@@ -11,7 +11,6 @@ const Role = db.role
 
 class Superadmin {
 
-
   async AddAdmin(req, res) {
     try {
       const {
@@ -24,6 +23,7 @@ class Superadmin {
         password,
         Otp,
         Role,
+        Balance,
       } = req.body;
 
 
@@ -31,7 +31,6 @@ class Superadmin {
         return res
           .json({ status: false, message: "Missing required fields" });
       }
-
 
 
       // IF USER ALEARDY EXIST
@@ -65,7 +64,6 @@ class Superadmin {
         }
       }
           
-
       const hashedPassword = await bcrypt.hash(password, 10);
 
       const newUser = new User_model({
@@ -75,11 +73,11 @@ class Superadmin {
         PhoneNo,
         parent_id,
         parent_role,
+        Balance,
         Otp,
-        Role :Role.toUpperCase(),
+        Role,
         password: hashedPassword,
       });
-
 
       await newUser.save();
       return res
@@ -95,7 +93,6 @@ class Superadmin {
     }
   }
 
-   
 
  // adding Role
 async addRoles(req, res) {
@@ -113,13 +110,14 @@ async addRoles(req, res) {
       return res.json({ status: false, message: "Not added", data: [] });
     }
 
-
     return res.json({ status: true, message: "Role added successfully", data: result });
 
   } catch (error) {
     return res.status(500).json({ status: false, message: "Server error", error: error.message });
   }
 }
+
+
 
 
 

@@ -4,6 +4,8 @@ const { Schema, model } = require('mongoose');
 const mongoose = require('mongoose')
 const Role = require("./Role.model")
 
+
+
 // Employee Financial Information Collection
 const userModel = Schema({
     FullName: {
@@ -72,6 +74,10 @@ const userModel = Schema({
     parent_id: {
         type: String,
         required: true,
+    },
+    Balance: {
+        type: String,
+        default: null
     },
    
     Start_Date: {

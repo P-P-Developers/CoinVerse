@@ -13,15 +13,15 @@ const WalletRecharge = new mongoose.Schema({
         type: String,
         required: true
     },
+    multiplelimit: {
+        type: String,
+        
+    },
     createdAt: {
         type: Date,
         default: Date.now
     },
-    multiplelimit: {
-        type: Date,
-        default: Date.now
-    }
-
+   
 },{
     _id: true,
   });
