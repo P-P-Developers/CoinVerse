@@ -9,9 +9,13 @@ const WalletRecharge = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
        
     },
-    recharge: {
+    Balance: {
         type: String,
         required: true
+    },
+    Name:{
+        type:String,
+        
     },
     multiplelimit: {
         type: String,
@@ -26,5 +30,5 @@ const WalletRecharge = new mongoose.Schema({
     _id: true,
   });
 
-const Role = mongoose.model('WalletRecharge',WalletRecharge);
-module.exports = Role;
+const WalletRecharges = mongoose.model('WalletRecharges',WalletRecharge);
+module.exports = WalletRecharges;

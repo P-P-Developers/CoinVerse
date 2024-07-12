@@ -37,8 +37,8 @@ const userModel = Schema({
         unique: true,
         default: null
     },
-    password: {
-        type: String,
+    password:{
+        type:String,
         required: true,
         trim: true,
         default: null
@@ -76,7 +76,7 @@ const userModel = Schema({
         required: true,
     },
     Balance: {
-        type: String,
+        type:Number,
         default: null
     },
    

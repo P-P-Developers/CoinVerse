@@ -2,13 +2,14 @@
 
 const router = require("express").Router()
 
-const {AddAdmin ,addRoles } = require("../../Controllers/Superadmin/Admins/admin")
+const {AddAdmin,walletRecharge} = require("../../Controllers/Superadmin/Admins/admin")
 
 
 
 
 router.post('/admin/add', AddAdmin);
-router.post('/admin/addRoles', addRoles);
+router.post('/admin/walletRecharge', walletRecharge);
+
 
 
 
