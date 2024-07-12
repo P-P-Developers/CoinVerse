@@ -5,7 +5,7 @@ const Header = () => {
         <div>
             <div
                 className="header-banner"
-                style={{ backgroundImage: "url(assets/images/bg-1.png)" }}
+                style={{ backgroundImage: "url(/assets/images/bg-1.png)" }}
             ></div>
 
             <div className="nav-header">

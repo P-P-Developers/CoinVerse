@@ -1,5 +1,5 @@
 import React from 'react'
-
+import { Link } from 'react-router-dom'
 const Sidebar = () => {
     return (
         <div>
@@ -10,25 +10,25 @@ const Sidebar = () => {
                     <div className="dlabnav-scroll mm-active">
                         <ul className="metismenu mm-show" id="menu">
                             <li className="mm-active">
-                                <a
+                                <Link
 
                                     href="javascript:void(0);"
                                     aria-expanded="false"
                                 >
                                     <i className="material-symbols-outlined">dashboard</i>
                                     <span className="nav-text">Dashboard</span>
-                                </a>
+                                </Link>
 
                             </li>
                             <li>
-                                <a
+                                <Link
 
                                     href="javascript:void(0);"
                                     aria-expanded="false"
                                 >
                                     <i className="material-symbols-outlined">monitoring</i>
                                     <span className="nav-text">Reports</span>
-                                </a>
+                                </Link>
 
                             </li>
                             <li>

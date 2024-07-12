@@ -1,6 +1,5 @@
 import React from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
+
 
 const Dashboard = () => {
 	return (
@@ -13,46 +12,244 @@ const Dashboard = () => {
 				<div class="row">
 					<div class="col-xl-12">
 						<div className="row main-card">
-							<Swiper
-								spaceBetween={30}
-								slidesPerView={1}
-								onSlideChange={() => console.log('slide change')}
-								onSwiper={(swiper) => console.log(swiper)}
+
+
+							<div
+								className="col-md-4"
+
 							>
-								<SwiperSlide>
-									<div className="card card-box bg-secondary">
-										<div className="card-header border-0 pb-0">
-											<div className="chart-num">
-												<p>
-													<i className="fa-solid fa-sort-down me-2" />
-													4%(30 days)
-												</p>
-												<h2 className="font-w600 mb-0">$65,123</h2>
-											</div>
-											<div className="dlab-swiper-circle"></div>
+								<div className="card card-box bg-secondary bg-secondary">
+									<div className="card-header border-0 pb-0">
+										<div className="chart-num">
+											<p>
+												<i className="fa-solid fa-sort-down me-2" />
+												4%(30 days)
+											</p>
+											<h2 className="font-w600 mb-0">$65,123</h2>
 										</div>
-										<div className="card-body p-0">
-											<div id="widgetChart1" className="chart-primary">
+										<div className="dlab-swiper-circle">
+
+										</div>
+									</div>
+									<div className="card-body p-0">
+										<div id="widgetChart1" className="chart-primary">
+											<div
+												options="[object Object]"
+												series="[object Object]"
+												type="line"
+												height={70}
+												width={500}
+												style={{ minHeight: 70 }}
+											>
 												<div
-													options="[object Object]"
-													series="[object Object]"
-													type="line"
-													height={70}
-													width={500}
-													style={{ minHeight: 70 }}
+													id="apexchartsx9yes9xy"
+													className="apexcharts-canvas apexchartsx9yes9xy apexcharts-theme-light"
+													style={{ width: 500, height: 70 }}
 												>
-													<div
-														id="apexchartsx9yes9xy"
-														className="apexcharts-canvas apexchartsx9yes9xy apexcharts-theme-light"
-														style={{ width: 500, height: 70 }}
-													></div>
+
 												</div>
 											</div>
 										</div>
 									</div>
-								</SwiperSlide>
-								{/* Add more SwiperSlide components as needed */}
-							</Swiper>
+								</div>
+							</div>
+							<div
+								className="col-md-4"
+
+							>
+								<div className="card card-box bg-secondary bg-pink">
+									<div className="card-header border-0 pb-0">
+										<div className="chart-num">
+											<p>
+												<i className="fa-solid fa-sort-down me-2" />
+												4%(30 days)
+											</p>
+											<h2 className="font-w600 mb-0">$68,123</h2>
+										</div>
+										<div className="dlab-swiper-circle">
+
+										</div>
+									</div>
+									<div className="card-body p-0">
+										<div id="widgetChart1" className="chart-primary">
+											<div
+												options="[object Object]"
+												series="[object Object]"
+												type="line"
+												height={70}
+												width={500}
+												style={{ minHeight: 70 }}
+											>
+												<div
+													id="apexchartsvwveid7d"
+													className="apexcharts-canvas apexchartsvwveid7d apexcharts-theme-light"
+													style={{ width: 500, height: 70 }}
+												>
+
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div
+								className="col-md-4"
+
+							>
+								<div className="card card-box bg-secondary bg-dark">
+									<div className="card-header border-0 pb-0">
+										<div className="chart-num">
+											<p>
+												<i className="fa-solid fa-sort-down me-2" />
+												4%(30 days)
+											</p>
+											<h2 className="font-w600 mb-0">$66,123</h2>
+										</div>
+										<div className="dlab-swiper-circle">
+
+										</div>
+									</div>
+									<div className="card-body p-0">
+										<div id="widgetChart1" className="chart-primary">
+											<div
+												options="[object Object]"
+												series="[object Object]"
+												type="line"
+												height={70}
+												width={500}
+												style={{ minHeight: 70 }}
+											>
+												<div
+													id="apexcharts4beacq3kf"
+													className="apexcharts-canvas apexcharts4beacq3kf apexcharts-theme-light"
+													style={{ width: 500, height: 70 }}
+												>
+
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div
+								className="col-md-4"
+
+							>
+								<div className="card card-box bg-secondary bg-warning">
+									<div className="card-header border-0 pb-0">
+										<div className="chart-num">
+											<p>
+												<i className="fa-solid fa-sort-down me-2" />
+												4%(30 days)
+											</p>
+											<h2 className="font-w600 mb-0">$67,123</h2>
+										</div>
+										<div className="dlab-swiper-circle">
+
+										</div>
+									</div>
+									<div className="card-body p-0">
+										<div id="widgetChart1" className="chart-primary">
+											<div
+												options="[object Object]"
+												series="[object Object]"
+												type="line"
+												height={70}
+												width={500}
+												style={{ minHeight: 70 }}
+											>
+												<div
+													id="apexchartss4ceobzc"
+													className="apexcharts-canvas apexchartss4ceobzc apexcharts-theme-light"
+													style={{ width: 500, height: 70 }}
+												>
+
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div
+								className="col-md-4"
+
+							>
+								<div className="card card-box bg-secondary bg-dark">
+									<div className="card-header border-0 pb-0">
+										<div className="chart-num">
+											<p>
+												<i className="fa-solid fa-sort-down me-2" />
+												4%(30 days)
+											</p>
+											<h2 className="font-w600 mb-0">$68,123</h2>
+										</div>
+										<div className="dlab-swiper-circle">
+
+										</div>
+									</div>
+									<div className="card-body p-0">
+										<div id="widgetChart1" className="chart-primary">
+											<div
+												options="[object Object]"
+												series="[object Object]"
+												type="line"
+												height={70}
+												width={500}
+												style={{ minHeight: 70 }}
+											>
+												<div
+													id="apexchartsbnvjl3ou"
+													className="apexcharts-canvas apexchartsbnvjl3ou apexcharts-theme-light"
+													style={{ width: 500, height: 70 }}
+												>
+
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div
+								className="col-md-4"
+
+							>
+								<div className="card card-box bg-secondary bg-secondary">
+									<div className="card-header border-0 pb-0">
+										<div className="chart-num">
+											<p>
+												<i className="fa-solid fa-sort-down me-2" />
+												4%(30 days)
+											</p>
+											<h2 className="font-w600 mb-0">$67,123</h2>
+										</div>
+										<div className="dlab-swiper-circle">
+
+										</div>
+									</div>
+									<div className="card-body p-0">
+										<div id="widgetChart1" className="chart-primary">
+											<div
+												options="[object Object]"
+												series="[object Object]"
+												type="line"
+												height={70}
+												width={500}
+												style={{ minHeight: 70 }}
+											>
+												<div
+													id="apexchartshwvh7gh8"
+													className="apexcharts-canvas apexchartshwvh7gh8 apexcharts-theme-light"
+													style={{ width: 500, height: 70 }}
+												>
+
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+
 						</div>
 
 						<div class="row">
