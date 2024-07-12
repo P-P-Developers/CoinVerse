@@ -12,7 +12,7 @@ const Sidebar = () => {
                             <li className="mm-active">
                                 <Link
 
-                                   to="/dashboard"
+                                    to="/dashboard"
                                     aria-expanded="false"
                                 >
                                     <i className="material-symbols-outlined">dashboard</i>
@@ -23,7 +23,7 @@ const Sidebar = () => {
                             <li>
                                 <Link
 
-                                    href="javascript:void(0);"
+                                    to="/report"
                                     aria-expanded="false"
                                 >
                                     <i className="material-symbols-outlined">monitoring</i>

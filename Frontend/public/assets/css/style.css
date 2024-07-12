@@ -36706,13 +36706,13 @@ code {
   background-color: rgba(222, 222, 237, 0.2);
 }
 
-.table tbody tr td:last-child {
+/* .table tbody tr td:last-child {
   text-align: right;
 }
 
 .table thead tr th:last-child {
   text-align: right !important;
-}
+} */
 
 .card-table th:first-child,
 .card-table td:first-child {
@@ -43111,4 +43111,13 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 [data-headerbg="color_3"] .header:not(.home) {
   background-color: var(--headerbg);
+}
+
+.nav-pills .navlink {
+  border-radius: 0.325rem;
+  padding: 1.5rem 7rem;
+  font-size: 15px;
+  font-weight: 600;
+  color: #5b5e81;
+  text-transform: capitalize;
 }
