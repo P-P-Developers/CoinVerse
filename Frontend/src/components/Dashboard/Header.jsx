@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { Link } from 'react-router-dom';
 const Header = () => {
     return (
         <div>
@@ -706,7 +706,7 @@ const Header = () => {
                                                         <span className="d-block text-end">@ilhamsupardi</span>
                                                     </div>
                                                 </div>
-                                                <img src="assets/images/user.jpg" alt="" />
+                                                <img src="/assets/images/user.jpg" alt="" />
                                             </div>
                                         </a>
                                         <div className="dropdown-menu dropdown-menu-end">
@@ -833,7 +833,7 @@ const Header = () => {
                                                 </svg>
                                                 <span className="ms-2">Settings </span>
                                             </a>
-                                            <a href="page-login.html" className="dropdown-item ai-icon">
+                                            <Link to='/login' className="dropdown-item ai-icon">
                                                 <svg
                                                     className="logout"
                                                     xmlns="http://www.w3.org/2000/svg"
@@ -851,7 +851,7 @@ const Header = () => {
                                                     <line x1={21} y1={12} x2={9} y2={12} />
                                                 </svg>
                                                 <span className="ms-2 text-danger">Logout </span>
-                                            </a>
+                                            </Link>
                                         </div>
                                     </div>
                                 </li>

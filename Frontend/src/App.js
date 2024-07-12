@@ -6,7 +6,7 @@ import AdminRoutes from './Routes/AdminRoutes';
 const App = () => {
   return (
     <div>
-      <AdminRoutes/>
+      <AdminRoutes />
     </div>
   );
 }

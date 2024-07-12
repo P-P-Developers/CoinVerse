@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
-
-
-
+import Login from '../Layouts/Auth/Login';
+import Dashboard from '../Layouts/Admin/Dashboard';
 
 
 const Routing = () => {
@@ -28,13 +27,13 @@ const Routing = () => {
             return;
         }
 
-        
+
         if (!user_details || !roles || user_details === "null" || roles === "null" || location.pathname === "/login") {
             navigate("/login");
             return;
         }
 
-       
+
         switch (roles) {
             case "SUPERADMIN":
                 if (location.pathname === "/login" || location.pathname === "/" || !location.pathname.startsWith("/superadmin")) {
@@ -65,14 +64,15 @@ const Routing = () => {
 
     return (
         <Routes>
-            <Route path="/admin/*" element={(roles === "ADMIN") ? <AdminRouting /> : <Login />} />
-           
+            {/* <Route path="/admin/*" element={(roles === "ADMIN") ? <AdminRouting /> : <Login />} /> */}
 
             {/* Add other routes here */}
             <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+
+            {/* <Route path="/register" element={<Register />} />
             <Route path="/forget" element={<Forget />} />
-            <Route path="/updatepassword/:id" element={<Update />} />
+            <Route path="/updatepassword/:id" element={<Update />} /> */}
         </Routes>
     );
 }
