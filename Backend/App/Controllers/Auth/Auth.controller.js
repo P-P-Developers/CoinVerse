@@ -11,7 +11,6 @@ const User_model = db.user;
 class Auth {
 
     async login(req, res) {
-
         try {
             const { Email, password } = req.body;
     

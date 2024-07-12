@@ -82,17 +82,21 @@ class Superadmin {
         Balance,
         Otp,
         Role,
-        password: hashedPassword,
+        password:hashedPassword,
       });
 
       await newUser.save();
 
+
+      // add balance 
       try {
-        let userWallet = await Wallet_model.findOne({ user_id: newUser._id });
+
+        let userWallet = await Wallet_model.findOne({user_id:newUser._id });
 
         if (userWallet) {
           userWallet.balance += Balance;
           await userWallet.save();
+
         } else {
           userWallet = new Wallet_model({
             user_id: newUser._id,
@@ -101,6 +105,7 @@ class Superadmin {
           });
           await userWallet.save();
         }
+
       } catch (walletError) {
         return res.json({
           status: true,
@@ -115,6 +120,8 @@ class Superadmin {
         message: "Admin added successfully",
         data: newUser,
       });
+
+
     } catch (error) {
       console.error("Error adding admin:", error);
       res.json({ status: false, message: "Failed to add admin", data: [] });
@@ -123,14 +130,13 @@ class Superadmin {
 
 
 
-
        //updated balance
 
-       async walletRecharge(req, res) {
+     async walletRecharge(req, res) {
         try {
           const { id, Balance } = req.body;
       
-          const wallet = await Wallet_model.findOne({ _id: id});
+          const wallet = await Wallet_model.findOne({_id: id});
           if (!wallet) {
 
             return res.json({ status: false, message: "Wallet not found", data: [] });
@@ -158,7 +164,6 @@ class Superadmin {
           return res.json({ status: false, message: "Internal error", data: [] });
         }
       }
-      
 
 
 
