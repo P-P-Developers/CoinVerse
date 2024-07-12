@@ -5,9 +5,6 @@ import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
 
 
-
-
-
 const Routing = () => {
     const location = useLocation();
 
@@ -70,7 +67,6 @@ const Routing = () => {
         <Routes>
             <Route path="/admin/*" element={(roles === "ADMIN") ? <AdminRouting /> : <Login />} />
            
-
 
             {/* Add other routes here */}
             <Route path="/login" element={<Login />} />
