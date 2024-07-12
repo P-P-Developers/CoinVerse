@@ -6,7 +6,7 @@ import Footer from '../components/Dashboard/Footer';
 import Dashboard from '../Layouts/Admin/Dashboard';
 
 
-const AdminRoutes = () => {
+const SuperadminRoutes = () => {
     return (
         <div id="main-wrapper" className='wallet-open show'>
             <Header />
@@ -18,13 +18,13 @@ const AdminRoutes = () => {
                     <Route path="/sidebar" element={<Sidebar />} />
                     <Route path="/footer" element={<Footer />} />
                     <Route path="/dashboard" element={<Dashboard />} />
-                   
+
                 </Routes>
             </div>
             <Footer />
-            
+
         </div>
     );
 }
 
-export default AdminRoutes;
+export default SuperadminRoutes;
