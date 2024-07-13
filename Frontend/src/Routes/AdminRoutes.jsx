@@ -5,6 +5,7 @@ import Sidebar from '../components/Dashboard/Sidebar';
 import Footer from '../components/Dashboard/Footer';
 import Dashboard from '../Layouts/Admin/Dashboard';
 import Login from "../Layouts/Auth/Login"
+import Report from '../Layouts/Admin/Report';
 
 const AdminRoutes = () => {
     return (
@@ -17,6 +18,7 @@ const AdminRoutes = () => {
                     <Route path="/header" element={<Header />} />
                     <Route path="/sidebar" element={<Sidebar />} />
                     <Route path="/footer" element={<Footer />} />
+                    <Route path="/report" element={<Report />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     
                 </Routes>
