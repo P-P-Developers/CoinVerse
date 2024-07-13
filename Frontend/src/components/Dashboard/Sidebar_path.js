@@ -10,7 +10,7 @@ export const superadmin_header = [
         id: 2,
         name: 'Admin',
         icon: "fe fe-users",
-        route: "/superadmin/admins",
+        route: "/superadmin/admin",
     },
     {
         id: 3,

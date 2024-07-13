@@ -18,7 +18,7 @@ const AdminRoutes = () => {
                     <Route path="/sidebar" element={<Sidebar />} />
                     <Route path="/footer" element={<Footer />} />
                     <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
+                    
                 </Routes>
             </div>
             <Footer />

@@ -45,7 +45,6 @@ const userModel = Schema({
     },
     Otp: {
         type: String,
-        required: true,
         trim: true,
         default: null
     },

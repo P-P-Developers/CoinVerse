@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 const db = require("../../../Models");
+const { findOne } = require("../../../Models/Role.model");
 const User_model = db.user;
 const Role = db.role;
 const Wallet_model = db.WalletRecharge;
@@ -166,6 +167,30 @@ class Superadmin {
       }
 
 
+
+
+      async getAdminDetail(req, res) {
+        try {
+          const { id } = req.body;
+      
+          const result = await User_model.find({ parent_id: id, Role: "ADMIN" });
+      
+          if (!result || result.length === 0) {
+            return res.json({ status: false, message: "Data not found", data: [] });
+          }
+      
+          return res.json({
+            status: true,
+            message: "getting data",
+            data: result
+          });
+      
+        } catch (error) {
+          console.error("Error fetching admin details:", error);
+          return res.json({ status: false, message: "Internal error", data: [] });
+        }
+      }
+      
 
 
 }
