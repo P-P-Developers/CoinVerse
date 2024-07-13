@@ -2,6 +2,10 @@ import React, { useEffect } from 'react';
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import Login from '../Layouts/Auth/Login';
 import Dashboard from '../Layouts/Admin/Dashboard';
+import Superadminroutes from './Superadminroutes';
+import Adminroutes from './AdminRoutes';
+
+
 
 
 const Routing = () => {
@@ -61,19 +65,14 @@ const Routing = () => {
     }, [navigate, location.pathname, roles, user_details]);
 
 
-
     return (
         <Routes>
-            {/* <Route path="/admin/*" element={(roles === "ADMIN") ? <AdminRouting /> : <Login />} /> */}
+            <Route path="/superadmin/*" element={(roles === "SUPERADMIN") ? <Superadminroutes /> : <Login />} />
 
+            <Route path="/admin/*" element={(roles === "ADMIN") ? <Adminroutes /> : <Login />} />
 
-            {/* Add other routes here */}
             <Route path="/login" element={<Login />} />
-            <Route path="/dashboard" element={<Dashboard />} />
 
-            {/* <Route path="/register" element={<Register />} />
-            <Route path="/forget" element={<Forget />} />
-            <Route path="/updatepassword/:id" element={<Update />} /> */}
         </Routes>
     );
 }
