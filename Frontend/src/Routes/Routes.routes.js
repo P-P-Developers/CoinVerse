@@ -73,7 +73,6 @@ const Routing = () => {
             <Route path="/admin/*" element={(roles === "ADMIN") ? <Adminroutes /> : <Login />} />
 
             <Route path="/login" element={<Login />} />
-            
             <Route path="/register" element={<Register />} />
 
         </Routes>

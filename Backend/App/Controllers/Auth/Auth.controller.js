@@ -5,8 +5,11 @@ const ObjectId = mongoose.Types.ObjectId;
 const db = require("../../Models");
 const jwt = require("jsonwebtoken");
 const User_model = db.user;
+const Sign_In = db.Sign_In;
 
 class Auth {
+
+
   async login(req, res) {
     try {
       const { Email, password } = req.body;
@@ -38,6 +41,56 @@ class Auth {
       res.send({ status: false, msg: "Server Side error", data: error });
     }   
   }
+
+
+
+  async SignIn(req, res) {
+    try {
+        const { FullName, UserName, Email, password } = req.body;
+
+
+        if (!FullName || !UserName || !Email || !password) {
+            return res.json({ status: false, message: "Missing required fields", data: [] });
+        }
+
+        // Hash the password
+        var rand_password = Math.round(password);
+        const salt = await bcrypt.genSalt(10);
+        var hashedPassword = await bcrypt.hash(rand_password.toString(), salt);
+
+    
+        const signinuser = new Sign_In({
+            FullName,
+            UserName,
+            Email,
+            password: hashedPassword,
+        });
+
+        const result = await signinuser.save();
+
+        if (!result) {
+            return res.json({ status: false, message: "Unable to sign in", data: [] });
+        }
+
+        return res.json({
+            status: true,
+            message: "Sign in successfully",
+            data: [],
+        });
+
+    } catch (error) {
+       
+        return res.json({
+            status: false,
+            message: "Internal error",
+            data: [],
+        });
+    }
+}
+
+
+
+
 }
 
 module.exports = new Auth();
