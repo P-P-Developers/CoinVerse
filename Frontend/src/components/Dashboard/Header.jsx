@@ -863,7 +863,7 @@ const Header = () => {
                     <div className="sub-dz-head">
                         <div className="d-flex align-items-center dz-head-title">
                             <h2 className="text-white m-0">Dashboard</h2>
-                            <p className="ms-2 text-warning">Welcome Back Yatin Sharma!</p>
+                            <p className="ms-2 text-warning">Welcome Back Neha Sharma!</p>
                         </div>
                     </div>
                 </div>
