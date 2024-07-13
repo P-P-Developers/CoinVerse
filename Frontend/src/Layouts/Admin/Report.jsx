@@ -70,6 +70,15 @@ const Report = () => {
                                                                                 aria-labelledby="Week-tab"
                                                                             >
                                                                                 <div className="table-responsive">
+                                                                                    <div className='mb-2'>
+                                                                                        Search :{" "}
+                                                                                        <input
+                                                                                            className="ml-2 input-search form-control"
+                                                                                            defaultValue=""
+                                                                                            style={{ width: "20%" }}
+                                                                                        />
+                                                                                    </div>
+
                                                                                     <table className="table table-responsive-md">
                                                                                         <thead>
                                                                                             <tr>
@@ -139,7 +148,17 @@ const Report = () => {
                                                                                 aria-labelledby="Week-tab"
                                                                             >
                                                                                 <div className="table-responsive">
+                                                                                    <div className="mb-2">
+                                                                                        Search :{" "}
+                                                                                        <input
+                                                                                            className="ml-2 input-search form-control"
+                                                                                            defaultValue=""
+                                                                                            style={{ width: "20%" }}
+                                                                                        />
+                                                                                    </div>
+
                                                                                     <table className="table table-responsive-md">
+
                                                                                         <thead>
                                                                                             <tr>
                                                                                                 <th>#</th>
