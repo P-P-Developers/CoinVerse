@@ -4,13 +4,19 @@ import { useNavigate } from "react-router-dom";
 import { LOGIN_API } from "../../Services/Auth/Auth";
 
 const Login = () => {
+
+
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
+
   const navigate = useNavigate();
 
   const handleEmailChange = (e) => setEmail(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
+
+
 
   const validate = () => {
     let inputErrors = {};
@@ -20,7 +26,7 @@ const Login = () => {
   };
 
 
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const inputErrors = validate();
@@ -30,6 +36,7 @@ const Login = () => {
     }
   
     try {
+      
       const response = await LOGIN_API({ Email: email, password: password });
   
       const { Role } = response.data;
