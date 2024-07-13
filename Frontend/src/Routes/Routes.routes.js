@@ -4,6 +4,7 @@ import Login from '../Layouts/Auth/Login';
 import Dashboard from '../Layouts/Admin/Dashboard';
 import Superadminroutes from './Superadminroutes';
 import Adminroutes from './AdminRoutes';
+import Register from '../Layouts/Auth/Register';
 
 
 
@@ -72,6 +73,8 @@ const Routing = () => {
             <Route path="/admin/*" element={(roles === "ADMIN") ? <Adminroutes /> : <Login />} />
 
             <Route path="/login" element={<Login />} />
+            
+            <Route path="/register" element={<Register />} />
 
         </Routes>
     );

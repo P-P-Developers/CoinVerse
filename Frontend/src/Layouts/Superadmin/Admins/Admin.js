@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
 import { getadmindata } from "../../../Services/Superadmin/Superadmin";
-
+import { Link } from "react-router-dom";
 const Admin = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
@@ -42,7 +42,12 @@ const Admin = () => {
               <div className="mb-2">
                 <h4 className="card-title">All Admins</h4>
               </div>
-              <ul className="float-end nav nav-pills mb-2" role="tablist">
+              <Link to="/superadmin/adddmin" className="float-end mb-2 btn btn-dark">
+
+                Add Admins
+              </Link>
+
+              {/* <ul className="float-end nav nav-pills mb-2" role="tablist">
                 <li className="nav-item" role="presentation">
                   <button
                     className="nav-link active"
@@ -85,7 +90,7 @@ const Admin = () => {
                     Year
                   </button>
                 </li>
-              </ul>
+              </ul> */}
             </div>
             <div className="card-body p-0">
               <div className="tab-content" id="myTabContent1">

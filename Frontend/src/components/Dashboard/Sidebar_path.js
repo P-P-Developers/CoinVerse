@@ -50,7 +50,7 @@ export const admin_header = [
         id: 5,
         name: 'Reports',
         icon: "fe fe-file-text",
-        route: "/admin/reports",
+        route: "/admin/report",
     },
     {
         id: 6,

@@ -18,7 +18,7 @@ const SuperadminRoutes = () => {
                     
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/admin" element={<Admin />} />
-                    <Route path="/AddAdmin" element={<AddAdmin />} />
+                    <Route path="/adddmin" element={<AddAdmin />} />
 
                 </Routes>
             </div>

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { LOGIN_API } from "../../Services/Auth/Auth";
+import { Link } from "react-router-dom";
 
 const Login = () => {
 
@@ -34,17 +35,17 @@ const Login = () => {
       setErrors(inputErrors);
       return;
     }
-  
+
     try {
       
       const response = await LOGIN_API({ Email: email, password: password });
-  
+
       const { Role } = response.data;
-  
+
       if (response.status) {
         localStorage.setItem("user_details", JSON.stringify(response.data));
         localStorage.setItem("user_role", JSON.stringify(response.data.Role));
-  
+
         Swal.fire({
           icon: "success",
           title: "Login successful",
@@ -58,7 +59,7 @@ const Login = () => {
             navigate("/admin/dashboard");
           }
         });
-        
+
       } else {
         Swal.fire({
           icon: "error",
@@ -75,14 +76,14 @@ const Login = () => {
       console.error("Login failed:", error);
     }
   };
-  
+
 
   return (
     <div className="authincation d-flex flex-column flex-lg-row flex-column-fluid">
       <div className="login-aside text-center d-flex flex-column flex-row-auto">
         <div className="d-flex flex-column-auto flex-column pt-lg-40 pt-15">
           <div className="text-center mb-lg-4 mb-2 pt-5 logo">
-            <img src="images/logo-white.png" alt="Logo" />
+            <img src="assets/images/logo-white.png" alt="Logo" />
           </div>
           <h3 className="mb-2 text-white">Welcome back!</h3>
           <p className="mb-4">
@@ -90,23 +91,24 @@ const Login = () => {
             Strategy SaaS Solutions
           </p>
         </div>
+
         <div
           className="aside-image position-relative"
-          style={{ backgroundImage: "url(images/background/pic-2.png)" }}
+          style={{ backgroundImage: "url(/assets/images/background/pic-2.png)" }}
         >
           <img
             className="img1 move-1"
-            src="images/background/pic3.png"
+            src="assets/images/background/pic3.png"
             alt=""
           />
           <img
             className="img2 move-2"
-            src="images/background/pic4.png"
+            src="assets/images/background/pic4.png"
             alt=""
           />
           <img
             className="img3 move-3"
-            src="images/background/pic5.png"
+            src="assets/images/background/pic5.png"
             alt=""
           />
         </div>
@@ -123,10 +125,12 @@ const Login = () => {
                   <form onSubmit={handleSubmit}>
                     <div className="text-center mb-4">
                       <h3 className="text-center mb-2 text-dark">Sign In</h3>
+                      <span>Your Social Campaigns</span>
                     </div>
 
                     <div className="separator">
-                      <span className="d-block mb-4 fs-13">Or with email</span>
+                      <span className="text-center
+                      d-block mb-4 fs-13">Or with email</span>
                     </div>
                     <div className="mb-3">
                       <label
@@ -171,13 +175,13 @@ const Login = () => {
                   <div className="new-account mt-3 text-center">
                     <p className="font-w500">
                       Don't have an account?{" "}
-                      <a
+                      <Link
                         className="text-primary"
-                        href="page-register.html"
+                        to="/register"
                         data-toggle="tab"
                       >
                         Sign up
-                      </a>
+                      </Link>
                     </p>
                   </div>
                 </div>
