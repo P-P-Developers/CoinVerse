@@ -187,12 +187,18 @@ const Register = () => {
                         </button>
                       </div>
 
-                      <div className="text-center">
-                        <small className="text-muted">
-                          Already have an account?{" "}
-                          <Link to="/login">Sign In</Link>
-                        </small>
-                      </div>
+                       <div className="new-account mt-3 text-center">
+                    <p className="font-w500">
+                    Already have an account?{" "}
+                      <Link
+                        className="text-primary"
+                        to="/login"
+                        data-toggle="tab"
+                      >
+                        Sign up
+                      </Link>
+                    </p>
+                  </div>
                     </form>
                   </div>
                 </div>
