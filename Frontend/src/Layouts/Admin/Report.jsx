@@ -58,140 +58,140 @@ const Report = () => {
                                                 <div className="tab-content">
                                                     <div id="navpills-1" className="tab-pane active">
                                                         <div className="row">
-                                                            <div className="col-md-12">
-                                                                <div className="card-body">
-                                                                    <div className="table-responsive">
-                                                                        <div className='mb-2'>
-                                                                            Search :{" "}
-                                                                            <input
-                                                                                className="ml-2 input-search form-control"
-                                                                                defaultValue=""
-                                                                                style={{ width: "20%" }}
-                                                                            />
+                                                            <div className="col-lg-12">
+                                                                <div className="card transaction-table">
+
+                                                                    <div className="card-body p-0">
+                                                                        <div className="tab-content" id="myTabContent1">
+                                                                            <div
+                                                                                className="tab-pane fade show active"
+                                                                                id="Week"
+                                                                                role="tabpanel"
+                                                                                aria-labelledby="Week-tab"
+                                                                            >
+                                                                                <div className="table-responsive">
+                                                                                    <table className="table table-responsive-md">
+                                                                                        <thead>
+                                                                                            <tr>
+                                                                                                <th>#</th>
+                                                                                                <th>Username</th>
+                                                                                                <th>Start Date</th>
+                                                                                                <th>End Date</th>
+
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody>
+                                                                                            <tr>
+
+                                                                                                <td>1</td>
+                                                                                                <td>Donalt</td>
+                                                                                                <td>01 August 2020</td>
+                                                                                                <td>01 August 2020</td>
+
+
+
+
+                                                                                            </tr>
+                                                                                            <tr>
+
+                                                                                                <td>2</td>
+                                                                                                <td>Donalt</td>
+                                                                                                <td>01 August 2020</td>
+                                                                                                <td>01 August 2020</td>
+
+
+
+
+                                                                                            </tr>
+                                                                                            <tr>
+
+                                                                                                <td>3</td>
+                                                                                                <td>Donalt</td>
+                                                                                                <td>01 August 2020</td>
+                                                                                                <td>01 August 2020</td>
+
+
+
+
+                                                                                            </tr>
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </div>
+                                                                            </div>
                                                                         </div>
-                                                                        <table className="table">
-                                                                            <thead>
-                                                                                <tr>
-                                                                                    <th>
-                                                                                        <strong>S.NO</strong>
-                                                                                    </th>
-                                                                                    <th>
-                                                                                        <strong>USER NAME</strong>
-                                                                                    </th>
-                                                                                    <th>
-                                                                                        <strong>END DATE</strong>
-                                                                                    </th>
-                                                                                    <th>
-                                                                                        <strong>START DATE</strong>
-                                                                                    </th>
-
-                                                                                </tr>
-                                                                            </thead>
-                                                                            <tbody>
-                                                                                <tr>
-                                                                                    <td>
-                                                                                        <strong>01</strong>
-                                                                                    </td>
-                                                                                    <td>Mr. Bobby</td>
-                                                                                    <td>Dr. Jackson</td>
-                                                                                    <td>01 August 2022</td>
-
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td>
-                                                                                        <strong>02</strong>
-                                                                                    </td>
-                                                                                    <td>Mr. Bobby</td>
-                                                                                    <td>Dr. Jackson</td>
-                                                                                    <td>01 August 2022</td>
-
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td>
-                                                                                        <strong>03</strong>
-                                                                                    </td>
-                                                                                    <td>Mr. Bobby</td>
-                                                                                    <td>Dr. Jackson</td>
-                                                                                    <td>01 August 2022</td>
-
-
-                                                                                </tr>
-                                                                            </tbody>
-                                                                        </table>
-
                                                                     </div>
                                                                 </div>
-
-
                                                             </div>
+
                                                         </div>
                                                     </div>
                                                     <div id="navpills-2" className="tab-pane">
                                                         <div className="row">
-                                                            <div className="col-md-12">
-                                                                <div className="card-body">
-                                                                    <div className="table-responsive">
-                                                                        <div className='mb-2'>
-                                                                            Search :{" "}
-                                                                            <input
-                                                                                className="ml-2 input-search form-control"
-                                                                                defaultValue=""
-                                                                                style={{ width: "20%" }}
-                                                                            />
+                                                            <div className="col-lg-12">
+                                                                <div className="card transaction-table">
+
+                                                                    <div className="card-body p-0">
+                                                                        <div className="tab-content" id="myTabContent1">
+                                                                            <div
+                                                                                className="tab-pane fade show active"
+                                                                                id="Week"
+                                                                                role="tabpanel"
+                                                                                aria-labelledby="Week-tab"
+                                                                            >
+                                                                                <div className="table-responsive">
+                                                                                    <table className="table table-responsive-md">
+                                                                                        <thead>
+                                                                                            <tr>
+                                                                                                <th>#</th>
+                                                                                                <th>Username</th>
+                                                                                                <th>Start Date</th>
+                                                                                                <th>End Date</th>
+
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody>
+                                                                                            <tr>
+
+                                                                                                <td>1</td>
+                                                                                                <td>MS Dhoni</td>
+                                                                                                <td>01 August 2020</td>
+                                                                                                <td>02 August 2024</td>
+
+
+
+
+                                                                                            </tr>
+                                                                                            <tr>
+
+                                                                                                <td>2</td>
+                                                                                                <td>Donalt Trump</td>
+                                                                                                <td>01 August 2020</td>
+                                                                                                <td>03 August 2024</td>
+
+
+
+
+                                                                                            </tr>
+                                                                                            <tr>
+
+                                                                                                <td>3</td>
+                                                                                                <td>Donalt kesh</td>
+                                                                                                <td>01 August 2020</td>
+                                                                                                <td>05 August 2025</td>
+
+
+
+
+                                                                                            </tr>
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </div>
+                                                                            </div>
                                                                         </div>
-                                                                        <table className="table">
-                                                                            <thead>
-                                                                                <tr>
-                                                                                    <th>
-                                                                                        <strong>S.NO</strong>
-                                                                                    </th>
-                                                                                    <th>
-                                                                                        <strong>USER NAME</strong>
-                                                                                    </th>
-                                                                                    <th>
-                                                                                        <strong>START DATE</strong>
-                                                                                    </th>
-                                                                                    <th>
-                                                                                        <strong>END DATE</strong>
-                                                                                    </th>
-
-                                                                                </tr>
-                                                                            </thead>
-                                                                            <tbody>
-                                                                                <tr>
-                                                                                    <td>
-                                                                                        <strong>01</strong>
-                                                                                    </td>
-                                                                                    <td>Mr. Bobby</td>
-                                                                                    <td>Dr. Jackson</td>
-                                                                                    <td>01 August 2022</td>
-
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td>
-                                                                                        <strong>02</strong>
-                                                                                    </td>
-                                                                                    <td>Mr. Bobby</td>
-                                                                                    <td>Dr. Jackson</td>
-                                                                                    <td>01 August 2022</td>
-
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td>
-                                                                                        <strong>03</strong>
-                                                                                    </td>
-                                                                                    <td>Mr. Bobby</td>
-                                                                                    <td>Dr. Jackson</td>
-                                                                                    <td>01 August 2022</td>
-
-
-                                                                                </tr>
-                                                                            </tbody>
-                                                                        </table>
-
                                                                     </div>
                                                                 </div>
                                                             </div>
+
                                                         </div>
                                                     </div>
                                                     <div id="navpills-3" className="tab-pane">
