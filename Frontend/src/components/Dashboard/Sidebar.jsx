@@ -37,7 +37,7 @@ const Sidebar = () => {
         <div className="dlabnav-scroll mm-active">
           <ul className="metismenu mm-show" id="menu">
             {routes && routes.map((data) => (
-              <li key={data.id} className="mm-active">
+              <li key={data.id} className="mm">
                 <Link to={data.route} aria-expanded="false">
                   <i className={getIconClass(data.name)}></i>
                   <span className="nav-text">{data.name}</span>

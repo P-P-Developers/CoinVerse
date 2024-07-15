@@ -18,6 +18,18 @@ export const superadmin_header = [
         icon: "fe fe-dollar-sign",
         route: "/superadmin/transaction",
     },
+    {
+        id: 4,
+        name: 'Position',
+        icon: "fe fe-dollar-sign",
+        route: "/superadmin/position",
+    },
+    {
+        id: 5,
+        name: 'Broadcast',
+        icon: "fe fe-dollar-sign",
+        route: "/superadmin/broadcast",
+    },
 ];
 
 // Admin header configuration

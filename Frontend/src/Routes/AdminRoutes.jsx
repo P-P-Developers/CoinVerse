@@ -6,6 +6,14 @@ import Footer from '../components/Dashboard/Footer';
 import Dashboard from '../Layouts/Admin/Dashboard';
 import Login from "../Layouts/Auth/Login"
 import Report from '../Layouts/Admin/Report';
+import Tradehistory from '../Layouts/Admin/Tradehistory';
+import Loginstatus from '../Layouts/Admin/Loginstatus';
+import Withdraw from '../Layouts/Admin/Withdraw';
+import Deposit from '../Layouts/Admin/Deposit';
+import Position from '../Layouts/Admin/Position';
+import Employee from '../Layouts/Admin/Employee';
+import User from '../Layouts/Admin/User';
+import Transaction from '../Layouts/Admin/Transaction';
 
 const AdminRoutes = () => {
     return (
@@ -20,7 +28,15 @@ const AdminRoutes = () => {
                     <Route path="/footer" element={<Footer />} />
                     <Route path="/report" element={<Report />} />
                     <Route path="/dashboard" element={<Dashboard />} />
-                    
+                    <Route path="/tradehistory" element={<Tradehistory />} />
+                    <Route path="/loginstatus" element={<Loginstatus />} />
+                    <Route path="/withdrawal" element={<Withdraw />} />
+                    <Route path="/deposit" element={<Deposit />} />
+                    <Route path="/position" element={<Position />} />
+                    <Route path="/employees" element={<Employee />} />
+                    <Route path="/users" element={<User />} />
+                    <Route path="/transaction" element={<Transaction />} />
+
                 </Routes>
             </div>
             <Footer />

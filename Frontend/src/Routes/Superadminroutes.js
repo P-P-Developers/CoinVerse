@@ -6,6 +6,7 @@ import Footer from '../components/Dashboard/Footer';
 import Dashboard from '../Layouts/Superadmin/Dashboard';
 import Admin from '../Layouts/Superadmin/Admins/Admin';
 import AddAdmin from '../Layouts/Superadmin/Admins/AddAdmin';
+import Transaction from '../Layouts/Superadmin/Admins/Transaction';
 
 
 const SuperadminRoutes = () => {
@@ -19,6 +20,7 @@ const SuperadminRoutes = () => {
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/admin" element={<Admin />} />
                     <Route path="/adddmin" element={<AddAdmin />} />
+                    <Route path="/transaction" element={<Transaction />} />
 
                 </Routes>
             </div>
