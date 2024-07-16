@@ -33,6 +33,8 @@ export const superadmin_header = [
     },
 ];
 
+
+
 // Admin header configuration
 export const admin_header = [
     {
@@ -43,9 +45,9 @@ export const admin_header = [
     },
     {
         id: 2,
-        name: 'Employees',
+        name: 'Employes',
         icon: "fe fe-users",
-        route: "/admin/employees",
+        route: "/admin/employes",
     },
     {
         id: 3,
@@ -71,12 +73,12 @@ export const admin_header = [
         icon: "fe fe-activity",
         route: "/admin/tradehistory",
     },
-    {
-        id: 7,
-        name: 'Login Status',
-        icon: "fe fe-check-square",
-        route: "/admin/loginstatus",
-    },
+    // {
+    //     id: 7,
+    //     name: 'Login Status',
+    //     icon: "fe fe-check-square",
+    //     route: "/admin/loginstatus",
+    // },
     {
         id: 8,
         name: 'Available Position',

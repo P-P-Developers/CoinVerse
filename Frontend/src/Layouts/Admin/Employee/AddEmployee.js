@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import Form from "../../../Utils/Form/Formik";
 import { AddnewUsers } from "../../../Services/Superadmin/Superadmin";
 
-const AddAdmin = () => {
+const AddEmployee = () => {
 
   const navigate = useNavigate();
 
@@ -67,9 +67,9 @@ const AddAdmin = () => {
         PhoneNo: values.phone,
         Balance: values.Balance,
         password: values.password,
-        parent_role: Role || "SUPERADMIN",
+        parent_role: Role || "ADMIN",
         parent_id: user_id,
-        Role: "ADMIN",
+        Role: "EMPLOYE",
       };
 
       setSubmitting(false);
@@ -78,19 +78,19 @@ const AddAdmin = () => {
         .then((response) => {
           if (response.status) {
             Swal.fire({
-              title: "Subadmin Added!",
-              text: "Subadmin added successfully",
+              title: "Employe Added!",
+              text: "Employe added successfully",
               icon: "success",
               timer: 1000,
               timerProgressBar: true,
             });
             setTimeout(() => {
-              navigate("/admin/allsubadmin");
+              navigate("/admin/employes");
             }, 1000);
           } else {
             Swal.fire({
               title: "Error!",
-              text: response.message || "Subadmin add error",
+              text: response.message || "Employe add error",
               icon: "error",
               timer: 1000,
               timerProgressBar: true,
@@ -103,6 +103,7 @@ const AddAdmin = () => {
     },
   });
 
+  
   const fields = [
     {
       name: "fullName",
@@ -131,7 +132,7 @@ const AddAdmin = () => {
     {
       name: "phone",
       label: "Phone Number",
-      type: "text",
+      type: "text3",
       label_size: 12,
       col_size: 6,
       disable: false,
@@ -167,13 +168,13 @@ const AddAdmin = () => {
       fields={fields.filter(
         (field) => !field.showWhen || field.showWhen(formik.values)
       )}
-      page_title="Add Admin"
-      btn_name="Add Subadmin"
+      page_title="Add Employe"
+      btn_name="Add Employe"
       btn_name1="Cancel"
       formik={formik}
-      btn_name1_route={"/superadmin/admin"}
+      btn_name1_route={"/admin/employes"}
     />
   );
 };
 
-export default AddAdmin;
+export default AddEmployee;

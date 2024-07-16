@@ -15,6 +15,7 @@ const Routing = () => {
     const navigate = useNavigate();
     const roles = JSON.parse(localStorage.getItem('user_role'));
     const user_details = JSON.parse(localStorage.getItem("user_details"));
+    
 
     useEffect(() => {
         if (location.pathname.startsWith("/updatepassword")) {
@@ -73,7 +74,6 @@ const Routing = () => {
             <Route path="/admin/*" element={(roles === "ADMIN") ? <Adminroutes /> : <Login />} />
 
             <Route path="/login" element={<Login />} />
-            
             <Route path="/register" element={<Register />} />
 
         </Routes>
