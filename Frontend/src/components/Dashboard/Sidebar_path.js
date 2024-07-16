@@ -2,6 +2,7 @@
 export const superadmin_header = [
     {
         id: 1,
+        icon: "material-symbols-outlined",
         name: 'Dashboard',
         icon: "material-symbols-outlined",
         route: "/superadmin/dashboard",
@@ -20,7 +21,7 @@ export const superadmin_header = [
     },
     {
         id: 4,
-        name: 'Position',
+        name: 'Available Position',
         icon: "fe fe-dollar-sign",
         route: "/superadmin/position",
     },
@@ -52,7 +53,7 @@ export const admin_header = [
         icon: "fe fe-users",
         route: "/admin/users",
     },
-    {
+    {                                             
         id: 4,
         name: 'Transaction',
         icon: "fe fe-dollar-sign",
@@ -78,7 +79,7 @@ export const admin_header = [
     },
     {
         id: 8,
-        name: 'Position',
+        name: 'Available Position',
         icon: "fe fe-target",
         route: "/admin/position",
     },
