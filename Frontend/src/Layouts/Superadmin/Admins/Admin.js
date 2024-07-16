@@ -72,8 +72,11 @@ const Admin = () => {
       accessor: "ActiveStatus",
       Cell: ({ cell }) => (
         <div class="form-check form-switch">
-          <input class="form-check-input toggler" type="checkbox" role="switch" id="flexSwitchCheckDefault" />
-           
+          <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
+          // checked={cell.value === 0}
+          // onChange={(event) => updateactivestatus(event, cell.row._id)}
+          />
+
         </div>
       ),
     },
