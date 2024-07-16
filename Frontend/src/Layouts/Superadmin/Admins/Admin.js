@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
-import { getUserdata, Addbalance , updateActivestatus} from "../../../Services/Superadmin/Superadmin";
+import { getUserdata, Addbalance, updateActivestatus } from "../../../Services/Superadmin/Superadmin";
 import { Link } from "react-router-dom";
 import { CirclePlus, IndianRupee } from "lucide-react";
 import Swal from 'sweetalert2';
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 import Loader from "../../../Utils/Loader/Loader";
-
 
 const Admin = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
@@ -16,7 +15,6 @@ const Admin = () => {
   const [balance, setBalance] = useState("");
   const [modal, setModal] = useState(false);
   const [id, setID] = useState("");
-
   const [loading, setLoading] = useState(false);
 
   const columns = [
@@ -73,38 +71,28 @@ const Admin = () => {
       Header: "ActiveStatus",
       accessor: "ActiveStatus",
       Cell: ({ cell }) => (
-        <label className="status-toggle">
-          <input
-            id={`rating_${cell.row.id}`}
-            className="check"
-            type="checkbox"
-            onChange={(event) => updateactivestatus(event, cell.row._id)}
-            defaultChecked={cell.value == 1}
-          />
-            <label htmlFor={`rating_${cell.row.id}`} className="checktoggle checkbox-bg"></label>
-
-        </label>
+        <div class="form-check form-switch">
+          <input class="form-check-input toggler" type="checkbox" role="switch" id="flexSwitchCheckDefault" />
+           
+        </div>
       ),
     },
-    { Header: "Create Date", accessor: "Create_Date",
-      Cell: ({cell}) => {
-        return fDateTime(cell.value)
-       
-       },
-     },
+    {
+      Header: "Create Date",
+      accessor: "Create_Date",
+      Cell: ({ cell }) => fDateTime(cell.value),
+    },
   ];
 
-
-
-  // update  balance
+  // update balance
   const updateBalance = async () => {
     try {
-     await Addbalance({
+      await Addbalance({
         id: id,
         Balance: balance,
-        parent_Id:user_id
+        parent_Id: user_id
       });
-      
+
       Swal.fire({
         icon: 'success',
         title: 'Balance Updated',
@@ -120,12 +108,8 @@ const Admin = () => {
       });
     }
   };
-  
 
-
-  // update acctive status
-
-  
+  // update active status
   const updateactivestatus = async (event, id) => {
     const user_active_status = event.target.checked ? 1 : 0;
 
@@ -134,12 +118,12 @@ const Admin = () => {
       showCancelButton: true,
       confirmButtonText: "Save",
       cancelButtonText: "Cancel",
-      allowOutsideClick: false, 
+      allowOutsideClick: false,
     });
 
     if (result.isConfirmed) {
       try {
-        const response = await updateActivestatus({ id, user_active_status })
+        const response = await updateActivestatus({ id, user_active_status });
         if (response.status) {
           Swal.fire({
             title: "Saved!",
@@ -149,20 +133,17 @@ const Admin = () => {
           });
           setTimeout(() => {
             Swal.close(); // Close the modal
-            
+            getAllAdmin(); // Refresh the data
           }, 1000);
-        } 
-  
+        }
       } catch (error) {
         console.error("Error", error);
         Swal.fire("Error", "There was an error processing your request.", "error");
       }
     } else if (result.dismiss === Swal.DismissReason.cancel) {
-      window.location.reload();
+      getAllAdmin(); // Reload the data to revert the change
     }
   };
-
-
 
   // get all admin
   const getAllAdmin = async () => {
@@ -170,14 +151,13 @@ const Admin = () => {
     const data = { id: user_id };
     try {
       const response = await getUserdata(data);
-      setData(response.data); 
+      setData(response.data);
       setLoading(false);
     } catch (error) {
       console.log("error", error);
+      setLoading(false);
     }
   };
-
-
 
   useEffect(() => {
     getAllAdmin();
