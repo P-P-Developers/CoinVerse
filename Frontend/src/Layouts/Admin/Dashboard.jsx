@@ -1,12 +1,38 @@
-import React from 'react';
-
+import React, { useEffect, useState } from 'react';
+import { Admindashboarddata } from '../../Services/Admin/Addmin';
 
 const Dashboard = () => {
+
+	const [countdata , setCountdata] = useState("")
+
+	const userDetails = JSON.parse(localStorage.getItem("user_details"));
+	const user_id = userDetails?.user_id;
+   
+
+	const getdashboard = async () => {
+		try {
+		  const data = { parent_id: user_id };
+		  const response = await Admindashboarddata(data);
+		  
+		  if (response.status) {
+			console.log("aa", response.data);
+			setCountdata(response.data)
+		  } else {
+			console.error("Error: ", response.message || "Unknown error occurred");
+		  }
+		} catch (error) {
+		  console.error("API call failed: ", error.message);
+		}
+	  };
+	  
+  
+	useEffect(()=>{
+		getdashboard()
+	},[])
+
+
 	return (
-
 		<div>
-
-
 			<div class="container-fluid">
 
 				<div class="row">
@@ -23,9 +49,9 @@ const Dashboard = () => {
 										<div className="chart-num">
 											<p>
 												<i className="fa-solid fa-sort-down me-2" />
-												Total Account
+												Total User
 											</p>
-											<h2 className="font-w600 mb-0">23</h2>
+											<h2 className="font-w600 mb-0">{countdata.TotalUserCount && countdata.TotalUserCount}</h2>
 										</div>
 										<div className="dlab-swiper-circle">
 											<svg
@@ -245,9 +271,9 @@ const Dashboard = () => {
 										<div className="chart-num">
 											<p>
 												<i className="fa-solid fa-sort-down me-2" />
-												Live Account
+												Total Active User
 											</p>
-											<h2 className="font-w600 mb-0">23</h2>
+											<h2 className="font-w600 mb-0">{countdata.TotalActiveUserCount && countdata.TotalActiveUserCount}</h2>
 										</div>
 										
 										<div className="dlab-swiper-circle">
@@ -467,9 +493,9 @@ const Dashboard = () => {
 										<div className="chart-num">
 											<p>
 												<i className="fa-solid fa-sort-down me-2" />
-												Expired Account
+												Total Deactive User
 											</p>
-											<h2 className="font-w600 mb-0">0</h2>
+											<h2 className="font-w600 mb-0">{countdata.TotalInActiveUserCount && countdata.TotalInActiveUserCount}</h2>
 										</div>
 										<div className="dlab-swiper-circle">
 											<svg
@@ -687,9 +713,9 @@ const Dashboard = () => {
 										<div className="chart-num">
 											<p>
 												<i className="fa-solid fa-sort-down me-2" />
-												Total Licence
+												Total Employe
 											</p>
-											<h2 className="font-w600 mb-0">67</h2>
+											<h2 className="font-w600 mb-0">{countdata.TotalEmployeCount && countdata.TotalEmployeCount}</h2>
 										</div>
 										<div className="dlab-swiper-circle">
 											<svg
@@ -907,9 +933,9 @@ const Dashboard = () => {
 										<div className="chart-num">
 											<p>
 												<i className="fa-solid fa-sort-down me-2" />
-												Remaining Licence
+												Total Active Employe
 											</p>
-											<h2 className="font-w600 mb-0">27</h2>
+											<h2 className="font-w600 mb-0">{countdata.TotalActiveEmployeCount && countdata.TotalActiveEmployeCount}</h2>
 										</div>
 										<div className="dlab-swiper-circle">
 											<svg
@@ -1127,9 +1153,9 @@ const Dashboard = () => {
 										<div className="chart-num">
 											<p>
 												<i className="fa-solid fa-sort-down me-2" />
-												Used Licence
+												Total Deactive Employe
 											</p>
-											<h2 className="font-w600 mb-0">123</h2>
+											<h2 className="font-w600 mb-0">{countdata.TotalInActiveEmployeCount && countdata.TotalInActiveEmployeCount}</h2>
 										</div>
 										<div className="dlab-swiper-circle">
 											<svg

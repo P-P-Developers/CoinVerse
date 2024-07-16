@@ -9,6 +9,8 @@ const Role = db.role;
 const Wallet_model = db.WalletRecharge;
 
 class Superadmin {
+
+
   async AddAdmin(req, res) {
     try {
       const {
@@ -83,17 +85,18 @@ class Superadmin {
       let userWallet = new Wallet_model({
         user_Id: newUser._id,
         Balance: Balance,
+        parent_Id:parent_id
       });
       await userWallet.save();
 
       return res.json({
         status: true,
-        message: "Admin added successfully",
+        message: "Users added successfully",
         data: newUser,
       });
     } catch (error) {
-      console.error("Error adding admin:", error);
-      res.json({ status: false, message: "Failed to add admin", data: [] });
+    
+      res.json({ status: false, message: "Failed to add User", data: [] });
     }
   }
 
@@ -101,7 +104,7 @@ class Superadmin {
 
   async walletRecharge(req, res) {
     try {
-      const { id, Balance } = req.body;
+      const { id, Balance,parent_Id } = req.body;
 
       const userdata = await User_model.findOne({ _id: id });
       if (!userdata) {
@@ -121,6 +124,7 @@ class Superadmin {
       const result = new Wallet_model({
         user_Id: userdata._id,
         Balance: Balance,
+        parent_Id:parent_Id
       });
       await result.save();
 
@@ -140,7 +144,7 @@ class Superadmin {
     try {
       const { id } = req.body;
 
-      const result = await User_model.find({ parent_id: id, Role: "ADMIN" });
+      const result = await User_model.find({ parent_id: id });
 
       if (!result || result.length === 0) {
         return res.json({ status: false, message: "Data not found", data: [] });
@@ -156,6 +160,8 @@ class Superadmin {
     }
   }
 
+
+  
   // update status
 
   async UpdateActiveStatusAdmin(req, res) {
@@ -211,6 +217,7 @@ class Superadmin {
             UserName: "$userData.UserName",
             Balance: 1,
             createdAt: 1,
+            parent_Id:1,
           },
         },
       ]);

@@ -5,13 +5,15 @@ import Swal from 'sweetalert2';
 import Form from "../../../Utils/Form/Formik";
 import { AddnewUsers } from "../../../Services/Superadmin/Superadmin";
 
-const AddAdmin = () => {
+const AddUsers = () => {
 
   const navigate = useNavigate();
 
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const Role = userDetails?.Role;
   const user_id = userDetails?.user_id;
+
+  
 
   const formik = useFormik({
     initialValues: {
@@ -67,9 +69,9 @@ const AddAdmin = () => {
         PhoneNo: values.phone,
         Balance: values.Balance,
         password: values.password,
-        parent_role: Role || "SUPERADMIN",
+        parent_role: Role || "ADMIN",
         parent_id: user_id,
-        Role: "ADMIN",
+        Role: "USER",
       };
 
       setSubmitting(false);
@@ -78,19 +80,19 @@ const AddAdmin = () => {
         .then((response) => {
           if (response.status) {
             Swal.fire({
-              title: "Subadmin Added!",
-              text: "Subadmin added successfully",
+              title: "User Added!",
+              text: "User added successfully",
               icon: "success",
               timer: 1000,
               timerProgressBar: true,
             });
             setTimeout(() => {
-              navigate("/admin/allsubadmin");
+              navigate("/admin/users");
             }, 1000);
           } else {
             Swal.fire({
               title: "Error!",
-              text: response.message || "Subadmin add error",
+              text: response.message || "User add error",
               icon: "error",
               timer: 1000,
               timerProgressBar: true,
@@ -131,7 +133,7 @@ const AddAdmin = () => {
     {
       name: "phone",
       label: "Phone Number",
-      type: "text",
+      type: "text3",
       label_size: 12,
       col_size: 6,
       disable: false,
@@ -167,13 +169,13 @@ const AddAdmin = () => {
       fields={fields.filter(
         (field) => !field.showWhen || field.showWhen(formik.values)
       )}
-      page_title="Add Admin"
-      btn_name="Add Subadmin"
+      page_title="Add User"
+      btn_name="Add User"
       btn_name1="Cancel"
       formik={formik}
-      btn_name1_route={"/superadmin/admin"}
+      btn_name1_route={"/admin/users"}
     />
   );
 };
 
-export default AddAdmin;
+export default AddUsers;

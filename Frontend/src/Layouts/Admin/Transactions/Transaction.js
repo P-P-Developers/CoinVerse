@@ -4,11 +4,16 @@ import { fDateTime } from "../../../Utils/Date_format/datefromat";
 
 import { gethistory } from "../../../Services/Superadmin/Superadmin";
 
-const Transection = () => {
+
+
+
+const Transaction = () => {
 
 
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
+
+  
 
   const [data, setData] = useState([]);
 
@@ -26,6 +31,8 @@ const Transection = () => {
     },
   ];
 
+
+  
   // getting data
   const getallhistory = async () => {
     try {
@@ -44,9 +51,6 @@ const Transection = () => {
   }, []);
 
 
-  useEffect(() => {
-    getallhistory();
-  }, []);
 
   return (
     <>
@@ -81,4 +85,4 @@ const Transection = () => {
   );
 };
 
-export default Transection;
+export default Transaction;

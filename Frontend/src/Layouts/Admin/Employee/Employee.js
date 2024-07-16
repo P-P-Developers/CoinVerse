@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
 import { getUserdata, Addbalance , updateActivestatus} from "../../../Services/Superadmin/Superadmin";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { CirclePlus, IndianRupee } from "lucide-react";
 import Swal from 'sweetalert2';
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 import Loader from "../../../Utils/Loader/Loader";
 
 
-const Admin = () => {
+const Employee = () => {
+    
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
+
+
+  
+
 
   const [data, setData] = useState([]);
   const [balance, setBalance] = useState("");
@@ -110,7 +115,7 @@ const Admin = () => {
         title: 'Balance Updated',
         text: 'The balance has been updated successfully.',
       });
-      getAllAdmin();
+      getAlluserdata();
       setModal(false);
     } catch (error) {
       Swal.fire({
@@ -154,23 +159,26 @@ const Admin = () => {
         } 
   
       } catch (error) {
-        console.error("Error", error);
+
         Swal.fire("Error", "There was an error processing your request.", "error");
       }
     } else if (result.dismiss === Swal.DismissReason.cancel) {
-      window.location.reload();
+        getAlluserdata();
     }
   };
 
 
 
   // get all admin
-  const getAllAdmin = async () => {
+  const getAlluserdata = async () => {
     setLoading(true);
     const data = { id: user_id };
     try {
       const response = await getUserdata(data);
-      setData(response.data); 
+      const result = response.data && response.data.filter((item)=>{
+         return item.Role === "EMPLOYE"
+      })
+      setData(result); 
       setLoading(false);
     } catch (error) {
       console.log("error", error);
@@ -180,7 +188,7 @@ const Admin = () => {
 
 
   useEffect(() => {
-    getAllAdmin();
+    getAlluserdata();
   }, []);
 
   return (
@@ -194,13 +202,13 @@ const Admin = () => {
               <div className="card transaction-table">
                 <div className="card-header border-0 flex-wrap pb-0">
                   <div className="mb-2">
-                    <h4 className="card-title">All Admins</h4>
+                    <h4 className="card-title">All Employes</h4>
                   </div>
                   <Link
-                    to="/superadmin/addmin"
+                    to="/admin/addemployees"
                     className="float-end mb-2 btn btn-dark"
                   >
-                    Add Admins
+                    Add Employee
                   </Link>
                 </div>
                 <div className="card-body p-0">
@@ -283,4 +291,4 @@ const Admin = () => {
   );
 };
 
-export default Admin;
+export default Employee;
