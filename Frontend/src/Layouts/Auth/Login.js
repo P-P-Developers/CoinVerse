@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { LOGIN_API } from "../../Services/Auth/Auth";
 import { Link } from "react-router-dom";
+import { getadminActivestatus } from "../../Services/Superadmin/Superadmin";
 
 const Login = () => {
 
@@ -17,16 +18,12 @@ const Login = () => {
   const handleEmailChange = (e) => setEmail(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
 
-
-
   const validate = () => {
     let inputErrors = {};
     if (!email) inputErrors.email = "Email is required";
     if (!password) inputErrors.password = "Password is required";
     return inputErrors;
   };
-
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,23 +32,22 @@ const Login = () => {
       setErrors(inputErrors);
       return;
     }
-
+  
     try {
-      
       const response = await LOGIN_API({ Email: email, password: password });
-
+  
       const { Role } = response.data;
-
+  
       if (response.status) {
         localStorage.setItem("user_details", JSON.stringify(response.data));
         localStorage.setItem("user_role", JSON.stringify(response.data.Role));
-
+  
         Swal.fire({
           icon: "success",
           title: "Login successful",
           text: "You have successfully logged in!",
           timer: 1500,
-          showConfirmButton: false
+          showConfirmButton: false,
         }).then(() => {
           if (Role === "SUPERADMIN") {
             navigate("/superadmin/dashboard");
@@ -59,24 +55,23 @@ const Login = () => {
             navigate("/admin/dashboard");
           }
         });
-
       } else {
         Swal.fire({
           icon: "error",
           title: "Login failed",
-          text: "Invalid email or password. Please try again.",
+          text: response.msg,
         });
       }
     } catch (error) {
       Swal.fire({
         icon: "error",
         title: "Login failed",
-        text: "Invalid email or password. Please try again.",
+        text: error.msg || "An unexpected error occurred",
       });
       console.error("Login failed:", error);
     }
   };
-
+  
 
   return (
     <div className="authincation d-flex flex-column flex-lg-row flex-column-fluid">
@@ -94,7 +89,9 @@ const Login = () => {
 
         <div
           className="aside-image position-relative"
-          style={{ backgroundImage: "url(/assets/images/background/pic-2.png)" }}
+          style={{
+            backgroundImage: "url(/assets/images/background/pic-2.png)",
+          }}
         >
           <img
             className="img1 move-1"
@@ -129,8 +126,12 @@ const Login = () => {
                     </div>
 
                     <div className="separator">
-                      <span className="text-center
-                      d-block mb-4 fs-13">Or with email</span>
+                      <span
+                        className="text-center
+                      d-block mb-4 fs-13"
+                      >
+                        Or with email
+                      </span>
                     </div>
                     <div className="mb-3">
                       <label
@@ -169,7 +170,6 @@ const Login = () => {
                     </div>
 
                     <button className="btn btn-block btn-primary">
-                    
                       Sign In
                     </button>
                   </form>

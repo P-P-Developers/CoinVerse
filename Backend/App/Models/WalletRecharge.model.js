@@ -1,13 +1,10 @@
 const mongoose = require('mongoose');
 
 const WalletRecharge = new mongoose.Schema({
-   admin_Id: {
-        type: mongoose.Schema.Types.ObjectId,
-       
-    },
+ 
     user_Id: {
         type: mongoose.Schema.Types.ObjectId,
-       
+        ref:"users"
     },
     Balance: {
         type: String,

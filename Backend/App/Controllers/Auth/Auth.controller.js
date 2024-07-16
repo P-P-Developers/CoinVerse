@@ -20,6 +20,10 @@ class Auth {
         return res.send({ status: false, msg: "User Not exists", data: [] });
       }
 
+        if (EmailCheck.ActiveStatus !== "1") {
+          return res.send({ status: false, msg: "Account is not active", data: [] });
+        }
+ 
       const validPassword = await bcrypt.compare(password, EmailCheck.password);
 
       if (!validPassword) {
@@ -37,7 +41,6 @@ class Auth {
         data: { token: token, Role: EmailCheck.Role, user_id: EmailCheck._id },
       });
     } catch (error) {
-      console.error("Error during login:", error);
       res.send({ status: false, msg: "Server Side error", data: error });
     }   
   }

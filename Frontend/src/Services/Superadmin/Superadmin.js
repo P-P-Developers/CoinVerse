@@ -34,3 +34,74 @@ export async function getadmindata(data, token) {
     }
 
 }
+
+
+// get admin recharge
+
+
+export async function Addbalance(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}admin/walletRecharge`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// get admn user_active_status
+
+
+export async function updateActivestatus(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}admin/UpdateActiveStatusAdmin`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// get history
+
+
+export async function gethistory(data, token) {
+    try {
+        const res = await axios.get(`${Config.base_url}admin/getadminhistory`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// get active status 
+
+export async function getadminActivestatus(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}admin/getActivestatus`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
