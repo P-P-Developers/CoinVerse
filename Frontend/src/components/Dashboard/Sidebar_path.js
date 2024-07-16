@@ -73,12 +73,12 @@ export const admin_header = [
         icon: "fe fe-activity",
         route: "/admin/tradehistory",
     },
-    // {
-    //     id: 7,
-    //     name: 'Login Status',
-    //     icon: "fe fe-check-square",
-    //     route: "/admin/loginstatus",
-    // },
+    {
+        id: 7,
+        name: 'Login Status',
+        icon: "fe fe-check-square",
+        route: "/admin/loginstatus",
+    },
     {
         id: 8,
         name: 'Available Position',
@@ -96,5 +96,11 @@ export const admin_header = [
         name: 'Deposit',
         icon: "fe fe-arrow-up-circle",
         route: "/admin/deposit",
+    },
+    {
+        id: 11,
+        name: 'Broadcast',
+        icon: "fe fe-arrow-up-circle",
+        route: "/admin/broadcast",
     },
 ];
