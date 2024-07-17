@@ -40,7 +40,7 @@ export const admin_header = [
     {
         id: 1,
         name: 'Dashboard',
-        icon: "material-symbols-outlined",
+        icon: "fa-solid fa-house",
         route: "/admin/dashboard",
     },
     {
@@ -55,7 +55,7 @@ export const admin_header = [
         icon: "fe fe-users",
         route: "/admin/users",
     },
-    {                                             
+    {
         id: 4,
         name: 'Transaction',
         icon: "fe fe-dollar-sign",
