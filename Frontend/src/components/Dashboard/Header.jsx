@@ -12,9 +12,12 @@ const Header = () => {
 
   const getLastPathSegment = (path) => {
     const segments = path.split("/");
-    return segments[segments.length - 1] || segments[segments.length - 2];
-   
-  };
+    const filteredSegments = segments.filter(segment => { 
+        return isNaN(segment.charAt(0));
+    });
+
+    return filteredSegments[filteredSegments.length - 1] || filteredSegments[filteredSegments.length - 2];
+};
 
   
 
