@@ -11,6 +11,8 @@ import AddUsers from '../Layouts/Admin/Users/AddUsers';
 import Transaction from '../Layouts/Admin/Transactions/Transaction';
 import Employee from '../Layouts/Admin/Employee/Employee';
 import AddEmployee from '../Layouts/Admin/Employee/AddEmployee';
+import Updateuser from '../Layouts/Admin/Users/Updateuser';
+import UpdateEmploye from '../Layouts/Admin/Employee/UpdateEmploye';
 
 const AdminRoutes = () => {
     return (
@@ -30,6 +32,9 @@ const AdminRoutes = () => {
                     <Route path="/transaction" element={<Transaction />} />
                     <Route path="/employes" element={<Employee />} />
                     <Route path="/addemployees" element={<AddEmployee />} />
+                    <Route path="/users/updateuser/:id" element={<Updateuser/>} />
+                    <Route path="/employes/updateemploye/:id" element={<UpdateEmploye/>} />
+
                     
                 </Routes>
             </div>

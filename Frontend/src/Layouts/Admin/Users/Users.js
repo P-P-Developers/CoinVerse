@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
 import { getUserdata, Addbalance , updateActivestatus} from "../../../Services/Superadmin/Superadmin";
-import { Link } from "react-router-dom";
-import { CirclePlus, IndianRupee } from "lucide-react";
+import { updateuserLicence ,DeleteUserdata} from "../../../Services/Admin/Addmin";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import { CirclePlus, IndianRupee,Pencil,Trash2} from "lucide-react";
 import Swal from 'sweetalert2';
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 import Loader from "../../../Utils/Loader/Loader";
 
 
+
 const Users = () => {
     
+  const navigate = useNavigate();
+
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
 
@@ -18,6 +22,11 @@ const Users = () => {
   const [balance, setBalance] = useState("");
   const [modal, setModal] = useState(false);
   const [id, setID] = useState("");
+
+  const [license,setLicence] = useState(false)
+  const [licenseid,setLicenceId] = useState("")
+  const [licencevalue, setLicencevalue] = useState("");
+
 
   const [loading, setLoading] = useState(false);
 
@@ -88,13 +97,145 @@ const Users = () => {
         </label>
       ),
     },
+    {
+      Header: "Licence",
+      accessor: "Licence",
+      Cell: ({ cell }) => (
+        <div
+          style={{
+            backgroundColor: "#E1FFED",
+            border: "none",
+            color: "#33B469",
+            padding: "6px 10px",
+            textAlign: "center",
+            textDecoration: "none",
+            display: "inline-block",
+            fontSize: "13px",
+            cursor: "pointer",
+            borderRadius: "10px",
+            transition: "background-color 0.3s ease",
+          }}
+          onClick={() => {
+            setLicence(true);
+            setLicenceId(cell.row._id);
+          }}
+        >
+          <span style={{ fontWeight: "bold", verticalAlign: "middle" }}>
+            <CirclePlus
+              size={20}
+              style={{
+                marginBottom: "-4px",
+                marginRight: "5px",
+                verticalAlign: "middle",
+              }}
+            />
+            {cell.value}
+          </span>
+        </div>
+      ),
+    },
     { Header: "Create Date", accessor: "Create_Date",
       Cell: ({cell}) => {
         return fDateTime(cell.value)
        
        },
      },
+     {
+      Header: "Action",
+      accessor: "Action",
+      Cell: ({ cell }) => {
+        return (
+          <div>
+           
+            <Pencil style={{ cursor: 'pointer' }} 
+               onClick={() => updateuserpage(cell.row._id,cell)}
+            />
+             <Trash2 style={{ cursor: 'pointer', marginRight: '10px' }}
+               onClick={() => DeleteUser(cell.row._id)}
+            />
+          </div>
+        );
+      },
+    },
   ];
+
+
+
+  const updateuserpage = (_id,obj) => {
+    navigate(`updateuser/${_id}`,{ state: { rowData: obj.row } });
+   
+};
+
+
+
+  //delete user 
+
+  const DeleteUser = async (_id) => {
+    try {
+
+      const confirmResult = await Swal.fire({
+        title: 'Are you sure?',
+        text: 'You will not be able to recover this user!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      });
+  
+      if (confirmResult.isConfirmed) {
+        const data = { id: _id };
+        await DeleteUserdata(data);
+  
+  
+        Swal.fire({
+          icon: 'success',
+          title: 'User Deleted',
+          text: 'The user has been deleted successfully.',
+        });
+  
+        getAlluserdata();
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Deletion Failed',
+        text: 'There was an error deleting the user. Please try again.',
+      });
+    }
+  };
+  
+  
+
+
+
+   // update Licence
+
+   const updateLicence = async () => {
+    try {
+     await updateuserLicence({
+        id: licenseid,
+        Licence:licencevalue,
+        parent_Id:user_id
+      });
+      
+      Swal.fire({
+        icon: 'success',
+        title: 'Licence Updated',
+        text: 'The Licence has been updated successfully.',
+      });
+      getAlluserdata();
+      setLicence(false);
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Update Failed',
+        text: 'There was an error updating the Licence. Please try again.',
+      });
+    }
+  };
+   
+
 
 
 
@@ -172,7 +313,10 @@ const Users = () => {
     const data = { id: user_id };
     try {
       const response = await getUserdata(data);
-      setData(response.data); 
+      const result = response.data && response.data.filter((item)=>{
+        return item.Role === "USER"
+      })
+      setData(result); 
       setLoading(false);
     } catch (error) {
       console.log("error", error);
@@ -272,6 +416,65 @@ const Users = () => {
                     data-bs-dismiss="modal"
                     className="btn btn-primary paid-continue-btn"
                     onClick={updateBalance}
+                  >
+                    Submit
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {license && (
+        <div className="modal custom-modal d-block" id="add_vendor" role="dialog">
+          <div className="modal-dialog modal-dialog-centered modal-md">
+            <div className="modal-content">
+              <div className="modal-header border-0 pb-0">
+                <div className="form-header modal-header-title text-start mb-0">
+                  <h4 className="mb-0">Add Licence</h4>
+                </div>
+                <button
+                  type="button"
+                  className="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                  onClick={() => setLicence(false)}
+                ></button>
+              </div>
+              <div>
+                <div className="modal-body">
+                  <div className="row">
+                    <div className="col-lg-12 col-sm-12">
+                      <div className="input-block mb-3">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Enter Licence"
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, '');
+                            setLicencevalue(value);
+                          }}
+                          value={licencevalue}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    data-bs-dismiss="modal"
+                    className="btn btn-back cancel-btn me-2"
+                    onClick={() => setLicence(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    data-bs-dismiss="modal"
+                    className="btn btn-primary paid-continue-btn"
+                    onClick={updateLicence}
                   >
                     Submit
                   </button>

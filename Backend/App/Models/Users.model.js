@@ -78,6 +78,10 @@ const userModel = Schema({
         type:Number,
         default: null
     },
+    Licence: {
+        type:Number,
+        default: null
+    },
    
     Start_Date: {
         type: Date,
@@ -92,6 +96,26 @@ const userModel = Schema({
         required: true,
 
     },
+    pertrade :{
+        type: Number,
+        defaultValue : null
+    },
+    perlot :{
+        type: Number,
+        default : null
+    },
+    turn_over_percentage :{
+        type: Number,
+        default : null
+    },
+    brokerage :{
+        type: Number,
+        default : null
+    },
+    limit :{
+        type: Number,
+        default : null
+    }
     
 },
     {

@@ -3,5 +3,6 @@ module.exports = {
     user: require("./Users.model"),
     role:require("./Role.model"),
     WalletRecharge :require("./WalletRecharge.model"),
-    Sign_In:require("./SignIn.model")
+    Sign_In:require("./SignIn.model"),
+    totalLicense : require("./Licence.model")
 };

@@ -5,6 +5,7 @@ const Header = () => {
   const location = useLocation();
 
   const capitalizeFirstLetter = (string) => {
+   
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
@@ -12,12 +13,14 @@ const Header = () => {
   const getLastPathSegment = (path) => {
     const segments = path.split("/");
     return segments[segments.length - 1] || segments[segments.length - 2];
+   
   };
+
+  
 
   const lastPathSegment = getLastPathSegment(location.pathname);
   const formattedSegment = capitalizeFirstLetter(lastPathSegment);
 
-  console.log("Employee", formattedSegment);
 
   return (
     <div>
@@ -886,7 +889,7 @@ const Header = () => {
               <h2 className="text-white m-0">
                 {formattedSegment && formattedSegment}
               </h2>
-              <p className="ms-2 text-warning">Welcome Back Neha Sharma!</p>
+              {/* <p className="ms-2 text-warning">Welcome Back Neha Sharma!</p> */}
             </div>
           </div>
         </div>

@@ -3,7 +3,7 @@ import { Admindashboarddata } from '../../Services/Admin/Addmin';
 
 const Dashboard = () => {
 
-	const [countdata , setCountdata] = useState("")
+	const [countdata , setCountdata] = useState([0])
 
 	const userDetails = JSON.parse(localStorage.getItem("user_details"));
 	const user_id = userDetails?.user_id;
@@ -15,7 +15,7 @@ const Dashboard = () => {
 		  const response = await Admindashboarddata(data);
 		  
 		  if (response.status) {
-			console.log("aa", response.data);
+			
 			setCountdata(response.data)
 		  } else {
 			console.error("Error: ", response.message || "Unknown error occurred");

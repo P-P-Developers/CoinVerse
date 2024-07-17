@@ -1,13 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useFormik } from "formik";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import Form from "../../../Utils/Form/Formik";
-import { AddUser } from "../../../Services/Admin/Addmin";
+import Form from "../../../Utils/Form/Formik"; // Assuming this is your custom Form component
+import { updateuserdata } from "../../../Services/Admin/Addmin";
 
-const AddUsers = () => {
+const Updateuser = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { rowData } = location.state;
 
+  // Retrieving user details from localStorage (ensure secure usage)
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const Role = userDetails?.Role;
   const user_id = userDetails?.user_id;
@@ -19,16 +22,14 @@ const AddUsers = () => {
       email: "",
       phone: "",
       Balance: "",
-      password: "",
-      confirmPassword: "",
       Licence: "",
-      limit:"",
-      selectedOption: "", 
-      inputValue: "", 
+      limit: "",
+      selectedOption:"",
+      inputValue: "",
     },
-
     validate: (values) => {
       let errors = {};
+      // Validation rules for form fields
       if (!values.fullName) {
         errors.fullName = "Please Enter Full Name";
       }
@@ -50,16 +51,6 @@ const AddUsers = () => {
       } else if (isNaN(values.Balance)) {
         errors.Balance = "Balance must be a number";
       }
-      if (!values.password) {
-        errors.password = "Please Enter Password";
-      } else if (values.password.length < 6) {
-        errors.password = "Password must be at least 6 characters";
-      }
-      if (!values.confirmPassword) {
-        errors.confirmPassword = "Please Confirm Password";
-      } else if (values.password !== values.confirmPassword) {
-        errors.confirmPassword = "Passwords do not match";
-      }
       if (!values.Licence) {
         errors.Licence = "Please Enter Licence";
       }
@@ -72,57 +63,43 @@ const AddUsers = () => {
       if (!values.limit) {
         errors.limit = "Please enter a value for Limit";
       }
-
       return errors;
     },
-
     onSubmit: async (values, { setSubmitting }) => {
       const selectedOption = values.selectedOption;
-
       const data = {
-        FullName: values.fullName,
-        UserName: values.username,
-        Email: values.email,
-        PhoneNo: values.phone,
-        Balance: values.Balance,
-        password: values.password,
-        parent_role: Role || "ADMIN",
-        parent_id: user_id,
-        Role: "USER",
-        limit:values.limit,
+        id: rowData && rowData._id,
+        limit: values.limit,
         Licence: values.Licence,
         [selectedOption]: values.inputValue,
       };
-
       setSubmitting(false);
-
       try {
-        const response = await AddUser(data);
+        const response = await updateuserdata(data);
         if (response.status) {
           Swal.fire({
-            title: "User Added!",
-            text: "User added successfully",
+            title: "User Updated!",
+            text: "User updated successfully",
             icon: "success",
-            timer: 1000,
+            timer: 2000,
             timerProgressBar: true,
           });
           setTimeout(() => {
             navigate("/admin/users");
-          }, 1000);
+          }, 2000);
         } else {
           Swal.fire({
             title: "Error!",
-            text: response.message || "User add error",
+            text: response.message || "User update error",
             icon: "error",
-            timer: 1000,
+            timer: 3000,
             timerProgressBar: true,
           });
         }
       } catch (error) {
-        console.log("Error:", error);
         Swal.fire({
           title: "Error!",
-          text: "Failed to add user. Please try again later.",
+          text: "Failed to update user. Please try again later.",
           icon: "error",
           timer: 3000,
           timerProgressBar: true,
@@ -131,6 +108,38 @@ const AddUsers = () => {
     },
   });
 
+  useEffect(() => {
+    if (rowData) {
+      const determineSelectedOption = () => {
+        if (rowData.pertrade !== undefined) return "pertrade";
+        if (rowData.perlot !== undefined) return "perlot";
+        if (rowData.turn_over_percentage !== undefined)
+          return "turn_over_percentage";
+        if (rowData.brokerage !== undefined) return "brokerage";
+        return "pertrade"; 
+      };
+
+
+      formik.setValues({
+        fullName: rowData.FullName || "",
+        username: rowData.UserName || "",
+        email: rowData.Email || "",
+        phone: rowData.PhoneNo || "",
+        Balance: rowData.Balance || "",
+        Licence: rowData.Licence || "",
+        selectedOption: rowData.selectedOption || determineSelectedOption(),
+        inputValue:
+          rowData.pertrade ||
+          rowData.perlot ||
+          rowData.turn_over_percentage ||
+          rowData.brokerage ||
+          "",
+          limit: rowData.limit || "",
+      });
+    }
+  }, [rowData]);
+
+  // Form fields configuration
   const fields = [
     {
       name: "fullName",
@@ -138,7 +147,7 @@ const AddUsers = () => {
       type: "text",
       label_size: 6,
       col_size: 6,
-      disable: false,
+      disable: true,
     },
     {
       name: "username",
@@ -146,7 +155,7 @@ const AddUsers = () => {
       type: "text",
       label_size: 12,
       col_size: 6,
-      disable: false,
+      disable:true ,
     },
     {
       name: "email",
@@ -154,36 +163,20 @@ const AddUsers = () => {
       type: "text",
       label_size: 12,
       col_size: 6,
-      disable: false,
+      disable: true,
     },
     {
       name: "phone",
       label: "Phone Number",
-      type: "text3",
+      type: "text",
       label_size: 12,
       col_size: 6,
-      disable: false,
+      disable: true,
     },
     {
       name: "Balance",
       label: "Balance",
-      type: "text3",
-      label_size: 12,
-      col_size: 6,
-      disable: false,
-    },
-    {
-      name: "password",
-      label: "Password",
-      type: "password",
-      label_size: 12,
-      col_size: 6,
-      disable: false,
-    },
-    {
-      name: "confirmPassword",
-      label: "Confirm Password",
-      type: "password",
+      type: "text",
       label_size: 12,
       col_size: 6,
       disable: false,
@@ -191,15 +184,15 @@ const AddUsers = () => {
     {
       name: "Licence",
       label: "Licence",
-      type: "text3",
+      type: "text",
       label_size: 12,
       col_size: 6,
       disable: false,
     },
     {
       name: "limit",
-      label: "limit",
-      type: "text3",
+      label: "Limit",
+      type: "text",
       label_size: 12,
       col_size: 6,
       disable: false,
@@ -221,7 +214,7 @@ const AddUsers = () => {
     {
       name: "inputValue",
       label: "Enter Value",
-      type: "text3",
+      type: "text",
       label_size: 12,
       col_size: 6,
       disable: false,
@@ -230,15 +223,18 @@ const AddUsers = () => {
   ];
 
   return (
+  
+ 
     <Form
       fields={fields}
-      page_title="Add User"
-      btn_name="Add User"
+      page_title="Update User"
+      btn_name="Update User"
       btn_name1="Cancel"
       formik={formik}
-      btn_name1_route={"/admin/users"}
+      btn_name1_route={"/admin/users"} 
     />
+    
   );
 };
 
-export default AddUsers;
+export default Updateuser;
