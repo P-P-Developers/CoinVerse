@@ -1,8 +1,7 @@
 // Superadmin header configuration
 export const superadmin_header = [
     {
-        id: 1,
-        icon: "material-symbols-outlined",
+        id: 1,    
         name: 'Dashboard',
         icon: "material-symbols-outlined",
         route: "/superadmin/dashboard",
@@ -21,7 +20,7 @@ export const superadmin_header = [
     },
     {
         id: 4,
-        name: 'Available Position',
+        name: 'Available Positions',
         icon: "fe fe-dollar-sign",
         route: "/superadmin/position",
     },
@@ -81,7 +80,7 @@ export const admin_header = [
     },
     {
         id: 8,
-        name: 'Available Position',
+        name: 'Available Positions',
         icon: "fe fe-target",
         route: "/admin/position",
     },
