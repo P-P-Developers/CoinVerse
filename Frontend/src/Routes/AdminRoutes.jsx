@@ -42,7 +42,7 @@ const AdminRoutes = () => {
                     <Route path="/deposit" element={<Deposit />} />
                     <Route path="/position" element={<Position />} />
                     {/* <Route path="/employees" element={<Employee />} /> */}
-                    <Route path="/users" element={<User />} />
+                    {/* <Route path="/users" element={<User />} /> */}
                     {/* <Route path="/transaction" element={<Transaction />} /> */}
 
                     <Route path="/users" element={<Users />} />
