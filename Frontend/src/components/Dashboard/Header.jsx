@@ -11,13 +11,18 @@ const Header = () => {
 
   const getLastPathSegment = (path) => {
     const segments = path.split("/");
-    return segments[segments.length - 1] || segments[segments.length - 2];
+    const filteredSegments = segments.filter((segment) => {
+      return isNaN(segment.charAt(0));
+    });
+
+    return (
+      filteredSegments[filteredSegments.length - 1] ||
+      filteredSegments[filteredSegments.length - 2]
+    );
   };
 
   const lastPathSegment = getLastPathSegment(location.pathname);
   const formattedSegment = capitalizeFirstLetter(lastPathSegment);
-
-  console.log("Employee", formattedSegment);
 
   return (
     <div>
@@ -886,7 +891,7 @@ const Header = () => {
               <h2 className="text-white m-0">
                 {formattedSegment && formattedSegment}
               </h2>
-              <p className="ms-2 text-warning">Welcome Back Neha Sharma!</p>
+              {/* <p className="ms-2 text-warning">Welcome Back Neha Sharma!</p> */}
             </div>
           </div>
         </div>

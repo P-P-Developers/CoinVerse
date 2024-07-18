@@ -966,11 +966,11 @@ const DynamicForm = ({
                   ))}
                   {additional_field}
 
-                  <div className="add-customer-btns text-end mt-3">
+                  <div className="add-customer-btns text-end mt-3 ">
                     {btn_name1 ? (
                       <Link
                         to={btn_name1_route}
-                        className="btn customer-btn-cancel"
+                        className="btn customer-btn-cancel btn btn-primary"
                       >
                         {btn_name1}
                       </Link>
@@ -979,13 +979,13 @@ const DynamicForm = ({
                     )}
                     {
                       <>
-                        <button type="submit" className="btn customer-btn-save">
+                        <button type="submit" className="btn customer-btn-save btn btn-primary m-2">
                           {btn_name}
                         </button>
                         {btn_name2 ? (
                           <button
                             type="submit"
-                            className="btn customer-btn-save"
+                            className="btn customer-btn-save btn btn-primary"
                           >
                             {btn_name2}
                           </button>

@@ -1,13 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useFormik } from "formik";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
 import Form from "../../../Utils/Form/Formik";
-import { AddnewUsers } from "../../../Services/Superadmin/Superadmin";
+import { Update_Employe } from "../../../Services/Admin/Addmin";
 
-const AddAdmin = () => {
-
+const UpdateEmploye = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { rowData } = location.state;
 
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const Role = userDetails?.Role;
@@ -15,16 +16,13 @@ const AddAdmin = () => {
 
   const formik = useFormik({
     initialValues: {
-      fullName: "",
-      username: "",
-      email: "",
-      phone: "",
-      Balance: "",
+      fullName: rowData?.FullName || "",
+      username: rowData?.UserName || "",
+      email: rowData?.Email || "",
+      phone: rowData?.PhoneNo || "",
+      Balance: rowData?.Balance || "",
       password: "",
-      confirmPassword: "",
-      parent_id: "",
-      parent_role: "",
-      Role: "",
+      confirmPassword: ""
     },
     
     validate: (values) => {
@@ -48,60 +46,75 @@ const AddAdmin = () => {
       if (!values.Balance) {
         errors.Balance = "Please Enter Balance";
       }
-      if (!values.password) {
-        errors.password = "Please Enter Password";
-      }
-      if (!values.confirmPassword) {
-        errors.confirmPassword = "Please Confirm Password";
-      } else if (values.password !== values.confirmPassword) {
-        errors.confirmPassword = "Passwords do not match";
-      }
+      // Add password validation if necessary
+      // if (!values.password) {
+      //   errors.password = "Please Enter Password";
+      // } else if (values.password !== values.confirmPassword) {
+      //   errors.confirmPassword = "Passwords do not match";
+      // }
 
       return errors;
     },
+    
     onSubmit: async (values, { setSubmitting }) => {
       const data = {
+        id: rowData?._id,
         FullName: values.fullName,
         UserName: values.username,
         Email: values.email,
         PhoneNo: values.phone,
         Balance: values.Balance,
-        password: values.password,
-        parent_role: Role || "SUPERADMIN",
-        parent_id: user_id,
-        Role: "ADMIN",
+       Password: values.password,
       };
 
       setSubmitting(false);
 
-      await AddnewUsers(data)
-        .then((response) => {
-          if (response.status) {
-            Swal.fire({
-              title: "Subadmin Added!",
-              text: "Subadmin added successfully",
-              icon: "success",
-              timer: 1000,
-              timerProgressBar: true,
-            });
-            setTimeout(() => {
-              navigate("/admin/allsubadmin");
-            }, 1000);
-          } else {
-            Swal.fire({
-              title: "Error!",
-              text: response.message || "Subadmin add error",
-              icon: "error",
-              timer: 1000,
-              timerProgressBar: true,
-            });
-          }
-        })
-        .catch((error) => {
-          console.log("Error:", error);
+      try {
+        const response = await Update_Employe(data);
+        if (response.status) {
+          Swal.fire({
+            title: "Employee Updated!",
+            text: "Employee updated successfully",
+            icon: "success",
+            timer: 1000,
+            timerProgressBar: true,
+          });
+          setTimeout(() => {
+            navigate("/admin/employes");
+          }, 1500);
+        } else {
+          Swal.fire({
+            title: "Error!",
+            text: response.message || "Employee update error",
+            icon: "error",
+            timer: 1500,
+            timerProgressBar: true,
+          });
+        }
+      } catch (error) {
+        console.log("Error:", error);
+        Swal.fire({
+          title: "Error!",
+          text: "Failed to update employee",
+          icon: "error",
+          timer: 1500,
+          timerProgressBar: true,
         });
+      }
     },
   });
+
+  useEffect(() => {
+    formik.setValues({
+      fullName: rowData?.FullName || "",
+      username: rowData?.UserName || "",
+      email: rowData?.Email || "",
+      phone: rowData?.PhoneNo || "",
+      Balance: rowData?.Balance || "",
+      password: "",
+      confirmPassword: ""
+    });
+  }, [rowData]);
 
   const fields = [
     {
@@ -139,11 +152,12 @@ const AddAdmin = () => {
     {
       name: "Balance",
       label: "Balance",
-      type: "text",
+      type: "text3",
       label_size: 12,
       col_size: 6,
       disable: false,
     },
+
     {
       name: "password",
       label: "Password",
@@ -164,16 +178,14 @@ const AddAdmin = () => {
 
   return (
     <Form
-      fields={fields.filter(
-        (field) => !field.showWhen || field.showWhen(formik.values)
-      )}
-      page_title="Add Admin"
-      btn_name="Add Subadmin"
+      fields={fields}
+      page_title="Update Employee"
+      btn_name="Update Employee"
       btn_name1="Cancel"
       formik={formik}
-      btn_name1_route={"/superadmin/admin"}
+      btn_name1_route={"/admin/employes"}
     />
   );
 };
 
-export default AddAdmin;
+export default UpdateEmploye;

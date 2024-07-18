@@ -7,6 +7,7 @@ const { findOne } = require("../../../Models/Role.model");
 const User_model = db.user;
 const Role = db.role;
 const Wallet_model = db.WalletRecharge;
+const totalLicense = db.totalLicense
 
 class Superadmin {
 
@@ -24,6 +25,12 @@ class Superadmin {
         Otp,
         Role,
         Balance,
+        Licence,
+        pertrade,
+        perlot,
+        turn_over_percentage,
+        brokerage,
+        limit,
       } = req.body;
 
       if (!FullName || !UserName || !Email || !PhoneNo || !password || !Role) {
@@ -39,7 +46,7 @@ class Superadmin {
         if (existingUser.UserName === UserName) {
           return res.send({
             status: false,
-            msg: "Username already exists",
+            message: "Username already exists",
             data: [],
           });
         }
@@ -47,7 +54,7 @@ class Superadmin {
         if (existingUser.Email === Email) {
           return res.send({
             status: false,
-            msg: "Email already exists",
+            message: "Email already exists",
             data: [],
           });
         }
@@ -55,12 +62,13 @@ class Superadmin {
         if (existingUser.PhoneNo === PhoneNo) {
           return res.send({
             status: false,
-            msg: "Phone Number already exists",
+            message: "Phone Number already exists",
             data: [],
           });
         }
       }
 
+      
       // Hash password
       var rand_password = Math.round(password);
       const salt = await bcrypt.genSalt(10);
@@ -77,6 +85,11 @@ class Superadmin {
         Balance,
         Otp,
         Role,
+        pertrade,
+        perlot,
+        turn_over_percentage,
+        brokerage,
+        limit,
         password: hashedPassword,
       });
 

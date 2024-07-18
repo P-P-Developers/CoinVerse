@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
 import { getUserdata, Addbalance , updateActivestatus} from "../../../Services/Superadmin/Superadmin";
-import { Link, useLocation, useParams } from "react-router-dom";
-import { CirclePlus, IndianRupee } from "lucide-react";
+import { delete_Employee } from "../../../Services/Admin/Addmin";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { CirclePlus, IndianRupee ,Pencil,Trash2} from "lucide-react";
 import Swal from 'sweetalert2';
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 import Loader from "../../../Utils/Loader/Loader";
@@ -10,6 +11,11 @@ import Loader from "../../../Utils/Loader/Loader";
 
 const Employee = () => {
     
+
+  const navigate = useNavigate()
+
+
+
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
 
@@ -91,6 +97,23 @@ const Employee = () => {
         </label>
       ),
     },
+    {
+      Header: "Action",
+      accessor: "Action",
+      Cell: ({ cell }) => {
+        return (
+          <div>
+           
+            <Pencil style={{ cursor: 'pointer' }} 
+               onClick={() => updateEmploye(cell.row._id,cell)}
+            />
+             <Trash2 style={{ cursor: 'pointer', marginRight: '10px' }}
+               onClick={() => DeleteEmployee(cell.row._id)}
+            />
+          </div>
+        );
+      },
+    },
     { Header: "Create Date", accessor: "Create_Date",
       Cell: ({cell}) => {
         return fDateTime(cell.value)
@@ -98,6 +121,54 @@ const Employee = () => {
        },
      },
   ];
+
+
+
+  const updateEmploye = (_id,obj) => {
+    navigate(`updateemploye/${_id}`,{ state: { rowData: obj.row }});
+   
+};
+
+
+
+
+// delet employee
+
+const DeleteEmployee = async (_id) => {
+  try {
+
+    const confirmResult = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will not be able to recover this user!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (confirmResult.isConfirmed) {
+      const data = { id: _id };
+      await delete_Employee(data);
+
+      Swal.fire({
+        icon: 'success',
+        title: 'User Deleted',
+        text: 'The user has been deleted successfully.',
+      });
+
+      getAlluserdata();
+    }
+  } catch (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Deletion Failed',
+      text: 'There was an error deleting the user. Please try again.',
+    });
+  }
+};
+
+
 
 
 
