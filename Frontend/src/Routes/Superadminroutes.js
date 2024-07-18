@@ -9,7 +9,7 @@ import AddAdmin from '../Layouts/Superadmin/Admins/AddAdmin';
 import Transection from '../Layouts/Superadmin/Transection/Transection';
 import Position from '../Layouts/Superadmin/Admins/Position';
 import Broadcast from '../Layouts/Superadmin/Admins/Broadcast';
-
+import UpdateAdmin from '../Layouts/Superadmin/Admins/UpdateAdmin';
 
 const SuperadminRoutes = () => {
     return (

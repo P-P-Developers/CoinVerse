@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
-import { getUserdata, Addbalance, updateActivestatus } from "../../../Services/Superadmin/Superadmin";
-import { Link } from "react-router-dom";
-import { CirclePlus, IndianRupee } from "lucide-react";
+import { getUserdata, Addbalance , updateActivestatus , Delete_Admin} from "../../../Services/Superadmin/Superadmin";
+import { Link, useNavigate } from "react-router-dom";
+import { CirclePlus, IndianRupee, Pencil,Trash2} from "lucide-react";
 import Swal from 'sweetalert2';
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 import Loader from "../../../Utils/Loader/Loader";
+
 
 const Admin = () => {
 
@@ -21,6 +22,7 @@ const Admin = () => {
   const [balance, setBalance] = useState("");
   const [modal, setModal] = useState(false);
   const [id, setID] = useState("");
+
   const [loading, setLoading] = useState(false);
 
 
@@ -79,34 +81,102 @@ const Admin = () => {
       Header: "ActiveStatus",
       accessor: "ActiveStatus",
       Cell: ({ cell }) => (
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
-          // checked={cell.value === 0}
-          // onChange={(event) => updateactivestatus(event, cell.row._id)}
+        <label className="status-toggle">
+          <input
+            id={`rating_${cell.row.id}`}
+            className="check"
+            type="checkbox"
+            onChange={(event) => updateactivestatus(event, cell.row._id)}
+            defaultChecked={cell.value == 1}
           />
+            <label htmlFor={`rating_${cell.row.id}`} className="checktoggle checkbox-bg"></label>
 
-        </div>
+        </label>
       ),
     },
     {
-      Header: "Create Date",
-      accessor: "Create_Date",
-      Cell: ({ cell }) => fDateTime(cell.value),
+      Header: "Action",
+      accessor: "Action",
+      Cell: ({ cell }) => {
+        return (
+          <div>
+           
+            <Pencil style={{ cursor: 'pointer' }} 
+               onClick={() => updateAdmin(cell.row._id,cell)}
+            />
+             <Trash2 style={{ cursor: 'pointer', marginRight: '10px' }}
+               onClick={() => DeleteAdmin(cell.row._id)}
+            />
+          </div>
+        );
+      },
     },
+    { Header: "Create Date", accessor: "Create_Date",
+      Cell: ({cell}) => {
+        return fDateTime(cell.value)
+       
+       },
+     },
   ];
 
-
-
   
-  // update balance
+
+  // delete admin
+
+  const DeleteAdmin = async (_id) => {
+    try {
+  
+      const confirmResult = await Swal.fire({
+        title: 'Are you sure?',
+        text: 'You will not be able to recover this user!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      });
+  
+      if (confirmResult.isConfirmed) {
+        const data = { id: _id };
+        await Delete_Admin(data);
+  
+        Swal.fire({
+          icon: 'success',
+          title: 'User Deleted',
+          text: 'The user has been deleted successfully.',
+        });
+  
+        getAllAdmin();
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Deletion Failed',
+        text: 'There was an error deleting the user. Please try again.',
+      });
+    }
+  };
+
+  // update admin data 
+
+
+  const updateAdmin = (_id,obj) => {
+    navigate(`updateadmin/${_id}`,{ state: { rowData: obj.row }});
+   
+};
+
+
+
+
+  // update  balance
   const updateBalance = async () => {
     try {
-      await Addbalance({
+     await Addbalance({
         id: id,
         Balance: balance,
-        parent_Id: user_id
+        parent_Id:user_id
       });
-
+      
       Swal.fire({
         icon: 'success',
         title: 'Balance Updated',
@@ -122,42 +192,49 @@ const Admin = () => {
       });
     }
   };
+  
 
-  // update active status
-  // const updateactivestatus = async (event, id) => {
-  //   const user_active_status = event.target.checked ? 1 : 0;
 
-  //   const result = await Swal.fire({
-  //     title: "Do you want to save the changes?",
-  //     showCancelButton: true,
-  //     confirmButtonText: "Save",
-  //     cancelButtonText: "Cancel",
-  //     allowOutsideClick: false,
-  //   });
+  // update acctive status
 
-  //   if (result.isConfirmed) {
-  //     try {
-  //       const response = await updateActivestatus({ id, user_active_status });
-  //       if (response.status) {
-  //         Swal.fire({
-  //           title: "Saved!",
-  //           icon: "success",
-  //           timer: 1000,
-  //           timerProgressBar: true
-  //         });
-  //         setTimeout(() => {
-  //           Swal.close(); // Close the modal
-  //           getAllAdmin(); // Refresh the data
-  //         }, 1000);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error", error);
-  //       Swal.fire("Error", "There was an error processing your request.", "error");
-  //     }
-  //   } else if (result.dismiss === Swal.DismissReason.cancel) {
-  //     getAllAdmin(); // Reload the data to revert the change
-  //   }
-  // };
+  
+  const updateactivestatus = async (event, id) => {
+    const user_active_status = event.target.checked ? 1 : 0;
+
+    const result = await Swal.fire({
+      title: "Do you want to save the changes?",
+      showCancelButton: true,
+      confirmButtonText: "Save",
+      cancelButtonText: "Cancel",
+      allowOutsideClick: false, 
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const response = await updateActivestatus({ id, user_active_status })
+        if (response.status) {
+          Swal.fire({
+            title: "Saved!",
+            icon: "success",
+            timer: 1000,
+            timerProgressBar: true
+          });
+          setTimeout(() => {
+            Swal.close(); // Close the modal
+            
+          }, 1000);
+        } 
+  
+      } catch (error) {
+        console.error("Error", error);
+        Swal.fire("Error", "There was an error processing your request.", "error");
+      }
+    } else if (result.dismiss === Swal.DismissReason.cancel) {
+      window.location.reload();
+    }
+  };
+
+
 
   // get all admin
   const getAllAdmin = async () => {
@@ -165,13 +242,14 @@ const Admin = () => {
     const data = { id: user_id };
     try {
       const response = await getUserdata(data);
-      setData(response.data);
+      setData(response.data); 
       setLoading(false);
     } catch (error) {
       console.log("error", error);
-      setLoading(false);
     }
   };
+
+
 
   useEffect(() => {
     getAllAdmin();
