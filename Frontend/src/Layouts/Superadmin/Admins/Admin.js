@@ -85,6 +85,11 @@ const Admin = () => {
       accessor: "Create_Date",
       Cell: ({ cell }) => fDateTime(cell.value),
     },
+    {
+      Header: "Edit",
+      accessor: "Create_Date",
+      Cell: ({ cell }) => fDateTime(cell.value),
+    },
   ];
 
   // update balance
