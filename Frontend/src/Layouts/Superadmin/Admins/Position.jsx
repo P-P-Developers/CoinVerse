@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Report = () => {
+const Position = () => {
     return (
         <div>
             <div className='row'>
@@ -12,7 +12,7 @@ const Report = () => {
                             <div className="col-xl-12">
                                 <div className="card dz-card" id="nav-pills">
                                     <div className="card-header flex-wrap border-0">
-                                        <h4 className="card-title">Reports</h4>
+                                        <h4 className="card-title">Available Position</h4>
 
                                     </div>
                                     <div className="tab-content" id="myTabContent3">
@@ -23,7 +23,7 @@ const Report = () => {
                                             aria-labelledby="home-tab3"
                                         >
                                             <div className="card-body pt-0">
-                                                <ul className="nav nav-pills  mb-4 light">
+                                                <ul className="nav nav-pills navpills mb-4 light ">
                                                     <li className=" nav-item">
                                                         <a
                                                             href="#navpills-1"
@@ -31,7 +31,7 @@ const Report = () => {
                                                             data-bs-toggle="tab"
                                                             aria-expanded="false"
                                                         >
-                                                            All live Clients
+                                                            Admin Wise
                                                         </a>
                                                     </li>
                                                     <li className="nav-item">
@@ -41,19 +41,10 @@ const Report = () => {
                                                             data-bs-toggle="tab"
                                                             aria-expanded="false"
                                                         >
-                                                            Active Live Clients
+                                                            All Over Admin Wise
                                                         </a>
                                                     </li>
-                                                    <li className="nav-item">
-                                                        <a
-                                                            href="#navpills-3"
-                                                            className="nav-link navlink"
-                                                            data-bs-toggle="tab"
-                                                            aria-expanded="true"
-                                                        >
-                                                            Expired Live Clients
-                                                        </a>
-                                                    </li>
+
                                                 </ul>
                                                 <div className="tab-content">
                                                     <div id="navpills-1" className="tab-pane active">
@@ -213,13 +204,7 @@ const Report = () => {
 
                                                         </div>
                                                     </div>
-                                                    <div id="navpills-3" className="tab-pane">
-                                                        <div className="row">
-                                                            <div className="col-md-12">
-                                                                <p className='text-center'>There are no records to display</p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -343,8 +328,7 @@ const Report = () => {
                 </div>
             </div>
         </div>
-
     );
 }
 
-export default Report;
+export default Position;

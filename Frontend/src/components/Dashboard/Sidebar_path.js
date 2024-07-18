@@ -1,7 +1,7 @@
 // Superadmin header configuration
 export const superadmin_header = [
     {
-        id: 1,
+        id: 1,    
         name: 'Dashboard',
         icon: "material-symbols-outlined",
         route: "/superadmin/dashboard",
@@ -18,6 +18,18 @@ export const superadmin_header = [
         icon: "fe fe-dollar-sign",
         route: "/superadmin/transaction",
     },
+    {
+        id: 4,
+        name: 'Available Positions',
+        icon: "fe fe-dollar-sign",
+        route: "/superadmin/position",
+    },
+    {
+        id: 5,
+        name: 'Broadcast',
+        icon: "fe fe-dollar-sign",
+        route: "/superadmin/broadcast",
+    },
 ];
 
 
@@ -27,7 +39,7 @@ export const admin_header = [
     {
         id: 1,
         name: 'Dashboard',
-        icon: "material-symbols-outlined",
+        icon: "fa-solid fa-house",
         route: "/admin/dashboard",
     },
     {
@@ -60,15 +72,15 @@ export const admin_header = [
         icon: "fe fe-activity",
         route: "/admin/tradehistory",
     },
-    // {
-    //     id: 7,
-    //     name: 'Login Status',
-    //     icon: "fe fe-check-square",
-    //     route: "/admin/loginstatus",
-    // },
+    {
+        id: 7,
+        name: 'Login Status',
+        icon: "fe fe-check-square",
+        route: "/admin/loginstatus",
+    },
     {
         id: 8,
-        name: 'Position',
+        name: 'Available Positions',
         icon: "fe fe-target",
         route: "/admin/position",
     },
@@ -83,5 +95,11 @@ export const admin_header = [
         name: 'Deposit',
         icon: "fe fe-arrow-up-circle",
         route: "/admin/deposit",
+    },
+    {
+        id: 11,
+        name: 'Broadcast',
+        icon: "fe fe-arrow-up-circle",
+        route: "/admin/broadcast",
     },
 ];

@@ -7,7 +7,9 @@ import Dashboard from '../Layouts/Superadmin/Dashboard';
 import Admin from '../Layouts/Superadmin/Admins/Admin';
 import AddAdmin from '../Layouts/Superadmin/Admins/AddAdmin';
 import Transection from '../Layouts/Superadmin/Transection/Transection';
-import UpdateAdmin from '../Layouts/Superadmin/Admins/UpdateAdmin';
+import Position from '../Layouts/Superadmin/Admins/Position';
+import Broadcast from '../Layouts/Superadmin/Admins/Broadcast';
+
 
 const SuperadminRoutes = () => {
     return (
@@ -16,12 +18,14 @@ const SuperadminRoutes = () => {
             <Sidebar />
             <div className='content-body'>
                 <Routes>
-                    
+
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/admin" element={<Admin />} />
+                    <Route path="/position" element={<Position />} />
                     <Route path="/addmin" element={<AddAdmin />} />
                     <Route path="/transaction" element={<Transection />} />
                     <Route path="/admin/updateadmin/:id" element={<UpdateAdmin />} />
+                    <Route path="/broadcast" element={<Broadcast />} />
 
                 </Routes>
             </div>
