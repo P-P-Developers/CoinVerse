@@ -5,25 +5,24 @@ const Header = () => {
   const location = useLocation();
 
   const capitalizeFirstLetter = (string) => {
-   
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
   const getLastPathSegment = (path) => {
     const segments = path.split("/");
-    const filteredSegments = segments.filter(segment => { 
-        return isNaN(segment.charAt(0));
+    const filteredSegments = segments.filter((segment) => {
+      return isNaN(segment.charAt(0));
     });
 
-    return filteredSegments[filteredSegments.length - 1] || filteredSegments[filteredSegments.length - 2];
-};
-
-  
+    return (
+      filteredSegments[filteredSegments.length - 1] ||
+      filteredSegments[filteredSegments.length - 2]
+    );
+  };
 
   const lastPathSegment = getLastPathSegment(location.pathname);
   const formattedSegment = capitalizeFirstLetter(lastPathSegment);
-
 
   return (
     <div>
