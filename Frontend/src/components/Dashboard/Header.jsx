@@ -727,8 +727,8 @@ const Header = () => {
                       </div>
                     </a>
                     <div className="dropdown-menu dropdown-menu-end">
-                      <a
-                        href="app-profile.html"
+                      <Link
+                        to="/admin/profile"
                         className="dropdown-item ai-icon "
                       >
                         <svg
@@ -761,7 +761,7 @@ const Header = () => {
                           </g>
                         </svg>
                         <span className="ms-2">Profile </span>
-                      </a>
+                      </Link>
                       <a
                         href="app-profile.html"
                         className="dropdown-item ai-icon "

@@ -22,6 +22,7 @@ import AddEmployee from '../Layouts/Admin/Employee/AddEmployee';
 import Broadcast from '../Layouts/Admin/Broadcast';
 import Updateuser from '../Layouts/Admin/Users/Updateuser';
 import UpdateEmploye from '../Layouts/Admin/Employee/UpdateEmploye';
+import Profile from '../Layouts/Admin/Profile';
 
 const AdminRoutes = () => {
     return (
@@ -51,9 +52,11 @@ const AdminRoutes = () => {
                     <Route path="/employes" element={<Employee />} />
                     <Route path="/addemployees" element={<AddEmployee />} />
                     <Route path="/broadcast" element={<Broadcast />} />
+                    <Route path="/profile" element={<Profile />} />
 
                     <Route path="/users/updateuser/:id" element={<Updateuser/>} />
                     <Route path="/employes/updateemploye/:id" element={<UpdateEmploye/>} />
+                    
 
                     
                 </Routes>
