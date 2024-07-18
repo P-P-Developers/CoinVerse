@@ -252,6 +252,70 @@ class Superadmin {
   }
 
 
+// update admin 
+  async Update_Admin(req, res) {
+    try {
+      const data = req.body;
+      const id = req.body.id;
+
+      const filter = { _id: id ,Role:"ADMIN"};
+      const updateOperation = { $set: data };
+
+      const result = await User_model.updateOne(filter, updateOperation);
+
+      if (result.nModified === 0) {
+        return res.json({
+          status: false,
+          message: "Data not Updated",
+          data: [],
+        });
+      }
+      return res.json({ status: true, message: "Data updated", data: result });
+    } catch (error) {
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  }
+   
+
+
+  // deleted admin 
+
+  async Delete_Admin(req, res) {
+    try {
+      const { id } = req.body;
+      const result = await User_model.findOneAndDelete({
+        _id: id,
+        Role:"ADMIN",
+      });
+
+      if (!result) {
+        return res.json({
+          success: false,
+          message: "User not found",
+          data: [],
+        });
+      }
+
+      return res.json({
+        success: true,
+        message: "User deleted successfully",
+        data: result,
+      });
+    } catch (error) {
+      return res.json({
+        success: false,
+        message: "Internal server error",
+        data: [],
+      });
+    }
+  }
+
+
+
 
 }
 

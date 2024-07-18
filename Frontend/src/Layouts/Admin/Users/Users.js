@@ -344,7 +344,7 @@ const Users = () => {
                   </div>
                   <Link
                     to="/admin/adduser"
-                    className="float-end mb-2 btn btn-dark"
+                    className="btn btn-primary m-2"
                   >
                     Add User
                   </Link>

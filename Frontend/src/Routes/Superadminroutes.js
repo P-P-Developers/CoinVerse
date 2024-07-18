@@ -7,7 +7,7 @@ import Dashboard from '../Layouts/Superadmin/Dashboard';
 import Admin from '../Layouts/Superadmin/Admins/Admin';
 import AddAdmin from '../Layouts/Superadmin/Admins/AddAdmin';
 import Transection from '../Layouts/Superadmin/Transection/Transection';
-
+import UpdateAdmin from '../Layouts/Superadmin/Admins/UpdateAdmin';
 
 const SuperadminRoutes = () => {
     return (
@@ -21,6 +21,7 @@ const SuperadminRoutes = () => {
                     <Route path="/admin" element={<Admin />} />
                     <Route path="/addmin" element={<AddAdmin />} />
                     <Route path="/transaction" element={<Transection />} />
+                    <Route path="/admin/updateadmin/:id" element={<UpdateAdmin />} />
 
                 </Routes>
             </div>

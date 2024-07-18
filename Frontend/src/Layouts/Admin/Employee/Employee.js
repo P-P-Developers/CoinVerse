@@ -21,8 +21,6 @@ const Employee = () => {
 
 
   
-
-
   const [data, setData] = useState([]);
   const [balance, setBalance] = useState("");
   const [modal, setModal] = useState(false);
@@ -201,7 +199,6 @@ const DeleteEmployee = async (_id) => {
 
   // update acctive status
 
-  
   const updateactivestatus = async (event, id) => {
     const user_active_status = event.target.checked ? 1 : 0;
 
@@ -273,11 +270,11 @@ const DeleteEmployee = async (_id) => {
               <div className="card transaction-table">
                 <div className="card-header border-0 flex-wrap pb-0">
                   <div className="mb-2">
-                    <h4 className="card-title">All Employes</h4>
+                    <h4 className="card-title ">All Employes</h4>
                   </div>
                   <Link
                     to="/admin/addemployees"
-                    className="float-end mb-2 btn btn-dark"
+                    className="btn btn-primary m-2"
                   >
                     Add Employee
                   </Link>
