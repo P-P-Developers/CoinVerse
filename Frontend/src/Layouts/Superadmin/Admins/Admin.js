@@ -113,40 +113,40 @@ const Admin = () => {
   };
 
   // update active status
-  const updateactivestatus = async (event, id) => {
-    const user_active_status = event.target.checked ? 1 : 0;
+  // const updateactivestatus = async (event, id) => {
+  //   const user_active_status = event.target.checked ? 1 : 0;
 
-    const result = await Swal.fire({
-      title: "Do you want to save the changes?",
-      showCancelButton: true,
-      confirmButtonText: "Save",
-      cancelButtonText: "Cancel",
-      allowOutsideClick: false,
-    });
+  //   const result = await Swal.fire({
+  //     title: "Do you want to save the changes?",
+  //     showCancelButton: true,
+  //     confirmButtonText: "Save",
+  //     cancelButtonText: "Cancel",
+  //     allowOutsideClick: false,
+  //   });
 
-    if (result.isConfirmed) {
-      try {
-        const response = await updateActivestatus({ id, user_active_status });
-        if (response.status) {
-          Swal.fire({
-            title: "Saved!",
-            icon: "success",
-            timer: 1000,
-            timerProgressBar: true
-          });
-          setTimeout(() => {
-            Swal.close(); // Close the modal
-            getAllAdmin(); // Refresh the data
-          }, 1000);
-        }
-      } catch (error) {
-        console.error("Error", error);
-        Swal.fire("Error", "There was an error processing your request.", "error");
-      }
-    } else if (result.dismiss === Swal.DismissReason.cancel) {
-      getAllAdmin(); // Reload the data to revert the change
-    }
-  };
+  //   if (result.isConfirmed) {
+  //     try {
+  //       const response = await updateActivestatus({ id, user_active_status });
+  //       if (response.status) {
+  //         Swal.fire({
+  //           title: "Saved!",
+  //           icon: "success",
+  //           timer: 1000,
+  //           timerProgressBar: true
+  //         });
+  //         setTimeout(() => {
+  //           Swal.close(); // Close the modal
+  //           getAllAdmin(); // Refresh the data
+  //         }, 1000);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error", error);
+  //       Swal.fire("Error", "There was an error processing your request.", "error");
+  //     }
+  //   } else if (result.dismiss === Swal.DismissReason.cancel) {
+  //     getAllAdmin(); // Reload the data to revert the change
+  //   }
+  // };
 
   // get all admin
   const getAllAdmin = async () => {
