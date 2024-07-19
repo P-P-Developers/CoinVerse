@@ -1,30 +1,36 @@
 const mongoose = require('mongoose');
 
 const WalletRecharge = new mongoose.Schema({
-   admin_Id: {
+ 
+    
+    parent_Id: {
         type: mongoose.Schema.Types.ObjectId,
-       
+        ref:"users"
     },
     user_Id: {
         type: mongoose.Schema.Types.ObjectId,
-       
+        ref:"users"
     },
-    recharge: {
+    Balance: {
         type: String,
         required: true
+    },
+    Name:{
+        type:String,
+        
+    },
+    multiplelimit: {
+        type: String,
+        
     },
     createdAt: {
         type: Date,
         default: Date.now
     },
-    multiplelimit: {
-        type: Date,
-        default: Date.now
-    }
-
+   
 },{
     _id: true,
   });
 
-const Role = mongoose.model('WalletRecharge',WalletRecharge);
-module.exports = Role;
+const WalletRecharges = mongoose.model('WalletRecharges',WalletRecharge);
+module.exports = WalletRecharges;

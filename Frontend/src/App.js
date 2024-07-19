@@ -1,10 +1,13 @@
+import React from 'react';
+import AdminRoutes from './Routes/AdminRoutes';
+import Routing from './Routes/Routes.routes';
 
-import './App.css';
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-   
+    <div>
+      {/* <AdminRoutes /> */}
+      <Routing/>
     </div>
   );
 }
