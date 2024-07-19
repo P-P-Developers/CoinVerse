@@ -82,24 +82,24 @@ const Employee = () => {
       Header: "ActiveStatus",
       accessor: "ActiveStatus",
       Cell: ({ cell }) => (
-        // <label className="status-toggle">
-        //   <input
-        //     id={`rating_${cell.row.id}`}
-        //     className="check"
-        //     type="checkbox"
-        //     onChange={(event) => updateactivestatus(event, cell.row._id)}
-        //     defaultChecked={cell.value == 1}
-        //   />
-        //     <label htmlFor={`rating_${cell.row.id}`} className="checktoggle checkbox-bg"></label>
-
-        // </label>
-              <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
-          // checked={cell.value === 0}
-          // onChange={(event) => updateactivestatus(event, cell.row._id)}
+        <label className="form-check form-switch">
+          <input
+            id={`rating_${cell.row.id}`}
+            className="form-check-input"
+            type="checkbox"
+            onChange={(event) => updateactivestatus(event, cell.row._id)}
+            defaultChecked={cell.value == 1}
           />
+            <label htmlFor={`rating_${cell.row.id}`} className="checktoggle checkbox-bg"></label>
 
-        </div>
+        </label>
+        //       <div class="form-check form-switch">
+        //   <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
+        //   // checked={cell.value === 0}
+        //   // onChange={(event) => updateactivestatus(event, cell.row._id)}
+        //   />
+
+        // </div>
       ),
     },
     {

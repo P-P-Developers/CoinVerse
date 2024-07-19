@@ -81,10 +81,10 @@ const Admin = () => {
       Header: "ActiveStatus",
       accessor: "ActiveStatus",
       Cell: ({ cell }) => (
-        <label className="status-toggle">
+        <label className="form-check form-switch">
           <input
             id={`rating_${cell.row.id}`}
-            className="check"
+            className="form-check-input"
             type="checkbox"
             onChange={(event) => updateactivestatus(event, cell.row._id)}
             defaultChecked={cell.value == 1}

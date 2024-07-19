@@ -314,8 +314,64 @@ class Superadmin {
     }
   }
 
-
-
+   
+  async SuperadminGetDashboardData(req, res) {
+    try {
+      const { parent_id } = req.body; 
+      const counts = await User_model.aggregate([
+        {
+          $facet: {
+            TotalAdminCount: [
+              { $match: { Role: "ADMIN", parent_id: parent_id } },
+              { $count: "count" },
+            ],
+            TotalActiveAdminCount: [
+              {
+                $match: {
+                  Role: "ADMIN",
+                  ActiveStatus: "1",
+                  parent_id: parent_id,
+                  $or: [{ End_Date: { $gte: new Date() } }, { End_Date: null }],
+                },
+              },
+              { $count: "count" },
+            ],
+          },
+        },
+        {
+          $project: {
+            TotalAdminCount: { $ifNull: [{ $arrayElemAt: ["$TotalAdminCount.count", 0] }, 0] },
+            TotalActiveAdminCount: { $ifNull: [{ $arrayElemAt: ["$TotalActiveAdminCount.count", 0] }, 0] },
+          },
+        },
+      ]);
+  
+      const {
+        TotalAdminCount,
+        TotalActiveAdminCount,
+      } = counts[0];
+  
+      var Count = {
+        TotalAdminCount: TotalAdminCount,
+        TotalActiveAdminCount: TotalActiveAdminCount,
+        TotalInActiveAdminCount: TotalAdminCount - TotalActiveAdminCount,
+      };
+  
+      // DATA GET SUCCESSFULLY
+      res.send({
+        status: true,
+        msg: "Get Dashboard Data",
+        data: Count,
+      });
+    } catch (error) {
+      console.log("Error getting Dashboard Data:", error);
+      res.status(500).send({
+        status: false,
+        msg: "Internal Server Error",
+      });
+    }
+  }
+  
 
 }
 
