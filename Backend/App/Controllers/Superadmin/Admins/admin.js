@@ -14,17 +14,7 @@ class Superadmin {
 
   async AddAdmin(req, res) {
     try {
-      const {
-        FullName,
-        UserName,
-        Email,
-        PhoneNo,
-        parent_id,
-        parent_role,
-        password,
-        Otp,
-        Role,
-      } = req.body;
+      const {FullName, UserName, Email,PhoneNo, parent_id, parent_role, password,Otp, Role } = req.body;
 
 
       if (!FullName || !UserName || !Email || !PhoneNo || !password || !Role) {
