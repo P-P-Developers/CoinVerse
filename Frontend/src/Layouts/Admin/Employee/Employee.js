@@ -112,10 +112,10 @@ const Employee = () => {
           <div>
             
            
-            <Pencil style={{ cursor: 'pointer' }} 
+            <Pencil style={{ cursor: 'pointer', color: '#33B469' }} 
                onClick={() => updateEmploye(cell.row._id,cell)}
             />
-             <Trash2 style={{ cursor: 'pointer', marginRight: '10px' }}
+            <Trash2 style={{ cursor: 'pointer', marginLeft: '3px', color: "red",marginRight: '10px' }}
                onClick={() => DeleteEmployee(cell.row._id)}
             />
           </div>

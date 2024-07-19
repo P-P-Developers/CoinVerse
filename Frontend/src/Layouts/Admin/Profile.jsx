@@ -14,18 +14,18 @@ const Profile = () => {
                                 <div className="profile-info">
                                     <div className="profile-photo">
                                         <img
-                                            src="https://jiade.scriptlelo.com/vite/demo/assets/profile-B9SRNMn2.png"
+                                            src="assets/images/jiade.png"
                                             className="img-fluid rounded-circle"
                                             alt="profile"
                                         />
                                     </div>
                                     <div className="profile-details">
                                         <div className="profile-name px-3 pt-2">
-                                            <h4 className="text-primary mb-0">Mitchell C. Shay</h4>
+                                            <h4 className="text-primary mb-0">Neha sharma</h4>
                                             <p>UX / UI Designer</p>
                                         </div>
                                         <div className="profile-email px-2 pt-2">
-                                            <h4 className="text-muted mb-0">hello@email.com</h4>
+                                            <h4 className="text-muted mb-0">neha@email.com</h4>
                                             <p>Email</p>
                                         </div>
                                         <div className="dropdown ms-auto dropdown">
@@ -164,7 +164,7 @@ const Profile = () => {
                                     <div className="card-body pt-3">
                                         <div className="profile-blog ">
                                             <img
-                                                src="/assets/vite/demo/assets/1-Cq4soiQ7.jpg"
+                                                src="assets/images/j1.jpg"
                                                 alt="profile"
                                                 className="img-fluid  mb-4 w-100 "
                                             />
@@ -181,153 +181,8 @@ const Profile = () => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="col-lg-12">
-                                <div className="card">
-                                    <div className="card-header border-0 pb-0">
-                                        <h5 className="text-primary ">Interest</h5>
-                                    </div>
-                                    <div className="card-body pt-3">
-                                        <div className="profile-interest ">
-                                            <div className="lg-react-element row sp4">
-                                                <div
-                                                    data-src="/vite/demo/assets/3-BmwFTwJL.jpg"
-                                                    className="col-lg-4 col-xl-4 col-sm-4 col-6 int-col mb-1"
-                                                    data-lg-id="fc4f3553-e71e-4114-9cd4-4ae8500cc8f8"
-                                                >
-                                                    <img
-                                                        src="/vite/demo/assets/3-BmwFTwJL.jpg"
-                                                        alt="gallery"
-                                                        style={{ width: "100%" }}
-                                                    />
-                                                </div>
-                                                <div
-                                                    data-src="/vite/demo/assets/4-CQ0-Q1zK.jpg"
-                                                    className="col-lg-4 col-xl-4 col-sm-4 col-6 int-col mb-1"
-                                                    data-lg-id="e0f1546a-91b0-43f6-9661-777eece22ec7"
-                                                >
-                                                    <img
-                                                        src="/vite/demo/assets/4-CQ0-Q1zK.jpg"
-                                                        alt="gallery"
-                                                        style={{ width: "100%" }}
-                                                    />
-                                                </div>
-                                                <div
-                                                    data-src="/vite/demo/assets/2-rrkGLtzm.jpg"
-                                                    className="col-lg-4 col-xl-4 col-sm-4 col-6 int-col mb-1"
-                                                    data-lg-id="7a9da7a7-a562-4ace-b412-de83f37ec849"
-                                                >
-                                                    <img
-                                                        src="/vite/demo/assets/2-rrkGLtzm.jpg"
-                                                        alt="gallery"
-                                                        style={{ width: "100%" }}
-                                                    />
-                                                </div>
-                                                <div
-                                                    data-src="/vite/demo/assets/4-CQ0-Q1zK.jpg"
-                                                    className="col-lg-4 col-xl-4 col-sm-4 col-6 int-col mb-1"
-                                                    data-lg-id="70fe97ab-94b4-4d04-ba62-f3c5875e3a47"
-                                                >
-                                                    <img
-                                                        src="/vite/demo/assets/4-CQ0-Q1zK.jpg"
-                                                        alt="gallery"
-                                                        style={{ width: "100%" }}
-                                                    />
-                                                </div>
-                                                <div
-                                                    data-src="/vite/demo/assets/3-BmwFTwJL.jpg"
-                                                    className="col-lg-4 col-xl-4 col-sm-4 col-6 int-col mb-1"
-                                                    data-lg-id="0bf884f6-78d6-410c-a1dd-f5748439d264"
-                                                >
-                                                    <img
-                                                        src="/vite/demo/assets/3-BmwFTwJL.jpg"
-                                                        alt="gallery"
-                                                        style={{ width: "100%" }}
-                                                    />
-                                                </div>
-                                                <div
-                                                    data-src="/vite/demo/assets/2-rrkGLtzm.jpg"
-                                                    className="col-lg-4 col-xl-4 col-sm-4 col-6 int-col mb-1"
-                                                    data-lg-id="bd70c162-dbfc-4f70-899d-58e3b187a146"
-                                                >
-                                                    <img
-                                                        src="/vite/demo/assets/2-rrkGLtzm.jpg"
-                                                        alt="gallery"
-                                                        style={{ width: "100%" }}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col-lg-12">
-                                <div className="card">
-                                    <div className="card-header border-0 pb-0">
-                                        <h5 className="text-primary">Our Latest News</h5>
-                                    </div>
-                                    <div className="card-body pt-3">
-                                        <div className="profile-news">
-                                            <div className="media pt-3 pb-3">
-                                                <img
-                                                    src="/vite/demo/assets/5-B5DXGN9E.jpg"
-                                                    alt=""
-                                                    className="me-3 rounded"
-                                                    width={75}
-                                                />
-                                                <div className="media-body">
-                                                    <h5 className="m-b-5">
-                                                        <a href="/vite/demo/post-details">
-                                                            Check crypto news websites regularly.
-                                                        </a>
-                                                    </h5>
-                                                    <p className="mb-0">
-                                                        I shared this on my fb wall a few months back, and I
-                                                        thought.{" "}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div className="media pt-3 pb-3">
-                                                <img
-                                                    src="/vite/demo/assets/6-1U_FjGGb.jpg"
-                                                    alt=""
-                                                    className="me-3 rounded"
-                                                    width={75}
-                                                />
-                                                <div className="media-body">
-                                                    <h5 className="m-b-5">
-                                                        <a href="/vite/demo/post-details">
-                                                            Use crypto news sources daily.
-                                                        </a>
-                                                    </h5>
-                                                    <p className="mb-0">
-                                                        I shared this on my fb wall a few months back, and I
-                                                        thought.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div className="media pt-3 ">
-                                                <img
-                                                    src="/vite/demo/assets/7-D8H_aPge.jpg"
-                                                    alt=""
-                                                    className="me-3 rounded"
-                                                    width={75}
-                                                />
-                                                <div className="media-body">
-                                                    <h5 className="m-b-5">
-                                                        <a href="/vite/demo/post-details">
-                                                            Collection of textile samples
-                                                        </a>
-                                                    </h5>
-                                                    <p className="mb-0">
-                                                        I shared this on my fb wall a few months back, and I
-                                                        thought.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+
+
                         </div>
                     </div>
                     <div className="col-xl-8">
@@ -351,36 +206,8 @@ const Profile = () => {
                                                     Posts
                                                 </a>
                                             </li>
-                                            <li className="nav-item nav-item">
-                                                <a
-                                                    to="#about-me"
-                                                    role="tab"
-                                                    data-rr-ui-event-key="About"
-                                                    id="react-aria2055717917-:r2o:-tab-About"
-                                                    aria-controls="react-aria2055717917-:r2o:-tabpane-About"
-                                                    aria-selected="false"
-                                                    tabIndex={-1}
-                                                    className="nav-link"
-                                                    href="#"
-                                                >
-                                                    About Me
-                                                </a>
-                                            </li>
-                                            <li className="nav-item nav-item">
-                                                <a
-                                                    to="#profile-settings"
-                                                    role="tab"
-                                                    data-rr-ui-event-key="Setting"
-                                                    id="react-aria2055717917-:r2o:-tab-Setting"
-                                                    aria-controls="react-aria2055717917-:r2o:-tabpane-Setting"
-                                                    aria-selected="false"
-                                                    tabIndex={-1}
-                                                    className="nav-link"
-                                                    href="#"
-                                                >
-                                                    Setting
-                                                </a>
-                                            </li>
+
+
                                         </ul>
                                         <div className="tab-content">
                                             <div
@@ -419,101 +246,9 @@ const Profile = () => {
                                                             Post
                                                         </a>
                                                     </div>
-                                                    <div className="profile-uoloaded-post border-bottom-1 pb-5">
-                                                        <img
-                                                            src="/vite/demo/assets/8-Fy0DFfK2.jpg"
-                                                            alt=""
-                                                            className="img-fluid w-100 rounded"
-                                                        />
-                                                        <a className="post-title" href="/vite/demo/post-details">
-                                                            <h3>Use crypto news sources daily.</h3>
-                                                        </a>
-                                                        <p>
-                                                            A wonderful serenity has take possession of my entire
-                                                            soul like these sweet morning of spare which enjoy whole
-                                                            heart.A wonderful serenity has take possession of my
-                                                            entire soul like these sweet morning of spare which
-                                                            enjoy whole heart.
-                                                        </p>
-                                                        <button className="btn btn-primary me-2">
-                                                            <span className="me-2">
-                                                                {" "}
-                                                                <i className="fa fa-heart" />{" "}
-                                                            </span>
-                                                            Like
-                                                        </button>
-                                                        <button className="btn btn-secondary">
-                                                            <span className="me-2">
-                                                                {" "}
-                                                                <i className="fa fa-reply" />
-                                                            </span>
-                                                            Reply
-                                                        </button>
-                                                    </div>
-                                                    <div className="profile-uoloaded-post border-bottom-1 pb-5">
-                                                        <img
-                                                            src="/vite/demo/assets/9-7gTCTQdZ.jpg"
-                                                            alt=""
-                                                            className="img-fluid w-100 rounded"
-                                                        />
-                                                        <a className="post-title" href="/vite/demo/post-details">
-                                                            <h3>
-                                                                How To Win Clients And Influence Markets with
-                                                                EDUCATION
-                                                            </h3>
-                                                        </a>
-                                                        <p>
-                                                            A wonderful serenity has take possession of my entire
-                                                            soul like these sweet morning of spare which enjoy whole
-                                                            heart.A wonderful serenity has take possession of my
-                                                            entire soul like these sweet morning of spare which
-                                                            enjoy whole heart.
-                                                        </p>
-                                                        <button className="btn btn-primary me-2">
-                                                            <span className="me-2">
-                                                                {" "}
-                                                                <i className="fa fa-heart" />{" "}
-                                                            </span>
-                                                            Like
-                                                        </button>
-                                                        <button className="btn btn-secondary">
-                                                            <span className="me-2">
-                                                                {" "}
-                                                                <i className="fa fa-reply" />
-                                                            </span>
-                                                            Reply
-                                                        </button>
-                                                    </div>
-                                                    <div className="profile-uoloaded-post pb-3">
-                                                        <img
-                                                            src="/vite/demo/assets/8-Fy0DFfK2.jpg"
-                                                            alt=""
-                                                            className="img-fluid  w-100 rounded"
-                                                        />
-                                                        <a className="post-title" href="/vite/demo/post-details">
-                                                            <h3>Stay updated on crypto developments.</h3>
-                                                        </a>
-                                                        <p>
-                                                            A wonderful serenity has take possession of my entire
-                                                            soul like these sweet morning of spare which enjoy whole
-                                                            heart.A wonderful serenity has take possession of my
-                                                            entire soul like these sweet morning of spare which
-                                                            enjoy whole heart.
-                                                        </p>
-                                                        <button className="btn btn-primary me-2">
-                                                            <span className="me-2">
-                                                                <i className="fa fa-heart" />
-                                                            </span>
-                                                            Like
-                                                        </button>
-                                                        <button className="btn btn-secondary">
-                                                            <span className="me-2">
-                                                                {" "}
-                                                                <i className="fa fa-reply" />
-                                                            </span>
-                                                            Reply
-                                                        </button>
-                                                    </div>
+
+
+
                                                 </div>
                                             </div>
                                             <div
