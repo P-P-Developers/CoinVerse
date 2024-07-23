@@ -3,7 +3,7 @@ import Table from "../../../Utils/Table/Table";
 import { getUserdata, Addbalance , updateActivestatus} from "../../../Services/Superadmin/Superadmin";
 import { delete_Employee } from "../../../Services/Admin/Addmin";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { CirclePlus, IndianRupee ,Pencil,Trash2} from "lucide-react";
+import { CirclePlus,Pencil,Trash2,CircleDollarSign,CircleMinus} from "lucide-react";
 import Swal from 'sweetalert2';
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 import Loader from "../../../Utils/Loader/Loader";
@@ -25,6 +25,7 @@ const Employee = () => {
   const [balance, setBalance] = useState("");
   const [modal, setModal] = useState(false);
   const [id, setID] = useState("");
+  const [type,setType] = useState("")
 
   const [loading, setLoading] = useState(false);
 
@@ -51,11 +52,17 @@ const Employee = () => {
             borderRadius: "10px",
             transition: "background-color 0.3s ease",
           }}
-          onClick={() => {
-            setModal(true);
-            setID(cell.row._id);
-          }}
+         
         >
+        <CircleDollarSign
+              style={{
+                height: "16px",
+                marginBottom: "-4px",
+                marginRight: "5px",
+                verticalAlign: "middle",
+              }}
+            />
+            
           <span style={{ fontWeight: "bold", verticalAlign: "middle" }}>
             <CirclePlus
               size={20}
@@ -64,16 +71,28 @@ const Employee = () => {
                 marginRight: "5px",
                 verticalAlign: "middle",
               }}
+              onClick={() => {
+             setModal(true);
+             setID(cell.row._id);
+             setType("CREDIT")
+          }}
             />
-            <IndianRupee
+             {cell.value}
+             <CircleMinus
+              size={20}
               style={{
-                height: "16px",
                 marginBottom: "-4px",
                 marginRight: "5px",
                 verticalAlign: "middle",
               }}
+              onClick={() => {
+             setModal(true);
+             setID(cell.row._id);
+             setType("DEBIT")
+          }}
             />
-            {cell.value}
+            
+           
           </span>
         </div>
       ),
@@ -185,7 +204,8 @@ const DeleteEmployee = async (_id) => {
      await Addbalance({
         id: id,
         Balance: balance,
-        parent_Id:user_id
+        parent_Id:user_id,
+        Type:type
       });
       
       Swal.fire({

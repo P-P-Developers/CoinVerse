@@ -12,7 +12,7 @@ const WalletRecharge = new mongoose.Schema({
         ref:"users"
     },
     Balance: {
-        type: String,
+        type: Number,
         required: true
     },
     Name:{
@@ -27,6 +27,10 @@ const WalletRecharge = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    Type:{
+        type:String,
+       
+    }
    
 },{
     _id: true,

@@ -3,7 +3,7 @@ import Table from "../../../Utils/Table/Table";
 import { getUserdata, Addbalance , updateActivestatus} from "../../../Services/Superadmin/Superadmin";
 import { updateuserLicence ,DeleteUserdata} from "../../../Services/Admin/Addmin";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { CirclePlus, IndianRupee,Pencil,Trash2} from "lucide-react";
+import { CirclePlus,Pencil,Trash2,CircleDollarSign,CircleMinus  } from "lucide-react";
 import Swal from 'sweetalert2';
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 import Loader from "../../../Utils/Loader/Loader";
@@ -22,6 +22,8 @@ const Users = () => {
   const [balance, setBalance] = useState("");
   const [modal, setModal] = useState(false);
   const [id, setID] = useState("");
+  const [type,setType] = useState("")
+
 
   const [license,setLicence] = useState(false)
   const [licenseid,setLicenceId] = useState("")
@@ -53,21 +55,9 @@ const Users = () => {
             borderRadius: "10px",
             transition: "background-color 0.3s ease",
           }}
-          onClick={() => {
-            setModal(true);
-            setID(cell.row._id);
-          }}
+         
         >
-          <span style={{ fontWeight: "bold", verticalAlign: "middle" }}>
-            <CirclePlus
-              size={20}
-              style={{
-                marginBottom: "-4px",
-                marginRight: "5px",
-                verticalAlign: "middle",
-              }}
-            />
-            <IndianRupee
+        <CircleDollarSign
               style={{
                 height: "16px",
                 marginBottom: "-4px",
@@ -75,8 +65,41 @@ const Users = () => {
                 verticalAlign: "middle",
               }}
             />
+          <span style={{ fontWeight: "bold", verticalAlign: "middle" }}>
+            <CirclePlus
+              size={20}
+              style={{
+                marginBottom: "-4px",
+                marginRight: "5px",
+                verticalAlign: "middle",
+                
+              }}
+              onClick={() => {
+            setModal(true);
+            setID(cell.row._id);
+            setType("CREDIT")
+          }}
+            />
+            
             {cell.value}
           </span>
+          <CircleMinus
+              size={20}
+              style={{
+                marginBottom: "-4px",
+                marginRight: "5px",
+                verticalAlign: "middle",
+                marginLeft:"10px"
+                
+                
+              }}
+              onClick={() => {
+            setModal(true);
+            setID(cell.row._id);
+            setType("DEBIT")
+
+          }}
+            />
         </div>
       ),
     },
@@ -96,13 +119,7 @@ const Users = () => {
             <label htmlFor={`rating_${cell.row.id}`} className="checktoggle checkbox-bg"></label>
 
         </label>
-        // <div class="form-check form-switch">
-        //   <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
-        //   // checked={cell.value === 0}
-        //   // onChange={(event) => updateactivestatus(event, cell.row._id)}
-        //   />
-
-        // </div>
+        
       ),
     },
     {
@@ -245,14 +262,15 @@ const Users = () => {
 
 
 
-
   // update  balance
   const updateBalance = async () => {
+
     try {
      await Addbalance({
         id: id,
         Balance: balance,
-        parent_Id:user_id
+        parent_Id:user_id,
+        Type:type
       });
       
       Swal.fire({

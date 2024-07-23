@@ -9,7 +9,7 @@ const Userwatchlist = db.Userwatchlist
 
 
 
-class UserOrder {
+class UserSymbol {
 
 
 
@@ -39,8 +39,6 @@ class UserOrder {
     }
   }
   
-
-
 
 
 
@@ -171,4 +169,4 @@ class UserOrder {
 
 }
 
-module.exports = new UserOrder();
+  module.exports = new UserSymbol();

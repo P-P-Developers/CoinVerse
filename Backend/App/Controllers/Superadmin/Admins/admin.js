@@ -115,11 +115,53 @@ class Superadmin {
 
   //updated balance
 
+  // async walletRecharge(req, res) {
+  //   try {
+  //     const { id, Balance,parent_Id ,Type} = req.body;
+
+  //     const userdata = await User_model.findOne({ _id: id});
+  //     if (!userdata) {
+  //       return res.json({
+  //         status: false,
+  //         message: "Wallet not found",
+  //         data: [],
+  //       });
+  //     }
+
+  //     const newBalance = Number(userdata.Balance || 0) + Number(Balance);
+
+  //     const result1 = await User_model.updateOne(
+  //       { _id: userdata._id },
+  //       { $set: { Balance: newBalance } }
+  //     );
+
+      
+  //     const result = new Wallet_model({
+  //       user_Id: userdata._id,
+  //       Balance: Balance,
+  //       parent_Id:parent_Id,
+  //       Type:Type
+  //     });
+  //     await result.save();
+
+  //     return res.json({
+  //       status: true,
+  //       message: "Balance is updated",
+  //       data: result,
+  //     });
+  //   } catch (error) {
+  //     return res.json({ status: false, message: "Internal error", data: [] });
+  //   }
+  // }
+
+
+  
   async walletRecharge(req, res) {
     try {
-      const { id, Balance,parent_Id } = req.body;
-
+      const { id, Balance, parent_Id, Type } = req.body;
+  
       const userdata = await User_model.findOne({ _id: id });
+      
       if (!userdata) {
         return res.json({
           status: false,
@@ -127,20 +169,40 @@ class Superadmin {
           data: [],
         });
       }
-
-      const newBalance = Number(userdata.Balance || 0) + Number(Balance);
-      const result1 = await User_model.updateOne(
+  
+      let newBalance;
+      if (Type === "CREDIT") {
+        newBalance = Number(userdata.Balance || 0) + Number(Balance);
+      } else if (Type === "DEBIT") {
+        newBalance = Number(userdata.Balance || 0) - Number(Balance);
+        if (newBalance < 0) {
+          return res.json({
+            status: false,
+            message: "Insufficient balance",
+            data: [],
+          });
+        }
+      } else {
+        return res.json({
+          status: false,
+          message: "Invalid transaction type",
+          data: [],
+        });
+      }
+  
+      await User_model.updateOne(
         { _id: userdata._id },
         { $set: { Balance: newBalance } }
       );
-
+  
       const result = new Wallet_model({
         user_Id: userdata._id,
         Balance: Balance,
-        parent_Id:parent_Id
+        parent_Id: parent_Id,
+        Type: Type,
       });
       await result.save();
-
+  
       return res.json({
         status: true,
         message: "Balance is updated",
@@ -150,6 +212,7 @@ class Superadmin {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
+  
 
   // get all admin detail
 

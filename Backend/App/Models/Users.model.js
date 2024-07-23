@@ -5,8 +5,6 @@ const mongoose = require('mongoose')
 const Role = require("./Role.model")
 
 
-
-// Employee Financial Information Collection
 const userModel = Schema({
     FullName: {
         type: String,
