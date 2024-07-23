@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
-import { getUserdata, Addbalance , updateActivestatus} from "../../../Services/Superadmin/Superadmin";
-import { updateuserLicence ,DeleteUserdata} from "../../../Services/Admin/Addmin";
+import { getUserdata, Addbalance, updateActivestatus } from "../../../Services/Superadmin/Superadmin";
+import { updateuserLicence, DeleteUserdata } from "../../../Services/Admin/Addmin";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { CirclePlus,Pencil,Trash2,CircleDollarSign,CircleMinus  } from "lucide-react";
 import Swal from 'sweetalert2';
@@ -11,7 +11,7 @@ import Loader from "../../../Utils/Loader/Loader";
 
 
 const Users = () => {
-    
+
   const navigate = useNavigate();
 
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
@@ -25,8 +25,8 @@ const Users = () => {
   const [type,setType] = useState("")
 
 
-  const [license,setLicence] = useState(false)
-  const [licenseid,setLicenceId] = useState("")
+  const [license, setLicence] = useState(false)
+  const [licenseid, setLicenceId] = useState("")
   const [licencevalue, setLicencevalue] = useState("");
 
 
@@ -149,7 +149,7 @@ const Users = () => {
             <CirclePlus
               size={20}
               style={{
-              
+
                 marginRight: "5px",
                 verticalAlign: "middle",
               }}
@@ -159,24 +159,25 @@ const Users = () => {
         </div>
       ),
     },
-    { Header: "Create Date", accessor: "Create_Date",
-      Cell: ({cell}) => {
+    {
+      Header: "Create Date", accessor: "Create_Date",
+      Cell: ({ cell }) => {
         return fDateTime(cell.value)
-       
-       },
-     },
-     {
+
+      },
+    },
+    {
       Header: "Action",
       accessor: "Action",
       Cell: ({ cell }) => {
         return (
           <div>
-           
-            <Pencil style={{ cursor: 'pointer' }} 
-               onClick={() => updateuserpage(cell.row._id,cell)}
+
+            <Pencil style={{ cursor: 'pointer', color: '#33B469' }}
+              onClick={() => updateuserpage(cell.row._id, cell)}
             />
-             <Trash2 style={{ cursor: 'pointer', marginRight: '10px' }}
-               onClick={() => DeleteUser(cell.row._id)}
+            <Trash2 style={{ cursor: 'pointer', marginRight: '10px', marginLeft: '3px', color: "red" }}
+              onClick={() => DeleteUser(cell.row._id)}
             />
           </div>
         );
@@ -186,10 +187,10 @@ const Users = () => {
 
 
 
-  const updateuserpage = (_id,obj) => {
-    navigate(`updateuser/${_id}`,{ state: { rowData: obj.row } });
-   
-};
+  const updateuserpage = (_id, obj) => {
+    navigate(`updateuser/${_id}`, { state: { rowData: obj.row } });
+
+  };
 
 
   //delete user 
@@ -206,18 +207,18 @@ const Users = () => {
         cancelButtonColor: '#d33',
         confirmButtonText: 'Yes, delete it!'
       });
-  
+
       if (confirmResult.isConfirmed) {
         const data = { id: _id };
         await DeleteUserdata(data);
-  
-  
+
+
         Swal.fire({
           icon: 'success',
           title: 'User Deleted',
           text: 'The user has been deleted successfully.',
         });
-  
+
         getAlluserdata();
       }
     } catch (error) {
@@ -228,21 +229,21 @@ const Users = () => {
       });
     }
   };
-  
-  
 
 
 
-   // update Licence
 
-   const updateLicence = async () => {
+
+  // update Licence
+
+  const updateLicence = async () => {
     try {
-     await updateuserLicence({
+      await updateuserLicence({
         id: licenseid,
-        Licence:licencevalue,
-        parent_Id:user_id
+        Licence: licencevalue,
+        parent_Id: user_id
       });
-      
+
       Swal.fire({
         icon: 'success',
         title: 'Licence Updated',
@@ -258,7 +259,7 @@ const Users = () => {
       });
     }
   };
-   
+
 
 
 
@@ -266,13 +267,13 @@ const Users = () => {
   const updateBalance = async () => {
 
     try {
-     await Addbalance({
+      await Addbalance({
         id: id,
         Balance: balance,
         parent_Id:user_id,
         Type:type
       });
-      
+
       Swal.fire({
         icon: 'success',
         title: 'Balance Updated',
@@ -288,12 +289,12 @@ const Users = () => {
       });
     }
   };
-  
+
 
 
   // update acctive status
 
-  
+
   const updateactivestatus = async (event, id) => {
     const user_active_status = event.target.checked ? 1 : 0;
 
@@ -302,7 +303,7 @@ const Users = () => {
       showCancelButton: true,
       confirmButtonText: "Save",
       cancelButtonText: "Cancel",
-      allowOutsideClick: false, 
+      allowOutsideClick: false,
     });
 
     if (result.isConfirmed) {
@@ -317,16 +318,16 @@ const Users = () => {
           });
           setTimeout(() => {
             Swal.close(); // Close the modal
-            
+
           }, 1000);
-        } 
-  
+        }
+
       } catch (error) {
 
         Swal.fire("Error", "There was an error processing your request.", "error");
       }
     } else if (result.dismiss === Swal.DismissReason.cancel) {
-        getAlluserdata();
+      getAlluserdata();
     }
   };
 
@@ -338,10 +339,10 @@ const Users = () => {
     const data = { id: user_id };
     try {
       const response = await getUserdata(data);
-      const result = response.data && response.data.filter((item)=>{
+      const result = response.data && response.data.filter((item) => {
         return item.Role === "USER"
       })
-      setData(result); 
+      setData(result);
       setLoading(false);
     } catch (error) {
       console.log("error", error);
