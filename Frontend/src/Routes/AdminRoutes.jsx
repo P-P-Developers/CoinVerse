@@ -24,6 +24,8 @@ import Updateuser from '../Layouts/Admin/Users/Updateuser';
 import UpdateEmploye from '../Layouts/Admin/Employee/UpdateEmploye';
 import Profile from '../Layouts/Admin/Profile';
 import Setting from '../Layouts/Admin/Setting';
+import Holdoff from '../Layouts/Superadmin/Admins/Holdoff';
+
 
 const AdminRoutes = () => {
     return (
@@ -43,6 +45,7 @@ const AdminRoutes = () => {
                     <Route path="/withdrawal" element={<Withdraw />} />
                     <Route path="/deposit" element={<Deposit />} />
                     <Route path="/position" element={<Position />} />
+                    <Route path="/holdoff" element={<Holdoff />} />
                     {/* <Route path="/employees" element={<Employee />} /> */}
                     {/* <Route path="/users" element={<User />} /> */}
                     {/* <Route path="/transaction" element={<Transaction />} /> */}

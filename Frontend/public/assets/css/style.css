@@ -43125,7 +43125,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .nav-pills .navlink {
   border-radius: 0.325rem;
-  padding: 1.5rem 7rem;
+  padding: 0.9rem 7rem;
   font-size: 15px;
   font-weight: 600;
   color: #5b5e81;
@@ -43134,7 +43134,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .nav-pills1 .navlink {
 
-  padding: 1.5rem 9rem;
+  padding: 0.9rem 9rem;
 }
 
 .navpills {

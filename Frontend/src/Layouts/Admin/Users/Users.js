@@ -347,12 +347,12 @@ const Users = () => {
             <div className="col-lg-12">
               <div className="card transaction-table">
                 <div className="card-header border-0 flex-wrap pb-0">
-                  <div className="mb-2">
+                  <div className="mb-4">
                     <h4 className="card-title">All Users</h4>
                   </div>
                   <Link
                     to="/admin/adduser"
-                    className="float-end mb-2 btn btn-dark"
+                    className="float-end mb-4 btn btn-primary"
                   >
                     Add User
                   </Link>
@@ -365,6 +365,14 @@ const Users = () => {
                       role="tabpanel"
                       aria-labelledby="Week-tab"
                     >
+                      <div className='mb-3 ms-4'>
+                        Search :{" "}
+                        <input
+                          className="ml-2 input-search form-control"
+                          defaultValue=""
+                          style={{ width: "20%" }}
+                        />
+                      </div>
                       <Table columns={columns} data={data} />
                     </div>
                   </div>

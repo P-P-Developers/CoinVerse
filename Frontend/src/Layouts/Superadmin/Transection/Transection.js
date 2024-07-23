@@ -19,19 +19,20 @@ const Transection = () => {
     {
       Header: "Create Date",
       accessor: "createdAt",
-      Cell: ({cell}) => {
-       return fDateTime(cell.value)
-      
+      Cell: ({ cell }) => {
+        return fDateTime(cell.value)
+
       },
     },
+    { Header: "Status", accessor: "Type" },
   ];
 
   // getting data
   const getallhistory = async () => {
     try {
       const response = await gethistory({});
-      const result = response.data && response.data.filter((item)=>{
-         return item.parent_Id == user_id
+      const result = response.data && response.data.filter((item) => {
+        return item.parent_Id == user_id
       })
       setData(result);
     } catch (error) {
@@ -56,7 +57,7 @@ const Transection = () => {
             <div className="col-lg-12">
               <div className="card transaction-table">
                 <div className="card-header border-0 flex-wrap pb-0">
-                  <div className="mb-2">
+                  <div className="mb-3">
                     <h4 className="card-title">transaction History</h4>
                   </div>
                 </div>
@@ -68,6 +69,14 @@ const Transection = () => {
                       role="tabpanel"
                       aria-labelledby="Week-tab"
                     >
+                      <div className='mb-3 ms-4'>
+                        Search :{" "}
+                        <input
+                          className="ml-2 input-search form-control"
+                          defaultValue=""
+                          style={{ width: "20%" }}
+                        />
+                      </div>
                       <Table columns={columns} data={data && data} />
                     </div>
                   </div>
