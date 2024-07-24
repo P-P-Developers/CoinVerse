@@ -9,7 +9,8 @@ import AddAdmin from '../Layouts/Superadmin/Admins/AddAdmin';
 import Transection from '../Layouts/Superadmin/Transection/Transection';
 import Position from '../Layouts/Superadmin/Admins/Position';
 import Broadcast from '../Layouts/Superadmin/Admins/Broadcast';
-import UpdateAdmin from '../Layouts/Superadmin/Admins/UpdateAdmin';
+import Holdoff from '../Layouts/Superadmin/Admins/Holdoff';
+
 
 const SuperadminRoutes = () => {
     return (
@@ -26,6 +27,7 @@ const SuperadminRoutes = () => {
                     <Route path="/transaction" element={<Transection />} />
                     <Route path="/admin/updateadmin/:id" element={<UpdateAdmin />} />
                     <Route path="/broadcast" element={<Broadcast />} />
+                    <Route path="/holdoff" element={<Holdoff />} />
 
                 </Routes>
             </div>

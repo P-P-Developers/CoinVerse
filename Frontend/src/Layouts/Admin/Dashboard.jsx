@@ -709,7 +709,7 @@ const Dashboard = () => {
                     <div className="chart-num">
                       <p>
                         <i className="fa-solid fa-sort-down me-2" />
-                        Total Employe
+                        Total Employee
                       </p>
                       <h2 className="font-w600 mb-0">
                         {countdata.TotalEmployeCount &&
@@ -932,7 +932,7 @@ const Dashboard = () => {
                     <div className="chart-num">
                       <p>
                         <i className="fa-solid fa-sort-down me-2" />
-                        Total Active Employe
+                        Total Active Employee
                       </p>
                       <h2 className="font-w600 mb-0">
                         {countdata.TotalActiveEmployeCount &&
@@ -1155,7 +1155,7 @@ const Dashboard = () => {
                     <div className="chart-num">
                       <p>
                         <i className="fa-solid fa-sort-down me-2" />
-                        Total InActive Employe
+                        Total Deactive Employee
                       </p>
                       <h2 className="font-w600 mb-0">
                         {countdata.TotalInActiveEmployeCount &&

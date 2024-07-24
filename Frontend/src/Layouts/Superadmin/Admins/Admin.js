@@ -289,7 +289,7 @@ const Admin = () => {
                   </div>
                   <Link
                     to="/superadmin/addmin"
-                    className="float-end mb-2 btn btn-dark"
+                      className="float-end mb-2 btn btn-primary"
                   >
                     Add Admins
                   </Link>
@@ -302,6 +302,14 @@ const Admin = () => {
                       role="tabpanel"
                       aria-labelledby="Week-tab"
                     >
+                        <div className='mb-3 ms-4'>
+                          Search :{" "}
+                          <input
+                            className="ml-2 input-search form-control"
+                            defaultValue=""
+                            style={{ width: "20%" }}
+                          />
+                        </div>
                       <Table columns={columns} data={data} />
                     </div>
                   </div>

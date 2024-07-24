@@ -25,18 +25,12 @@ const Broadcast = () => {
                                             </div>
                                             <div className="compose-content">
                                                 <form action="#">
+
                                                     <div className="mb-3">
                                                         <input
                                                             type="text"
                                                             className="form-control bg-transparent"
-                                                            placeholder=" To:"
-                                                        />
-                                                    </div>
-                                                    <div className="mb-3">
-                                                        <input
-                                                            type="text"
-                                                            className="form-control bg-transparent"
-                                                            placeholder=" Subject:"
+                                                            placeholder=" Title:"
                                                         />
                                                     </div>
                                                     <div className="mb-3">
