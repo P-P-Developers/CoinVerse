@@ -80,7 +80,7 @@ const UpdateEmploye = () => {
             timerProgressBar: true,
           });
           setTimeout(() => {
-            navigate("/admin/employes");
+            navigate("/admin/employee");
           }, 1500);
         } else {
           Swal.fire({
@@ -183,7 +183,7 @@ const UpdateEmploye = () => {
       btn_name="Update Employee"
       btn_name1="Cancel"
       formik={formik}
-      btn_name1_route={"/admin/employes"}
+      btn_name1_route={"/admin/employee"}
     />
   );
 };

@@ -10,6 +10,8 @@ const User_model = db.user;
 const Wallet_model = db.WalletRecharge;
 
 class Users {
+
+  
   async userWithdrawalanddeposite(req, res) {
     try {
       const { userid, Balance, type } = req.body;

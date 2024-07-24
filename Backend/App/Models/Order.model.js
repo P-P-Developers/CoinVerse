@@ -38,14 +38,14 @@ const orderSchema = new mongoose.Schema({
     type: String,
     default: null
   },
-  type_entry_exit: {
-    type: String,
-    default: null
-  },
   token: {
     type: String,
     default: null
-  }
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+},
 });
 
 const Order = mongoose.model('Order', orderSchema);

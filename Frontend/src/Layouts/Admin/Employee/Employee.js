@@ -3,7 +3,7 @@ import Table from "../../../Utils/Table/Table";
 import { getUserdata, Addbalance, updateActivestatus } from "../../../Services/Superadmin/Superadmin";
 import { delete_Employee } from "../../../Services/Admin/Addmin";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { CirclePlus, IndianRupee, Pencil, Trash2 } from "lucide-react";
+import { CirclePlus,CircleDollarSign ,CircleMinus, Pencil, Trash2 } from "lucide-react";
 import Swal from 'sweetalert2';
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 import Loader from "../../../Utils/Loader/Loader";
@@ -18,7 +18,6 @@ const Employee = () => {
 
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
-
 
 
 
@@ -99,39 +98,39 @@ const Employee = () => {
         </div>
       ),
     },
-    {
-      Header: "ActiveStatus",
-      accessor: "ActiveStatus",
-      Cell: ({ cell }) => (
-        // <label className="status-toggle">
-        //   <input
-        //     id={`rating_${cell.row.id}`}
-        //     className="check"
-        //     type="checkbox"
-        //     onChange={(event) => updateactivestatus(event, cell.row._id)}
-        //     defaultChecked={cell.value == 1}
-        //   />
-        //     <label htmlFor={`rating_${cell.row.id}`} className="checktoggle checkbox-bg"></label>
+    // {
+    //   Header: "ActiveStatus",
+    //   accessor: "ActiveStatus",
+    //   Cell: ({ cell }) => (
+    //     // <label className="status-toggle">
+    //     //   <input
+    //     //     id={`rating_${cell.row.id}`}
+    //     //     className="check"
+    //     //     type="checkbox"
+    //     //     onChange={(event) => updateactivestatus(event, cell.row._id)}
+    //     //     defaultChecked={cell.value == 1}
+    //     //   />
+    //     //     <label htmlFor={`rating_${cell.row.id}`} className="checktoggle checkbox-bg"></label>
 
-        // </label>
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
-          // checked={cell.value === 0}
-          // onChange={(event) => updateactivestatus(event, cell.row._id)}
-          />
-            <label htmlFor={`rating_${cell.row.id}`} className="checktoggle checkbox-bg"></label>
+    //     // </label>
+    //     <div class="form-check form-switch">
+    //       <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
+    //       // checked={cell.value === 0}
+    //       // onChange={(event) => updateactivestatus(event, cell.row._id)}
+    //       />
+    //         <label htmlFor={`rating_${cell.row.id}`} className="checktoggle checkbox-bg"></label>
 
-      </div>
-      //</label>
-        //       <div class="form-check form-switch">
-        //   <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
-        //   // checked={cell.value === 0}
-        //   // onChange={(event) => updateactivestatus(event, cell.row._id)}
-        //   />
+    //   </div>
+    //   //</label>
+    //     //       <div class="form-check form-switch">
+    //     //   <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
+    //     //   // checked={cell.value === 0}
+    //     //   // onChange={(event) => updateactivestatus(event, cell.row._id)}
+    //     //   />
 
-        // </div>
-      ),
-    },
+    //     // </div>
+    //   ),
+    // },
     {
       Header: "Action",
       accessor: "Action",

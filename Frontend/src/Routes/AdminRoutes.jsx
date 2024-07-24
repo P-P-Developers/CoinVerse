@@ -53,13 +53,13 @@ const AdminRoutes = () => {
                     <Route path="/users" element={<Users />} />
                     <Route path="/adduser" element={<AddUsers />} />
                     <Route path="/transaction" element={<Transaction />} />
-                    <Route path="/employes" element={<Employee />} />
+                    <Route path="/employee" element={<Employee />} />
                     <Route path="/addemployees" element={<AddEmployee />} />
                     <Route path="/broadcast" element={<Broadcast />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/setting" element={<Setting />} />
                     <Route path="/users/updateuser/:id" element={<Updateuser/>} />
-                    <Route path="/employes/updateemploye/:id" element={<UpdateEmploye/>} />
+                    <Route path="/employee/updateemploye/:id" element={<UpdateEmploye/>} />
                     
 
                     

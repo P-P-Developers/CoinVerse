@@ -9,5 +9,6 @@ module.exports = {
     Userwatchlist :require("./UserWatchlist.model"),
     Order: require("./Order.model"),
     PaymenetHistorySchema:require("./PaymetMethod.model"),
-    MarginRequired: require("./MarginReq.model")
+    MarginRequired: require("./MarginReq.model"),
+    mainorder_model : require("./Mainorder.model")
 };

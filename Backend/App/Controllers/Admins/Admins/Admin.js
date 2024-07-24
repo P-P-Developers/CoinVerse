@@ -382,6 +382,7 @@ async UpdateStatus(req, res) {
 
     const filter = { _id: new ObjectId(id) };
     const paymentHistoryFind = await PaymenetHistorySchema.findOne(filter);
+    
     if (!paymentHistoryFind) {
       return res.json({
         status: false,

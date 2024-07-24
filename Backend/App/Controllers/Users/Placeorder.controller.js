@@ -49,7 +49,6 @@ class Placeorder{
       if (!checkadmin) {
         return res.json({status: false, message: 'User not found',data :[]});
       }
-  
 
       const adminId = checkadmin.parent_id;
       
@@ -62,6 +61,7 @@ class Placeorder{
         order.adminid = adminId;
     
         
+
         await order.save();
   
         res.json({ status:true, message: 'Order placed successfully', order });
@@ -72,8 +72,11 @@ class Placeorder{
   
         await order.save();
   
-        res.json({status: true, message: 'Order placed successfully', order });
+        res.json({status: true, message:'Order placed successfully', order });
       }
+       
+      
+
     } catch (error) {
       console.error(error);
       res.json({ status:false,message: 'Server error',data:[] });
