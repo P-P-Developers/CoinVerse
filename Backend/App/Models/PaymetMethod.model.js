@@ -15,7 +15,7 @@ const PaymenetHistory = new mongoose.Schema(
         required: true
     },
     type: {
-        type: String
+        type: Number
     },
     status: {
       type: Number,

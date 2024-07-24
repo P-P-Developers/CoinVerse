@@ -3,8 +3,8 @@
 const router = require("express").Router()
 
 const { GetDashboardData} = require("../../Controllers/Admins/AdminDashboard/Dashboard");
-const {AddUser , updateLicence , updateUser , DeleteUser,Update_Employe ,Delete_Employee} = require("../../Controllers/Admins/Admins/Admin")
-
+const {AddUser , updateLicence , updateUser , DeleteUser,Update_Employe ,Delete_Employee,getuserpaymentstatus,UpdateStatus} = require("../../Controllers/Admins/Admins/Admin")
+const {marginupdate , getmarginprice} = require("../../Controllers/Admins/Admins/MarginReq")
 
 
 router.post('/admin/GetDashboardData', GetDashboardData);
@@ -14,6 +14,13 @@ router.post('/admin/updateUser', updateUser);
 router.post('/admin/DeleteUser', DeleteUser);
 router.post('/admin/Update_Employe', Update_Employe);
 router.post('/admin/Delete_Employee', Delete_Employee);
+router.post('/admin/getuserpaymentstatus', getuserpaymentstatus);
+router.post('/admin/Updatestatus', UpdateStatus);
+
+// margin required
+
+router.post('/admin/marginupdate', marginupdate);
+router.post('/admin/getmarginprice', getmarginprice);
      
 
 

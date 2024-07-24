@@ -17,24 +17,27 @@ class UserSymbol {
 
   async symbolSearch(req, res) {
     try {
-      const symboleName = req.body.symboleName; 
-  
+      const symboleName = req.body.symboleName;
       let condition = {};
   
       if (symboleName) {
-        condition.trading_symbol = {$regex: symboleName, $options: "i" };
+        condition.trading_symbol = { $regex: symboleName, $options: "i" };
       }
   
       const symbols = await Symbol.find(condition)
         .select("-symbol")
-        .sort({ symbol: "asc" });
+        .sort({ trading_symbol: "asc" });
   
-      return res.send(symbols);
+      if (!symboleName || symbols.length === 0) {
+        return res.json({ status: false, message: "Symbol not found", data: [] });
+      }
   
+      return res.json({ status: true, message: "Find Success", data: symbols });
     } catch (err) {
-      return res.send({
+      return res.json({
+        status: false,
         message: err.message || "Some error occurred while retrieving symbols.",
-        data: []
+        data: [],
       });
     }
   }
@@ -64,7 +67,7 @@ class UserSymbol {
       const symbol = await Symbol.findOne({
          trading_symbol: req.body.symbolname,
       });
-  
+      
       if (!symbol) {
         return res.json({
           status: false,

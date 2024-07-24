@@ -7,22 +7,21 @@ const Symbol = db.Symbol;
 const Userwatchlist = db.Userwatchlist;
 const PaymenetHistorySchema = db.PaymenetHistorySchema;
 const User_model = db.user;
+const Wallet_model = db.WalletRecharge;
 
 class Users {
-
-
   async userWithdrawalanddeposite(req, res) {
     try {
-      const { id, Balance ,type } = req.body;
+      const { userid, Balance, type } = req.body;
 
-    const userdata = await User_model.findById({ _id: id});
-    
+      const userdata = await User_model.findById({ _id: userid});
+
       if (!userdata) {
         return res.json({ status: false, message: "User not found", data: [] });
       }
 
       const paymentHistory = new PaymenetHistorySchema({
-        userid: id,
+        userid: userid,
         adminid: userdata.parent_id,
         Balance: Balance,
         type: type,
@@ -31,35 +30,61 @@ class Users {
 
       await paymentHistory.save();
 
-      return res.json({status:true, message: "Request send" , data: paymentHistory });
-
+      return res.json({
+        status: true,
+        message: "Request send",
+        data: paymentHistory,
+      });
     } catch (error) {
-
-      return res.json({status:false, message: "Error to Request send" , data:[] });
+      return res.json({
+        status: false,
+        message: "Error to Request send",
+        data: [],
+      });
     }
   }
 
-  
+  async getpaymenthistory(req, res) {
+    try {
+      const { userid } = req.body;
+      const result = await PaymenetHistorySchema.find({ userid: userid });
 
-  async getpaymenthistory(req,res){
-      try {
-            
-         const { id } = req.body
-         const result = await PaymenetHistorySchema.find({ userid:id })
-
-         if(!result){
-            return res.json({status: false,message:"User not found",data:[]})
-         }
-         return res.json({status:true,message:"Find Successfully",data:result})
-
-
-      } catch (error) {
-        return res.json({status: false,message:"Server error",data:[]})
+      if (!result) {
+        return res.json({ status: false, message: "User not found", data: [] });
       }
+      return res.json({
+        status: true,
+        message: "Find Successfully",
+        data:result,
+      });
+    } catch (error) {
+      return res.json({ status: false, message: "Server error", data: [] });
+    }
   }
 
+  // get user
 
+  async getUserDetail(req, res) {
+    try {
+      const { userid } = req.body;
 
+      const result = await User_model.find({_id:userid, Role:"USER" }).select(
+        "FullName Balance limit pertrade perlot turn_over_percentage brokerage UserName createdAt"
+      );
+
+      if (!result || result.length === 0) {
+        return res.json({ status: false, message: "Data not found", data: [] });
+      }
+
+      return res.json({
+        status: true,
+        message: "getting data",
+        data: result,
+      });
+    } catch (error) {
+      return res.json({ status: false, message: "Internal error", data: [] });
+    }
+  }
 }
 
 module.exports = new Users();

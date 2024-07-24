@@ -29,6 +29,7 @@ const Transaction = () => {
       
       },
     },
+    { Header: "Status", accessor: "Type" }
   ];
 
 

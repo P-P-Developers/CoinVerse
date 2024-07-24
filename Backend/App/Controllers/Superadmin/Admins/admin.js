@@ -200,7 +200,9 @@ class Superadmin {
         Balance: Balance,
         parent_Id: parent_Id,
         Type: Type,
+
       });
+
       await result.save();
   
       return res.json({
@@ -212,6 +214,7 @@ class Superadmin {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
+
   
 
   // get all admin detail
@@ -294,6 +297,7 @@ class Superadmin {
             Balance: 1,
             createdAt: 1,
             parent_Id:1,
+            Type:1
           },
         },
       ]);

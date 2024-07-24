@@ -8,6 +8,6 @@ module.exports = {
     Symbol: require("./Symbole.model"),
     Userwatchlist :require("./UserWatchlist.model"),
     Order: require("./Order.model"),
-    PaymenetHistorySchema:require("./PaymetMethod.model")
-  
+    PaymenetHistorySchema:require("./PaymetMethod.model"),
+    MarginRequired: require("./MarginReq.model")
 };

@@ -20,7 +20,7 @@ const Sidebar = () => {
       case 'employees':
       case 'users':
       case 'position':
-        return 'fe fe-users';
+        return 'fa fa-home';
       case 'transaction':
       case 'withdrawal':
       case 'deposit':
