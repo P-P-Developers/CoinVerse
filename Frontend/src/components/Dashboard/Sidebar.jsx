@@ -45,6 +45,8 @@ const Sidebar = () => {
         return 'fa-solid fa-crosshairs';
       case 'admin':
         return 'fa fa-user';
+      case 'currency setup':
+        return 'fa-regular fa-coin';
       default:
         return '';
     }
