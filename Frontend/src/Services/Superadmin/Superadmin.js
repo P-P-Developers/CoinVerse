@@ -124,3 +124,20 @@ export async function Delete_Admin(data, token) {
     }
 
 }
+
+
+// admin status on super admin panel
+
+export async function Superadmindashboarddata(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}SuperadminGetDashboardData`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}

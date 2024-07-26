@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
-import { getUserdata, Addbalance , updateActivestatus} from "../../../Services/Superadmin/Superadmin";
+import { getUserdata, Addbalance, updateActivestatus } from "../../../Services/Superadmin/Superadmin";
 import { delete_Employee } from "../../../Services/Admin/Addmin";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { CirclePlus, IndianRupee ,Pencil,Trash2} from "lucide-react";
+import { CirclePlus,CircleDollarSign ,CircleMinus, Pencil, Trash2 } from "lucide-react";
 import Swal from 'sweetalert2';
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 import Loader from "../../../Utils/Loader/Loader";
 
 
 const Employee = () => {
-    
+
 
   const navigate = useNavigate()
 
@@ -20,11 +20,13 @@ const Employee = () => {
   const user_id = userDetails?.user_id;
 
 
-  
+
+
   const [data, setData] = useState([]);
   const [balance, setBalance] = useState("");
   const [modal, setModal] = useState(false);
   const [id, setID] = useState("");
+  const [type,setType] = useState("")
 
   const [loading, setLoading] = useState(false);
 
@@ -51,11 +53,17 @@ const Employee = () => {
             borderRadius: "10px",
             transition: "background-color 0.3s ease",
           }}
-          onClick={() => {
-            setModal(true);
-            setID(cell.row._id);
-          }}
+         
         >
+        <CircleDollarSign
+              style={{
+                height: "16px",
+                marginBottom: "-4px",
+                marginRight: "5px",
+                verticalAlign: "middle",
+              }}
+            />
+            
           <span style={{ fontWeight: "bold", verticalAlign: "middle" }}>
             <CirclePlus
               size={20}
@@ -64,116 +72,138 @@ const Employee = () => {
                 marginRight: "5px",
                 verticalAlign: "middle",
               }}
+              onClick={() => {
+             setModal(true);
+             setID(cell.row._id);
+             setType("CREDIT")
+          }}
             />
-            <IndianRupee
+             {cell.value}
+             <CircleMinus
+              size={20}
               style={{
-                height: "16px",
                 marginBottom: "-4px",
                 marginRight: "5px",
                 verticalAlign: "middle",
               }}
+              onClick={() => {
+             setModal(true);
+             setID(cell.row._id);
+             setType("DEBIT")
+          }}
             />
-            {cell.value}
+            
+           
           </span>
         </div>
       ),
     },
-    {
-      Header: "ActiveStatus",
-      accessor: "ActiveStatus",
-      Cell: ({ cell }) => (
-        // <label className="status-toggle">
-        //   <input
-        //     id={`rating_${cell.row.id}`}
-        //     className="check"
-        //     type="checkbox"
-        //     onChange={(event) => updateactivestatus(event, cell.row._id)}
-        //     defaultChecked={cell.value == 1}
-        //   />
-        //     <label htmlFor={`rating_${cell.row.id}`} className="checktoggle checkbox-bg"></label>
+    // {
+    //   Header: "ActiveStatus",
+    //   accessor: "ActiveStatus",
+    //   Cell: ({ cell }) => (
+    //     // <label className="status-toggle">
+    //     //   <input
+    //     //     id={`rating_${cell.row.id}`}
+    //     //     className="check"
+    //     //     type="checkbox"
+    //     //     onChange={(event) => updateactivestatus(event, cell.row._id)}
+    //     //     defaultChecked={cell.value == 1}
+    //     //   />
+    //     //     <label htmlFor={`rating_${cell.row.id}`} className="checktoggle checkbox-bg"></label>
 
-        // </label>
-              <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
-          // checked={cell.value === 0}
-          // onChange={(event) => updateactivestatus(event, cell.row._id)}
-          />
+    //     // </label>
+    //     <div class="form-check form-switch">
+    //       <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
+    //       // checked={cell.value === 0}
+    //       // onChange={(event) => updateactivestatus(event, cell.row._id)}
+    //       />
+    //         <label htmlFor={`rating_${cell.row.id}`} className="checktoggle checkbox-bg"></label>
 
-        </div>
-      ),
-    },
+    //   </div>
+    //   //</label>
+    //     //       <div class="form-check form-switch">
+    //     //   <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
+    //     //   // checked={cell.value === 0}
+    //     //   // onChange={(event) => updateactivestatus(event, cell.row._id)}
+    //     //   />
+
+    //     // </div>
+    //   ),
+    // },
     {
       Header: "Action",
       accessor: "Action",
       Cell: ({ cell }) => {
         return (
           <div>
-            
-           
-            <Pencil style={{ cursor: 'pointer' }} 
-               onClick={() => updateEmploye(cell.row._id,cell)}
+
+
+            <Pencil style={{ cursor: 'pointer', color: '#33B469' }}
+              onClick={() => updateEmploye(cell.row._id, cell)}
             />
-             <Trash2 style={{ cursor: 'pointer', marginRight: '10px' }}
-               onClick={() => DeleteEmployee(cell.row._id)}
+            <Trash2 style={{ cursor: 'pointer', marginLeft: '3px', color: "red", marginRight: '10px' }}
+              onClick={() => DeleteEmployee(cell.row._id)}
             />
           </div>
         );
       },
     },
-    { Header: "Create Date", accessor: "Create_Date",
-      Cell: ({cell}) => {
+    {
+      Header: "Create Date", accessor: "Create_Date",
+      Cell: ({ cell }) => {
         return fDateTime(cell.value)
-       
-       },
-     },
+
+      },
+    },
   ];
 
 
 
-  const updateEmploye = (_id,obj) => {
-    navigate(`updateemploye/${_id}`,{ state: { rowData: obj.row }});
-   
-};
+  const updateEmploye = (_id, obj) => {
+    navigate(`updateemploye/${_id}`, { state: { rowData: obj.row } });
+
+  };
 
 
 
 
-// delet employee
+  // delet employee
 
-const DeleteEmployee = async (_id) => {
-  try {
+  const DeleteEmployee = async (_id) => {
+    try {
 
-    const confirmResult = await Swal.fire({
-      title: 'Are you sure?',
-      text: 'You will not be able to recover this user!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
-    });
-
-    if (confirmResult.isConfirmed) {
-      const data = { id: _id };
-      await delete_Employee(data);
-
-      Swal.fire({
-        icon: 'success',
-        title: 'User Deleted',
-        text: 'The user has been deleted successfully.',
+      const confirmResult = await Swal.fire({
+        title: 'Are you sure?',
+        text: 'You will not be able to recover this user!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
       });
 
-      getAlluserdata();
+      if (confirmResult.isConfirmed) {
+        const data = { id: _id };
+        await delete_Employee(data);
+
+        Swal.fire({
+          icon: 'success',
+          title: 'User Deleted',
+          text: 'The user has been deleted successfully.',
+        });
+
+        getAlluserdata();
+      }
+
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Deletion Failed',
+        text: 'There was an error deleting the user. Please try again.',
+      });
     }
-    
-  } catch (error) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Deletion Failed',
-      text: 'There was an error deleting the user. Please try again.',
-    });
-  }
-};
+  };
 
 
 
@@ -182,12 +212,12 @@ const DeleteEmployee = async (_id) => {
   // update  balance
   const updateBalance = async () => {
     try {
-     await Addbalance({
+      await Addbalance({
         id: id,
         Balance: balance,
-        parent_Id:user_id
+        parent_Id: user_id
       });
-      
+
       Swal.fire({
         icon: 'success',
         title: 'Balance Updated',
@@ -203,7 +233,7 @@ const DeleteEmployee = async (_id) => {
       });
     }
   };
-  
+
 
 
   // update acctive status
@@ -216,7 +246,7 @@ const DeleteEmployee = async (_id) => {
       showCancelButton: true,
       confirmButtonText: "Save",
       cancelButtonText: "Cancel",
-      allowOutsideClick: false, 
+      allowOutsideClick: false,
     });
 
     if (result.isConfirmed) {
@@ -231,16 +261,16 @@ const DeleteEmployee = async (_id) => {
           });
           setTimeout(() => {
             Swal.close(); // Close the modal
-            
+
           }, 1000);
-        } 
-  
+        }
+
       } catch (error) {
 
         Swal.fire("Error", "There was an error processing your request.", "error");
       }
     } else if (result.dismiss === Swal.DismissReason.cancel) {
-        getAlluserdata();
+      getAlluserdata();
     }
   };
 
@@ -252,10 +282,10 @@ const DeleteEmployee = async (_id) => {
     const data = { id: user_id };
     try {
       const response = await getUserdata(data);
-      const result = response.data && response.data.filter((item)=>{
-         return item.Role === "EMPLOYE"
+      const result = response.data && response.data.filter((item) => {
+        return item.Role === "EMPLOYE"
       })
-      setData(result); 
+      setData(result);
       setLoading(false);
     } catch (error) {
       console.log("error", error);
@@ -278,12 +308,12 @@ const DeleteEmployee = async (_id) => {
             <div className="col-lg-12">
               <div className="card transaction-table">
                 <div className="card-header border-0 flex-wrap pb-0">
-                  <div className="mb-2">
-                    <h4 className="card-title ">All Employes</h4>
+                  <div className="mb-4">
+                    <h4 className="card-title">All Employees</h4>
                   </div>
                   <Link
                     to="/admin/addemployees"
-                    className="btn btn-primary m-2"
+                    className="float-end mb-4 btn btn-primary"
                   >
                     Add Employee
                   </Link>
@@ -296,7 +326,17 @@ const DeleteEmployee = async (_id) => {
                       role="tabpanel"
                       aria-labelledby="Week-tab"
                     >
+                      <div className='mb-3 ms-4'>
+                        Search :{" "}
+                        <input
+                          className="ml-2 input-search form-control"
+                          defaultValue=""
+                          style={{ width: "20%" }}
+                        />
+                      </div>
+
                       <Table columns={columns} data={data} />
+
                     </div>
                   </div>
                 </div>

@@ -78,7 +78,7 @@ const Login = () => {
       <div className="login-aside text-center d-flex flex-column flex-row-auto">
         <div className="d-flex flex-column-auto flex-column pt-lg-40 pt-15">
           <div className="text-center mb-lg-4 mb-2 pt-5 logo">
-            <img src="assets/images/logo-white.png" alt="Logo" />
+            <img src="/assets/images/pnpp.png" style={{height:"46px"}} alt="Logo" />
           </div>
           <h3 className="mb-2 text-white">Welcome back!</h3>
           <p className="mb-4">

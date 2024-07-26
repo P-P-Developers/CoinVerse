@@ -24,7 +24,7 @@ const Updateuser = () => {
       Balance: "",
       Licence: "",
       limit: "",
-      selectedOption:"",
+      selectedOption: "",
       inputValue: "",
     },
     validate: (values) => {
@@ -113,12 +113,8 @@ const Updateuser = () => {
       const determineSelectedOption = () => {
         if (rowData.pertrade !== undefined) return "pertrade";
         if (rowData.perlot !== undefined) return "perlot";
-        if (rowData.turn_over_percentage !== undefined)
-          return "turn_over_percentage";
-        if (rowData.brokerage !== undefined) return "brokerage";
         return "pertrade"; 
       };
-
 
       formik.setValues({
         fullName: rowData.FullName || "",
@@ -131,13 +127,17 @@ const Updateuser = () => {
         inputValue:
           rowData.pertrade ||
           rowData.perlot ||
-          rowData.turn_over_percentage ||
-          rowData.brokerage ||
           "",
-          limit: rowData.limit || "",
+        limit: rowData.limit || "",
       });
     }
   }, [rowData]);
+
+  const getInputValueLabel = (selectedOption) => {
+    if (selectedOption === "pertrade") return "Enter Value for Per Trade";
+    if (selectedOption === "perlot") return "Enter Value for Per Lot";
+    return "Enter Value";
+  };
 
   // Form fields configuration
   const fields = [
@@ -155,7 +155,7 @@ const Updateuser = () => {
       type: "text",
       label_size: 12,
       col_size: 6,
-      disable:true ,
+      disable: true,
     },
     {
       name: "email",
@@ -168,7 +168,7 @@ const Updateuser = () => {
     {
       name: "phone",
       label: "Phone Number",
-      type: "text",
+      type: "text3",
       label_size: 12,
       col_size: 6,
       disable: true,
@@ -176,7 +176,7 @@ const Updateuser = () => {
     {
       name: "Balance",
       label: "Balance",
-      type: "text",
+      type: "text3",
       label_size: 12,
       col_size: 6,
       disable: false,
@@ -204,8 +204,6 @@ const Updateuser = () => {
       options: [
         { value: "pertrade", label: "Per Trade" },
         { value: "perlot", label: "Per Lot" },
-        { value: "brokerage", label: "Brokerage" },
-        { value: "turn_over_percentage", label: "Turn Over Percentage" },
       ],
       label_size: 12,
       col_size: 6,
@@ -213,7 +211,7 @@ const Updateuser = () => {
     },
     {
       name: "inputValue",
-      label: "Enter Value",
+      label: getInputValueLabel(formik.values.selectedOption),
       type: "text",
       label_size: 12,
       col_size: 6,
@@ -223,8 +221,6 @@ const Updateuser = () => {
   ];
 
   return (
-  
- 
     <Form
       fields={fields}
       page_title="Update User"
@@ -233,7 +229,6 @@ const Updateuser = () => {
       formik={formik}
       btn_name1_route={"/admin/users"} 
     />
-    
   );
 };
 

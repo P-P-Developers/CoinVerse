@@ -1,7 +1,7 @@
 // Superadmin header configuration
 export const superadmin_header = [
     {
-        id: 1,    
+        id: 1,
         name: 'Dashboard',
         icon: "material-symbols-outlined",
         route: "/superadmin/dashboard",
@@ -21,7 +21,7 @@ export const superadmin_header = [
     {
         id: 4,
         name: 'Available Positions',
-        icon: "fe fe-dollar-sign",
+        icon: "fa fa-home",
         route: "/superadmin/position",
     },
     {
@@ -29,6 +29,12 @@ export const superadmin_header = [
         name: 'Broadcast',
         icon: "fe fe-dollar-sign",
         route: "/superadmin/broadcast",
+    },
+    {
+        id: 6,
+        name: 'Hold off',
+        icon: "fe fe-dollar-sign",
+        route: "/superadmin/holdoff",
     },
 ];
 
@@ -44,9 +50,9 @@ export const admin_header = [
     },
     {
         id: 2,
-        name: 'Employes',
+        name: 'Employees',
         icon: "fe fe-users",
-        route: "/admin/employes",
+        route: "/admin/employee",
     },
     {
         id: 3,
@@ -101,5 +107,11 @@ export const admin_header = [
         name: 'Broadcast',
         icon: "fe fe-arrow-up-circle",
         route: "/admin/broadcast",
+    },
+    {
+        id: 12,
+        name: 'Hold off',
+        icon: "fe fe-arrow-up-circle",
+        route: "/admin/holdoff",
     },
 ];

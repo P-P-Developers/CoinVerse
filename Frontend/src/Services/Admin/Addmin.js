@@ -124,3 +124,70 @@ export async function delete_Employee(data, token) {
     }
 
 }
+
+
+// funds history status
+
+
+export async function getFundstatus(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}admin/getuserpaymentstatus`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+// update status
+
+export async function UpdatestatusForpaymenthistory(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}admin/Updatestatus`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// margin required price
+
+export async function MarginpriceRequired(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}admin/marginupdate`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+// getting margin price
+
+export async function getMarginpriceRequired(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}admin/getmarginprice`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
