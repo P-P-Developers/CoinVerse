@@ -114,4 +114,10 @@ export const admin_header = [
         icon: "fe fe-arrow-up-circle",
         route: "/admin/holdoff",
     },
+    {
+        id: 11,
+        name: 'Currency Setup',
+        icon: "fe fe-arrow-up-circle",
+        route: "/admin/currency",
+    },
 ];
