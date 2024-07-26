@@ -16,32 +16,33 @@ const Sidebar = () => {
   const getIconClass = (name) => {
     switch (name.toLowerCase()) {
       case 'dashboard':
-        return 'fa fa-envelope-open';
+        return 'fa-solid fa-house';
       case 'employees':
 
-        return ' fa fa-address-card';
+        return 'fa-solid fa-users';
       case 'users':
         return 'fa fa-user';
       case 'position':
         return 'fa fa-id-badge';
       case 'transaction':
-        return 'fa fa-folder-open';
+
+        return 'fa-solid fa-money-bill-transfer';
       case 'withdrawal':
-        return 'fa fa-hdd';
+        return 'fa -solid fa-money-simple-from-bracket';
       case 'deposit':
-        return 'fa fa-chevron-circle-right';
+        return 'fa-sharp fa-light fa-money-bill';
       case 'reports':
         return 'fa fa-file-text';
       case 'trade history':
-        return 'fa fa-calendar';
+        return 'fa-sharp fa-solid fa-clock-rotate-left';
       case 'login status':
-        return 'fa fa-check-square';
+        return 'fa-solid fa-signal-bars';
       case 'broadcast':
-        return 'fa fa-sticky-note';
+        return 'fa-solid fa-tower-broadcast';
       case 'hold off':
-        return 'fa fa-refresh';
+        return 'fa-solid fa-power-off';
       case 'available positions':
-        return 'fa fa-paper-plane';
+        return 'fa-solid fa-crosshairs';
       case 'admin':
         return 'fa fa-user';
       default:
