@@ -25,6 +25,8 @@ import UpdateEmploye from '../Layouts/Admin/Employee/UpdateEmploye';
 import Profile from '../Layouts/Admin/Profile';
 import Setting from '../Layouts/Admin/Setting';
 import Holdoff from '../Layouts/Superadmin/Admins/Holdoff';
+import Currency from "../Layouts/Admin/Currency"
+
 
 
 const AdminRoutes = () => {
@@ -51,6 +53,8 @@ const AdminRoutes = () => {
                     <Route path="/deposit" element={<Deposit />} />
                     <Route path="/position" element={<Position />} />
                     <Route path="/holdoff" element={<Holdoff />} />
+                    <Route path="/currency" element={<Currency />} />
+
                     {/* <Route path="/employees" element={<Employee />} /> */}
                     {/* <Route path="/users" element={<User />} /> */}
                     {/* <Route path="/transaction" element={<Transaction />} /> */}
