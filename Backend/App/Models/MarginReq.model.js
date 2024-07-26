@@ -19,6 +19,7 @@ const marginReqPerSchema = new Schema(
         type: Number,
         default: null,
     }
+    
   },
   {
     timestamps: true,

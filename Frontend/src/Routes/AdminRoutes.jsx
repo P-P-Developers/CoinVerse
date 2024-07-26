@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Header from '../components/Dashboard/Header';
 import Sidebar from '../components/Dashboard/Sidebar';
@@ -25,11 +25,18 @@ import UpdateEmploye from '../Layouts/Admin/Employee/UpdateEmploye';
 import Profile from '../Layouts/Admin/Profile';
 import Setting from '../Layouts/Admin/Setting';
 import Holdoff from '../Layouts/Superadmin/Admins/Holdoff';
+import Currency from "../Layouts/Admin/Currency"
+
 
 
 const AdminRoutes = () => {
+    const [isMenuToggled, setIsMenuToggled] = useState(false);
+
+    const handleToggleClick = () => {
+        setIsMenuToggled(!isMenuToggled);
+    }
     return (
-        <div id="main-wrapper" className='wallet-open show'>
+        <div id="main-wrapper" className={`wallet-open show ${isMenuToggled ? 'menu-toggle' : ''}`}>
             <Header />
             <Sidebar />
             <div className='content-body'>
@@ -46,6 +53,8 @@ const AdminRoutes = () => {
                     <Route path="/deposit" element={<Deposit />} />
                     <Route path="/position" element={<Position />} />
                     <Route path="/holdoff" element={<Holdoff />} />
+                    <Route path="/currency" element={<Currency />} />
+
                     {/* <Route path="/employees" element={<Employee />} /> */}
                     {/* <Route path="/users" element={<User />} /> */}
                     {/* <Route path="/transaction" element={<Transaction />} /> */}

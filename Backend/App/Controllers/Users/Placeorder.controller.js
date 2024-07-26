@@ -11,19 +11,48 @@ const WalletRecharge = db.WalletRecharge;
 const User_model = db.user;
 const mainorder_model = db.mainorder_model;
 
+
+
+
 class Placeorder {
 
   async getOrderBook(req, res) {
     try {
       const { userid } = req.body;
-
-      const result = await Order.find({ userid: userid });
-
-      if (!result) {
-        return res.json({ status: false, message: "User not found", data: [] });
+  
+      const result = await Order.find({ userid });
+  
+      if (!result.length) {
+        return res.json({ status: false, message: "No orders found for this user", data: [] });
       }
+      return res.json({ status: true, message: "Orders found", data: result });
+  
+    } catch (error) {
+      console.error('Error fetching order book:', error);
+      return res.json({ status: false, message: "Internal server error", data: [] });
+    }
+  }
+  
 
+
+
+
+   // get trade history
+
+   async gettardehistory(req, res) {
+    try {
+      const { userid, Role } = req.body;
+  
+      let result;
+      
+      if (Role === "USER") {
+        result = await mainorder_model.find({ userid: userid});
+      } else {
+        result = await mainorder_model.find({ adminid: userid });
+      }
+  
       return res.json({ status: true, message: "User found", data: result });
+  
     } catch (error) {
       return res.json({ status: false, message: "internal error", data: [] });
     }

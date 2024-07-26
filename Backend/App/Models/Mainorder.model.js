@@ -9,7 +9,6 @@ const mainorderSchema = new mongoose.Schema({
     type: String,
     default: null
   },
-
   symbol: {
     type: String,
     default: null

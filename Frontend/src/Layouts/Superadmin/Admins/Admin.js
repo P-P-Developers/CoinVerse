@@ -78,7 +78,7 @@ const Admin = () => {
             />
            
             {cell.value}
-            <CircleMinus 
+            {/* <CircleMinus 
               size={20}
               style={{
                 marginBottom: "-4px",
@@ -90,7 +90,7 @@ const Admin = () => {
             setID(cell.row._id);
             setType("DEBIT")
           }}
-            />
+            /> */}
           </span>
         </div>
       ),

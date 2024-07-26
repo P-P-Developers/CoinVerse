@@ -102,14 +102,6 @@ const userModel = Schema({
         type: Number,
         default : null
     },
-    turn_over_percentage :{
-        type: Number,
-        default : null
-    },
-    brokerage :{
-        type: Number,
-        default : null
-    },
     limit :{
         type: Number,
         default : null

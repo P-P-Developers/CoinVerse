@@ -30,6 +30,10 @@ const orderSchema = new mongoose.Schema({
     type: Number,
     default: null,
   },
+  Role: {
+    type: String,
+    default: null,
+},
   lot: {
     type: Number,
     default: null,

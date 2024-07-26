@@ -35,48 +35,44 @@ class Superadmin {
         brokerage,
         limit,
       } = req.body;
-
+  
       if (!FullName || !UserName || !Email || !PhoneNo || !password || !Role) {
-        return res.json({ status: false, message: "Missing required fields" });
+        return res.status(400).json({ status: false, message: "Missing required fields" });
       }
-
-      // Check if user already exists
+  
+    
       const existingUser = await User_model.findOne({
         $or: [{ UserName }, { Email }, { PhoneNo }],
       });
+  
 
       if (existingUser) {
         if (existingUser.UserName === UserName) {
-          return res.send({
-            status: false,
-            message: "Username already exists",
-            data: [],
-          });
+          return res.json({ status: false, message: "Username already exists" });
         }
-
+  
         if (existingUser.Email === Email) {
-          return res.send({
-            status: false,
-            message: "Email already exists",
-            data: [],
-          });
+          return res.json({ status: false, message: "Email already exists" });
         }
-
+  
         if (existingUser.PhoneNo === PhoneNo) {
-          return res.send({
-            status: false,
-            message: "Phone Number already exists",
-            data: [],
-          });
+          return res.json({ status: false, message: "Phone Number already exists" });
         }
       }
-
-      
+  
+      // // Fetch dollar price data
+      // const dollarPriceData = await MarginRequired.findOne({ adminid: parent_id }).select("dollarprice");
+      // if (!dollarPriceData) {
+      //   return res.json({ status: false, message: "Dollar price data not found" });
+      // }
+  
+      // // Calculate dollar count
+      // const dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
+  
       // Hash password
-      var rand_password = Math.round(password);
       const salt = await bcrypt.genSalt(10);
-      var hashedPassword = await bcrypt.hash(rand_password.toString(), salt);
-
+      const hashedPassword = await bcrypt.hash(password.toString(), salt);
+  
       // Create new user
       const newUser = new User_model({
         FullName,
@@ -95,26 +91,28 @@ class Superadmin {
         limit,
         password: hashedPassword,
       });
-
+  
       await newUser.save();
-
-      let userWallet = new Wallet_model({
+  
+      // Create user wallet
+      const userWallet = new Wallet_model({
         user_Id: newUser._id,
         Balance: Balance,
-        parent_Id:parent_id
+        parent_Id: parent_id
       });
       await userWallet.save();
-
+  
       return res.json({
         status: true,
-        message: "Users added successfully",
+        message: "User added successfully",
         data: newUser,
       });
     } catch (error) {
-    
-      res.json({ status: false, message: "Failed to add User", data: [] });
+      console.error(error);
+      return res.json({ status: false, message: "Failed to add user", data: [] });
     }
   }
+  
 
   //updated balance
 

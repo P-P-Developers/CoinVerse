@@ -172,64 +172,64 @@ class Admin {
     }
   }
 
-  async updateUser(req, res) {
-    try {
-      const { id, perlot, pertrade, ...rest } = req.body;
-  
-      const values = [perlot, pertrade];
-      const nonZeroValues = values.filter(value => value !== undefined && value !== 0);
-  
-      if (nonZeroValues.length > 1) {
-        return res.status(400).send({
-          status: false,
-          msg: "Only one of perlot or pertrade can have a non-zero value",
-        });
-      }
-  
-      // Initialize dataToUpdate with default zero values
-      let dataToUpdate = {
-        perlot: 0,
-        pertrade: 0,
-        ...rest,
-      };
-  
-      // Assign non-zero values accordingly
-      if (perlot !== undefined && perlot !== 0) {
-        dataToUpdate.perlot = perlot;
-      } else if (pertrade !== undefined && pertrade !== 0) {
-        dataToUpdate.pertrade = pertrade;
-      }
-  
-      const filter = { _id: id };
-      const updateOperation = { $set: dataToUpdate };
-  
-      const updatedUser = await User_model.findOneAndUpdate(filter, updateOperation, {
-        new: true,
-        upsert: true,
-      });
-  
-      if (!updatedUser) {
-        return res.status(404).send({
-          status: false,
-          msg: "Data not updated",
-          data: [],
-        });
-      }
-  
-      return res.send({
-        status: true,
-        msg: "Data updated successfully",
-        data: updatedUser,
-      });
-    } catch (error) {
-      console.error("Internal error:", error);
-      return res.status(500).send({
+async updateUser(req, res) {
+  try {
+    const { id, perlot, pertrade, ...rest } = req.body;
+
+    const values = [perlot, pertrade];
+    const nonZeroValues = values.filter(value => value !== undefined && value !== 0);
+
+    if (nonZeroValues.length > 1) {
+      return res.status(400).send({
         status: false,
-        msg: "Internal server error",
+        msg: "Only one of perlot or pertrade can have a non-zero value",
       });
     }
+
+    // Initialize dataToUpdate with default zero values
+    let dataToUpdate = {
+      perlot: 0,
+      pertrade: 0,
+      ...rest,
+    };
+
+    // Assign non-zero values accordingly
+    if (perlot !== undefined && perlot !== 0) {
+      dataToUpdate.perlot = perlot;
+    } else if (pertrade !== undefined && pertrade !== 0) {
+      dataToUpdate.pertrade = pertrade;
+    }
+
+    const filter = { _id: id };
+    const updateOperation = { $set: dataToUpdate };
+
+    const updatedUser = await User_model.findOneAndUpdate(filter, updateOperation, {
+      new: true,
+      upsert: true,
+    });
+
+    if (!updatedUser) {
+      return res.status(404).send({
+        status: false,
+        msg: "Data not updated",
+        data: [],
+      });
+    }
+
+    return res.send({
+      status: true,
+      msg: "Data updated successfully",
+      data: updatedUser,
+    });
+  } catch (error) {
+    console.error("Internal error:", error);
+    return res.status(500).send({
+      status: false,
+      msg: "Internal server error",
+    });
   }
-  
+}
+
 
   // user by id
 
@@ -332,6 +332,7 @@ class Admin {
         {
           $addFields: {
             userid: { $toObjectId: "$userid" },
+           
           },
         },
         {
@@ -356,6 +357,11 @@ class Admin {
             _id: 1,
             userid: 1,
             Balance: 1,
+          },
+        },
+        {
+          $sort: {
+            createdAt: -1, 
           },
         },
       ]);
@@ -486,6 +492,10 @@ async UpdateStatus(req, res) {
     });
   }
 }
+
+
+
+
 
 }
 
