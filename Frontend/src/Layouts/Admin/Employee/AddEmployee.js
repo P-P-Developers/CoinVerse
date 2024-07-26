@@ -85,7 +85,7 @@ const AddEmployee = () => {
               timerProgressBar: true,
             });
             setTimeout(() => {
-              navigate("/admin/employes");
+              navigate("/admin/employee");
             }, 1000);
           } else {
             Swal.fire({
@@ -172,7 +172,7 @@ const AddEmployee = () => {
       btn_name="Add Employe"
       btn_name1="Cancel"
       formik={formik}
-      btn_name1_route={"/admin/employes"}
+      btn_name1_route={"/admin/employee"}
     />
   );
 };

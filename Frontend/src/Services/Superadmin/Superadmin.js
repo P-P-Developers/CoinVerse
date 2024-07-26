@@ -89,6 +89,55 @@ export async function gethistory(data, token) {
 
 }
 
+// update admin 
+
 
  
+export async function Update_admin(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}admin/Update_Admin`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
 
+    }
+
+}
+
+
+// delet admin by superadmin
+
+ 
+export async function Delete_Admin(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}admin/Delete_Admin`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// admin status on super admin panel
+
+export async function Superadmindashboarddata(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}SuperadminGetDashboardData`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}

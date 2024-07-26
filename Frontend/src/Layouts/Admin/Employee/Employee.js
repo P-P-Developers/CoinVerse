@@ -3,7 +3,7 @@ import Table from "../../../Utils/Table/Table";
 import { getUserdata, Addbalance, updateActivestatus } from "../../../Services/Superadmin/Superadmin";
 import { delete_Employee } from "../../../Services/Admin/Addmin";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { CirclePlus, IndianRupee, Pencil, Trash2 } from "lucide-react";
+import { CirclePlus,CircleDollarSign ,CircleMinus, Pencil, Trash2 } from "lucide-react";
 import Swal from 'sweetalert2';
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 import Loader from "../../../Utils/Loader/Loader";
@@ -22,11 +22,11 @@ const Employee = () => {
 
 
 
-
   const [data, setData] = useState([]);
   const [balance, setBalance] = useState("");
   const [modal, setModal] = useState(false);
   const [id, setID] = useState("");
+  const [type,setType] = useState("")
 
   const [loading, setLoading] = useState(false);
 
@@ -53,11 +53,17 @@ const Employee = () => {
             borderRadius: "10px",
             transition: "background-color 0.3s ease",
           }}
-          onClick={() => {
-            setModal(true);
-            setID(cell.row._id);
-          }}
+         
         >
+        <CircleDollarSign
+              style={{
+                height: "16px",
+                marginBottom: "-4px",
+                marginRight: "5px",
+                verticalAlign: "middle",
+              }}
+            />
+            
           <span style={{ fontWeight: "bold", verticalAlign: "middle" }}>
             <CirclePlus
               size={20}
@@ -66,44 +72,65 @@ const Employee = () => {
                 marginRight: "5px",
                 verticalAlign: "middle",
               }}
+              onClick={() => {
+             setModal(true);
+             setID(cell.row._id);
+             setType("CREDIT")
+          }}
             />
-            <IndianRupee
+             {cell.value}
+             <CircleMinus
+              size={20}
               style={{
-                height: "16px",
                 marginBottom: "-4px",
                 marginRight: "5px",
                 verticalAlign: "middle",
               }}
+              onClick={() => {
+             setModal(true);
+             setID(cell.row._id);
+             setType("DEBIT")
+          }}
             />
-            {cell.value}
+            
+           
           </span>
         </div>
       ),
     },
-    {
-      Header: "ActiveStatus",
-      accessor: "ActiveStatus",
-      Cell: ({ cell }) => (
-        // <label className="status-toggle">
-        //   <input
-        //     id={`rating_${cell.row.id}`}
-        //     className="check"
-        //     type="checkbox"
-        //     onChange={(event) => updateactivestatus(event, cell.row._id)}
-        //     defaultChecked={cell.value == 1}
-        //   />
-        //     <label htmlFor={`rating_${cell.row.id}`} className="checktoggle checkbox-bg"></label>
+    // {
+    //   Header: "ActiveStatus",
+    //   accessor: "ActiveStatus",
+    //   Cell: ({ cell }) => (
+    //     // <label className="status-toggle">
+    //     //   <input
+    //     //     id={`rating_${cell.row.id}`}
+    //     //     className="check"
+    //     //     type="checkbox"
+    //     //     onChange={(event) => updateactivestatus(event, cell.row._id)}
+    //     //     defaultChecked={cell.value == 1}
+    //     //   />
+    //     //     <label htmlFor={`rating_${cell.row.id}`} className="checktoggle checkbox-bg"></label>
 
-        // </label>
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
-          // checked={cell.value === 0}
-          // onChange={(event) => updateactivestatus(event, cell.row._id)}
-          />
+    //     // </label>
+    //     <div class="form-check form-switch">
+    //       <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
+    //       // checked={cell.value === 0}
+    //       // onChange={(event) => updateactivestatus(event, cell.row._id)}
+    //       />
+    //         <label htmlFor={`rating_${cell.row.id}`} className="checktoggle checkbox-bg"></label>
 
-        </div>
-      ),
-    },
+    //   </div>
+    //   //</label>
+    //     //       <div class="form-check form-switch">
+    //     //   <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
+    //     //   // checked={cell.value === 0}
+    //     //   // onChange={(event) => updateactivestatus(event, cell.row._id)}
+    //     //   />
+
+    //     // </div>
+    //   ),
+    // },
     {
       Header: "Action",
       accessor: "Action",
@@ -210,7 +237,6 @@ const Employee = () => {
 
 
   // update acctive status
-
 
   const updateactivestatus = async (event, id) => {
     const user_active_status = event.target.checked ? 1 : 0;

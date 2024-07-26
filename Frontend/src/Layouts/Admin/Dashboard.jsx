@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Admindashboarddata } from "../../Services/Admin/Addmin";
 
 const Dashboard = () => {
+  
   const [countdata, setCountdata] = useState([0]);
 
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
@@ -485,7 +486,7 @@ const Dashboard = () => {
                     <div className="chart-num">
                       <p>
                         <i className="fa-solid fa-sort-down me-2" />
-                        Total Deactive User
+                        Total InActive User
                       </p>
                       <h2 className="font-w600 mb-0">
                         {countdata.TotalInActiveUserCount &&

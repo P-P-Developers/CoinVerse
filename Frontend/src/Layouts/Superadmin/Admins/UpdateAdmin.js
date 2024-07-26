@@ -3,10 +3,14 @@ import { useFormik } from "formik";
 import { useLocation, useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
 import Form from "../../../Utils/Form/Formik";
-import { Update_Employe } from "../../../Services/Admin/Addmin";
+import { Update_admin } from "../../../Services/Superadmin/Superadmin";
 
-const UpdateEmploye = () => {
+
+const UpdateAdmin = () => {
+
   const navigate = useNavigate();
+
+
   const location = useLocation();
   const { rowData } = location.state;
 
@@ -64,13 +68,13 @@ const UpdateEmploye = () => {
         Email: values.email,
         PhoneNo: values.phone,
         Balance: values.Balance,
-       Password: values.password,
+        // Password: values.password,
       };
 
       setSubmitting(false);
 
       try {
-        const response = await Update_Employe(data);
+        const response = await Update_admin(data);
         if (response.status) {
           Swal.fire({
             title: "Employee Updated!",
@@ -80,12 +84,12 @@ const UpdateEmploye = () => {
             timerProgressBar: true,
           });
           setTimeout(() => {
-            navigate("/admin/employee");
+            navigate("/superadmin/admin");
           }, 1500);
         } else {
           Swal.fire({
             title: "Error!",
-            text: response.message || "Employee update error",
+            text: response.message || "Admin update error",
             icon: "error",
             timer: 1500,
             timerProgressBar: true,
@@ -95,7 +99,7 @@ const UpdateEmploye = () => {
         console.log("Error:", error);
         Swal.fire({
           title: "Error!",
-          text: "Failed to update employee",
+          text: "Failed to Update Admin",
           icon: "error",
           timer: 1500,
           timerProgressBar: true,
@@ -158,34 +162,34 @@ const UpdateEmploye = () => {
       disable: false,
     },
 
-    {
-      name: "password",
-      label: "Password",
-      type: "password",
-      label_size: 12,
-      col_size: 6,
-      disable: false,
-    },
-    {
-      name: "confirmPassword",
-      label: "Confirm Password",
-      type: "password",
-      label_size: 12,
-      col_size: 6,
-      disable: false,
-    },
+    // {
+    //   name: "password",
+    //   label: "Password",
+    //   type: "password",
+    //   label_size: 12,
+    //   col_size: 6,
+    //   disable: false,
+    // },
+    // {
+    //   name: "confirmPassword",
+    //   label: "Confirm Password",
+    //   type: "password",
+    //   label_size: 12,
+    //   col_size: 6,
+    //   disable: false,
+    // },
   ];
 
   return (
     <Form
       fields={fields}
-      page_title="Update Employee"
-      btn_name="Update Employee"
+      page_title="Update Admin"
+      btn_name="Update Admin"
       btn_name1="Cancel"
       formik={formik}
-      btn_name1_route={"/admin/employee"}
+      btn_name1_route={"/superadmin/admin"}
     />
   );
 };
 
-export default UpdateEmploye;
+export default UpdateAdmin;

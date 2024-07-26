@@ -211,8 +211,7 @@ const AddUsers = () => {
       options: [
         { value: "pertrade", label: "Per Trade" },
         { value: "perlot", label: "Per Lot" },
-        { value: "brokerage", label: "Brokerage" },
-        { value: "turn_over_percentage", label: "Turn Over Percentage" },
+      
       ],
       label_size: 12,
       col_size: 6,
@@ -220,13 +219,18 @@ const AddUsers = () => {
     },
     {
       name: "inputValue",
-      label: "Enter Value",
-      type: "text3",
+      label: formik.values.selectedOption
+        ? formik.values.selectedOption === "pertrade"
+          ? "Per Trade"
+          : "Per Lot"
+        : "Input Value",
+      type: "text",
       label_size: 12,
       col_size: 6,
       disable: false,
       showWhen: (values) => !!values.selectedOption,
     },
+
   ];
 
   return (

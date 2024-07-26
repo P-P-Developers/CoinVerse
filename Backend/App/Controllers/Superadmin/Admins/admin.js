@@ -8,6 +8,9 @@ const User_model = db.user;
 const Role = db.role;
 const Wallet_model = db.WalletRecharge;
 const totalLicense = db.totalLicense
+const MarginRequired = db.MarginRequired
+
+
 
 class Superadmin {
 
@@ -117,8 +120,21 @@ class Superadmin {
 
   async walletRecharge(req, res) {
     try {
-      const { id, Balance,parent_Id } = req.body;
+      const { id, Balance, parent_Id, Type } = req.body;
+  
+      const dollarPriceData = await MarginRequired.findOne({ adminid:parent_Id }).select("dollarprice");
+      if (!dollarPriceData) {
+        return res.json({
+          status: false,
+          message: "Dollar price data not found",
+          data: [],
+        });
+      }
+      
 
+      const dollarcount = (Balance/dollarPriceData.dollarprice).toFixed(3);
+  
+    
       const userdata = await User_model.findOne({ _id: id });
       if (!userdata) {
         return res.json({
@@ -127,20 +143,43 @@ class Superadmin {
           data: [],
         });
       }
-
-      const newBalance = Number(userdata.Balance || 0) + Number(Balance);
-      const result1 = await User_model.updateOne(
+  
+      let newBalance;
+      if (Type === "CREDIT") {
+        newBalance = Number(userdata.Balance || 0) + Number(dollarcount);
+      } else if (Type === "DEBIT") {
+        newBalance = Number(userdata.Balance || 0) - Number(dollarcount);
+        if (newBalance < 0) {
+          return res.json({
+            status: false,
+            message: "Insufficient balance",
+            data: [],
+          });
+        }
+      } else {
+        return res.json({
+          status: false,
+          message: "Invalid transaction type",
+          data: [],
+        });
+      }
+  
+    
+      await User_model.updateOne(
         { _id: userdata._id },
         { $set: { Balance: newBalance } }
       );
-
+  
+    
       const result = new Wallet_model({
         user_Id: userdata._id,
-        Balance: Balance,
-        parent_Id:parent_Id
+        Balance: dollarcount,  
+        parent_Id: parent_Id,
+        Type: Type,
       });
+  
       await result.save();
-
+  
       return res.json({
         status: true,
         message: "Balance is updated",
@@ -150,6 +189,9 @@ class Superadmin {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
+  
+
+  
 
   // get all admin detail
 
@@ -231,6 +273,7 @@ class Superadmin {
             Balance: 1,
             createdAt: 1,
             parent_Id:1,
+            Type:1
           },
         },
       ]);
@@ -252,6 +295,126 @@ class Superadmin {
   }
 
 
+// update admin 
+  async Update_Admin(req, res) {
+    try {
+      const data = req.body;
+      const id = req.body.id;
+
+      const filter = { _id: id ,Role:"ADMIN"};
+      const updateOperation = { $set: data };
+
+      const result = await User_model.updateOne(filter, updateOperation);
+
+      if (result.nModified === 0) {
+        return res.json({
+          status: false,
+          message: "Data not Updated",
+          data: [],
+        });
+      }
+      return res.json({ status: true, message: "Data updated", data: result });
+    } catch (error) {
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  }
+   
+
+
+  // deleted admin 
+
+  async Delete_Admin(req, res) {
+    try {
+      const { id } = req.body;
+      const result = await User_model.findOneAndDelete({
+        _id: id,
+        Role:"ADMIN",
+      });
+
+      if (!result) {
+        return res.json({
+          success: false,
+          message: "User not found",
+          data: [],
+        });
+      }
+
+      return res.json({
+        success: true,
+        message: "User deleted successfully",
+        data: result,
+      });
+    } catch (error) {
+      return res.json({
+        success: false,
+        message: "Internal server error",
+        data: [],
+      });
+    }
+  }
+
+   
+  async SuperadminGetDashboardData(req, res) {
+    try {
+      const { parent_id } = req.body; 
+      const counts = await User_model.aggregate([
+        {
+          $facet: {
+            TotalAdminCount: [
+              { $match: { Role: "ADMIN", parent_id: parent_id } },
+              { $count: "count" },
+            ],
+            TotalActiveAdminCount: [
+              {
+                $match: {
+                  Role: "ADMIN",
+                  ActiveStatus: "1",
+                  parent_id: parent_id,
+                  $or: [{ End_Date: { $gte: new Date() } }, { End_Date: null }],
+                },
+              },
+              { $count: "count" },
+            ],
+          },
+        },
+        {
+          $project: {
+            TotalAdminCount: { $ifNull: [{ $arrayElemAt: ["$TotalAdminCount.count", 0] }, 0] },
+            TotalActiveAdminCount: { $ifNull: [{ $arrayElemAt: ["$TotalActiveAdminCount.count", 0] }, 0] },
+          },
+        },
+      ]);
+  
+      const {
+        TotalAdminCount,
+        TotalActiveAdminCount,
+      } = counts[0];
+  
+      var Count = {
+        TotalAdminCount: TotalAdminCount,
+        TotalActiveAdminCount: TotalActiveAdminCount,
+        TotalInActiveAdminCount: TotalAdminCount - TotalActiveAdminCount,
+      };
+  
+      // DATA GET SUCCESSFULLY
+      res.send({
+        status: true,
+        msg: "Get Dashboard Data",
+        data: Count,
+      });
+    } catch (error) {
+      console.log("Error getting Dashboard Data:", error);
+      res.status(500).send({
+        status: false,
+        msg: "Internal Server Error",
+      });
+    }
+  }
+  
 
 }
 

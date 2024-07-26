@@ -52,7 +52,7 @@ export const admin_header = [
         id: 2,
         name: 'Employees',
         icon: "fe fe-users",
-        route: "/admin/employes",
+        route: "/admin/employee",
     },
     {
         id: 3,
