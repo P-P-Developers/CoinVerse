@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Header from '../components/Dashboard/Header';
 import Sidebar from '../components/Dashboard/Sidebar';
@@ -28,8 +28,13 @@ import Holdoff from '../Layouts/Superadmin/Admins/Holdoff';
 
 
 const AdminRoutes = () => {
+    const [isMenuToggled, setIsMenuToggled] = useState(false);
+
+    const handleToggleClick = () => {
+        setIsMenuToggled(!isMenuToggled);
+    }
     return (
-        <div id="main-wrapper" className='wallet-open show'>
+        <div id="main-wrapper" className={`wallet-open show ${isMenuToggled ? 'menu-toggle' : ''}`}>
             <Header />
             <Sidebar />
             <div className='content-body'>

@@ -23,7 +23,11 @@ const Header = () => {
   const lastPathSegment = getLastPathSegment(location.pathname);
   const formattedSegment = capitalizeFirstLetter(lastPathSegment);
 
+  const [isActive, setIsActive] = useState(false);
 
+  const toggleHamburger = () => {
+    setIsActive(!isActive);
+  };
 
   return (
     <div>
@@ -42,7 +46,10 @@ const Header = () => {
               </div>
             </a>
             <div className="nav-control">
-              <div className="hamburger">
+              <div
+                className={`hamburger ${isActive ? 'is-active' : ''}`}
+                onClick={toggleHamburger}
+              >
                 <span className="line" />
                 <span className="line" />
                 <span className="line" />
@@ -671,13 +678,16 @@ const Header = () => {
                   <img src="/assets/images/download1.png" style={{ height: "57px" }} alt="" />
                 </div>
               </a>
-              <div className="nav-control">
-                <div className="hamburger">
-                  <span className="line" />
-                  <span className="line" />
-                  <span className="line" />
-                </div>
+             <div className="nav-control">
+              <div
+                className={`hamburger ${isActive ? 'is-active' : ''}`}
+                onClick={toggleHamburger}
+              >
+                <span className="line" />
+                <span className="line" />
+                <span className="line" />
               </div>
+            </div>
             </div>
 
             <div className="header home">
