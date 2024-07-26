@@ -10,7 +10,7 @@ const Withdraw = () => {
                             <div className="col-xl-12">
                                 <div className="card dz-card" id="nav-pills">
                                     <div className="card-header flex-wrap border-0">
-                                        <h4 className="card-title">Withdrawl</h4>
+                                        <h4 className="card-title">Withdrawal</h4>
 
                                     </div>
                                     <div className="tab-content" id="myTabContent3">
@@ -80,7 +80,7 @@ const Withdraw = () => {
                                                                                     <table className="table table-responsive-md">
                                                                                         <thead>
                                                                                             <tr>
-                                                                                                <th>#</th>
+                                                                                                <th>S.No.</th>
                                                                                                 <th>Username</th>
                                                                                                 <th>Start Date</th>
                                                                                                 <th>End Date</th>

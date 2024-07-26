@@ -25,41 +25,30 @@ const Profile = () => {
                                                 </div>
                                             </div>
                                             <div className="author-info">
-                                                <h6 className="title">Neha Sharma</h6>
-                                                <span>Developer</span>
+                                                <h6 className="title">Admin</h6>
+                                                {/* <span>Developer</span> */}
                                             </div>
                                         </div>
                                     </div>
                                     <div className="info-list">
                                         <ul>
                                             <li>
-                                                <a href="/vite/demo/app-profile">Client Key  </a>
-                                                <span> ADM788766240323 </span>
+                                                <a href="/vite/demo/app-profile">Name  </a>
+                                                <span> Admin </span>
                                             </li>
                                             <li>
                                                 <a href="/vite/demo/uc-lightgallery">Company Name</a>
                                                 <span>PNP</span>
                                             </li>
                                             <li>
-                                                <a href="/vite/demo/app-profile">DOB</a>
-                                                <span>15 January 1997</span>
+                                                <a href="/vite/demo/app-profile">Email</a>
+                                                <span>info@pnpinfotech.com</span>
                                             </li>
                                             <li>
-                                                <a href="/vite/demo/app-profile">Address </a>
-                                                <span>777, Bhawarkua</span>
+                                                <a href="/vite/demo/app-profile">Mobile </a>
+                                                <span>1234567890</span>
                                             </li>
-                                            <li>
-                                                <a href="/vite/demo/app-profile">Location  </a>
-                                                <span>Indore</span>
-                                            </li>
-                                            <li>
-                                                <a href="/vite/demo/app-profile">State</a>
-                                                <span>MadhyaPradesh</span>
-                                            </li>
-                                            <li>
-                                                <a href="/vite/demo/app-profile">Country   </a>
-                                                <span>India</span>
-                                            </li>
+
 
                                         </ul>
                                     </div>

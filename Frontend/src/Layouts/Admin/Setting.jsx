@@ -14,7 +14,7 @@ const Setting = () => {
                             <form className="profile-form">
                                 <div className="card-body">
                                     <div className="row">
-                                        <div className="col-sm-6 mb-3">
+                                        <div className="col-sm-4 mb-3">
                                             <label className="form-label">Current Passsword</label>
                                             <input
                                                 type="text"
@@ -22,12 +22,20 @@ const Setting = () => {
                                                 placeholder='enter your current password'
                                             />
                                         </div>
-                                        <div className="col-sm-6 mb-3">
+                                        <div className="col-sm-4 mb-3">
                                             <label className="form-label">New Password</label>
                                             <input
                                                 type="text"
                                                 className="form-control"
                                                 placeholder='enter your new password'
+                                            />
+                                        </div>
+                                        <div className="col-sm-4 mb-3">
+                                            <label className="form-label">Confirm New Password</label>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                placeholder='enter your confirm new password'
                                             />
                                         </div>
 

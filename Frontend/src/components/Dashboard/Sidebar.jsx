@@ -18,7 +18,8 @@ const Sidebar = () => {
       case 'dashboard':
         return 'fa fa-envelope-open';
       case 'employees':
-        return 'fa fa-calendar';
+
+        return ' fa fa-address-card';
       case 'users':
         return 'fa fa-user';
       case 'position':
@@ -28,11 +29,11 @@ const Sidebar = () => {
       case 'withdrawal':
         return 'fa fa-hdd';
       case 'deposit':
-        return 'fa fa-snowflake';
+        return 'fa fa-chevron-circle-right';
       case 'reports':
         return 'fa fa-file-text';
       case 'trade history':
-        return 'fa fa-address-card';
+        return 'fa fa-calendar';
       case 'login status':
         return 'fa fa-check-square';
       case 'broadcast':
@@ -42,7 +43,7 @@ const Sidebar = () => {
       case 'available positions':
         return 'fa fa-paper-plane';
       case 'admin':
-        return 'fa fa-check-square';
+        return 'fa fa-user';
       default:
         return '';
     }
