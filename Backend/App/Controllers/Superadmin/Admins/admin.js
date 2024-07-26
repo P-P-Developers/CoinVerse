@@ -8,6 +8,9 @@ const User_model = db.user;
 const Role = db.role;
 const Wallet_model = db.WalletRecharge;
 const totalLicense = db.totalLicense
+const MarginRequired = db.MarginRequired
+
+
 
 class Superadmin {
 
@@ -115,53 +118,24 @@ class Superadmin {
 
   //updated balance
 
-  // async walletRecharge(req, res) {
-  //   try {
-  //     const { id, Balance,parent_Id ,Type} = req.body;
-
-  //     const userdata = await User_model.findOne({ _id: id});
-  //     if (!userdata) {
-  //       return res.json({
-  //         status: false,
-  //         message: "Wallet not found",
-  //         data: [],
-  //       });
-  //     }
-
-  //     const newBalance = Number(userdata.Balance || 0) + Number(Balance);
-
-  //     const result1 = await User_model.updateOne(
-  //       { _id: userdata._id },
-  //       { $set: { Balance: newBalance } }
-  //     );
-
-      
-  //     const result = new Wallet_model({
-  //       user_Id: userdata._id,
-  //       Balance: Balance,
-  //       parent_Id:parent_Id,
-  //       Type:Type
-  //     });
-  //     await result.save();
-
-  //     return res.json({
-  //       status: true,
-  //       message: "Balance is updated",
-  //       data: result,
-  //     });
-  //   } catch (error) {
-  //     return res.json({ status: false, message: "Internal error", data: [] });
-  //   }
-  // }
-
-
-  
   async walletRecharge(req, res) {
     try {
       const { id, Balance, parent_Id, Type } = req.body;
   
-      const userdata = await User_model.findOne({ _id: id });
+      const dollarPriceData = await MarginRequired.findOne({ adminid:parent_Id }).select("dollarprice");
+      if (!dollarPriceData) {
+        return res.json({
+          status: false,
+          message: "Dollar price data not found",
+          data: [],
+        });
+      }
       
+
+      const dollarcount = (Balance/dollarPriceData.dollarprice).toFixed(3);
+  
+    
+      const userdata = await User_model.findOne({ _id: id });
       if (!userdata) {
         return res.json({
           status: false,
@@ -172,9 +146,9 @@ class Superadmin {
   
       let newBalance;
       if (Type === "CREDIT") {
-        newBalance = Number(userdata.Balance || 0) + Number(Balance);
+        newBalance = Number(userdata.Balance || 0) + Number(dollarcount);
       } else if (Type === "DEBIT") {
-        newBalance = Number(userdata.Balance || 0) - Number(Balance);
+        newBalance = Number(userdata.Balance || 0) - Number(dollarcount);
         if (newBalance < 0) {
           return res.json({
             status: false,
@@ -190,19 +164,20 @@ class Superadmin {
         });
       }
   
+    
       await User_model.updateOne(
         { _id: userdata._id },
         { $set: { Balance: newBalance } }
       );
   
+    
       const result = new Wallet_model({
         user_Id: userdata._id,
-        Balance: Balance,
+        Balance: dollarcount,  
         parent_Id: parent_Id,
         Type: Type,
-
       });
-
+  
       await result.save();
   
       return res.json({
@@ -214,6 +189,7 @@ class Superadmin {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
+  
 
   
 

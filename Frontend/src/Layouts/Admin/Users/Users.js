@@ -265,30 +265,36 @@ const Users = () => {
 
   // update  balance
   const updateBalance = async () => {
-
     try {
-      await Addbalance({
+      const response = await Addbalance({
         id: id,
         Balance: balance,
-        parent_Id:user_id,
-        Type:type
+        parent_Id: user_id,
+        Type: type,
       });
-
+  
       Swal.fire({
         icon: 'success',
         title: 'Balance Updated',
-        text: 'The balance has been updated successfully.',
+        text: response.message || 'The balance has been updated successfully.',
       });
+      
       getAlluserdata();
       setModal(false);
     } catch (error) {
+      let errorMessage = 'There was an error updating the balance. Please try again.';
+      if (error.response && error.response.data && error.response.data.message) {
+        errorMessage = error.response.data.message;
+      }
+  
       Swal.fire({
         icon: 'error',
         title: 'Update Failed',
-        text: 'There was an error updating the balance. Please try again.',
+        text: errorMessage,
       });
     }
   };
+  
 
 
 

@@ -9,28 +9,24 @@ const mainorderSchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  orderid:{
+    type: String,
+    default: null
+  },
   symbol: {
     type: String,
     default: null
   },
-  qty: {
-    type: Number,
-    default: null
-  },
   // Type Buy Sell
-  type: {
+  buy_type: {
     type: String,
     default: null
   },
-  price: {
-    type: Number,
-    default: null
-  }, 
-  totalamount: {
-    type: Number,
+  sell_type:{
+   type: String,
     default: null
   },
-  lot: {
+  totalamount: {
     type: Number,
     default: null
   },
@@ -45,6 +41,38 @@ const mainorderSchema = new mongoose.Schema({
   token: {
     type: String,
     default: null
+  },
+  requiredFund: {
+    type: Number,
+    default: null,
+  },
+  reason: {
+    type: String,
+    default: null,
+  },
+  status: {
+    type: String,
+    default: null,
+  },
+  pertrade: {
+    type: Number,
+    defaultValue: null,
+  },
+  perlot: {
+    type: Number,
+    default: null,
+  },
+  turn_over_percentage: {
+    type: Number,
+    default: null,
+  },
+  brokerage: {
+    type: Number,
+    default: null,
+  },
+  limit: {
+    type: Number,
+    default: null,
   },
   sell_price:{
      type: Number,
@@ -78,6 +106,7 @@ const mainorderSchema = new mongoose.Schema({
     type: Number,
     default: null
   },
+  
   createdAt: {
     type: Date,
     default: Date.now

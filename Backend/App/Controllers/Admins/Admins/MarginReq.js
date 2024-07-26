@@ -5,6 +5,8 @@ const ObjectId = mongoose.Types.ObjectId;
 const db = require("../../../Models");
 const MarginRequired = db.MarginRequired
 
+
+
 class MarginReq {
     
     async marginupdate(req, res) {

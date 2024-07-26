@@ -8,10 +8,15 @@ const Role = db.role;
 const Wallet_model = db.WalletRecharge;
 const totalLicense = db.totalLicense;
 const PaymenetHistorySchema = db.PaymenetHistorySchema;
+const MarginRequired = db.MarginRequired
+
 
 class Admin {
+
+
   async AddUser(req, res) {
     try {
+
       const {
         FullName,
         UserName,
@@ -39,6 +44,7 @@ class Admin {
       const existingUser = await User_model.findOne({
         $or: [{ UserName }, { Email }, { PhoneNo }],
       });
+
 
       if (existingUser) {
         if (existingUser.UserName === UserName) {
@@ -71,6 +77,12 @@ class Admin {
       const salt = await bcrypt.genSalt(10);
       var hashedPassword = await bcrypt.hash(rand_password.toString(), salt);
 
+
+    /// dollar price
+      const dollarPriceData = await MarginRequired.findOne({adminid:parent_id}).select("dollarprice");
+      const dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
+      
+
       // Create new user
       const newUser = new User_model({
         FullName,
@@ -79,7 +91,7 @@ class Admin {
         PhoneNo,
         parent_id,
         parent_role,
-        Balance,
+        Balance:dollarcount,
         Otp,
         Role,
         Licence,
@@ -93,12 +105,15 @@ class Admin {
 
       await newUser.save();
 
+
+
       let userWallet = new Wallet_model({
         user_Id: newUser._id,
-        Balance: Balance,
+        Balance: dollarcount,
         parent_Id: parent_id,
       });
 
+       
       await userWallet.save();
 
       let licence = new totalLicense({
@@ -159,58 +174,48 @@ class Admin {
 
   async updateUser(req, res) {
     try {
-      const { id, perlot, pertrade, brokerage, turn_over_percentage, ...rest } =
-        req.body;
-
-      const values = [perlot, pertrade, brokerage, turn_over_percentage];
-      const nonZeroValues = values.filter(
-        (value) => value !== undefined && value !== 0
-      );
-
+      const { id, perlot, pertrade, ...rest } = req.body;
+  
+      const values = [perlot, pertrade];
+      const nonZeroValues = values.filter(value => value !== undefined && value !== 0);
+  
       if (nonZeroValues.length > 1) {
         return res.status(400).send({
           status: false,
-          msg: "Only one of perlot, pertrade, brokerage, or turn_over_percentage can have a non-zero value",
+          msg: "Only one of perlot or pertrade can have a non-zero value",
         });
       }
-
-      // Set other fields to zero if one field is non-zero
+  
+      // Initialize dataToUpdate with default zero values
       let dataToUpdate = {
         perlot: 0,
         pertrade: 0,
-        brokerage: 0,
-        turn_over_percentage: 0,
         ...rest,
       };
-
-      if (perlot !== undefined) {
+  
+      // Assign non-zero values accordingly
+      if (perlot !== undefined && perlot !== 0) {
         dataToUpdate.perlot = perlot;
-      } else if (pertrade !== undefined) {
+      } else if (pertrade !== undefined && pertrade !== 0) {
         dataToUpdate.pertrade = pertrade;
-      } else if (brokerage !== undefined) {
-        dataToUpdate.brokerage = brokerage;
-      } else if (turn_over_percentage !== undefined) {
-        dataToUpdate.turn_over_percentage = turn_over_percentage;
       }
-
+  
       const filter = { _id: id };
       const updateOperation = { $set: dataToUpdate };
-
-      const updatedUser = await User_model.findOneAndUpdate(
-        filter,
-        updateOperation,
-        {
-          new: true,
-          upsert: true,
-        }
-      );
-
+  
+      const updatedUser = await User_model.findOneAndUpdate(filter, updateOperation, {
+        new: true,
+        upsert: true,
+      });
+  
       if (!updatedUser) {
-        return res
-          .status(404)
-          .send({ status: false, msg: "Data not updated", data: [] });
+        return res.status(404).send({
+          status: false,
+          msg: "Data not updated",
+          data: [],
+        });
       }
-
+  
       return res.send({
         status: true,
         msg: "Data updated successfully",
@@ -218,11 +223,13 @@ class Admin {
       });
     } catch (error) {
       console.error("Internal error:", error);
-      return res
-        .status(500)
-        .send({ status: false, msg: "Internal server error" });
+      return res.status(500).send({
+        status: false,
+        msg: "Internal server error",
+      });
     }
   }
+  
 
   // user by id
 

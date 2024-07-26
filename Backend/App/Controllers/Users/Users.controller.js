@@ -8,9 +8,14 @@ const Userwatchlist = db.Userwatchlist;
 const PaymenetHistorySchema = db.PaymenetHistorySchema;
 const User_model = db.user;
 const Wallet_model = db.WalletRecharge;
+const MarginRequired = db.MarginRequired
+
 
 class Users {
+  
 
+
+  //userWithdrawalanddeposite
   
   async userWithdrawalanddeposite(req, res) {
     try {
@@ -21,11 +26,20 @@ class Users {
       if (!userdata) {
         return res.json({ status: false, message: "User not found", data: [] });
       }
+       
 
+      const dollarPriceData = await MarginRequired.findOne({ adminid: userdata.parent_id }).select("dollarprice");
+      if (!dollarPriceData) {
+        return res.json({ status: false, message: "Dollar price data not found", data: [] });
+      }
+  
+
+      const dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
+      
       const paymentHistory = new PaymenetHistorySchema({
         userid: userid,
         adminid: userdata.parent_id,
-        Balance: Balance,
+        Balance: dollarcount,
         type: type,
         status: 0,
       });
@@ -64,6 +78,8 @@ class Users {
     }
   }
 
+
+  
   // get user
 
   async getUserDetail(req, res) {
