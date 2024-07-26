@@ -26,7 +26,7 @@ const AddAdmin = () => {
       parent_role: "",
       Role: "",
     },
-    
+
     validate: (values) => {
       let errors = {};
       if (!values.fullName) {
@@ -168,7 +168,7 @@ const AddAdmin = () => {
         (field) => !field.showWhen || field.showWhen(formik.values)
       )}
       page_title="Add Admin"
-      btn_name="Add Subadmin"
+      btn_name="Submit"
       btn_name1="Cancel"
       formik={formik}
       btn_name1_route={"/superadmin/admin"}

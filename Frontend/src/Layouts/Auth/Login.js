@@ -74,13 +74,13 @@ const Login = () => {
       <div className="login-aside text-center d-flex flex-column flex-row-auto">
         <div className="d-flex flex-column-auto flex-column pt-lg-40 pt-15">
           <div className="text-center mb-lg-4 mb-2 pt-5 logo">
-            <img src="/assets/images/pnpp.png" style={{height:"46px"}} alt="Logo" />
+            <img src="/assets/images/pnpp.png" style={{ height: "46px" }} alt="Logo" />
           </div>
           <h3 className="mb-2 text-white">Welcome back!</h3>
-          <p className="mb-4">
+          {/* <p className="mb-4">
             User Experience &amp; Interface Design <br />
             Strategy SaaS Solutions
-          </p>
+          </p> */}
         </div>
 
         <div
@@ -118,17 +118,17 @@ const Login = () => {
                   <form onSubmit={handleSubmit}>
                     <div className="text-center mb-4">
                       <h3 className="text-center mb-2 text-dark">Sign In</h3>
-                      <span>Your Social Campaigns</span>
+                      {/* <span>Your Social Campaigns</span> */}
                     </div>
 
-                    <div className="separator">
+                    {/* <div className="separator">
                       <span
                         className="text-center
                       d-block mb-4 fs-13"
                       >
                         Or with username
                       </span>
-                    </div>
+                    </div> */}
                     <div className="mb-3">
                       <label
                         htmlFor="exampleFormControlInput1"
@@ -169,7 +169,7 @@ const Login = () => {
                       Sign In
                     </button>
                   </form>
-                  <div className="new-account mt-3 text-center">
+                  {/* <div className="new-account mt-3 text-center">
                     <p className="font-w500">
                       Don't have an account?{" "}
                       <Link
@@ -180,7 +180,7 @@ const Login = () => {
                         Sign up
                       </Link>
                     </p>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>

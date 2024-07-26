@@ -10,7 +10,7 @@ const Position = () => {
               <div className="col-xl-12">
                 <div className="card dz-card" id="nav-pills">
                   <div className="card-header flex-wrap border-0">
-                    <h4 className="card-title">Availabel Position</h4>
+                    <h4 className="card-title">Available Position</h4>
                   </div>
 
                   <div className="card-body pt-0">
@@ -37,7 +37,7 @@ const Position = () => {
                                   <table className="table table-responsive-md">
                                     <thead>
                                       <tr>
-                                        <th>S.No</th>
+                                        <th>S.No.</th>
                                         <th>Trading Symbol</th>
                                         <th>Buy QTY	</th>
                                         <th>Sell QTY</th>

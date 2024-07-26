@@ -206,7 +206,7 @@ const AddUsers = () => {
     },
     {
       name: "selectedOption",
-      label: "Select One Option",
+      label: "Brokerage",
       type: "select",
       options: [
         { value: "pertrade", label: "Per Trade" },
