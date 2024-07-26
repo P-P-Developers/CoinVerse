@@ -19,12 +19,9 @@ import {
   CircleMinus,
 } from "lucide-react";
 
-
 import Swal from "sweetalert2";
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 import Loader from "../../../Utils/Loader/Loader";
-
-
 
 const Users = () => {
   const navigate = useNavigate();
@@ -45,7 +42,6 @@ const Users = () => {
   const [licencevalue, setLicencevalue] = useState("");
 
   const [loading, setLoading] = useState(false);
-
 
   const columns = [
     { Header: "FullName", accessor: "FullName" },
@@ -94,7 +90,7 @@ const Users = () => {
               }}
             />
 
-            {cell.value}
+            {parseFloat(cell.value).toFixed(2)}
           </span>
           {/* <CircleMinus
               size={20}
@@ -206,8 +202,6 @@ const Users = () => {
   const updateuserpage = (_id, obj) => {
     navigate(`updateuser/${_id}`, { state: { rowData: obj.row } });
   };
-
-
 
   //delete user
 
@@ -355,11 +349,9 @@ const Users = () => {
       const result =
         response.data &&
         response.data.filter((item) => {
-          return item.Role === "USER"
+          return item.Role === "USER";
         });
 
-        
-          
       setData(result);
       setFilteredData(result);
       setLoading(false);
@@ -372,10 +364,8 @@ const Users = () => {
     getAlluserdata();
   }, []);
 
-
   return (
     <>
-    
       {loading ? (
         <Loader />
       ) : (
