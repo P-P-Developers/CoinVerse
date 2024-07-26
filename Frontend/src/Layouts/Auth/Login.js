@@ -6,21 +6,18 @@ import { Link } from "react-router-dom";
 import { getadminActivestatus } from "../../Services/Superadmin/Superadmin";
 
 const Login = () => {
-
-
-
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
 
   const navigate = useNavigate();
 
-  const handleEmailChange = (e) => setEmail(e.target.value);
+  const handleUsernameChange = (e) => setUsername(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
 
   const validate = () => {
     let inputErrors = {};
-    if (!email) inputErrors.email = "Email is required";
+    if (!username) inputErrors.username = "Username is required";
     if (!password) inputErrors.password = "Password is required";
     return inputErrors;
   };
@@ -32,16 +29,16 @@ const Login = () => {
       setErrors(inputErrors);
       return;
     }
-  
+
     try {
-      const response = await LOGIN_API({ Email: email, password: password });
-  
+      const response = await LOGIN_API({ UserName: username, password: password });
+
       const { Role } = response.data;
-  
+
       if (response.status) {
         localStorage.setItem("user_details", JSON.stringify(response.data));
         localStorage.setItem("user_role", JSON.stringify(response.data.Role));
-  
+
         Swal.fire({
           icon: "success",
           title: "Login successful",
@@ -71,7 +68,6 @@ const Login = () => {
       console.error("Login failed:", error);
     }
   };
-  
 
   return (
     <div className="authincation d-flex flex-column flex-lg-row flex-column-fluid">
@@ -130,7 +126,7 @@ const Login = () => {
                         className="text-center
                       d-block mb-4 fs-13"
                       >
-                        Or with email
+                        Or with username
                       </span>
                     </div>
                     <div className="mb-3">
@@ -138,17 +134,17 @@ const Login = () => {
                         htmlFor="exampleFormControlInput1"
                         className="form-label required"
                       >
-                        Email address
+                        Username
                       </label>
                       <input
-                        type="email"
+                        type="text"
                         className="form-control"
                         id="exampleFormControlInput1"
-                        value={email}
-                        onChange={handleEmailChange}
+                        value={username}
+                        onChange={handleUsernameChange}
                       />
-                      {errors.email && (
-                        <div className="text-danger">{errors.email}</div>
+                      {errors.username && (
+                        <div className="text-danger">{errors.username}</div>
                       )}
                     </div>
                     <div className="mb-3 position-relative">

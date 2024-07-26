@@ -35,110 +35,94 @@ const Employee = () => {
     { Header: "UserName", accessor: "UserName" },
     { Header: "Email", accessor: "Email" },
     { Header: "Phone No", accessor: "PhoneNo" },
-    {
-      Header: "Balance",
-      accessor: "Balance",
-      Cell: ({ cell }) => (
-        <div
-          style={{
-            backgroundColor: "#E1FFED",
-            border: "none",
-            color: "#33B469",
-            padding: "6px 10px",
-            textAlign: "center",
-            textDecoration: "none",
-            display: "inline-block",
-            fontSize: "13px",
-            cursor: "pointer",
-            borderRadius: "10px",
-            transition: "background-color 0.3s ease",
-          }}
+    // {
+    //   Header: "Balance",
+    //   accessor: "Balance",
+    //   Cell: ({ cell }) => (
+    //     <div
+    //       style={{
+    //         backgroundColor: "#E1FFED",
+    //         border: "none",
+    //         color: "#33B469",
+    //         padding: "6px 10px",
+    //         textAlign: "center",
+    //         textDecoration: "none",
+    //         display: "inline-block",
+    //         fontSize: "13px",
+    //         cursor: "pointer",
+    //         borderRadius: "10px",
+    //         transition: "background-color 0.3s ease",
+    //       }}
          
-        >
-        <CircleDollarSign
-              style={{
-                height: "16px",
-                marginBottom: "-4px",
-                marginRight: "5px",
-                verticalAlign: "middle",
-              }}
-            />
+    //     >
+    //     <CircleDollarSign
+    //           style={{
+    //             height: "16px",
+    //             marginBottom: "-4px",
+    //             marginRight: "5px",
+    //             verticalAlign: "middle",
+    //           }}
+    //         />
             
-          <span style={{ fontWeight: "bold", verticalAlign: "middle" }}>
-            <CirclePlus
-              size={20}
-              style={{
-                marginBottom: "-4px",
-                marginRight: "5px",
-                verticalAlign: "middle",
-              }}
-              onClick={() => {
-             setModal(true);
-             setID(cell.row._id);
-             setType("CREDIT")
-          }}
-            />
-             {cell.value}
-             <CircleMinus
-              size={20}
-              style={{
-                marginBottom: "-4px",
-                marginRight: "5px",
-                verticalAlign: "middle",
-              }}
-              onClick={() => {
-             setModal(true);
-             setID(cell.row._id);
-             setType("DEBIT")
-          }}
-            />
+    //       <span style={{ fontWeight: "bold", verticalAlign: "middle" }}>
+    //         <CirclePlus
+    //           size={20}
+    //           style={{
+    //             marginBottom: "-4px",
+    //             marginRight: "5px",
+    //             verticalAlign: "middle",
+    //           }}
+    //           onClick={() => {
+    //          setModal(true);
+    //          setID(cell.row._id);
+    //          setType("CREDIT")
+    //       }}
+    //         />
+    //          {cell.value}
+    //          <CircleMinus
+    //           size={20}
+    //           style={{
+    //             marginBottom: "-4px",
+    //             marginRight: "5px",
+    //             verticalAlign: "middle",
+    //           }}
+    //           onClick={() => {
+    //          setModal(true);
+    //          setID(cell.row._id);
+    //          setType("DEBIT")
+    //       }}
+    //         />
             
            
-          </span>
-        </div>
-      ),
-    },
-    // {
-    //   Header: "ActiveStatus",
-    //   accessor: "ActiveStatus",
-    //   Cell: ({ cell }) => (
-    //     // <label className="status-toggle">
-    //     //   <input
-    //     //     id={`rating_${cell.row.id}`}
-    //     //     className="check"
-    //     //     type="checkbox"
-    //     //     onChange={(event) => updateactivestatus(event, cell.row._id)}
-    //     //     defaultChecked={cell.value == 1}
-    //     //   />
-    //     //     <label htmlFor={`rating_${cell.row.id}`} className="checktoggle checkbox-bg"></label>
-
-    //     // </label>
-    //     <div class="form-check form-switch">
-    //       <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
-    //       // checked={cell.value === 0}
-    //       // onChange={(event) => updateactivestatus(event, cell.row._id)}
-    //       />
-    //         <label htmlFor={`rating_${cell.row.id}`} className="checktoggle checkbox-bg"></label>
-
-    //   </div>
-    //   //</label>
-    //     //       <div class="form-check form-switch">
-    //     //   <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
-    //     //   // checked={cell.value === 0}
-    //     //   // onChange={(event) => updateactivestatus(event, cell.row._id)}
-    //     //   />
-
-    //     // </div>
+    //       </span>
+    //     </div>
     //   ),
     // },
+    {
+      Header: "ActiveStatus",
+      accessor: "ActiveStatus",
+      Cell: ({ cell }) => (
+        <label className="form-check form-switch">
+          <input
+            id={`rating_${cell.row.id}`}
+            className="form-check-input"
+            type="checkbox"
+            role="switch"
+            onChange={(event) => updateactivestatus(event, cell.row._id)}
+            defaultChecked={cell.value == 1}
+          />
+            <label htmlFor={`rating_${cell.row.id}`} className="checktoggle checkbox-bg"></label>
+
+        </label>
+        
+      ),
+    },
     {
       Header: "Action",
       accessor: "Action",
       Cell: ({ cell }) => {
         return (
           <div>
-
-
             <Pencil style={{ cursor: 'pointer', color: '#33B469' }}
               onClick={() => updateEmploye(cell.row._id, cell)}
             />

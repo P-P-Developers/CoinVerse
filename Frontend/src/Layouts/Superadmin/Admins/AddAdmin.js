@@ -85,7 +85,7 @@ const AddAdmin = () => {
               timerProgressBar: true,
             });
             setTimeout(() => {
-              navigate("/admin/allsubadmin");
+              navigate("/superadmin/admin");
             }, 1000);
           } else {
             Swal.fire({

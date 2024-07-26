@@ -26,6 +26,10 @@ const PaymenetHistory = new mongoose.Schema(
       type: String,
       default: null,
     },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
   },
   {
     timestamps: true,

@@ -12,9 +12,9 @@ class Auth {
 
   async login(req, res) {
     try {
-      const { Email, password } = req.body;
+      const { UserName, password } = req.body;
 
-      const EmailCheck = await User_model.findOne({ Email: Email });
+      const EmailCheck = await User_model.findOne({ UserName:UserName });
 
       if (!EmailCheck) {
         return res.send({ status: false, msg: "User Not exists", data: [] });

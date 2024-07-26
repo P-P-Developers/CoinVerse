@@ -1,36 +1,51 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
-import { getUserdata, Addbalance, updateActivestatus } from "../../../Services/Superadmin/Superadmin";
-import { updateuserLicence, DeleteUserdata } from "../../../Services/Admin/Addmin";
+import {
+  getUserdata,
+  Addbalance,
+  updateActivestatus,
+} from "../../../Services/Superadmin/Superadmin";
+import {
+  updateuserLicence,
+  DeleteUserdata,
+} from "../../../Services/Admin/Addmin";
+
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { CirclePlus,Pencil,Trash2,CircleDollarSign,CircleMinus  } from "lucide-react";
-import Swal from 'sweetalert2';
+import {
+  CirclePlus,
+  Pencil,
+  Trash2,
+  CircleDollarSign,
+  CircleMinus,
+} from "lucide-react";
+
+
+import Swal from "sweetalert2";
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 import Loader from "../../../Utils/Loader/Loader";
 
 
 
 const Users = () => {
-
   const navigate = useNavigate();
 
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
 
-
+  const [filteredData, setFilteredData] = useState([]);
+  const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
   const [balance, setBalance] = useState("");
   const [modal, setModal] = useState(false);
   const [id, setID] = useState("");
-  const [type,setType] = useState("")
+  const [type, setType] = useState("");
 
-
-  const [license, setLicence] = useState(false)
-  const [licenseid, setLicenceId] = useState("")
+  const [license, setLicence] = useState(false);
+  const [licenseid, setLicenceId] = useState("");
   const [licencevalue, setLicencevalue] = useState("");
 
-
   const [loading, setLoading] = useState(false);
+
 
   const columns = [
     { Header: "FullName", accessor: "FullName" },
@@ -55,16 +70,15 @@ const Users = () => {
             borderRadius: "10px",
             transition: "background-color 0.3s ease",
           }}
-         
         >
-        <CircleDollarSign
-              style={{
-                height: "16px",
-                marginBottom: "-4px",
-                marginRight: "5px",
-                verticalAlign: "middle",
-              }}
-            />
+          <CircleDollarSign
+            style={{
+              height: "16px",
+              marginBottom: "-4px",
+              marginRight: "5px",
+              verticalAlign: "middle",
+            }}
+          />
           <span style={{ fontWeight: "bold", verticalAlign: "middle" }}>
             <CirclePlus
               size={20}
@@ -72,26 +86,24 @@ const Users = () => {
                 marginBottom: "-4px",
                 marginRight: "5px",
                 verticalAlign: "middle",
-                
               }}
               onClick={() => {
-            setModal(true);
-            setID(cell.row._id);
-            setType("CREDIT")
-          }}
+                setModal(true);
+                setID(cell.row._id);
+                setType("CREDIT");
+              }}
             />
-            
+
             {cell.value}
           </span>
-          <CircleMinus
+          {/* <CircleMinus
               size={20}
               style={{
                 marginBottom: "-4px",
                 marginRight: "5px",
                 verticalAlign: "middle",
                 marginLeft:"10px"
-                
-                
+  
               }}
               onClick={() => {
             setModal(true);
@@ -99,7 +111,7 @@ const Users = () => {
             setType("DEBIT")
 
           }}
-            />
+            /> */}
         </div>
       ),
     },
@@ -116,10 +128,11 @@ const Users = () => {
             onChange={(event) => updateactivestatus(event, cell.row._id)}
             defaultChecked={cell.value == 1}
           />
-            <label htmlFor={`rating_${cell.row.id}`} className="checktoggle checkbox-bg"></label>
-
+          <label
+            htmlFor={`rating_${cell.row.id}`}
+            className="checktoggle checkbox-bg"
+          ></label>
         </label>
-        
       ),
     },
     {
@@ -149,7 +162,6 @@ const Users = () => {
             <CirclePlus
               size={20}
               style={{
-
                 marginRight: "5px",
                 verticalAlign: "middle",
               }}
@@ -160,10 +172,10 @@ const Users = () => {
       ),
     },
     {
-      Header: "Create Date", accessor: "Create_Date",
+      Header: "Create Date",
+      accessor: "Create_Date",
       Cell: ({ cell }) => {
-        return fDateTime(cell.value)
-
+        return fDateTime(cell.value);
       },
     },
     {
@@ -172,11 +184,17 @@ const Users = () => {
       Cell: ({ cell }) => {
         return (
           <div>
-
-            <Pencil style={{ cursor: 'pointer', color: '#33B469' }}
+            <Pencil
+              style={{ cursor: "pointer", color: "#33B469" }}
               onClick={() => updateuserpage(cell.row._id, cell)}
             />
-            <Trash2 style={{ cursor: 'pointer', marginRight: '10px', marginLeft: '3px', color: "red" }}
+            <Trash2
+              style={{
+                cursor: "pointer",
+                marginRight: "10px",
+                marginLeft: "3px",
+                color: "red",
+              }}
               onClick={() => DeleteUser(cell.row._id)}
             />
           </div>
@@ -185,54 +203,46 @@ const Users = () => {
     },
   ];
 
-
-
   const updateuserpage = (_id, obj) => {
     navigate(`updateuser/${_id}`, { state: { rowData: obj.row } });
-
   };
 
 
-  //delete user 
+
+  //delete user
 
   const DeleteUser = async (_id) => {
     try {
-
       const confirmResult = await Swal.fire({
-        title: 'Are you sure?',
-        text: 'You will not be able to recover this user!',
-        icon: 'warning',
+        title: "Are you sure?",
+        text: "You will not be able to recover this user!",
+        icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!'
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
       });
 
       if (confirmResult.isConfirmed) {
         const data = { id: _id };
         await DeleteUserdata(data);
 
-
         Swal.fire({
-          icon: 'success',
-          title: 'User Deleted',
-          text: 'The user has been deleted successfully.',
+          icon: "success",
+          title: "User Deleted",
+          text: "The user has been deleted successfully.",
         });
 
         getAlluserdata();
       }
     } catch (error) {
       Swal.fire({
-        icon: 'error',
-        title: 'Deletion Failed',
-        text: 'There was an error deleting the user. Please try again.',
+        icon: "error",
+        title: "Deletion Failed",
+        text: "There was an error deleting the user. Please try again.",
       });
     }
   };
-
-
-
-
 
   // update Licence
 
@@ -241,27 +251,24 @@ const Users = () => {
       await updateuserLicence({
         id: licenseid,
         Licence: licencevalue,
-        parent_Id: user_id
+        parent_Id: user_id,
       });
 
       Swal.fire({
-        icon: 'success',
-        title: 'Licence Updated',
-        text: 'The Licence has been updated successfully.',
+        icon: "success",
+        title: "Licence Updated",
+        text: "The Licence has been updated successfully.",
       });
       getAlluserdata();
       setLicence(false);
     } catch (error) {
       Swal.fire({
-        icon: 'error',
-        title: 'Update Failed',
-        text: 'There was an error updating the Licence. Please try again.',
+        icon: "error",
+        title: "Update Failed",
+        text: "There was an error updating the Licence. Please try again.",
       });
     }
   };
-
-
-
 
   // update  balance
   const updateBalance = async () => {
@@ -272,34 +279,35 @@ const Users = () => {
         parent_Id: user_id,
         Type: type,
       });
-  
+
       Swal.fire({
-        icon: 'success',
-        title: 'Balance Updated',
-        text: response.message || 'The balance has been updated successfully.',
+        icon: "success",
+        title: "Balance Updated",
+        text: response.message || "The balance has been updated successfully.",
       });
-      
+
       getAlluserdata();
       setModal(false);
     } catch (error) {
-      let errorMessage = 'There was an error updating the balance. Please try again.';
-      if (error.response && error.response.data && error.response.data.message) {
+      let errorMessage =
+        "There was an error updating the balance. Please try again.";
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
         errorMessage = error.response.data.message;
       }
-  
+
       Swal.fire({
-        icon: 'error',
-        title: 'Update Failed',
+        icon: "error",
+        title: "Update Failed",
         text: errorMessage,
       });
     }
   };
-  
-
-
 
   // update acctive status
-
 
   const updateactivestatus = async (event, id) => {
     const user_active_status = event.target.checked ? 1 : 0;
@@ -314,30 +322,29 @@ const Users = () => {
 
     if (result.isConfirmed) {
       try {
-        const response = await updateActivestatus({ id, user_active_status })
+        const response = await updateActivestatus({ id, user_active_status });
         if (response.status) {
           Swal.fire({
             title: "Saved!",
             icon: "success",
             timer: 1000,
-            timerProgressBar: true
+            timerProgressBar: true,
           });
           setTimeout(() => {
             Swal.close(); // Close the modal
-
           }, 1000);
         }
-
       } catch (error) {
-
-        Swal.fire("Error", "There was an error processing your request.", "error");
+        Swal.fire(
+          "Error",
+          "There was an error processing your request.",
+          "error"
+        );
       }
     } else if (result.dismiss === Swal.DismissReason.cancel) {
       getAlluserdata();
     }
   };
-
-
 
   // get all admin
   const getAlluserdata = async () => {
@@ -345,24 +352,30 @@ const Users = () => {
     const data = { id: user_id };
     try {
       const response = await getUserdata(data);
-      const result = response.data && response.data.filter((item) => {
-        return item.Role === "USER"
-      })
+      const result =
+        response.data &&
+        response.data.filter((item) => {
+          return item.Role === "USER"
+        });
+
+        
+          
       setData(result);
+      setFilteredData(result);
       setLoading(false);
     } catch (error) {
       console.log("error", error);
     }
   };
 
-
-
   useEffect(() => {
     getAlluserdata();
   }, []);
 
+
   return (
     <>
+    
       {loading ? (
         <Loader />
       ) : (
@@ -389,12 +402,16 @@ const Users = () => {
                       role="tabpanel"
                       aria-labelledby="Week-tab"
                     >
-                      <div className='mb-3 ms-4'>
+                      <div className="mb-3 ms-4">
                         Search :{" "}
                         <input
                           className="ml-2 input-search form-control"
                           defaultValue=""
                           style={{ width: "20%" }}
+                          type="text"
+                          placeholder="Search..."
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
                         />
                       </div>
                       <Table columns={columns} data={data} />
@@ -408,7 +425,11 @@ const Users = () => {
       )}
 
       {modal && (
-        <div className="modal custom-modal d-block" id="add_vendor" role="dialog">
+        <div
+          className="modal custom-modal d-block"
+          id="add_vendor"
+          role="dialog"
+        >
           <div className="modal-dialog modal-dialog-centered modal-md">
             <div className="modal-content">
               <div className="modal-header border-0 pb-0">
@@ -433,7 +454,7 @@ const Users = () => {
                           className="form-control"
                           placeholder="Enter Fund"
                           onChange={(e) => {
-                            const value = e.target.value.replace(/\D/g, '');
+                            const value = e.target.value.replace(/\D/g, "");
                             setBalance(value);
                           }}
                           value={balance}
@@ -467,7 +488,11 @@ const Users = () => {
       )}
 
       {license && (
-        <div className="modal custom-modal d-block" id="add_vendor" role="dialog">
+        <div
+          className="modal custom-modal d-block"
+          id="add_vendor"
+          role="dialog"
+        >
           <div className="modal-dialog modal-dialog-centered modal-md">
             <div className="modal-content">
               <div className="modal-header border-0 pb-0">
@@ -492,7 +517,7 @@ const Users = () => {
                           className="form-control"
                           placeholder="Enter Licence"
                           onChange={(e) => {
-                            const value = e.target.value.replace(/\D/g, '');
+                            const value = e.target.value.replace(/\D/g, "");
                             setLicencevalue(value);
                           }}
                           value={licencevalue}
