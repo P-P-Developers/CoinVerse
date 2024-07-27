@@ -1,520 +1,153 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import Table from "../../Utils/Table/Table";
+import { symbolholdoff ,updatesymbolstatus } from "../../Services/Admin/Addmin";
+import Swal from "sweetalert2";
+
+
+
+
 
 const Holdoff = () => {
+
+
+  const userDetails = JSON.parse(localStorage.getItem("user_details"));
+  const user_id = userDetails?.user_id;
+
+
+
+  const [data, setData] = useState([]);
+
+
+
+  const columns = [
+    { Header: "Symbol name", accessor: "symbol" },
+    { Header: "exch_seg", accessor: "exch_seg" },
+    { Header: "lotsize", accessor: "lotsize" },
+    { Header: "Action", accessor: "Action" ,
+        Cell: ({ cell }) => (
+            <label className="form-check form-switch">
+              <input
+                id={`rating_${cell.row.symbol}`}
+                className="form-check-input"
+                type="checkbox"
+                role="switch"
+                onChange={(event) => updatestatus(event, cell.row.symbol)}
+                defaultChecked={cell.row.status === 1}
+              />
+              <label
+                htmlFor={`rating_${cell.row.status}`}
+                className="checktoggle checkbox-bg"
+              ></label>
+            </label>
+          ),
+
+   },
+  ];
+
+
+
+  // update symbol status
+
+  const updatestatus = async (event, symbol) => {
+    try {
+    
+      const user_active_status = event.target.checked ? 1 : 0;
+      const data = { symbol: symbol, status: user_active_status };
+
+      const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: `Do you want to ${user_active_status ? 'activate' : 'deactivate'} this symbol?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, do it!',
+        allowOutsideClick: false,
+      });
+  
+      if (result.isConfirmed) {
+
+        const response = await updatesymbolstatus(data);
+        if (response && response.status) {
+          Swal.fire(
+            'Success!',
+            `Symbol has been ${user_active_status ? 'activated' : 'deactivated'}.`,
+            'success'
+          );
+        } else {
+          throw new Error('Failed to update status.');
+        }
+      }
+    } catch (error) {
+      console.error("Error updating status:", error);
+      Swal.fire(
+        'Error!',
+        'There was a problem updating the status.',
+        'error'
+      );
+    }
+  };
+  ;
+
+
+
+
+  // getting data
+  const Symbolholdoff = async () => {
+    try {
+      const response = await symbolholdoff({});
+
+      setData(response.data);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+  useEffect(() => {
+    Symbolholdoff();
+  }, []);
+
+
+
   return (
-    <div>
-          <div class="container-fluid">
-              <div class="row">
-                  <div class="col-lg-12">
-                      <div class="card transaction-table">
-                          <div class="card-header border-0 flex-wrap pb-0">
-                              <div class="mb-2">
-                                  <h4 class="card-title">Recent Transactions</h4>
-                                  <p class="mb-sm-3 mb-0">
-                                      Lorem ipsum dolor sit amet, consectetur
-                                  </p>
-                              </div>
-                              <ul class="float-end nav nav-pills mb-2" role="tablist">
-                                  <li class="nav-item" role="presentation">
-                                      <button
-                                          class="nav-link active"
-                                          id="Week-tab"
-                                          data-bs-toggle="tab"
-                                          data-bs-target="#Week"
-                                          type="button"
-                                          role="tab"
-                                          aria-controls="month"
-                                          aria-selected="true"
-                                      >
-                                          Week
-                                      </button>
-                                  </li>
-                                  <li class="nav-item" role="presentation">
-                                      <button
-                                          class="nav-link"
-                                          id="month-tab"
-                                          data-bs-toggle="tab"
-                                          data-bs-target="#month"
-                                          type="button"
-                                          role="tab"
-                                          aria-controls="month"
-                                          aria-selected="false"
-                                          tabindex="-1"
-                                      >
-                                          Month
-                                      </button>
-                                  </li>
-                                  <li class="nav-item" role="presentation">
-                                      <button
-                                          class="nav-link"
-                                          id="year-tab"
-                                          data-bs-toggle="tab"
-                                          data-bs-target="#year"
-                                          type="button"
-                                          role="tab"
-                                          aria-controls="year"
-                                          aria-selected="false"
-                                          tabindex="-1"
-                                      >
-                                          Year
-                                      </button>
-                                  </li>
-                              </ul>
-                          </div>
-                          <div class="card-body p-0">
-                              <div class="tab-content" id="myTabContent1">
-                                  <div
-                                      class="tab-pane fade show active"
-                                      id="Week"
-                                      role="tabpanel"
-                                      aria-labelledby="Week-tab"
-                                  >
-                                      <div class="table-responsive">
-                                          <table class="table table-responsive-md">
-                                              <thead>
-                                                  <tr>
-                                                      <th>#</th>
-                                                      <th>Transaction ID</th>
-                                                      <th>Date</th>
-                                                      <th>From</th>
-                                                      <th>To</th>
-                                                      <th>Coin</th>
-                                                      <th>Amount</th>
-                                                      <th class="text-end">Status</th>
-                                                  </tr>
-                                              </thead>
-                                              <tbody>
-                                                  <tr>
-                                                      <td>
-                                                          {/* <svg class="arrow svg-main-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
-																			<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-																				<polygon points="0 0 24 0 24 24 0 24"></polygon>
-																				<rect fill="#fff" opacity="0.3" transform="translate(11.646447, 12.853553) rotate(-315.000000) translate(-11.646447, -12.853553) " x="10.6464466" y="5.85355339" width="2" height="14" rx="1"></rect>
-																				<path d="M8.1109127,8.90380592 C7.55862795,8.90380592 7.1109127,8.45609067 7.1109127,7.90380592 C7.1109127,7.35152117 7.55862795,6.90380592 8.1109127,6.90380592 L16.5961941,6.90380592 C17.1315855,6.90380592 17.5719943,7.32548256 17.5952502,7.8603687 L17.9488036,15.9920967 C17.9727933,16.5438602 17.5449482,17.0106003 16.9931847,17.0345901 C16.4414212,17.0585798 15.974681,16.6307346 15.9506913,16.0789711 L15.6387276,8.90380592 L8.1109127,8.90380592 Z" fill="#fff" fill-rule="nonzero"></path>
-																			</g>
-																		</svg> */}
-                                                      </td>
-                                                      <td>#12415346563475</td>
-                                                      <td>01 August 2020</td>
-                                                      <td>Thomas</td>
-                                                      <td>
-                                                          <div class="d-flex align-items-center">
-                                                              <img
-                                                                  src="images/avatar/1.jpg"
-                                                                  class=" me-2"
-                                                                  width="30"
-                                                                  alt=""
-                                                              />{" "}
-                                                              <span class="w-space-no">Dr. Jackson</span>
-                                                          </div>
-                                                      </td>
-                                                      <td>
-                                                          <div class="d-flex align-items-center">
-                                                              <img
-                                                                  src="images/svg/btc.svg"
-                                                                  alt=""
-                                                                  class="me-2 img-btc"
-                                                              />
-                                                              Bitcoin
-                                                          </div>
-                                                      </td>
-                                                      <td class="text-success font-w600">+$5,553</td>
-                                                      <td class="text-end">
-                                                          <div class="badge badge-sm badge-success">
-                                                              COMPLETED
-                                                          </div>
-                                                      </td>
-                                                  </tr>
-                                                  <tr>
-                                                      <td>
-                                                          {/* <svg class="arrow style-1 svg-main-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
-																			<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-																				<polygon points="0 0 24 0 24 24 0 24"></polygon>
-																				<rect fill="#fff" opacity="0.3" transform="translate(11.646447, 12.853553) rotate(-315.000000) translate(-11.646447, -12.853553) " x="10.6464466" y="5.85355339" width="2" height="14" rx="1"></rect>
-																				<path d="M8.1109127,8.90380592 C7.55862795,8.90380592 7.1109127,8.45609067 7.1109127,7.90380592 C7.1109127,7.35152117 7.55862795,6.90380592 8.1109127,6.90380592 L16.5961941,6.90380592 C17.1315855,6.90380592 17.5719943,7.32548256 17.5952502,7.8603687 L17.9488036,15.9920967 C17.9727933,16.5438602 17.5449482,17.0106003 16.9931847,17.0345901 C16.4414212,17.0585798 15.974681,16.6307346 15.9506913,16.0789711 L15.6387276,8.90380592 L8.1109127,8.90380592 Z" fill="#fff" fill-rule="nonzero"></path>
-																			</g>
-																		</svg> */}
-                                                      </td>
-                                                      <td>#12415346563475</td>
-                                                      <td>01 August 2020</td>
-                                                      <td>Thomas</td>
-                                                      <td>
-                                                          <div class="d-flex align-items-center">
-                                                              <img
-                                                                  src="images/avatar/2.jpg"
-                                                                  class=" me-2"
-                                                                  width="30"
-                                                                  alt=""
-                                                              />{" "}
-                                                              <span class="w-space-no">Dr. Jackson</span>
-                                                          </div>
-                                                      </td>
-                                                      <td>
-                                                          <div class="d-flex align-items-center">
-                                                              <img
-                                                                  src="images/svg/btc.svg"
-                                                                  alt=""
-                                                                  class="me-2 img-btc"
-                                                              />
-                                                              Bitcoin
-                                                          </div>
-                                                      </td>
-                                                      <td class="text-success font-w600">+$5,553</td>
-                                                      <td class="text-end">
-                                                          <div class="badge badge-sm badge-warning">
-                                                              PENDING
-                                                          </div>
-                                                      </td>
-                                                  </tr>
-                                                  <tr>
-                                                      <td>
-                                                          {/* <svg class="arrow style-2 svg-main-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
-																			<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-																				<polygon points="0 0 24 0 24 24 0 24"></polygon>
-																				<rect fill="#fff" opacity="0.3" transform="translate(11.646447, 12.853553) rotate(-315.000000) translate(-11.646447, -12.853553) " x="10.6464466" y="5.85355339" width="2" height="14" rx="1"></rect>
-																				<path d="M8.1109127,8.90380592 C7.55862795,8.90380592 7.1109127,8.45609067 7.1109127,7.90380592 C7.1109127,7.35152117 7.55862795,6.90380592 8.1109127,6.90380592 L16.5961941,6.90380592 C17.1315855,6.90380592 17.5719943,7.32548256 17.5952502,7.8603687 L17.9488036,15.9920967 C17.9727933,16.5438602 17.5449482,17.0106003 16.9931847,17.0345901 C16.4414212,17.0585798 15.974681,16.6307346 15.9506913,16.0789711 L15.6387276,8.90380592 L8.1109127,8.90380592 Z" fill="#fff" fill-rule="nonzero"></path>
-																			</g>
-																		</svg> */}
-                                                      </td>
-                                                      <td>#12415346563475</td>
-                                                      <td>01 August 2020</td>
-                                                      <td>Thomas</td>
-                                                      <td>
-                                                          <div class="d-flex align-items-center">
-                                                              <img
-                                                                  src="images/avatar/3.jpg"
-                                                                  class="me-2"
-                                                                  width="30"
-                                                                  alt=""
-                                                              />{" "}
-                                                              <span class="w-space-no">Dr. Jackson</span>
-                                                          </div>
-                                                      </td>
-                                                      <td>
-                                                          <div class="d-flex align-items-center">
-                                                              <img
-                                                                  src="images/svg/btc.svg"
-                                                                  alt=""
-                                                                  class="me-2 img-btc"
-                                                              />
-                                                              Bitcoin
-                                                          </div>
-                                                      </td>
-                                                      <td class="text-danger font-w600">+$5,553</td>
-                                                      <td class="text-end">
-                                                          <div class="badge badge-sm badge-danger">
-                                                              CANCEL
-                                                          </div>
-                                                      </td>
-                                                  </tr>
-                                              </tbody>
-                                          </table>
-                                      </div>
-                                  </div>
-                                  <div
-                                      class="tab-pane fade show"
-                                      id="month"
-                                      role="tabpanel"
-                                      aria-labelledby="month-tab"
-                                  >
-                                      <div class="table-responsive">
-                                          <table class="table table-responsive-md">
-                                              <thead>
-                                                  <tr>
-                                                      <th>#</th>
-                                                      <th>Transaction ID</th>
-                                                      <th>Date</th>
-                                                      <th>From</th>
-                                                      <th>To</th>
-                                                      <th>Coin</th>
-                                                      <th>Amount</th>
-                                                      <th class="text-end">Status</th>
-                                                  </tr>
-                                              </thead>
-                                              <tbody>
-                                                  <tr>
-                                                      <td>
-                                                          {/* <svg class="arrow style-1 svg-main-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
-																			<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-																				<polygon points="0 0 24 0 24 24 0 24"></polygon>
-																				<rect fill="#fff" opacity="0.3" transform="translate(11.646447, 12.853553) rotate(-315.000000) translate(-11.646447, -12.853553) " x="10.6464466" y="5.85355339" width="2" height="14" rx="1"></rect>
-																				<path d="M8.1109127,8.90380592 C7.55862795,8.90380592 7.1109127,8.45609067 7.1109127,7.90380592 C7.1109127,7.35152117 7.55862795,6.90380592 8.1109127,6.90380592 L16.5961941,6.90380592 C17.1315855,6.90380592 17.5719943,7.32548256 17.5952502,7.8603687 L17.9488036,15.9920967 C17.9727933,16.5438602 17.5449482,17.0106003 16.9931847,17.0345901 C16.4414212,17.0585798 15.974681,16.6307346 15.9506913,16.0789711 L15.6387276,8.90380592 L8.1109127,8.90380592 Z" fill="#fff" fill-rule="nonzero"></path>
-																			</g>
-																		</svg> */}
-                                                      </td>
-                                                      <td>#12415346563475</td>
-                                                      <td>01 August 2020</td>
-                                                      <td>Thomas</td>
-                                                      <td>
-                                                          <div class="d-flex align-items-center">
-                                                              <img
-                                                                  src="images/avatar/2.jpg"
-                                                                  class=" me-2"
-                                                                  width="24"
-                                                                  alt=""
-                                                              />{" "}
-                                                              <span class="w-space-no">Dr. Jackson</span>
-                                                          </div>
-                                                      </td>
-                                                      <td>
-                                                          <div class="d-flex align-items-center">
-                                                              <img
-                                                                  src="images/svg/btc.svg"
-                                                                  alt=""
-                                                                  class="me-2 img-btc"
-                                                              />
-                                                              Bitcoin
-                                                          </div>
-                                                      </td>
-                                                      <td>+$5,553</td>
-                                                      <td class="text-end">
-                                                          <div class="badge badge-sm badge-warning">
-                                                              PENDING
-                                                          </div>
-                                                      </td>
-                                                  </tr>
-                                                  <tr>
-                                                      <td>
-                                                          {/* <svg class="arrow svg-main-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
-																		<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-																			<polygon points="0 0 24 0 24 24 0 24"></polygon>
-																			<rect fill="#fff" opacity="0.3" transform="translate(11.646447, 12.853553) rotate(-315.000000) translate(-11.646447, -12.853553) " x="10.6464466" y="5.85355339" width="2" height="14" rx="1"></rect>
-																			<path d="M8.1109127,8.90380592 C7.55862795,8.90380592 7.1109127,8.45609067 7.1109127,7.90380592 C7.1109127,7.35152117 7.55862795,6.90380592 8.1109127,6.90380592 L16.5961941,6.90380592 C17.1315855,6.90380592 17.5719943,7.32548256 17.5952502,7.8603687 L17.9488036,15.9920967 C17.9727933,16.5438602 17.5449482,17.0106003 16.9931847,17.0345901 C16.4414212,17.0585798 15.974681,16.6307346 15.9506913,16.0789711 L15.6387276,8.90380592 L8.1109127,8.90380592 Z" fill="#fff" fill-rule="nonzero"></path>
-																		</g>
-																	</svg> */}
-                                                      </td>
-                                                      <td>#12415346563475</td>
-                                                      <td>01 August 2020</td>
-                                                      <td>Thomas</td>
-                                                      <td>
-                                                          <div class="d-flex align-items-center">
-                                                              <img
-                                                                  src="images/avatar/1.jpg"
-                                                                  class=" me-2"
-                                                                  width="24"
-                                                                  alt=""
-                                                              />{" "}
-                                                              <span class="w-space-no">Dr. Jackson</span>
-                                                          </div>
-                                                      </td>
-                                                      <td>
-                                                          <div class="d-flex align-items-center">
-                                                              <img
-                                                                  src="images/svg/btc.svg"
-                                                                  alt=""
-                                                                  class="me-2 img-btc"
-                                                              />
-                                                              Bitcoin
-                                                          </div>
-                                                      </td>
-                                                      <td>+$5,553</td>
-                                                      <td class="text-end">
-                                                          <div class="badge badge-sm badge-success">
-                                                              COMPLETED
-                                                          </div>
-                                                      </td>
-                                                  </tr>
-                                                  <tr>
-                                                      <td>
-                                                          {/* <svg class="arrow style-2 svg-main-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
-																			<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-																				<polygon points="0 0 24 0 24 24 0 24"></polygon>
-																				<rect fill="#fff" opacity="0.3" transform="translate(11.646447, 12.853553) rotate(-315.000000) translate(-11.646447, -12.853553) " x="10.6464466" y="5.85355339" width="2" height="14" rx="1"></rect>
-																				<path d="M8.1109127,8.90380592 C7.55862795,8.90380592 7.1109127,8.45609067 7.1109127,7.90380592 C7.1109127,7.35152117 7.55862795,6.90380592 8.1109127,6.90380592 L16.5961941,6.90380592 C17.1315855,6.90380592 17.5719943,7.32548256 17.5952502,7.8603687 L17.9488036,15.9920967 C17.9727933,16.5438602 17.5449482,17.0106003 16.9931847,17.0345901 C16.4414212,17.0585798 15.974681,16.6307346 15.9506913,16.0789711 L15.6387276,8.90380592 L8.1109127,8.90380592 Z" fill="#fff" fill-rule="nonzero"></path>
-																			</g>
-																		</svg> */}
-                                                      </td>
-                                                      <td>#12415346563475</td>
-                                                      <td>01 August 2020</td>
-                                                      <td>Thomas</td>
-                                                      <td>
-                                                          <div class="d-flex align-items-center">
-                                                              <img
-                                                                  src="images/avatar/3.jpg"
-                                                                  class=" me-2"
-                                                                  width="24"
-                                                                  alt=""
-                                                              />{" "}
-                                                              <span class="w-space-no">Dr. Jackson</span>
-                                                          </div>
-                                                      </td>
-                                                      <td>
-                                                          <div class="d-flex align-items-center">
-                                                              <img
-                                                                  src="images/svg/btc.svg"
-                                                                  alt=""
-                                                                  class="me-2 img-btc"
-                                                              />
-                                                              Bitcoin
-                                                          </div>
-                                                      </td>
-                                                      <td>+$5,553</td>
-                                                      <td class="text-end">
-                                                          <div class="badge badge-sm badge-danger">
-                                                              CANCEL
-                                                          </div>
-                                                      </td>
-                                                  </tr>
-                                              </tbody>
-                                          </table>
-                                      </div>
-                                  </div>
-                                  <div
-                                      class="tab-pane fade show"
-                                      id="year"
-                                      role="tabpanel"
-                                      aria-labelledby="year-tab"
-                                  >
-                                      <div class="table-responsive">
-                                          <table class="table table-responsive-md">
-                                              <thead>
-                                                  <tr>
-                                                      <th>#</th>
-                                                      <th>Transaction ID</th>
-                                                      <th>Date</th>
-                                                      <th>From</th>
-                                                      <th>To</th>
-                                                      <th>Coin</th>
-                                                      <th>Amount</th>
-                                                      <th class="text-end">Status</th>
-                                                  </tr>
-                                              </thead>
-                                              <tbody>
-                                                  <tr>
-                                                      <td>
-                                                          {/* <svg class="arrow svg-main-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
-																			<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-																				<polygon points="0 0 24 0 24 24 0 24"></polygon>
-																				<rect fill="#fff" opacity="0.3" transform="translate(11.646447, 12.853553) rotate(-315.000000) translate(-11.646447, -12.853553) " x="10.6464466" y="5.85355339" width="2" height="14" rx="1"></rect>
-																				<path d="M8.1109127,8.90380592 C7.55862795,8.90380592 7.1109127,8.45609067 7.1109127,7.90380592 C7.1109127,7.35152117 7.55862795,6.90380592 8.1109127,6.90380592 L16.5961941,6.90380592 C17.1315855,6.90380592 17.5719943,7.32548256 17.5952502,7.8603687 L17.9488036,15.9920967 C17.9727933,16.5438602 17.5449482,17.0106003 16.9931847,17.0345901 C16.4414212,17.0585798 15.974681,16.6307346 15.9506913,16.0789711 L15.6387276,8.90380592 L8.1109127,8.90380592 Z" fill="#fff" fill-rule="nonzero"></path>
-																			</g>
-																		</svg> */}
-                                                      </td>
-                                                      <td>#12415346563475</td>
-                                                      <td>01 August 2020</td>
-                                                      <td>Thomas</td>
-                                                      <td>
-                                                          <div class="d-flex align-items-center">
-                                                              <img
-                                                                  src="images/avatar/1.jpg"
-                                                                  class=" me-2"
-                                                                  width="24"
-                                                                  alt=""
-                                                              />{" "}
-                                                              <span class="w-space-no">Dr. Jackson</span>
-                                                          </div>
-                                                      </td>
-                                                      <td>
-                                                          <div class="d-flex align-items-center">
-                                                              <img
-                                                                  src="images/svg/btc.svg"
-                                                                  alt=""
-                                                                  class="me-2 img-btc"
-                                                              />
-                                                              Bitcoin
-                                                          </div>
-                                                      </td>
-                                                      <td>+$5,553</td>
-                                                      <td class="text-end">
-                                                          <div class="badge badge-sm badge-success">
-                                                              COMPLETED
-                                                          </div>
-                                                      </td>
-                                                  </tr>
-                                                  <tr>
-                                                      <td>
-                                                          {/* <svg class="arrow style-1 svg-main-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
-																			<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-																				<polygon points="0 0 24 0 24 24 0 24"></polygon>
-																				<rect fill="#fff" opacity="0.3" transform="translate(11.646447, 12.853553) rotate(-315.000000) translate(-11.646447, -12.853553) " x="10.6464466" y="5.85355339" width="2" height="14" rx="1"></rect>
-																				<path d="M8.1109127,8.90380592 C7.55862795,8.90380592 7.1109127,8.45609067 7.1109127,7.90380592 C7.1109127,7.35152117 7.55862795,6.90380592 8.1109127,6.90380592 L16.5961941,6.90380592 C17.1315855,6.90380592 17.5719943,7.32548256 17.5952502,7.8603687 L17.9488036,15.9920967 C17.9727933,16.5438602 17.5449482,17.0106003 16.9931847,17.0345901 C16.4414212,17.0585798 15.974681,16.6307346 15.9506913,16.0789711 L15.6387276,8.90380592 L8.1109127,8.90380592 Z" fill="#fff" fill-rule="nonzero"></path>
-																			</g>
-																		</svg> */}
-                                                      </td>
-                                                      <td>#12415346563475</td>
-                                                      <td>01 August 2020</td>
-                                                      <td>Thomas</td>
-                                                      <td>
-                                                          <div class="d-flex align-items-center">
-                                                              <img
-                                                                  src="images/avatar/2.jpg"
-                                                                  class=" me-2"
-                                                                  width="24"
-                                                                  alt=""
-                                                              />{" "}
-                                                              <span class="w-space-no">Dr. Jackson</span>
-                                                          </div>
-                                                      </td>
-                                                      <td>
-                                                          <div class="d-flex align-items-center">
-                                                              <img
-                                                                  src="images/svg/btc.svg"
-                                                                  alt=""
-                                                                  class="me-2 img-btc"
-                                                              />
-                                                              Bitcoin
-                                                          </div>
-                                                      </td>
-                                                      <td>+$5,553</td>
-                                                      <td class="text-end">
-                                                          <div class="badge badge-sm badge-warning">
-                                                              PENDING
-                                                          </div>
-                                                      </td>
-                                                  </tr>
-                                                  <tr>
-                                                      <td>
-                                                          {/* <svg class="arrow style-2 svg-main-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
-																			<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-																				<polygon points="0 0 24 0 24 24 0 24"></polygon>
-																				<rect fill="#fff" opacity="0.3" transform="translate(11.646447, 12.853553) rotate(-315.000000) translate(-11.646447, -12.853553) " x="10.6464466" y="5.85355339" width="2" height="14" rx="1"></rect>
-																				<path d="M8.1109127,8.90380592 C7.55862795,8.90380592 7.1109127,8.45609067 7.1109127,7.90380592 C7.1109127,7.35152117 7.55862795,6.90380592 8.1109127,6.90380592 L16.5961941,6.90380592 C17.1315855,6.90380592 17.5719943,7.32548256 17.5952502,7.8603687 L17.9488036,15.9920967 C17.9727933,16.5438602 17.5449482,17.0106003 16.9931847,17.0345901 C16.4414212,17.0585798 15.974681,16.6307346 15.9506913,16.0789711 L15.6387276,8.90380592 L8.1109127,8.90380592 Z" fill="#fff" fill-rule="nonzero"></path>
-																			</g>
-																		</svg> */}
-                                                      </td>
-                                                      <td>#12415346563475</td>
-                                                      <td>01 August 2020</td>
-                                                      <td>Thomas</td>
-                                                      <td>
-                                                          <div class="d-flex align-items-center">
-                                                              <img
-                                                                  src="images/avatar/3.jpg"
-                                                                  class=" me-2"
-                                                                  width="24"
-                                                                  alt=""
-                                                              />{" "}
-                                                              <span class="w-space-no">Dr. Jackson</span>
-                                                          </div>
-                                                      </td>
-                                                      <td>
-                                                          <div class="d-flex align-items-center">
-                                                              <img
-                                                                  src="images/svg/btc.svg"
-                                                                  alt=""
-                                                                  class="me-2 img-btc"
-                                                              />
-                                                              Bitcoin
-                                                          </div>
-                                                      </td>
-                                                      <td>+$5,553</td>
-                                                      <td class="text-end">
-                                                          <div class="badge badge-sm badge-danger">
-                                                              CANCEL
-                                                          </div>
-                                                      </td>
-                                                  </tr>
-                                              </tbody>
-                                          </table>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
+    <>
+      <div>
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-lg-12">
+              <div className="card transaction-table">
+                <div className="card-header border-0 flex-wrap pb-0">
+                  <div className="mb-4">
+                    <h4 className="card-title">Hold off</h4>
                   </div>
+                </div>
+                <div className="card-body p-0">
+                  <div className="tab-content" id="myTabContent1">
+                    <div
+                      className="tab-pane fade show active"
+                      id="Week"
+                      role="tabpanel"
+                      aria-labelledby="Week-tab"
+                    >
+                      <div className='mb-3 ms-4'>
+                        Search :{" "}
+                        <input
+                          className="ml-2 input-search form-control"
+                          defaultValue=""
+                          style={{ width: "20%" }}
+                        />
+                      </div>
+                      <Table columns={columns} data={data && data} />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-    </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
-}
+};
 
 export default Holdoff;

@@ -24,7 +24,7 @@ import Updateuser from '../Layouts/Admin/Users/Updateuser';
 import UpdateEmploye from '../Layouts/Admin/Employee/UpdateEmploye';
 import Profile from '../Layouts/Admin/Profile';
 import Setting from '../Layouts/Admin/Setting';
-import Holdoff from '../Layouts/Superadmin/Admins/Holdoff';
+import Holdoff from '../Layouts/Admin/Holdoff';
 import Currency from "../Layouts/Admin/Currency"
 
 

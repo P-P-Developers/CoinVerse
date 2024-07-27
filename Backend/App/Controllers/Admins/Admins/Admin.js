@@ -9,7 +9,7 @@ const Wallet_model = db.WalletRecharge;
 const totalLicense = db.totalLicense;
 const PaymenetHistorySchema = db.PaymenetHistorySchema;
 const MarginRequired = db.MarginRequired
-
+const Symbol = db.Symbol
 
 class Admin {
 
@@ -493,6 +493,60 @@ async UpdateStatus(req, res) {
   }
 }
 
+
+
+
+async  getsymbolholdoff(req,res){
+   try {
+       const result = await Symbol.find({})
+       if(!result){
+           return res.json({status:false, message:"symbol not found" ,data:[]})
+       }
+       return res.json({status: true, message:"symbol  found" , data: result })
+
+   } catch (error) {
+
+    return res.json({status: false, message:"internal error " , data: [] })
+
+   }
+
+}
+
+
+// async updatesymbolholoff(req,res){
+//     try {
+//          const {symbol ,status} = 
+//     } catch (error) {
+      
+//     }
+// }
+
+
+async updatesymbolholoff(req, res) {
+  try {
+      const { symbol , status} = req.body;
+      
+      if (!symbol) {
+          return res.json({stats:false, message: "symbol ID is required." , data:[] });
+      }
+
+      const result = await Symbol.updateOne(
+          { symbol: symbol }, 
+          { status },
+          
+      );
+
+      return res.json({
+          status: true,
+          message:"Updated",
+          data: result
+      });
+
+  } catch (error) {
+      console.error(error);
+      return res.json({ message: "An error occurred while updating margin." });
+  }
+}
 
 
 

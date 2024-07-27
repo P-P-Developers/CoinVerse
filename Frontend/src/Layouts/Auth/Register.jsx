@@ -13,7 +13,6 @@ const Register = () => {
     initialValues: {
       FullName: "",
       UserName: "",
-      Email: "",
       password: "",
       agree: false,
     },
@@ -95,7 +94,7 @@ const Register = () => {
 
                       <div className="mb-3">
                         <label className="form-label" htmlFor="UserName">
-                          Username
+                          UserName
                         </label>
                         <input
                           id="UserName"

@@ -191,3 +191,38 @@ export async function getMarginpriceRequired(data, token) {
     }
 
 }
+
+
+// holoffsymbol
+
+export async function symbolholdoff(data, token) {
+    try {
+        const res = await axios.get(`${Config.base_url}admin/getsymbolholdoff`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+// update holdoff
+
+
+
+export async function updatesymbolstatus(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}admin/updatesymbolholoff`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}

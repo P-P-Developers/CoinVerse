@@ -9,7 +9,6 @@ const Sign_In = db.Sign_In;
 
 class Auth {
 
-
   async login(req, res) {
     try {
       const { UserName, password } = req.body;
@@ -65,7 +64,6 @@ class Auth {
         const signinuser = new Sign_In({
             FullName,
             UserName,
-            Email,
             password: hashedPassword,
         });
 
