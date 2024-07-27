@@ -664,7 +664,7 @@ const Header = () => {
         </div>
       )}
       {
-        user_role && user_role === 'ADMIN' && (
+        user_role && user_role === 'ADMIN' || 'EMPLOYE' && (
           <div>
             <div
               className="header-banner"
@@ -678,16 +678,16 @@ const Header = () => {
                   <img src="/assets/images/download1.png" style={{ height: "57px" }} alt="" />
                 </div>
               </a>
-             <div className="nav-control">
-              <div
-                className={`hamburger ${isActive ? 'is-active' : ''}`}
-                onClick={toggleHamburger}
-              >
-                <span className="line" />
-                <span className="line" />
-                <span className="line" />
+              <div className="nav-control">
+                <div
+                  className={`hamburger ${isActive ? 'is-active' : ''}`}
+                  onClick={toggleHamburger}
+                >
+                  <span className="line" />
+                  <span className="line" />
+                  <span className="line" />
+                </div>
               </div>
-            </div>
             </div>
 
             <div className="header home">

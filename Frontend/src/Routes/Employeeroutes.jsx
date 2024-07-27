@@ -1,0 +1,70 @@
+import React, { useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import Header from '../components/Dashboard/Header';
+import Sidebar from '../components/Dashboard/Sidebar';
+import Footer from '../components/Dashboard/Footer';
+import Dashboard from '../Layouts/Employee/Dashboard';
+
+import Login from "../Layouts/Auth/Login"
+import Report from '../Layouts/Admin/Report';
+import Tradehistory from '../Layouts/Admin/Tradehistory';
+import Loginstatus from '../Layouts/Admin/Loginstatus';
+import Withdraw from '../Layouts/Admin/Withdraw';
+import Deposit from '../Layouts/Admin/Deposit';
+import Position from '../Layouts/Admin/Position';
+// import Employee from '../Layouts/Admin/Employee';
+import User from '../Layouts/Admin/User';
+// import Transaction from '../Layouts/Admin/Transaction';
+import Users from '../Layouts/Admin/Users/Users';
+import AddUsers from '../Layouts/Admin/Users/AddUsers';
+import Transaction from '../Layouts/Admin/Transactions/Transaction';
+import Employee from '../Layouts/Admin/Employee/Employee';
+import AddEmployee from '../Layouts/Admin/Employee/AddEmployee';
+import Broadcast from '../Layouts/Admin/Broadcast';
+import Updateuser from '../Layouts/Admin/Users/Updateuser';
+import UpdateEmploye from '../Layouts/Admin/Employee/UpdateEmploye';
+import Profile from '../Layouts/Admin/Profile';
+import Setting from '../Layouts/Admin/Setting';
+import Holdoff from '../Layouts/Superadmin/Admins/Holdoff';
+import Currency from "../Layouts/Admin/Currency"
+
+
+
+const EmployeeRoutes = () => {
+    const [isMenuToggled, setIsMenuToggled] = useState(false);
+
+    const handleToggleClick = () => {
+        setIsMenuToggled(!isMenuToggled);
+    }
+    return (
+        <div id="main-wrapper" className={`wallet-open show ${isMenuToggled ? 'menu-toggle' : ''}`}>
+            <Header />
+            <Sidebar />
+            <div className='content-body'>
+                <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/header" element={<Header />} />
+                    <Route path="/sidebar" element={<Sidebar />} />
+                    <Route path="/footer" element={<Footer />} />
+                    <Route path="/report" element={<Report />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/tradehistory" element={<Tradehistory />} />
+                    <Route path="/loginstatus" element={<Loginstatus />} />
+                    <Route path="/withdrawal" element={<Withdraw />} />
+                    <Route path="/deposit" element={<Deposit />} />
+                    <Route path="/position" element={<Position />} />
+                    <Route path="/holdoff" element={<Holdoff />} />
+                    <Route path="/currency" element={<Currency />} />
+
+
+
+
+
+                </Routes>
+            </div>
+            <Footer />
+        </div>
+    );
+}
+
+export default EmployeeRoutes;

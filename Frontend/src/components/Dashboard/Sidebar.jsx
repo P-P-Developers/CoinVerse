@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { superadmin_header, admin_header } from "./Sidebar_path";
+import { superadmin_header, admin_header, employee_header } from "./Sidebar_path";
 
 const Sidebar = () => {
   const roles = JSON.parse(localStorage.getItem("user_role"));
-  const routes = roles === "SUPERADMIN" ? superadmin_header : admin_header;
+  const routes = roles === "SUPERADMIN" ? superadmin_header : roles === "ADMIN" ? admin_header : employee_header;
   const location = useLocation();
 
   const [activeRoute, setActiveRoute] = useState(location.pathname);

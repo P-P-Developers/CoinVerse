@@ -46,7 +46,7 @@ export const admin_header = [
         id: 1,
         name: 'Dashboard',
         icon: "fa-solid fa-house",
-        route: "/admin/dashboard",
+        route: "//dashboard",
     },
     {
         id: 2,
@@ -120,4 +120,70 @@ export const admin_header = [
         icon: "fe fe-arrow-up-circle",
         route: "/admin/currency",
     },
+];
+
+
+export const employee_header = [
+    {
+        id: 1,
+        name: 'Dashboard',
+        icon: "fa-solid fa-house",
+        route: "/admin/dashboard",
+    },
+   
+    {
+        id: 2,
+        name: 'Users',
+        icon: "fe fe-users",
+        route: "/admin/users",
+    },
+    {
+        id: 3,
+        name: 'Transaction',
+        icon: "fe fe-dollar-sign",
+        route: "/admin/transaction",
+    },
+    {
+        id: 4,
+        name: 'Reports',
+        icon: "fe fe-file-text",
+        route: "/admin/report",
+    },
+    {
+        id: 5,
+        name: 'Trade History',
+        icon: "fe fe-activity",
+        route: "/admin/tradehistory",
+    },
+    {
+        id: 6,
+        name: 'Login Status',
+        icon: "fe fe-check-square",
+        route: "/admin/loginstatus",
+    },
+    {
+        id: 7,
+        name: 'Available Positions',
+        icon: "fe fe-target",
+        route: "/admin/position",
+    },
+    {
+        id: 8,
+        name: 'Withdrawal',
+        icon: "fe fe-arrow-down-circle",
+        route: "/admin/withdrawal",
+    },
+    {
+        id: 9,
+        name: 'Deposit',
+        icon: "fe fe-arrow-up-circle",
+        route: "/admin/deposit",
+    },
+    {
+        id: 10,
+        name: 'Broadcast',
+        icon: "fe fe-arrow-up-circle",
+        route: "/admin/broadcast",
+    },
+   
 ];
