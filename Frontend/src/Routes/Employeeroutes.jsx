@@ -4,29 +4,24 @@ import Header from '../components/Dashboard/Header';
 import Sidebar from '../components/Dashboard/Sidebar';
 import Footer from '../components/Dashboard/Footer';
 import Dashboard from '../Layouts/Employee/Dashboard';
-
 import Login from "../Layouts/Auth/Login"
-import Report from '../Layouts/Admin/Report';
-import Tradehistory from '../Layouts/Admin/Tradehistory';
-import Loginstatus from '../Layouts/Admin/Loginstatus';
-import Withdraw from '../Layouts/Admin/Withdraw';
-import Deposit from '../Layouts/Admin/Deposit';
-import Position from '../Layouts/Admin/Position';
-// import Employee from '../Layouts/Admin/Employee';
-import User from '../Layouts/Admin/User';
-// import Transaction from '../Layouts/Admin/Transaction';
-import Users from '../Layouts/Admin/Users/Users';
-import AddUsers from '../Layouts/Admin/Users/AddUsers';
-import Transaction from '../Layouts/Admin/Transactions/Transaction';
-import Employee from '../Layouts/Admin/Employee/Employee';
-import AddEmployee from '../Layouts/Admin/Employee/AddEmployee';
-import Broadcast from '../Layouts/Admin/Broadcast';
-import Updateuser from '../Layouts/Admin/Users/Updateuser';
-import UpdateEmploye from '../Layouts/Admin/Employee/UpdateEmploye';
-import Profile from '../Layouts/Admin/Profile';
-import Setting from '../Layouts/Admin/Setting';
-import Holdoff from '../Layouts/Superadmin/Admins/Holdoff';
-import Currency from "../Layouts/Admin/Currency"
+import Report from '../Layouts/Employee/Report';
+import Tradehistory from '../Layouts/Employee/Tradehistory';
+import Loginstatus from '../Layouts/Employee/Loginstatus';
+import Withdraw from '../Layouts/Employee/Withdraw';
+import Deposit from '../Layouts/Employee/Deposit';
+import Position from '../Layouts/Employee/Position';
+
+import Users from '../Layouts/Employee/Users/Users';
+import AddUsers from '../Layouts/Employee/Users/AddUsers';
+import Transaction from '../Layouts/Employee/Transactions/Transaction';
+
+import Broadcast from '../Layouts/Employee/Broadcast';
+import Updateuser from '../Layouts/Employee/Users/Updateuser';
+
+import Profile from '../Layouts/Employee/Profile';
+import Setting from '../Layouts/Employee/Setting';
+
 
 
 
@@ -53,10 +48,18 @@ const EmployeeRoutes = () => {
                     <Route path="/withdrawal" element={<Withdraw />} />
                     <Route path="/deposit" element={<Deposit />} />
                     <Route path="/position" element={<Position />} />
-                    <Route path="/holdoff" element={<Holdoff />} />
-                    <Route path="/currency" element={<Currency />} />
-
-
+                 
+            
+                    <Route path="/users" element={<Users />} />
+                    <Route path="/adduser" element={<AddUsers />} />
+                    <Route path="/transaction" element={<Transaction />} />
+                   
+                 
+                    <Route path="/broadcast" element={<Broadcast />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/setting" element={<Setting />} />
+                    <Route path="/users/updateuser/:id" element={<Updateuser />} />
+                   
 
 
 
