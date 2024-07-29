@@ -13,7 +13,7 @@ const Transection = () => {
   const [data, setData] = useState([]);
 
   const columns = [
-    { Header: "UserName", accessor: "UserName" },
+    { Header:"UserName", accessor: "UserName" },
 
     { Header: "Balance", accessor: "Balance" },
     {
