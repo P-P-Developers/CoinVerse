@@ -46,10 +46,15 @@ const Login = () => {
           timer: 1500,
           showConfirmButton: false,
         }).then(() => {
+          console.log("Role", Role)
+
           if (Role === "SUPERADMIN") {
             navigate("/superadmin/dashboard");
           } else if (Role === "ADMIN") {
             navigate("/admin/dashboard");
+          }
+          else if (Role === "EMPLOYE") {
+            navigate("/employee/dashboard");
           }
         });
       } else {

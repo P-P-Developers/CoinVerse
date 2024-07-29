@@ -4,6 +4,8 @@ import Login from '../Layouts/Auth/Login';
 import Dashboard from '../Layouts/Admin/Dashboard';
 import Superadminroutes from './Superadminroutes';
 import Adminroutes from './AdminRoutes';
+import Employeeroutes from './Employeeroutes';
+
 import Register from '../Layouts/Auth/Register';
 
 
@@ -15,7 +17,7 @@ const Routing = () => {
     const navigate = useNavigate();
     const roles = JSON.parse(localStorage.getItem('user_role'));
     const user_details = JSON.parse(localStorage.getItem("user_details"));
-    
+
 
     useEffect(() => {
         if (location.pathname.startsWith("/updatepassword")) {
@@ -72,6 +74,9 @@ const Routing = () => {
             <Route path="/superadmin/*" element={(roles === "SUPERADMIN") ? <Superadminroutes /> : <Login />} />
 
             <Route path="/admin/*" element={(roles === "ADMIN") ? <Adminroutes /> : <Login />} />
+
+            <Route path="/employee/*" element={(roles === "EMPLOYE") ? <Employeeroutes /> : <Login />} />
+
 
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
