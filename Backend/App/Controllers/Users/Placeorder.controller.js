@@ -98,7 +98,13 @@ class Placeorder {
             buy_price: trade.buy_price,
             buy_lot: trade.buy_lot,
             buy_qty: trade.buy_qty,
-            buy_time: trade.buy_time
+            buy_time: trade.buy_time,
+            sell_type:trade.sell_type,
+            sell_lot:trade.sell_lot,
+            sell_qty:trade.sell_qty,
+            sell_time:trade.sell_time
+
+
           });
         }
           if (trade.sell_type === 'sell') {
