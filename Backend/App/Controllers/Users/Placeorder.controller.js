@@ -86,7 +86,7 @@ class Placeorder {
       });
   
       if (!finduser || finduser.length === 0) {
-        return res.status(404).json({ success: false, error: 'No positions found' });
+        return res.json({ status: false, error: 'No positions found' ,data:[] });
       }
   
           
@@ -121,13 +121,65 @@ class Placeorder {
         return acc;
       }, { openPositions: [] });
   
-      res.status(200).json({ success: true, data: currentPosition.openPositions });
+      res.json({ status: true, data: currentPosition.openPositions });
     } catch (error) {
-      console.error("Error fetching user data:", error);
-      res.status(500).json({ success: false, error: 'Internal Server Error' });
+      res.json({ status: false, error: 'Internal Server Error',data:[] });
     }
   }
 
+
+
+
+// holding
+
+async holding(req, res) {
+  try {
+    const { userid } = req.body;
+
+    const today = new Date();
+    const startOfToday = new Date(today.setHours(0, 0, 0, 0));
+
+
+    const finduser = await mainorder_model.find({
+      userid: userid,
+      createdAt: { $lt: startOfToday }
+    });
+
+    if (!finduser || finduser.length === 0) {
+      return res.json({ status: false, error: 'No positions found' , data:[] });
+    }
+
+    const currentPosition = finduser.reduce((acc, trade) => {
+      if (trade.buy_type === 'buy') {
+        acc.openPositions.push({
+          symbol: trade.symbol,
+          buy_price: trade.buy_price,
+          buy_lot: trade.buy_lot,
+          buy_qty: trade.buy_qty,
+          buy_time: trade.buy_time,
+          sell_type: trade.sell_type,
+          sell_lot: trade.sell_lot,
+          sell_qty: trade.sell_qty,
+          sell_time: trade.sell_time
+        });
+      }
+      if (trade.sell_type === 'sell') {
+        const index = acc.openPositions.findIndex((pos) => pos.symbol === trade.symbol);
+        if (index !== -1) {
+          acc.openPositions[index].sell_price = trade.sell_price;
+          acc.openPositions[index].sell_lot = trade.sell_lot;
+          acc.openPositions[index].sell_qty = trade.sell_qty;
+          acc.openPositions[index].sell_time = trade.sell_time;
+        }
+      }
+      return acc;
+    }, { openPositions: [] });
+
+    res.json({ status: true, data: currentPosition.openPositions });
+  } catch (error) {
+    res.json({ status: false, error: 'Internal Server Error' ,data:[]});
+  }
+}
 
 
 
@@ -209,9 +261,7 @@ class Placeorder {
   }
 
 
-
 }
-
 
 
 
