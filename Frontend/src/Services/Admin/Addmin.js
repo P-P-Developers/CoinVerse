@@ -226,3 +226,36 @@ export async function updatesymbolstatus(data, token) {
     }
 
 }
+
+
+// get trade history
+
+export async function getpositionhistory(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}gettardehistory`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+// get user history
+
+export async function getuserhistory(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}getOrderBook`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}

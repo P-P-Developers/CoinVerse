@@ -274,6 +274,11 @@ class Superadmin {
             Type:1
           },
         },
+        {
+          $sort:{
+            createdAt : -1 
+          }
+        }
       ]);
 
       if (!walletData || walletData.length === 0) {

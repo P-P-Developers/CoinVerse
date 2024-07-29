@@ -1,20 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../Utils/Table/Table";
-import { symbolholdoff ,updatesymbolstatus } from "../../Services/Admin/Addmin";
+import { symbolholdoff, updatesymbolstatus } from "../../Services/Admin/Addmin";
 import Swal from "sweetalert2";
 
-
-
-
-
 const Holdoff = () => {
-
-
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
 
-
-
+  const [refresh, setRefresh] = useState(false);
   const [data, setData] = useState([]);
 
 
@@ -23,80 +16,71 @@ const Holdoff = () => {
     { Header: "Symbol name", accessor: "symbol" },
     { Header: "exch_seg", accessor: "exch_seg" },
     { Header: "lotsize", accessor: "lotsize" },
-    { Header: "Action", accessor: "Action" ,
-        Cell: ({ cell }) => (
-            <label className="form-check form-switch">
-              <input
-                id={`rating_${cell.row.symbol}`}
-                className="form-check-input"
-                type="checkbox"
-                role="switch"
-                onChange={(event) => updatestatus(event, cell.row.symbol)}
-                defaultChecked={cell.row.status === 1}
-              />
-              <label
-                htmlFor={`rating_${cell.row.status}`}
-                className="checktoggle checkbox-bg"
-              ></label>
-            </label>
-          ),
-
-   },
+    {
+      Header: "ActiveStatus",
+      accessor: "ActiveStatus",
+      Cell: ({ cell }) => (
+        <label className="form-check form-switch">
+          <input
+            id={`rating_${cell.row.status}`}
+            className="form-check-input"
+            type="checkbox"
+            role="switch"
+            onChange={(event) => updatestatus(event, cell.row.symbol)}
+            defaultChecked={cell.row.status == 1}
+          />
+          <label
+            htmlFor={`rating_${cell.row.status}`}
+            className="checktoggle checkbox-bg"
+          ></label>
+        </label>
+      ),
+    },
   ];
 
 
 
-  // update symbol status
-
+  // Update symbol status
   const updatestatus = async (event, symbol) => {
-    try {
-    
-      const user_active_status = event.target.checked ? 1 : 0;
-      const data = { symbol: symbol, status: user_active_status };
+    const user_active_status = event.target.checked ? 1 : 0;
 
-      const result = await Swal.fire({
-        title: 'Are you sure?',
-        text: `Do you want to ${user_active_status ? 'activate' : 'deactivate'} this symbol?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, do it!',
-        allowOutsideClick: false,
-      });
-  
-      if (result.isConfirmed) {
+    const result = await Swal.fire({
+      title: "Do you want to save the changes?",
+      showCancelButton: true,
+      confirmButtonText: "Save",
+      cancelButtonText: "Cancel",
+      allowOutsideClick: false,
+    });
 
-        const response = await updatesymbolstatus(data);
-        if (response && response.status) {
-          Swal.fire(
-            'Success!',
-            `Symbol has been ${user_active_status ? 'activated' : 'deactivated'}.`,
-            'success'
-          );
-        } else {
-          throw new Error('Failed to update status.');
+    if (result.isConfirmed) {
+      try {
+        const response = await updatesymbolstatus({ symbol, user_active_status });
+        if (response.status) {
+          Swal.fire({
+            title: "Saved!",
+            icon: "success",
+            timer: 1000,
+            timerProgressBar: true,
+          });
+          setTimeout(() => {
+            Swal.close();
+            setRefresh(!refresh); 
+          }, 1000);
         }
+      } catch (error) {
+        Swal.fire("Error", "There was an error processing your request.", "error");
       }
-    } catch (error) {
-      console.error("Error updating status:", error);
-      Swal.fire(
-        'Error!',
-        'There was a problem updating the status.',
-        'error'
-      );
+    } else {
+      event.target.checked = !event.target.checked; 
     }
   };
-  ;
 
 
 
-
-  // getting data
+  // Fetching data
   const Symbolholdoff = async () => {
     try {
       const response = await symbolholdoff({});
-
       setData(response.data);
     } catch (error) {
       console.log("error", error);
@@ -105,7 +89,7 @@ const Holdoff = () => {
 
   useEffect(() => {
     Symbolholdoff();
-  }, []);
+  }, [refresh]);
 
 
 
@@ -129,15 +113,15 @@ const Holdoff = () => {
                       role="tabpanel"
                       aria-labelledby="Week-tab"
                     >
-                      <div className='mb-3 ms-4'>
-                        Search :{" "}
+                      <div className="mb-3 ms-4">
+                        Search:{" "}
                         <input
                           className="ml-2 input-search form-control"
                           defaultValue=""
                           style={{ width: "20%" }}
                         />
                       </div>
-                      <Table columns={columns} data={data && data} />
+                      <Table columns={columns} data={data} />
                     </div>
                   </div>
                 </div>

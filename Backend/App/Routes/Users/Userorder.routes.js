@@ -3,7 +3,7 @@
 const router = require("express").Router()
 
 const { addSymbol,symbolSearch,userSymbollist,deletwatchlistsymbol} = require("../../Controllers/Users/Symbol.controller")
-const {placeorder ,getOrderBook , gettardehistory} = require("../../Controllers/Users/Placeorder.controller")
+const {placeorder ,getOrderBook , gettardehistory ,position } = require("../../Controllers/Users/Placeorder.controller")
 const {userWithdrawalanddeposite,getpaymenthistory, getUserDetail} = require("../../Controllers/Users/Users.controller")
 
 
@@ -19,6 +19,8 @@ router.post('/getpaymenthistory',getpaymenthistory);
 router.post('/getUserDetail',getUserDetail);
 router.post('/getOrderBook',getOrderBook);
 router.post('/gettardehistory',gettardehistory);
+router.post('/position',position);
+// router.post('/holding',holding);
 
 
 

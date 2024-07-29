@@ -38,25 +38,91 @@ class Placeorder {
 
 
    // get trade history
-
    async gettardehistory(req, res) {
     try {
       const { userid, Role } = req.body;
-  
-      let result;
       
+      let result;
+  
       if (Role === "USER") {
-        result = await mainorder_model.find({ userid: userid});
+  
+        result = await mainorder_model.find({ userid: userid });
+        if (result.length > 0) {
+          return res.json({ status: true, message: "User found", data: result });
+        } else {
+          return res.json({ status: false, message: "No orders found for this user", data: [] });
+        }
       } else {
-        result = await mainorder_model.find({ adminid: userid });
+       
+        result = await mainorder_model.find({adminid:userid});
+
+        if (result.length > 0) {
+          return res.json({ status: true, message: "Admin found", data: result });
+        } else {
+          return res.json({ status: false, message: "No orders found for this admin", data: [] });
+        }
       }
-  
-      return res.json({ status: true, message: "User found", data: result });
-  
     } catch (error) {
-      return res.json({ status: false, message: "internal error", data: [] });
+      return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
+  
+
+
+
+  // position 
+
+  async position(req, res) {
+    try {
+      const { userid } = req.body;
+  
+      const today = new Date();
+      const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+      const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+  
+      const finduser = await mainorder_model.find({
+        userid: userid,
+        createdAt: { $gte: startOfDay, $lte: endOfDay }
+      });
+  
+      if (!finduser || finduser.length === 0) {
+        return res.status(404).json({ success: false, error: 'No positions found' });
+      }
+  
+          
+
+      const currentPosition = finduser.reduce((acc, trade) => {
+        if (trade.buy_type === 'buy') {
+          acc.openPositions.push({
+            symbol: trade.symbol,
+            buy_price: trade.buy_price,
+            buy_lot: trade.buy_lot,
+            buy_qty: trade.buy_qty,
+            buy_time: trade.buy_time
+          });
+        }
+          if (trade.sell_type === 'sell') {
+          const index = acc.openPositions.findIndex((pos) => pos.symbol === trade.symbol);
+          if (index !== -1) {
+            acc.openPositions[index].sell_price = trade.sell_price;
+            acc.openPositions[index].sell_lot = trade.sell_lot;
+            acc.openPositions[index].sell_qty = trade.sell_qty;
+            acc.openPositions[index].sell_time = trade.sell_time;
+          }
+        }
+
+ 
+        return acc;
+      }, { openPositions: [] });
+  
+      res.status(200).json({ success: true, data: currentPosition.openPositions });
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+  }
+
+
 
 
   async placeorder(req, res) {
@@ -220,7 +286,7 @@ const ExitTrade = async (req, res, orderdata, checkadmin) => {
   let tradehistory = await mainorder_model.findOne({ userid, symbol });
 
   if (tradehistory) {
-    if (tradehistory.buy_lot >= parseInt(lot) + parseInt(tradehistory.sell_lot)) {
+    if (tradehistory.buy_lot >= parseInt(lot) + parseInt(tradehistory.sell_lot || 0)) {
 
       if (tradehistory.sell_lot == null && tradehistory.sell_price == null) {
         tradehistory.sell_price = price;
@@ -259,5 +325,9 @@ const ExitTrade = async (req, res, orderdata, checkadmin) => {
 
 
 };
+
+
+
+
 
 module.exports = new Placeorder();

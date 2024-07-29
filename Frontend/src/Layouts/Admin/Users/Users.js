@@ -197,7 +197,26 @@ const Users = () => {
         );
       },
     },
+    {
+      Header: "Trade History",
+      accessor: "Trade History",
+      Cell: ({ cell }) => {
+        return (
+          <div>
+            <Pencil
+              style={{ cursor: "pointer", color: "#33B469" }}
+              onClick={() => updateuserpage(cell.row._id, cell)}
+            />
+          </div>
+        );
+      },
+    },
+
   ];
+
+
+  
+
 
   const updateuserpage = (_id, obj) => {
     navigate(`updateuser/${_id}`, { state: { rowData: obj.row } });
@@ -325,7 +344,7 @@ const Users = () => {
             timerProgressBar: true,
           });
           setTimeout(() => {
-            Swal.close(); // Close the modal
+            Swal.close();
           }, 1000);
         }
       } catch (error) {
