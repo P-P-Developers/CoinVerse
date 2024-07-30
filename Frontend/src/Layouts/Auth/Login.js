@@ -38,7 +38,9 @@ const Login = () => {
       if (response.status) {
         localStorage.setItem("user_details", JSON.stringify(response.data));
         localStorage.setItem("user_role", JSON.stringify(response.data.Role));
+        localStorage.setItem("UserName", JSON.stringify(response.data.UserName));
 
+        
         Swal.fire({
           icon: "success",
           title: "Login successful",

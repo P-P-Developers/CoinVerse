@@ -134,6 +134,8 @@ class Admin {
     }
   }
 
+
+
   // update Licence
 
   async updateLicence(req, res) {
@@ -172,6 +174,9 @@ class Admin {
     }
   }
 
+
+
+  // update user 
 async updateUser(req, res) {
   try {
     const { id, perlot, pertrade, ...rest } = req.body;
