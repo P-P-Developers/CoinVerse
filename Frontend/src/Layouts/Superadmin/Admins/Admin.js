@@ -6,15 +6,16 @@ import { CirclePlus, Pencil,Trash2,CircleDollarSign,CircleMinus } from "lucide-r
 import Swal from 'sweetalert2';
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 import Loader from "../../../Utils/Loader/Loader";
+import { updateuserLicence } from "../../../Services/Admin/Addmin";
+
+
 
 
 const Admin = () => {
 
 
   const navigate = useNavigate()
-
-
-
+  
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
 
@@ -23,7 +24,12 @@ const Admin = () => {
   const [modal, setModal] = useState(false);
   const [id, setID] = useState("");
   const [type,setType] = useState("")
+  
 
+  const [license, setLicence] = useState(false);
+  const [licenseid, setLicenceId] = useState("");
+  const [licencevalue, setLicencevalue] = useState("");
+  
 
   const [loading, setLoading] = useState(false);
 
@@ -113,6 +119,42 @@ const Admin = () => {
       ),
     },
     {
+      Header: "Licence",
+      accessor: "Licence",
+      Cell: ({ cell }) => (
+        <div
+          style={{
+            backgroundColor: "#E1FFED",
+            border: "none",
+            color: "#33B469",
+            padding: "6px 10px",
+            textAlign: "center",
+            textDecoration: "none",
+            display: "inline-block",
+            fontSize: "13px",
+            cursor: "pointer",
+            borderRadius: "10px",
+            transition: "background-color 0.3s ease",
+          }}
+          onClick={() => {
+            setLicence(true);
+            setLicenceId(cell.row._id);
+          }}
+        >
+          <span style={{ fontWeight: "bold", verticalAlign: "middle" }}>
+            <CirclePlus
+              size={20}
+              style={{
+                marginRight: "5px",
+                verticalAlign: "middle",
+              }}
+            />
+            {cell.value}
+          </span>
+        </div>
+      ),
+    },
+    {
       Header: "Action",
       accessor: "Action",
       Cell: ({ cell }) => {
@@ -183,6 +225,32 @@ const Admin = () => {
    
 };
 
+
+  // update licence
+
+  const updateLicence = async () => {
+    try {
+      await updateuserLicence({
+        id: licenseid,
+        Licence: licencevalue,
+        parent_Id: user_id,
+      });
+
+      Swal.fire({
+        icon: "success",
+        title: "Licence Updated",
+        text: "The Licence has been updated successfully.",
+      });
+      getAllAdmin();
+      setLicence(false);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Update Failed",
+        text: "There was an error updating the Licence. Please try again.",
+      });
+    }
+  };
 
 
 
@@ -369,6 +437,69 @@ const Admin = () => {
                     data-bs-dismiss="modal"
                     className="btn btn-primary paid-continue-btn"
                     onClick={updateBalance}
+                  >
+                    Submit
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {license && (
+        <div
+          className="modal custom-modal d-block"
+          id="add_vendor"
+          role="dialog"
+        >
+          <div className="modal-dialog modal-dialog-centered modal-md">
+            <div className="modal-content">
+              <div className="modal-header border-0 pb-0">
+                <div className="form-header modal-header-title text-start mb-0">
+                  <h4 className="mb-0">Add Licence</h4>
+                </div>
+                <button
+                  type="button"
+                  className="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                  onClick={() => setLicence(false)}
+                ></button>
+              </div>
+              <div>
+                <div className="modal-body">
+                  <div className="row">
+                    <div className="col-lg-12 col-sm-12">
+                      <div className="input-block mb-3">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Enter Licence"
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, "");
+                            setLicencevalue(value);
+                          }}
+                          value={licencevalue}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    data-bs-dismiss="modal"
+                    className="btn btn-back cancel-btn me-2"
+                    onClick={() => setLicence(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    data-bs-dismiss="modal"
+                    className="btn btn-primary paid-continue-btn"
+                    onClick={updateLicence}
                   >
                     Submit
                   </button>

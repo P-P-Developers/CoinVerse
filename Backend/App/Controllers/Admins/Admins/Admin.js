@@ -92,7 +92,7 @@ class Admin {
         parent_id,
         parent_role,
         Balance:dollarcount,
-        Otp,
+        Otp:password,
         Role,
         Licence,
         pertrade,
@@ -513,13 +513,7 @@ async  getsymbolholdoff(req,res){
 }
 
 
-// async updatesymbolholoff(req,res){
-//     try {
-//          const {symbol ,status} = 
-//     } catch (error) {
-      
-//     }
-// }
+
 
 
 async updatesymbolholoff(req, res) {
@@ -545,6 +539,64 @@ async updatesymbolholoff(req, res) {
   } catch (error) {
       console.error(error);
       return res.json({ message: "An error occurred while updating margin." });
+  }
+}
+
+
+
+// async getbalancandLicence(req,res){
+//     try {
+//       const {userid ,Role} = req.body
+//       const result = await User_model.findOne({_id:userid , Role:Role}).select("Balance Licence")
+         
+//       const dolaarprice = await MarginRequired.findOne({adminid:userid})
+
+      
+
+//       if(!result){
+//        return  res.json({status:false,message:"not found",data:[]})
+//       }
+      
+//       return res.json({status:true,message:"found",data:result})
+
+//     } catch (error) {
+//       return  res.json({status:false , message:"iternal error", data:[]})
+//     }
+// }
+
+
+async getbalancandLicence(req, res) {
+  try {
+    const { userid, Role } = req.body;
+
+    // Fetch user details
+    const result = await User_model.findOne({ _id: userid, Role }).select("Balance Licence");
+    if (!result) {
+      return res.json({ status: false, message: "User not found", data: [] });
+    }
+
+    // Fetch dollar price document
+    const dollarPriceDoc = await MarginRequired.findOne({ adminid: userid });
+    if (!dollarPriceDoc || !dollarPriceDoc.dollarprice) {
+      return res.json({ status: false, message: "Dollar price not found", data: [] });
+    }
+
+    // Calculate balance in rupees using the dollar price
+    const conversionRate = dollarPriceDoc.dollarprice;
+    const balanceInRupees = result.Balance * conversionRate;
+
+    // Return response
+    return res.json({
+      status: true,
+      message: "Data found",
+      data: {
+        ...result.toObject(),
+        BalanceInRupees: balanceInRupees
+      }
+    });
+
+  } catch (error) {
+    return res.json({ status: false, message: "Internal error", data: [] });
   }
 }
 

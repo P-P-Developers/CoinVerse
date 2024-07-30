@@ -1,12 +1,17 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import Form from "../../../Utils/Form/Formik";
-import { AddUser } from "../../../Services/Admin/Addmin";
+import { AddUser, getbalancandLicence } from "../../../Services/Admin/Addmin";
+// import { getUserdata } from "../../../Services/Superadmin/Superadmin";
+
+
 
 const AddUsers = () => {
   const navigate = useNavigate();
+
+  const [checkprice, setCheckprice] = useState("");
 
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const Role = userDetails?.Role;
@@ -22,9 +27,9 @@ const AddUsers = () => {
       password: "",
       confirmPassword: "",
       Licence: "",
-      limit:"",
-      selectedOption: "", 
-      inputValue: "", 
+      limit: "",
+      selectedOption: "",
+      inputValue: "",
     },
 
     validate: (values) => {
@@ -89,10 +94,24 @@ const AddUsers = () => {
         parent_role: Role || "ADMIN",
         parent_id: user_id,
         Role: "USER",
-        limit:values.limit,
+        limit: values.limit,
         Licence: values.Licence,
         [selectedOption]: values.inputValue,
       };
+
+      setSubmitting(false);
+
+      if (parseFloat(checkprice.BalanceInRupees) < parseFloat(values.Balance)) {
+        Swal.fire({
+          title: "Alert",
+          text: "Insufficient funds",
+          icon: "warning",
+          timer: 1000,
+          timerProgressBar: true,
+        });
+        setSubmitting(false);
+        return;
+      }
 
       setSubmitting(false);
 
@@ -130,6 +149,25 @@ const AddUsers = () => {
       }
     },
   });
+
+
+
+
+  //  // get all admin
+  const getadminbalance = async () => {
+    const data = { userid: user_id, Role: Role };
+    try {
+      const response = await getbalancandLicence(data);
+
+      setCheckprice(response.data);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+  useEffect(() => {
+    getadminbalance();
+  }, []);
 
   const fields = [
     {
@@ -211,7 +249,6 @@ const AddUsers = () => {
       options: [
         { value: "pertrade", label: "Per Trade" },
         { value: "perlot", label: "Per Lot" },
-      
       ],
       label_size: 12,
       col_size: 6,
@@ -230,7 +267,6 @@ const AddUsers = () => {
       disable: false,
       showWhen: (values) => !!values.selectedOption,
     },
-
   ];
 
   return (

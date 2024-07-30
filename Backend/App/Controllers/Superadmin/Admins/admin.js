@@ -61,14 +61,15 @@ class Superadmin {
       }
   
       // // Fetch dollar price data
-      // const dollarPriceData = await MarginRequired.findOne({ adminid: parent_id }).select("dollarprice");
-      // if (!dollarPriceData) {
-      //   return res.json({ status: false, message: "Dollar price data not found" });
-      // }
+      const dollarPriceData = await MarginRequired.findOne({adminid:parent_id }).select("dollarprice");
+      if (!dollarPriceData) {
+        return res.json({ status: false, message: "Dollar price data not found" });
+      }
   
       // // Calculate dollar count
-      // const dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
-  
+      const dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
+   
+
       // Hash password
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password.toString(), salt);
@@ -81,14 +82,15 @@ class Superadmin {
         PhoneNo,
         parent_id,
         parent_role,
-        Balance,
-        Otp,
+        Balance:dollarcount,
+        Otp:password,
         Role,
         pertrade,
         perlot,
         turn_over_percentage,
         brokerage,
         limit,
+        Licence,
         password: hashedPassword,
       });
   
@@ -97,7 +99,7 @@ class Superadmin {
       // Create user wallet
       const userWallet = new Wallet_model({
         user_Id: newUser._id,
-        Balance: Balance,
+        Balance: dollarcount,
         parent_Id: parent_id
       });
       await userWallet.save();
@@ -120,7 +122,7 @@ class Superadmin {
     try {
       const { id, Balance, parent_Id, Type } = req.body;
   
-      const dollarPriceData = await MarginRequired.findOne({ adminid:parent_Id }).select("dollarprice");
+      const dollarPriceData = await MarginRequired.findOne({adminid:parent_Id}).select("dollarprice");
       if (!dollarPriceData) {
         return res.json({
           status: false,
@@ -133,6 +135,8 @@ class Superadmin {
       const dollarcount = (Balance/dollarPriceData.dollarprice).toFixed(3);
   
     
+
+
       const userdata = await User_model.findOne({ _id: id });
       if (!userdata) {
         return res.json({

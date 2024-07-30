@@ -10,5 +10,6 @@ module.exports = {
     Order: require("./Order.model"),
     PaymenetHistorySchema:require("./PaymetMethod.model"),
     MarginRequired: require("./MarginReq.model"),
-    mainorder_model : require("./Mainorder.model")
+    mainorder_model : require("./Mainorder.model"),
+    Statement : require("./statement.model")
 };

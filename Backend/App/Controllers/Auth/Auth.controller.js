@@ -6,6 +6,7 @@ const db = require("../../Models");
 const jwt = require("jsonwebtoken");
 const User_model = db.user;
 const Sign_In = db.Sign_In;
+const totalLicense = db.totalLicense
 
 class Auth {
 
@@ -14,6 +15,8 @@ class Auth {
       const { UserName, password } = req.body;
 
       const EmailCheck = await User_model.findOne({ UserName:UserName });
+
+
 
       if (!EmailCheck) {
         return res.send({ status: false, msg: "User Not exists", data: [] });
@@ -43,6 +46,69 @@ class Auth {
       res.send({ status: false, msg: "Server Side error", data: error });
     }   
   }
+
+
+
+ async login(req, res) {
+  try {
+    const { UserName, password } = req.body;
+  
+    const EmailCheck = await User_model.findOne({ UserName: UserName });
+  
+    if (!EmailCheck) {
+      return res.send({ status: false, msg: "User Not exists", data: [] });
+    }
+  
+    if (EmailCheck.ActiveStatus !== "1") {
+      return res.send({ status: false, msg: "Account is not active", data: [] });
+    }
+  
+    const validPassword = await bcrypt.compare(password, EmailCheck.password);
+  
+    if (!validPassword) {
+      return res.send({ status: false, msg: "Password Not Match", data: [] });
+    }
+  
+    // License expiration check
+    const checkLicense = await totalLicense.find({ parent_Id: EmailCheck._id });
+    const currentDate = new Date();
+  
+      
+
+    let isLicenseValid = false;
+  
+    for (const license of checkLicense) {
+      const licenseCreatedAt = new Date(license.createdAt);
+      const licenseMonths = license.Licence;
+  
+      
+      const totalMonthsSinceCreation = (currentDate.getFullYear() - licenseCreatedAt.getFullYear()) * 12 + currentDate.getMonth() - licenseCreatedAt.getMonth();
+  
+      
+      if (totalMonthsSinceCreation <= licenseMonths) {
+        isLicenseValid = true;
+        break;
+      }
+    }
+  
+    if (!isLicenseValid) {
+      return res.send({ status: false, msg: "License has expired", data: [] });
+    }
+  
+   
+    var token = jwt.sign({ id: EmailCheck._id }, process.env.SECRET, {
+      expiresIn: 36000,
+    });
+  
+    return res.send({
+      status: true,
+      msg: "Login Successfully",
+      data: { token: token, Role: EmailCheck.Role, user_id: EmailCheck._id },
+    });
+  } catch (error) {
+    res.send({ status: false, msg: "Server Side error", data: error });
+  }
+ }
 
 
 

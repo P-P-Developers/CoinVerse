@@ -25,6 +25,7 @@ const AddAdmin = () => {
       parent_id: "",
       parent_role: "",
       Role: "",
+      Licence:""
     },
 
     validate: (values) => {
@@ -67,9 +68,11 @@ const AddAdmin = () => {
         PhoneNo: values.phone,
         Balance: values.Balance,
         password: values.password,
+        Licence:values.Licence,
         parent_role: Role || "SUPERADMIN",
         parent_id: user_id,
         Role: "ADMIN",
+        
       };
 
       setSubmitting(false);
@@ -140,6 +143,14 @@ const AddAdmin = () => {
       name: "Balance",
       label: "Balance",
       type: "text",
+      label_size: 12,
+      col_size: 6,
+      disable: false,
+    },
+    {
+      name: "Licence",
+      label: "Licence",
+      type: "text3",
       label_size: 12,
       col_size: 6,
       disable: false,

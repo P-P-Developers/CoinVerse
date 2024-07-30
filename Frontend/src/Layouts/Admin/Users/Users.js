@@ -8,6 +8,7 @@ import {
 import {
   updateuserLicence,
   DeleteUserdata,
+  
 } from "../../../Services/Admin/Addmin";
 
 import { Link, Navigate, useNavigate } from "react-router-dom";
@@ -205,7 +206,7 @@ const Users = () => {
           <div>
             <Pencil
               style={{ cursor: "pointer", color: "#33B469" }}
-              onClick={() => updateuserpage(cell.row._id, cell)}
+              // onClick={() => updateuserpage(cell.row._id, cell)}
             />
           </div>
         );
@@ -383,6 +384,8 @@ const Users = () => {
     getAlluserdata();
   }, []);
 
+
+  
   return (
     <>
       {loading ? (

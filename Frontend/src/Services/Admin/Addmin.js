@@ -259,3 +259,19 @@ export async function getuserhistory(data, token) {
     }
 
 }
+
+
+// balance and licence
+export async function getbalancandLicence(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}getbalancandLicence`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
