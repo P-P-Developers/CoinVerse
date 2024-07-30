@@ -275,3 +275,22 @@ export async function getbalancandLicence(data, token) {
     }
 
 }
+
+
+
+// sign in user detail
+
+
+export async function getSignIn(data, token) {
+    try {
+        const res = await axios.get(`${Config.base_url}getSignIn`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}

@@ -26,6 +26,7 @@ import Profile from '../Layouts/Admin/Profile';
 import Setting from '../Layouts/Admin/Setting';
 import Holdoff from '../Layouts/Admin/Holdoff';
 import Currency from "../Layouts/Admin/Currency"
+import Signup from '../Layouts/Admin/Signup';
 
 
 
@@ -69,6 +70,7 @@ const AdminRoutes = () => {
                     <Route path="/setting" element={<Setting />} />
                     <Route path="/users/updateuser/:id" element={<Updateuser/>} />
                     <Route path="/employee/updateemploye/:id" element={<UpdateEmploye/>} />
+                    <Route path="/signup" element={<Signup/>} />
                     
 
                     

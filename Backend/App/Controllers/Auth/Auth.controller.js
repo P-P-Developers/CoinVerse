@@ -55,23 +55,24 @@ class Auth {
 
   async SignIn(req, res) {
     try {
-        const { FullName, UserName, Email, password } = req.body;
+        const { FullName, UserName, PhoneNo, password } = req.body;
 
 
-        if (!FullName || !UserName || !Email || !password) {
+        if (!FullName || !UserName || !PhoneNo || !password) {
             return res.json({ status: false, message: "Missing required fields", data: [] });
         }
 
-        // Hash the password
-        var rand_password = Math.round(password);
-        const salt = await bcrypt.genSalt(10);
-        var hashedPassword = await bcrypt.hash(rand_password.toString(), salt);
+        // // Hash the password
+        // var rand_password = Math.round(password);
+        // const salt = await bcrypt.genSalt(10);
+        // var hashedPassword = await bcrypt.hash(rand_password.toString(), salt);
 
     
         const signinuser = new Sign_In({
             FullName,
             UserName,
-            password: hashedPassword,
+            password,
+            PhoneNo,
         });
 
         const result = await signinuser.save();
@@ -96,6 +97,26 @@ class Auth {
     }
 }
 
+
+  async getSignIn(req,res){
+      try {
+        const result = await Sign_In.find({})
+
+        if(!result){
+
+          return res.json({ status: false, message: "data not found", data: [] })
+        }
+
+        return res.json({ status: true, message: "finding data ", data: result })
+      } catch (error) {
+        return res.json({
+          status: false,
+          message: "Internal error",
+          data: [],
+      });
+        
+      }
+  }
 
 
 

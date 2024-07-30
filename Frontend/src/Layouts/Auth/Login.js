@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { LOGIN_API } from "../../Services/Auth/Auth";
 import { Link } from "react-router-dom";
-import { getadminActivestatus } from "../../Services/Superadmin/Superadmin";
+
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -48,7 +48,7 @@ const Login = () => {
           timer: 1500,
           showConfirmButton: false,
         }).then(() => {
-          console.log("Role", Role)
+          
 
           if (Role === "SUPERADMIN") {
             navigate("/superadmin/dashboard");
@@ -72,7 +72,7 @@ const Login = () => {
         title: "Login failed",
         text: error.msg || "An unexpected error occurred",
       });
-      console.error("Login failed:", error);
+      
     }
   };
 
@@ -176,7 +176,7 @@ const Login = () => {
                       Sign In
                     </button>
                   </form>
-                  {/* <div className="new-account mt-3 text-center">
+                  <div className="new-account mt-3 text-center">
                     <p className="font-w500">
                       Don't have an account?{" "}
                       <Link
@@ -187,7 +187,7 @@ const Login = () => {
                         Sign up
                       </Link>
                     </p>
-                  </div> */}
+                  </div>
                 </div>
               </div>
             </div>
