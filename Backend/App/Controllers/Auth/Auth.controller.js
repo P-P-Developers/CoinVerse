@@ -6,28 +6,38 @@ const db = require("../../Models");
 const jwt = require("jsonwebtoken");
 const User_model = db.user;
 const Sign_In = db.Sign_In;
-const totalLicense = db.totalLicense
+const totalLicense = db.totalLicense;
 
 class Auth {
-
-
-
   async login(req, res) {
     try {
       const { UserName, password } = req.body;
 
-      const EmailCheck = await User_model.findOne({ UserName:UserName });
-
-
+      const EmailCheck = await User_model.findOne({ UserName: UserName });
 
       if (!EmailCheck) {
         return res.send({ status: false, msg: "User Not exists", data: [] });
       }
 
-        if (EmailCheck.ActiveStatus !== "1") {
-          return res.send({ status: false, msg: "Account is not active", data: [] });
+      if (EmailCheck.ActiveStatus !== "1") {
+        return res.send({
+          status: false,
+          msg: "Account is not active",
+          data: [],
+        });
+      }
+       
+      if (EmailCheck.Role === "USER" || EmailCheck.Role === "ADMIN") {
+        const currentDate = new Date();
+        const endDate = new Date(EmailCheck.End_Date);
+       
+         console.log("endDate",endDate)
+
+        if (endDate.getDate() === currentDate.getDate() && endDate.getMonth() === currentDate.getMonth()) {
+          return res.send({ status: false, msg: "Account is expired", data: [] });
         }
- 
+      }
+  
       const validPassword = await bcrypt.compare(password, EmailCheck.password);
 
       if (!validPassword) {
@@ -42,84 +52,83 @@ class Auth {
       return res.send({
         status: true,
         msg: "Login Successfully",
-        data: { token: token, Role: EmailCheck.Role, user_id: EmailCheck._id ,UserName:EmailCheck.UserName },
+        data: {
+          token: token,
+          Role: EmailCheck.Role,
+          user_id: EmailCheck._id,
+          UserName: EmailCheck.UserName,
+        },
       });
     } catch (error) {
       res.send({ status: false, msg: "Server Side error", data: error });
-    }   
+    }
   }
-
-
-
-
 
   async SignIn(req, res) {
     try {
-        const { FullName, UserName, PhoneNo, password } = req.body;
+      const { FullName, UserName, PhoneNo, password } = req.body;
 
-
-        if (!FullName || !UserName || !PhoneNo || !password) {
-            return res.json({ status: false, message: "Missing required fields", data: [] });
-        }
-
-        // // Hash the password
-        // var rand_password = Math.round(password);
-        // const salt = await bcrypt.genSalt(10);
-        // var hashedPassword = await bcrypt.hash(rand_password.toString(), salt);
-
-    
-        const signinuser = new Sign_In({
-            FullName,
-            UserName,
-            password,
-            PhoneNo,
-        });
-
-        const result = await signinuser.save();
-
-        if (!result) {
-            return res.json({ status: false, message: "Unable to sign in", data: [] });
-        }
-
-        return res.json({
-            status: true,
-            message: "Sign in successfully",
-            data: [],
-        });
-
-    } catch (error) {
-       
-        return res.json({
-            status: false,
-            message: "Internal error",
-            data: [],
-        });
-    }
-}
-
-
-  async getSignIn(req,res){
-      try {
-        const result = await Sign_In.find({})
-
-        if(!result){
-
-          return res.json({ status: false, message: "data not found", data: [] })
-        }
-
-        return res.json({ status: true, message: "finding data ", data: result })
-      } catch (error) {
+      if (!FullName || !UserName || !PhoneNo || !password) {
         return res.json({
           status: false,
-          message: "Internal error",
+          message: "Missing required fields",
           data: [],
-      });
-        
+        });
       }
+
+      // // Hash the password
+      // var rand_password = Math.round(password);
+      // const salt = await bcrypt.genSalt(10);
+      // var hashedPassword = await bcrypt.hash(rand_password.toString(), salt);
+
+      const signinuser = new Sign_In({
+        FullName,
+        UserName,
+        password,
+        PhoneNo,
+      });
+
+      const result = await signinuser.save();
+
+      if (!result) {
+        return res.json({
+          status: false,
+          message: "Unable to sign in",
+          data: [],
+        });
+      }
+
+      return res.json({
+        status: true,
+        message: "Sign in successfully",
+        data: [],
+      });
+    } catch (error) {
+      return res.json({
+        status: false,
+        message: "Internal error",
+        data: [],
+      });
+    }
   }
 
+  async getSignIn(req, res) {
+    try {
+      const result = await Sign_In.find({});
 
+      if (!result) {
+        return res.json({ status: false, message: "data not found", data: [] });
+      }
 
+      return res.json({ status: true, message: "finding data ", data: result });
+    } catch (error) {
+      return res.json({
+        status: false,
+        message: "Internal error",
+        data: [],
+      });
+    }
+  }
 }
 
 module.exports = new Auth();

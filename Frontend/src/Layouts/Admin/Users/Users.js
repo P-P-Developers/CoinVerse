@@ -169,8 +169,15 @@ const Users = () => {
       ),
     },
     {
-      Header: "Create Date",
-      accessor: "Create_Date",
+      Header: "Start Date",
+      accessor: "Start_Date",
+      Cell: ({ cell }) => {
+        return fDateTime(cell.value);
+      },
+    },
+    {
+      Header: "End Date",
+      accessor: "End_Date",
       Cell: ({ cell }) => {
         return fDateTime(cell.value);
       },

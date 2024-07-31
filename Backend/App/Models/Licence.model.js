@@ -18,6 +18,15 @@ const Licence = new mongoose.Schema({
         type: Number,
         
     },
+    Start_Date: {
+        type: Date,
+        default: null
+    },
+    End_Date: {
+        type: Date,
+        default: null
+    },
+
     createdAt: {
         type: Date,
         default: Date.now
