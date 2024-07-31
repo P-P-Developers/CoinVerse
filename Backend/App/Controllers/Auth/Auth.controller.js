@@ -9,6 +9,7 @@ const Sign_In = db.Sign_In;
 const totalLicense = db.totalLicense;
 
 class Auth {
+  
   async login(req, res) {
     try {
       const { UserName, password } = req.body;
@@ -30,9 +31,7 @@ class Auth {
       if (EmailCheck.Role === "USER" || EmailCheck.Role === "ADMIN") {
         const currentDate = new Date();
         const endDate = new Date(EmailCheck.End_Date);
-       
-         console.log("endDate",endDate)
-
+  
         if (endDate.getDate() === currentDate.getDate() && endDate.getMonth() === currentDate.getMonth()) {
           return res.send({ status: false, msg: "Account is expired", data: [] });
         }
