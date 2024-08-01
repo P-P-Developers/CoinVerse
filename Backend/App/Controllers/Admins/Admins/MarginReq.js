@@ -55,6 +55,23 @@ class MarginReq {
         }
     }
 
+   
+    async getmarginpriceforuser(req,res){
+        try {
+            const {id} = req.body
+            const result = await MarginRequired.findOne({adminid:id})
+
+            if(!result){
+                return res.json({status:false,message:"not found",data:[]})
+            }
+            return res.json({status:true,message:"getting successfully",data:result})
+
+        } catch (error) {
+            return res.json({status:false,message:"inernal error",data:[]})
+        }
+    }
+
+
 
 }
 

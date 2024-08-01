@@ -294,3 +294,20 @@ export async function getSignIn(data, token) {
     }
 
 }
+
+
+// walletBalance
+
+export async function adminWalletBalance(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}admin/countuserBalance`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}

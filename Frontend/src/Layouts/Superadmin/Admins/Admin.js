@@ -40,67 +40,67 @@ const Admin = () => {
     { Header: "UserName", accessor: "UserName" },
     { Header: "Email", accessor: "Email" },
     { Header: "Phone No", accessor: "PhoneNo" },
-    {
-      Header: "Balance",
-      accessor: "Balance",
-      Cell: ({ cell }) => (
-        <div
-          style={{
-            backgroundColor: "#E1FFED",
-            border: "none",
-            color: "#33B469",
-            padding: "6px 10px",
-            textAlign: "center",
-            textDecoration: "none",
-            display: "inline-block",
-            fontSize: "13px",
-            cursor: "pointer",
-            borderRadius: "10px",
-            transition: "background-color 0.3s ease",
-          }}
+    // {
+    //   Header: "Balance",
+    //   accessor: "Balance",
+    //   Cell: ({ cell }) => (
+    //     <div
+    //       style={{
+    //         backgroundColor: "#E1FFED",
+    //         border: "none",
+    //         color: "#33B469",
+    //         padding: "6px 10px",
+    //         textAlign: "center",
+    //         textDecoration: "none",
+    //         display: "inline-block",
+    //         fontSize: "13px",
+    //         cursor: "pointer",
+    //         borderRadius: "10px",
+    //         transition: "background-color 0.3s ease",
+    //       }}
          
-        >
-         <CircleDollarSign
-              style={{
-                height: "16px",
-                marginBottom: "-4px",
-                marginRight: "5px",
-                verticalAlign: "middle",
-              }}
-            />
-          <span style={{ fontWeight: "bold", verticalAlign: "middle" }}>
-            <CirclePlus
-              size={20}
-              style={{
-                marginBottom: "-4px",
-                marginRight: "5px",
-                verticalAlign: "middle",
-              }}
-              onClick={() => {
-            setModal(true);
-            setID(cell.row._id);
-            setType("CREDIT")
-          }}
-            />
+    //     >
+    //      <CircleDollarSign
+    //           style={{
+    //             height: "16px",
+    //             marginBottom: "-4px",
+    //             marginRight: "5px",
+    //             verticalAlign: "middle",
+    //           }}
+    //         />
+    //       <span style={{ fontWeight: "bold", verticalAlign: "middle" }}>
+    //         <CirclePlus
+    //           size={20}
+    //           style={{
+    //             marginBottom: "-4px",
+    //             marginRight: "5px",
+    //             verticalAlign: "middle",
+    //           }}
+    //           onClick={() => {
+    //         setModal(true);
+    //         setID(cell.row._id);
+    //         setType("CREDIT")
+    //       }}
+    //         />
            
-            {cell.value}
-            {/* <CircleMinus 
-              size={20}
-              style={{
-                marginBottom: "-4px",
-                marginRight: "5px",
-                verticalAlign: "middle",
-              }}
-              onClick={() => {
-            setModal(true);
-            setID(cell.row._id);
-            setType("DEBIT")
-          }}
-            /> */}
-          </span>
-        </div>
-      ),
-    },
+    //         {cell.value}
+    //         {/* <CircleMinus 
+    //           size={20}
+    //           style={{
+    //             marginBottom: "-4px",
+    //             marginRight: "5px",
+    //             verticalAlign: "middle",
+    //           }}
+    //           onClick={() => {
+    //         setModal(true);
+    //         setID(cell.row._id);
+    //         setType("DEBIT")
+    //       }}
+    //         /> */}
+    //       </span>
+    //     </div>
+    //   ),
+    // },
     {
       Header: "ActiveStatus",
       accessor: "ActiveStatus",
@@ -171,7 +171,14 @@ const Admin = () => {
         );
       },
     },
-    { Header: "Create Date", accessor: "Create_Date",
+   
+     { Header: "Start Date", accessor: "Start_Date",
+      Cell: ({cell}) => {
+        return fDateTime(cell.value)
+       
+       },
+     },
+     { Header:"End Date", accessor: "End_Date",
       Cell: ({cell}) => {
         return fDateTime(cell.value)
        
@@ -254,31 +261,31 @@ const Admin = () => {
 
 
 
-  // update  balance
-  const updateBalance = async () => {
-    try {
-     await Addbalance({
-        id: id,
-        Balance: balance,
-        parent_Id:user_id,
-        Type:type
-      });
+  // // update  balance
+  // const updateBalance = async () => {
+  //   try {
+  //    await Addbalance({
+  //       id: id,
+  //       Balance: balance,
+  //       parent_Id:user_id,
+  //       Type:type
+  //     });
       
-      Swal.fire({
-        icon: 'success',
-        title: 'Balance Updated',
-        text: 'The balance has been updated successfully.',
-      });
-      getAllAdmin();
-      setModal(false);
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Update Failed',
-        text: 'There was an error updating the balance. Please try again.',
-      });
-    }
-  };
+  //     Swal.fire({
+  //       icon: 'success',
+  //       title: 'Balance Updated',
+  //       text: 'The balance has been updated successfully.',
+  //     });
+  //     getAllAdmin();
+  //     setModal(false);
+  //   } catch (error) {
+  //     Swal.fire({
+  //       icon: 'error',
+  //       title: 'Update Failed',
+  //       text: 'There was an error updating the balance. Please try again.',
+  //     });
+  //   }
+  // };
   
 
 
@@ -388,7 +395,7 @@ const Admin = () => {
         </div>
       )}
 
-      {modal && (
+      {/* {modal && (
         <div className="modal custom-modal d-block" id="add_vendor" role="dialog">
           <div className="modal-dialog modal-dialog-centered modal-md">
             <div className="modal-content">
@@ -445,7 +452,7 @@ const Admin = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
       {license && (
         <div

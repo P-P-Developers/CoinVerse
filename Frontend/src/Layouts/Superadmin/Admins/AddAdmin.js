@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import Form from "../../../Utils/Form/Formik";
 import { AddnewUsers } from "../../../Services/Superadmin/Superadmin";
 
+
 const AddAdmin = () => {
 
   const navigate = useNavigate();
@@ -13,13 +14,14 @@ const AddAdmin = () => {
   const Role = userDetails?.Role;
   const user_id = userDetails?.user_id;
 
+  
+
   const formik = useFormik({
     initialValues: {
       fullName: "",
       username: "",
       email: "",
       phone: "",
-      Balance: "",
       password: "",
       confirmPassword: "",
       parent_id: "",
@@ -46,9 +48,6 @@ const AddAdmin = () => {
       } else if (!/^\d{10}$/.test(values.phone)) {
         errors.phone = "Please enter a valid 10-digit phone number.";
       }
-      if (!values.Balance) {
-        errors.Balance = "Please Enter Balance";
-      }
       if (!values.password) {
         errors.password = "Please Enter Password";
       }
@@ -66,7 +65,6 @@ const AddAdmin = () => {
         UserName: values.username,
         Email: values.email,
         PhoneNo: values.phone,
-        Balance: values.Balance,
         password: values.password,
         Licence:values.Licence,
         parent_role: Role || "SUPERADMIN",
@@ -139,14 +137,14 @@ const AddAdmin = () => {
       col_size: 6,
       disable: false,
     },
-    {
-      name: "Balance",
-      label: "Balance",
-      type: "text",
-      label_size: 12,
-      col_size: 6,
-      disable: false,
-    },
+    // {
+    //   name: "Balance",
+    //   label: "Balance",
+    //   type: "text",
+    //   label_size: 12,
+    //   col_size: 6,
+    //   disable: false,
+    // },
     {
       name: "Licence",
       label: "Licence",
@@ -172,6 +170,10 @@ const AddAdmin = () => {
       disable: false,
     },
   ];
+
+
+
+ 
 
   return (
     <Form

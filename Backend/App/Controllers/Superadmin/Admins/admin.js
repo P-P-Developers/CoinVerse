@@ -27,7 +27,6 @@ class Superadmin {
         password,
         Otp,
         Role,
-        Balance,
         Licence,
         pertrade,
         perlot,
@@ -60,14 +59,24 @@ class Superadmin {
         }
       }
   
-      // // Fetch dollar price data
-      const dollarPriceData = await MarginRequired.findOne({adminid:parent_id }).select("dollarprice");
-      if (!dollarPriceData) {
-        return res.json({ status: false, message: "Dollar price data not found" });
+
+         // Current date as start date
+      const startDate = new Date();
+      let endDate = new Date(startDate);
+      endDate.setMonth(endDate.getMonth() + Number(Licence));
+
+      if (endDate.getDate() < startDate.getDate()) {
+        endDate.setDate(0);
       }
+       
+      // // Fetch dollar price data
+      // const dollarPriceData = await MarginRequired.findOne({adminid:parent_id }).select("dollarprice");
+      // if (!dollarPriceData) {
+      //   return res.json({ status: false, message: "Dollar price data not found" });
+      // }
   
       // // Calculate dollar count
-      const dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
+      // const dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
    
 
       // Hash password
@@ -82,7 +91,6 @@ class Superadmin {
         PhoneNo,
         parent_id,
         parent_role,
-        Balance:dollarcount,
         Otp:password,
         Role,
         pertrade,
@@ -92,18 +100,30 @@ class Superadmin {
         limit,
         Licence,
         password: hashedPassword,
+        Start_Date: startDate,
+        End_Date: endDate,
       });
   
       await newUser.save();
   
-      // Create user wallet
-      const userWallet = new Wallet_model({
-        user_Id: newUser._id,
-        Balance: dollarcount,
-        parent_Id: parent_id
-      });
-      await userWallet.save();
+      // // Create user wallet
+      // const userWallet = new Wallet_model({
+      //   user_Id: newUser._id,
+      //   Balance: dollarcount,
+      //   parent_Id: parent_id
+      // });
+      // await userWallet.save();
   
+      let licence = new totalLicense({
+        user_Id: newUser._id,
+        Licence: Licence,
+        parent_Id: parent_id,
+        Start_Date: startDate,
+        End_Date: endDate,
+      });
+
+      await licence.save();
+
       return res.json({
         status: true,
         message: "User added successfully",

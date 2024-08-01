@@ -8,6 +8,7 @@ import {
 import {
   updateuserLicence,
   DeleteUserdata,
+  adminWalletBalance
   
 } from "../../../Services/Admin/Addmin";
 
@@ -43,6 +44,9 @@ const Users = () => {
   const [licencevalue, setLicencevalue] = useState("");
 
   const [loading, setLoading] = useState(false);
+
+  const [checkprice, setCheckprice] = useState("");
+
 
   const columns = [
     { Header: "FullName", accessor: "FullName" },
@@ -294,32 +298,43 @@ const Users = () => {
   // update  balance
   const updateBalance = async () => {
     try {
+      // Check if there are sufficient funds before making the API call
+      if (parseFloat(checkprice) < parseFloat(balance)) {
+        Swal.fire({
+          title: "Alert",
+          text: "Insufficient funds",
+          icon: "warning",
+          timer: 1000,
+          timerProgressBar: true,
+        });
+        return;
+      }
+  
+      // Make the API call to add balance
       const response = await Addbalance({
         id: id,
         Balance: balance,
         parent_Id: user_id,
         Type: type,
       });
-
+  
+      // Show success message
       Swal.fire({
         icon: "success",
         title: "Balance Updated",
         text: response.message || "The balance has been updated successfully.",
       });
-
+  
+      // Refresh user data and close the modal
       getAlluserdata();
       setModal(false);
     } catch (error) {
-      let errorMessage =
-        "There was an error updating the balance. Please try again.";
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
+      // Handle errors and show error message
+      let errorMessage = "There was an error updating the balance. Please try again.";
+      if (error.response && error.response.data && error.response.data.message) {
         errorMessage = error.response.data.message;
       }
-
+  
       Swal.fire({
         icon: "error",
         title: "Update Failed",
@@ -327,7 +342,7 @@ const Users = () => {
       });
     }
   };
-
+  
   // update acctive status
 
   const updateactivestatus = async (event, id) => {
@@ -387,8 +402,23 @@ const Users = () => {
     }
   };
 
+
+  // admin blaance 
+  const getadminbalance = async () => {
+    const data = {userid: user_id};
+    try {
+      const response = await adminWalletBalance(data);
+      setCheckprice(response.Balance);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+
+
   useEffect(() => {
     getAlluserdata();
+    getadminbalance();
   }, []);
 
 

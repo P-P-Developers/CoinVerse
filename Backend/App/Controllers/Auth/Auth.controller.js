@@ -8,8 +8,10 @@ const User_model = db.user;
 const Sign_In = db.Sign_In;
 const totalLicense = db.totalLicense;
 
+
+
 class Auth {
-  
+
   async login(req, res) {
     try {
       const { UserName, password } = req.body;
@@ -63,10 +65,12 @@ class Auth {
     }
   }
 
+
   async SignIn(req, res) {
     try {
       const { FullName, UserName, PhoneNo, password } = req.body;
-
+       
+     
       if (!FullName || !UserName || !PhoneNo || !password) {
         return res.json({
           status: false,
@@ -75,18 +79,28 @@ class Auth {
         });
       }
 
-      // // Hash the password
-      // var rand_password = Math.round(password);
-      // const salt = await bcrypt.genSalt(10);
-      // var hashedPassword = await bcrypt.hash(rand_password.toString(), salt);
 
+  
+      // Check if username already exists
+      const existingUsers = await User_model.find({ UserName: { $in: [UserName] } });
+  
+      if (existingUsers.length > 0) {
+        return res.json({
+          status: false,
+          message: "Username already exists",
+          data: [],
+        });
+      }
+  
+    
+      // Create new user
       const signinuser = new Sign_In({
         FullName,
         UserName,
         password,
         PhoneNo,
       });
-
+  
       const result = await signinuser.save();
 
       if (!result) {
@@ -96,13 +110,14 @@ class Auth {
           data: [],
         });
       }
-
+  
       return res.json({
         status: true,
-        message: "Sign in successfully",
-        data: [],
+        message: "Signed in successfully",
+        data: result,  
       });
     } catch (error) {
+      console.error(error); // Log the error for debugging
       return res.json({
         status: false,
         message: "Internal error",
@@ -110,6 +125,7 @@ class Auth {
       });
     }
   }
+  
 
   async getSignIn(req, res) {
     try {

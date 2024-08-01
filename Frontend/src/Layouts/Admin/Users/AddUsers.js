@@ -3,15 +3,19 @@ import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import Form from "../../../Utils/Form/Formik";
-import { AddUser, getbalancandLicence } from "../../../Services/Admin/Addmin";
-// import { getUserdata } from "../../../Services/Superadmin/Superadmin";
-
-
+import { AddUser, adminWalletBalance } from "../../../Services/Admin/Addmin";
+import { useLocation } from "react-router-dom";
 
 const AddUsers = () => {
+
   const navigate = useNavigate();
+  const location = useLocation();
+  const clientData = location.state?.clientData || {};
+
+
 
   const [checkprice, setCheckprice] = useState("");
+
 
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const Role = userDetails?.Role;
@@ -19,16 +23,16 @@ const AddUsers = () => {
 
   const formik = useFormik({
     initialValues: {
-      fullName: "",
-      username: "",
+      fullName: clientData.FullName || "",
+      username: clientData.UserName || "",
       email: "",
-      phone: "",
+      phone: clientData.PhoneNo || "",
       Balance: "",
-      password: "",
+      password: clientData.password || "",
       confirmPassword: "",
-      Licence: "",
-      limit: "",
-      selectedOption: "",
+      Licence:"",
+      limit:"",
+      selectedOption:  "",
       inputValue: "",
     },
 
@@ -101,7 +105,7 @@ const AddUsers = () => {
 
       setSubmitting(false);
 
-      if (parseFloat(checkprice.BalanceInRupees) < parseFloat(values.Balance)) {
+      if (parseFloat(checkprice) < parseFloat(values.Balance)) {
         Swal.fire({
           title: "Alert",
           text: "Insufficient funds",
@@ -150,16 +154,11 @@ const AddUsers = () => {
     },
   });
 
-
-
-
-  //  // get all admin
   const getadminbalance = async () => {
-    const data = { userid: user_id, Role: Role };
+    const data = {userid: user_id};
     try {
-      const response = await getbalancandLicence(data);
-
-      setCheckprice(response.data);
+      const response = await adminWalletBalance(data);
+      setCheckprice(response.Balance);
     } catch (error) {
       console.log("error", error);
     }
@@ -205,7 +204,7 @@ const AddUsers = () => {
     {
       name: "Balance",
       label: "Balance",
-      type: "text3",
+      type: "text",
       label_size: 12,
       col_size: 6,
       disable: false,
@@ -236,7 +235,7 @@ const AddUsers = () => {
     },
     {
       name: "limit",
-      label: "limit",
+      label: "Limit",
       type: "text3",
       label_size: 12,
       col_size: 6,

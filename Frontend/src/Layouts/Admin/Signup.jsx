@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import Table from "../../Utils/Table/Table";
 import { fDateTime } from "../../Utils/Date_format/datefromat";
 import { getSignIn } from "../../Services/Admin/Addmin";
-
+import {Pencil} from "lucide-react";
+import { Navigate, useNavigate  } from "react-router-dom";
 
 
 const Signup = () => {
@@ -10,9 +11,14 @@ const Signup = () => {
 
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
+  
+  const navigate = useNavigate();
+ 
+
 
 
   const [data, setData] = useState([]);
+  const [currentClient, setCurrentClient] = useState(null);
 
   const columns = [
     { Header: "FullName", accessor: "FullName" },
@@ -27,11 +33,30 @@ const Signup = () => {
 
       },
     },
-    { Header: "Action", accessor: "Action" 
-        
+    {
+      Header: "Action",
+      accessor: "Action",
+      Cell: ({ cell }) => {
+        return (
+          <div>
+            <Pencil
+              style={{ cursor: "pointer", color: "#33B469" }}
+              onClick={() => EditClient(cell.row._id)}
+            />
+          </div>
+        );
+      },
     },
   ];
 
+  
+ 
+  const EditClient = (rowId) => {
+    const clientData = data.find((item) => item._id === rowId);
+   
+
+    navigate("/admin/adduser", { state: { clientData } });
+  };
 
 
 

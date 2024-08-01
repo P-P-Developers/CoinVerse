@@ -12,6 +12,7 @@ const MarginRequired = db.MarginRequired;
 const Symbol = db.Symbol;
 
 class Admin {
+  
   async AddUser(req, res) {
     try {
       const {
@@ -68,8 +69,6 @@ class Admin {
         }
       }
 
-
-      
       // Current date as start date
       const startDate = new Date();
       let endDate = new Date(startDate);
@@ -201,6 +200,7 @@ class Admin {
   //   }
   // }
 
+
   async updateLicence(req, res) {
     try {
       const { id, Licence, parent_Id } = req.body;
@@ -216,21 +216,21 @@ class Admin {
       }
 
       // Current date as start date
-      const startDate = new Date();
-      let endDate = new Date(startDate);
-      endDate.setMonth(endDate.getMonth() + Number(Licence));
+      const currentDate = new Date();
+      const startDate = new Date(
+        userdata.End_Date >= currentDate ? userdata.End_Date : currentDate
+      );
 
-      if (endDate.getDate() < startDate.getDate()) {
-        endDate.setDate(0);
-      }
 
-      const newLicence = Number(userdata.Licence || 0) + Number(Licence);
+      // Calculate the new end date
       let newEndDate = new Date(startDate);
-      newEndDate.setMonth(newEndDate.getMonth() + newLicence);
+      newEndDate.setMonth(newEndDate.getMonth() + Number(Licence));
 
       if (newEndDate.getDate() < startDate.getDate()) {
         newEndDate.setDate(0);
       }
+
+      const newLicence = Number(userdata.Licence || 0) + Number(Licence);
 
       await User_model.updateOne(
         { _id: userdata._id },
@@ -242,7 +242,7 @@ class Admin {
         Licence: Licence,
         parent_Id: parent_Id,
         Start_Date: startDate,
-        End_Date: endDate,
+        End_Date: newEndDate,
       });
       await result.save();
 
@@ -255,6 +255,9 @@ class Admin {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
+
+
+
 
   // update user
   async updateUser(req, res) {
@@ -672,6 +675,66 @@ class Admin {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
+
+  // count toatal baance
+
+
+  async countuserBalance(req, res) {
+    try {
+      const { userid } = req.body;
+  
+      if (!userid) {
+        return res.json({ status: false, message: "User ID is required", data: [] });
+      }
+  
+      const checkuser = await Wallet_model.find({ parent_Id: userid }).select("Balance Type");
+  
+      const totalBalance = checkuser.reduce((sum, user) => {
+        if (user.Type === 'CREDIT') {
+          return sum + Number(user.Balance);
+        } else if (user.Type === 'DEBIT') {
+          return sum - Number(user.Balance);
+        } else {
+          return sum;
+        }
+      }, 0);
+  
+    
+      const findadmin = await User_model.findOne({ _id: userid }).select("Balance");
+  
+      if (!findadmin) {
+        return res.json({ status: false, message: "Admin not found", data: [] });
+      }
+  
+      const counttotalbalance = Number(findadmin.Balance) + totalBalance;
+  
+  
+      const dollarPriceDoc = await MarginRequired.findOne({ adminid: userid });
+  
+      if (!dollarPriceDoc || !dollarPriceDoc.dollarprice) {
+        return res.json({
+          status: false,
+          message: "Dollar price not found",
+          data: [],
+        });
+      }
+  
+     
+      const conversionRate = dollarPriceDoc.dollarprice;
+      const balanceInRupees = counttotalbalance * conversionRate;
+  
+      return res.json({ status: true, message: "Success", Balance: balanceInRupees });
+  
+    } catch (error) {
+      
+      return res.json({ status: false, message: "Internal server error", data: [] });
+    }
+  }
+  
+  
+  
+  
+
 }
 
 module.exports = new Admin();
