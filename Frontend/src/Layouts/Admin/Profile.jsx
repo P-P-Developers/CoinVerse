@@ -1,6 +1,32 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { getAllClient } from '../../Services/Superadmin/Superadmin';
 
 const Profile = () => {
+
+    const userDetails = JSON.parse(localStorage.getItem("user_details"));
+  const user_id = userDetails?.user_id;
+
+    const [client,setClient] = useState([])
+
+   const getallclient=async()=>{
+      try {
+        const data = {userid:user_id}
+        const response = await getAllClient(data)
+        if(response.status){
+            console.log(response.data)
+            setClient(response.data)
+        }
+
+      } catch (error) {
+
+      }
+   }
+
+
+   useEffect(()=>{
+    getallclient()
+   },[])
+
     return (
         <div>
             <div className="container-fluid" style={{ minHeight: 723 }}>
@@ -25,7 +51,7 @@ const Profile = () => {
                                                 </div>
                                             </div>
                                             <div className="author-info">
-                                                <h6 className="title">Admin</h6>
+                                                <h6 className="title">{client.UserName && client.UserName}</h6>
                                                 {/* <span>Developer</span> */}
                                             </div>
                                         </div>
@@ -34,15 +60,15 @@ const Profile = () => {
                                         <ul>
                                             <li>
                                                 <a href="/vite/demo/app-profile">Name  </a>
-                                                <span> Admin </span>
+                                                <span>{client.UserName && client.UserName}</span>
                                             </li>
                                             <li>
-                                                <a href="/vite/demo/uc-lightgallery">Company Name</a>
-                                                <span>PNP</span>
+                                                <a href="/vite/demo/uc-lightgallery">phone Number</a>
+                                                <span>{client.PhoneNo && client.PhoneNo}</span>
                                             </li>
                                             <li>
-                                                <a href="/vite/demo/app-profile">Email</a>
-                                                <span>info@pnpinfotech.com</span>
+                                                <a href="/vite/demo/app-profile">Total Balance</a>
+                                                <span>{client.Balance && client.Balance}</span>
                                             </li>
                                             <li>
                                                 <a href="/vite/demo/app-profile">Mobile </a>

@@ -441,6 +441,25 @@ class Superadmin {
       });
     }
   }
+
+
+  async getAllclent(req,res){
+    try {
+      const {userid} = req.body 
+      const result = await User_model.findOne({ _id: userid})
+       
+      if(!result){
+        return res.json({status:false,message:"not found",data:[]})
+      }
+
+      return res.json({status:true,message:"user found",data:result})
+
+      
+    } catch (error) {
+      return res.json({status:false,message:"internal error",data:[]})
+      
+    }
+  }
   
 
 }

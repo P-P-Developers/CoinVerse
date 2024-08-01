@@ -741,9 +741,6 @@ const ExitTrade = async (req, res, orderdata, checkadmin, brokerage) => {
     if (tradehistory) {
       const totalSellLot = (tradehistory.sell_lot || 0) + lotNum;
 
-      console.log("lotNum", lotNum);
-      console.log("tradehistory", tradehistory.sell_lot);
-      console.log("tradehistory buy_lot", tradehistory.buy_lot);
 
       if (tradehistory.buy_lot >= totalSellLot) {
         if (tradehistory.sell_lot == null && tradehistory.sell_price == null) {

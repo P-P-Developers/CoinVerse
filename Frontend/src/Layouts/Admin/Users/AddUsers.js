@@ -1,25 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import Form from "../../../Utils/Form/Formik";
 import { AddUser, adminWalletBalance } from "../../../Services/Admin/Addmin";
-import { useLocation } from "react-router-dom";
+
 
 const AddUsers = () => {
-
   const navigate = useNavigate();
   const location = useLocation();
   const clientData = location.state?.clientData || {};
 
-
-
   const [checkprice, setCheckprice] = useState("");
-
+  const [dollarPrice, setDollarPrice] = useState(0);
+  const [checkdolarprice, setCheckdolarprice] = useState(0);
 
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const Role = userDetails?.Role;
   const user_id = userDetails?.user_id;
+
+ 
 
   const formik = useFormik({
     initialValues: {
@@ -30,9 +30,9 @@ const AddUsers = () => {
       Balance: "",
       password: clientData.password || "",
       confirmPassword: "",
-      Licence:"",
-      limit:"",
-      selectedOption:  "",
+      Licence: "",
+      limit: "",
+      selectedOption: "",
       inputValue: "",
     },
 
@@ -155,10 +155,11 @@ const AddUsers = () => {
   });
 
   const getadminbalance = async () => {
-    const data = {userid: user_id};
+    const data = { userid: user_id };
     try {
       const response = await adminWalletBalance(data);
       setCheckprice(response.Balance);
+      setCheckdolarprice(response.dollarPriceDoc.dollarprice)
     } catch (error) {
       console.log("error", error);
     }
@@ -167,6 +168,11 @@ const AddUsers = () => {
   useEffect(() => {
     getadminbalance();
   }, []);
+
+  useEffect(() => {
+    const exchangeRate = Number(checkdolarprice) // Example exchange rate
+    setDollarPrice(formik.values.Balance ? (parseFloat(formik.values.Balance) / exchangeRate).toFixed(2) : 0);
+  }, [formik.values.Balance]);
 
   const fields = [
     {
@@ -209,6 +215,7 @@ const AddUsers = () => {
       col_size: 6,
       disable: false,
     },
+    
     {
       name: "password",
       label: "Password",
@@ -269,14 +276,22 @@ const AddUsers = () => {
   ];
 
   return (
-    <Form
-      fields={fields}
-      page_title="Add User"
-      btn_name="Add User"
-      btn_name1="Cancel"
-      formik={formik}
-      btn_name1_route={"/admin/users"}
-    />
+    <div>
+      <Form
+        fields={fields}
+        page_title="Add User"
+        btn_name="Add User"
+        btn_name1="Cancel"
+        formik={formik}
+        btn_name1_route={"/admin/users"}
+      />
+      {formik.values.Balance && (
+      <div >
+        <p>Dollar Price: ${dollarPrice}</p>
+      </div>
+    )},
+  
+    </div>
   );
 };
 

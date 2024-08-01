@@ -723,7 +723,7 @@ class Admin {
       const conversionRate = dollarPriceDoc.dollarprice;
       const balanceInRupees = counttotalbalance * conversionRate;
   
-      return res.json({ status: true, message: "Success", Balance: balanceInRupees });
+      return res.json({ status: true, message: "Success", Balance: balanceInRupees,dollarPriceDoc });
   
     } catch (error) {
       
