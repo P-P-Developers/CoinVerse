@@ -17297,11 +17297,11 @@ svg.pulse-svg .third-circle {
   font-weight: 500;
   display: inline-block;
   font-size: 0.9rem;
-  color: var(--text);
+  color: #000;
 }
 
 .dlabnav .metismenu>li>a i {
-  color: #C8C8C8;
+  color: #000;
 }
 
 .dlabnav .metismenu>li>a svg {
