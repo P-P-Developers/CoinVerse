@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
-import { getUserdata, Addbalance , updateActivestatus , Delete_Admin} from "../../../Services/Superadmin/Superadmin";
+import { getUserdata, Addbalance, updateActivestatus, Delete_Admin } from "../../../Services/Superadmin/Superadmin";
 import { Link, useNavigate } from "react-router-dom";
-import { CirclePlus, Pencil,Trash2,CircleDollarSign,CircleMinus } from "lucide-react";
+import { CirclePlus, Pencil, Trash2, CircleDollarSign, CircleMinus } from "lucide-react";
 import Swal from 'sweetalert2';
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 import Loader from "../../../Utils/Loader/Loader";
@@ -22,7 +22,7 @@ const Admin = () => {
   const [balance, setBalance] = useState("");
   const [modal, setModal] = useState(false);
   const [id, setID] = useState("");
-  const [type,setType] = useState("")
+  const [type, setType] = useState("")
 
 
   const [loading, setLoading] = useState(false);
@@ -52,16 +52,16 @@ const Admin = () => {
             borderRadius: "10px",
             transition: "background-color 0.3s ease",
           }}
-         
+
         >
-         <CircleDollarSign
-              style={{
-                height: "16px",
-                marginBottom: "-4px",
-                marginRight: "5px",
-                verticalAlign: "middle",
-              }}
-            />
+          <CircleDollarSign
+            style={{
+              height: "16px",
+              marginBottom: "-4px",
+              marginRight: "5px",
+              verticalAlign: "middle",
+            }}
+          />
           <span style={{ fontWeight: "bold", verticalAlign: "middle" }}>
             <CirclePlus
               size={20}
@@ -71,12 +71,12 @@ const Admin = () => {
                 verticalAlign: "middle",
               }}
               onClick={() => {
-            setModal(true);
-            setID(cell.row._id);
-            setType("CREDIT")
-          }}
+                setModal(true);
+                setID(cell.row._id);
+                setType("CREDIT")
+              }}
             />
-           
+
             {cell.value}
             {/* <CircleMinus 
               size={20}
@@ -107,7 +107,7 @@ const Admin = () => {
             onChange={(event) => updateactivestatus(event, cell.row._id)}
             defaultChecked={cell.value == 1}
           />
-            <label htmlFor={`rating_${cell.row.id}`} className="checktoggle checkbox-bg"></label>
+          <label htmlFor={`rating_${cell.row.id}`} className="checktoggle checkbox-bg"></label>
 
         </label>
       ),
@@ -118,32 +118,33 @@ const Admin = () => {
       Cell: ({ cell }) => {
         return (
           <div>
-           
-            <Pencil style={{ cursor: 'pointer' }} 
-               onClick={() => updateAdmin(cell.row._id,cell)}
+
+            <Pencil style={{ cursor: 'pointer' }}
+              onClick={() => updateAdmin(cell.row._id, cell)}
             />
-             <Trash2 style={{ cursor: 'pointer', marginRight: '10px' }}
-               onClick={() => DeleteAdmin(cell.row._id)}
+            <Trash2 style={{ cursor: 'pointer', marginRight: '10px' }}
+              onClick={() => DeleteAdmin(cell.row._id)}
             />
           </div>
         );
       },
     },
-    { Header: "Create Date", accessor: "Create_Date",
-      Cell: ({cell}) => {
+    {
+      Header: "Create Date", accessor: "Create_Date",
+      Cell: ({ cell }) => {
         return fDateTime(cell.value)
-       
-       },
-     },
+
+      },
+    },
   ];
 
-  
+
 
   // delete admin
 
   const DeleteAdmin = async (_id) => {
     try {
-  
+
       const confirmResult = await Swal.fire({
         title: 'Are you sure?',
         text: 'You will not be able to recover this user!',
@@ -153,17 +154,17 @@ const Admin = () => {
         cancelButtonColor: '#d33',
         confirmButtonText: 'Yes, delete it!'
       });
-  
+
       if (confirmResult.isConfirmed) {
         const data = { id: _id };
         await Delete_Admin(data);
-  
+
         Swal.fire({
           icon: 'success',
           title: 'User Deleted',
           text: 'The user has been deleted successfully.',
         });
-  
+
         getAllAdmin();
       }
     } catch (error) {
@@ -178,10 +179,10 @@ const Admin = () => {
   // update admin data 
 
 
-  const updateAdmin = (_id,obj) => {
-    navigate(`updateadmin/${_id}`,{ state: { rowData: obj.row }});
-   
-};
+  const updateAdmin = (_id, obj) => {
+    navigate(`updateadmin/${_id}`, { state: { rowData: obj.row } });
+
+  };
 
 
 
@@ -189,13 +190,13 @@ const Admin = () => {
   // update  balance
   const updateBalance = async () => {
     try {
-     await Addbalance({
+      await Addbalance({
         id: id,
         Balance: balance,
-        parent_Id:user_id,
-        Type:type
+        parent_Id: user_id,
+        Type: type
       });
-      
+
       Swal.fire({
         icon: 'success',
         title: 'Balance Updated',
@@ -211,12 +212,12 @@ const Admin = () => {
       });
     }
   };
-  
+
 
 
   // update acctive status
 
-  
+
   const updateactivestatus = async (event, id) => {
     const user_active_status = event.target.checked ? 1 : 0;
 
@@ -225,7 +226,7 @@ const Admin = () => {
       showCancelButton: true,
       confirmButtonText: "Save",
       cancelButtonText: "Cancel",
-      allowOutsideClick: false, 
+      allowOutsideClick: false,
     });
 
     if (result.isConfirmed) {
@@ -240,10 +241,10 @@ const Admin = () => {
           });
           setTimeout(() => {
             Swal.close(); // Close the modal
-            
+
           }, 1000);
-        } 
-  
+        }
+
       } catch (error) {
         console.error("Error", error);
         Swal.fire("Error", "There was an error processing your request.", "error");
@@ -261,7 +262,7 @@ const Admin = () => {
     const data = { id: user_id };
     try {
       const response = await getUserdata(data);
-      setData(response.data); 
+      setData(response.data);
       setLoading(false);
     } catch (error) {
       console.log("error", error);
@@ -289,9 +290,9 @@ const Admin = () => {
                   </div>
                   <Link
                     to="/superadmin/addmin"
-                      className="float-end mb-2 btn btn-primary"
+                    className="float-end mb-2 btn btn-primary"
                   >
-                    Add Admins
+                    Add Admin
                   </Link>
                 </div>
                 <div className="card-body p-0">
@@ -302,14 +303,14 @@ const Admin = () => {
                       role="tabpanel"
                       aria-labelledby="Week-tab"
                     >
-                        <div className='mb-3 ms-4'>
-                          Search :{" "}
-                          <input
-                            className="ml-2 input-search form-control"
-                            defaultValue=""
-                            style={{ width: "20%" }}
-                          />
-                        </div>
+                      <div className='mb-3 ms-4'>
+                        Search :{" "}
+                        <input
+                          className="ml-2 input-search form-control"
+                          defaultValue=""
+                          style={{ width: "20%" }}
+                        />
+                      </div>
                       <Table columns={columns} data={data} />
                     </div>
                   </div>
