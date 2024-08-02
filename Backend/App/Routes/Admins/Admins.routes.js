@@ -4,7 +4,8 @@ const router = require("express").Router()
 
 const { GetDashboardData} = require("../../Controllers/Admins/AdminDashboard/Dashboard");
 const {AddUser , updateLicence , updateUser , DeleteUser,Update_Employe ,Delete_Employee,getuserpaymentstatus,UpdateStatus , getsymbolholdoff ,updatesymbolholoff,getbalancandLicence,
-    countuserBalance
+    countuserBalance,
+    TotalcountLicence,
 } = require("../../Controllers/Admins/Admins/Admin")
 const {marginupdate , getmarginprice} = require("../../Controllers/Admins/Admins/MarginReq")
 
@@ -27,6 +28,7 @@ router.get('/admin/getsymbolholdoff', getsymbolholdoff);
 router.post('/admin/updatesymbolholoff', updatesymbolholoff);
 router.post('/getbalancandLicence', getbalancandLicence);
 router.post('/admin/countuserBalance', countuserBalance);
+router.post('/TotalcountLicence', TotalcountLicence);
      
 
 

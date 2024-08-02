@@ -3,7 +3,7 @@ import { useFormik } from "formik";
 import { useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import Form from "../../../Utils/Form/Formik";
-import { AddUser, adminWalletBalance } from "../../../Services/Admin/Addmin";
+import { AddUser, adminWalletBalance ,TotalcountLicence} from "../../../Services/Admin/Addmin";
 
 
 const AddUsers = () => {
@@ -14,10 +14,13 @@ const AddUsers = () => {
   const [checkprice, setCheckprice] = useState("");
   const [dollarPrice, setDollarPrice] = useState(0);
   const [checkdolarprice, setCheckdolarprice] = useState(0);
+  const [checkLicence, setCheckLicence] = useState([]);
 
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const Role = userDetails?.Role;
   const user_id = userDetails?.user_id;
+
+
 
  
 
@@ -105,10 +108,10 @@ const AddUsers = () => {
 
       setSubmitting(false);
 
-      if (parseFloat(checkprice) < parseFloat(values.Balance)) {
+      if (parseInt(checkLicence.CountLicence) < parseInt(values.Licence)) {
         Swal.fire({
           title: "Alert",
-          text: "Insufficient funds",
+          text: "Licence is required",
           icon: "warning",
           timer: 1000,
           timerProgressBar: true,
@@ -118,7 +121,7 @@ const AddUsers = () => {
       }
 
       setSubmitting(false);
-
+      
       try {
         const response = await AddUser(data);
         if (response.status) {
@@ -142,7 +145,6 @@ const AddUsers = () => {
           });
         }
       } catch (error) {
-        console.log("Error:", error);
         Swal.fire({
           title: "Error!",
           text: "Failed to add user. Please try again later.",
@@ -165,14 +167,32 @@ const AddUsers = () => {
     }
   };
 
-  useEffect(() => {
-    getadminbalance();
-  }, []);
+ 
+  const getadminLicence = async () => {
+    const data = { userid: user_id };
+    try {
+      const response = await TotalcountLicence(data);
+      setCheckLicence(response.data)
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+  
+ 
+
 
   useEffect(() => {
-    const exchangeRate = Number(checkdolarprice) // Example exchange rate
+    getadminbalance();
+    getadminLicence()
+  }, []);
+
+
+
+  useEffect(() => {
+    const exchangeRate = Number(checkdolarprice) 
     setDollarPrice(formik.values.Balance ? (parseFloat(formik.values.Balance) / exchangeRate).toFixed(2) : 0);
   }, [formik.values.Balance]);
+
 
   const fields = [
     {

@@ -17,8 +17,7 @@ const Statement = db.Statement
 class statement{
 
   
-    async statement(req, res) {
-
+    async  statement(req, res) {
         try {
             const data = await Order.find({ userid: req.body.userid }).sort({ _id: -1 });
     
@@ -31,24 +30,20 @@ class statement{
                 brokerage: item.brokerage,
                 requiredFund: item.requiredFund,
                 createdAt: item.createdAt,
-                status:item.status
+                status: item.status
             }));
-
-
-           if(!result){
-            res.json({ status:false, message: "not found", data: [] });
-
-           }
-
+    
+            if (result.length === 0) {
+                return res.json({ status: false, message: "not found", data: [] });
+            }
+    
             res.json({ status: true, message: "success", data: result });
-
+    
         } catch (err) {
-
             res.json({ status: false, message: "internal error", data: [] });
         }
     }
     
-
 }
 
 module.exports = new statement();

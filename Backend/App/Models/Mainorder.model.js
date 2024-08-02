@@ -70,6 +70,10 @@ const mainorderSchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  lotsize:{
+    type: Number,
+    default: null,
+  },
   token: {
     type: String,
     default: null

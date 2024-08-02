@@ -8,7 +8,8 @@ import {
 import {
   updateuserLicence,
   DeleteUserdata,
-  adminWalletBalance
+  adminWalletBalance,
+  TotalcountLicence
   
 } from "../../../Services/Admin/Addmin";
 
@@ -42,6 +43,8 @@ const Users = () => {
   const [license, setLicence] = useState(false);
   const [licenseid, setLicenceId] = useState("");
   const [licencevalue, setLicencevalue] = useState("");
+  const [checkLicence, setCheckLicence] = useState([]);
+
 
   const [loading, setLoading] = useState(false);
 
@@ -273,18 +276,30 @@ const Users = () => {
 
   const updateLicence = async () => {
     try {
+      if (parseInt(checkLicence.CountLicence) < parseInt(licencevalue)) {
+        Swal.fire({
+          title: "Alert",
+          text: "Licence is required",
+          icon: "warning",
+          timer: 1000,
+          timerProgressBar: true,
+        });
+        return;
+      }
+
       await updateuserLicence({
         id: licenseid,
         Licence: licencevalue,
         parent_Id: user_id,
       });
-
+      
       Swal.fire({
         icon: "success",
         title: "Licence Updated",
         text: "The Licence has been updated successfully.",
       });
       getAlluserdata();
+      getadminLicence();
       setLicence(false);
     } catch (error) {
       Swal.fire({
@@ -298,18 +313,6 @@ const Users = () => {
   // update  balance
   const updateBalance = async () => {
     try {
-      // Check if there are sufficient funds before making the API call
-      if (parseFloat(checkprice) < parseFloat(balance)) {
-        Swal.fire({
-          title: "Alert",
-          text: "Insufficient funds",
-          icon: "warning",
-          timer: 1000,
-          timerProgressBar: true,
-        });
-        return;
-      }
-  
       // Make the API call to add balance
       const response = await Addbalance({
         id: id,
@@ -403,22 +406,37 @@ const Users = () => {
   };
 
 
-  // admin blaance 
-  const getadminbalance = async () => {
+
+  
+  // // admin blaance 
+  // const getadminbalance = async () => {
+  //   const data = {userid: user_id};
+  //   try {
+  //     const response = await adminWalletBalance(data);
+  //     setCheckprice(response.Balance);
+  //   } catch (error) {
+  //     console.log("error", error);
+  //   }
+  // };
+
+
+  // check licence
+
+  const getadminLicence = async () => {
     const data = {userid: user_id};
     try {
-      const response = await adminWalletBalance(data);
-      setCheckprice(response.Balance);
+      const response = await TotalcountLicence(data);
+      setCheckLicence(response.data);
     } catch (error) {
       console.log("error", error);
     }
   };
 
 
-
   useEffect(() => {
+    getadminLicence();
     getAlluserdata();
-    getadminbalance();
+    // getadminbalance();
   }, []);
 
 

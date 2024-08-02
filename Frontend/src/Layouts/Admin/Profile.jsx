@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getAllClient } from '../../Services/Superadmin/Superadmin';
+import { TotalcountLicence } from '../../Services/Admin/Addmin';
 
 const Profile = () => {
 
@@ -7,24 +8,39 @@ const Profile = () => {
   const user_id = userDetails?.user_id;
 
     const [client,setClient] = useState([])
+  const [checkLicence, setCheckLicence] = useState([]);
+
 
    const getallclient=async()=>{
       try {
         const data = {userid:user_id}
         const response = await getAllClient(data)
         if(response.status){
-            console.log(response.data)
             setClient(response.data)
         }
 
       } catch (error) {
-
+        console.log("error")
       }
    }
+
+   const gettotallicence=async()=>{
+    try {
+      const data = {userid:user_id}
+      const response = await TotalcountLicence(data)
+      if(response.status){
+          setCheckLicence(response.data)
+      }
+
+    } catch (error) {
+      console.log("error")
+    }
+ }
 
 
    useEffect(()=>{
     getallclient()
+    gettotallicence()
    },[])
 
     return (
@@ -66,13 +82,18 @@ const Profile = () => {
                                                 <a href="/vite/demo/uc-lightgallery">phone Number</a>
                                                 <span>{client.PhoneNo && client.PhoneNo}</span>
                                             </li>
+                                            
                                             <li>
-                                                <a href="/vite/demo/app-profile">Total Balance</a>
-                                                <span>{client.Balance && client.Balance}</span>
+                                                <a href="/vite/demo/app-profile">Total Licence </a>
+                                                <span>{checkLicence.userLicence && checkLicence.userLicence}</span>
                                             </li>
                                             <li>
-                                                <a href="/vite/demo/app-profile">Mobile </a>
-                                                <span>1234567890</span>
+                                                <a href="/vite/demo/app-profile">Remaining Licence</a>
+                                                <span>{checkLicence.CountLicence && checkLicence.CountLicence}</span>
+                                            </li>
+                                            <li>
+                                                <a href="/vite/demo/app-profile">Total Used Licence</a>
+                                                <span>{checkLicence.totalLicenses && checkLicence.totalLicenses}</span>
                                             </li>
 
 

@@ -10,9 +10,9 @@ const totalLicense = db.totalLicense;
 const PaymenetHistorySchema = db.PaymenetHistorySchema;
 const MarginRequired = db.MarginRequired;
 const Symbol = db.Symbol;
+// const nodemailer = require('nodemailer');
 
 class Admin {
-  
   async AddUser(req, res) {
     try {
       const {
@@ -200,7 +200,6 @@ class Admin {
   //   }
   // }
 
-
   async updateLicence(req, res) {
     try {
       const { id, Licence, parent_Id } = req.body;
@@ -220,7 +219,6 @@ class Admin {
       const startDate = new Date(
         userdata.End_Date >= currentDate ? userdata.End_Date : currentDate
       );
-
 
       // Calculate the new end date
       let newEndDate = new Date(startDate);
@@ -255,9 +253,6 @@ class Admin {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
-
-
-
 
   // update user
   async updateUser(req, res) {
@@ -678,39 +673,49 @@ class Admin {
 
   // count toatal baance
 
-
   async countuserBalance(req, res) {
     try {
       const { userid } = req.body;
-  
+
       if (!userid) {
-        return res.json({ status: false, message: "User ID is required", data: [] });
+        return res.json({
+          status: false,
+          message: "User ID is required",
+          data: [],
+        });
       }
-  
-      const checkuser = await Wallet_model.find({ parent_Id: userid }).select("Balance Type");
-  
+
+      const checkuser = await Wallet_model.find({ parent_Id: userid }).select(
+        "Balance Type"
+      );
+
       const totalBalance = checkuser.reduce((sum, user) => {
-        if (user.Type === 'CREDIT') {
+        if (user.Type === "CREDIT") {
           return sum + Number(user.Balance);
-        } else if (user.Type === 'DEBIT') {
+        } else if (user.Type === "DEBIT") {
           return sum - Number(user.Balance);
         } else {
           return sum;
         }
       }, 0);
-  
-    
-      const findadmin = await User_model.findOne({ _id: userid }).select("Balance");
-  
+
+      const findadmin = await User_model.findOne({ _id: userid }).select(
+        "Balance"
+      );
+
       if (!findadmin) {
-        return res.json({ status: false, message: "Admin not found", data: [] });
+        return res.json({
+          status: false,
+          message: "Admin not found",
+          data: [],
+        });
       }
-  
-      const counttotalbalance = Number(findadmin.Balance) + totalBalance;
-  
-  
+
+      const counttotalbalance =
+        Number(findadmin.Balance) - Number(totalBalance);
+
+
       const dollarPriceDoc = await MarginRequired.findOne({ adminid: userid });
-  
       if (!dollarPriceDoc || !dollarPriceDoc.dollarprice) {
         return res.json({
           status: false,
@@ -718,23 +723,59 @@ class Admin {
           data: [],
         });
       }
-  
-     
+
       const conversionRate = dollarPriceDoc.dollarprice;
       const balanceInRupees = counttotalbalance * conversionRate;
-  
-      return res.json({ status: true, message: "Success", Balance: balanceInRupees,dollarPriceDoc });
-  
+
+      return res.json({
+        status: true,
+        message: "Success",
+        Balance: balanceInRupees,
+        dollarPriceDoc,
+      });
     } catch (error) {
-      
-      return res.json({ status: false, message: "Internal server error", data: [] });
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        data: [],
+      });
     }
   }
-  
-  
-  
-  
 
+
+  async  TotalcountLicence(req, res) {
+  try {
+    const { userid } = req.body;
+
+    if (!userid) {
+      return res.json({ status: false, message: "User ID is required" });
+    }
+
+    const licenses = await totalLicense.find({ parent_Id: userid }).select("Licence");
+
+    const totalLicenses = licenses.reduce((acc, curr) => acc + curr.Licence, 0);
+
+    const user = await User_model.findOne({ _id: userid });
+
+    if (!user) {
+      return res.json({ status: false, message: "User not found" });
+    }
+  
+    const licenseDiff =  Number(user.Licence) - Number(totalLicenses)
+
+    return res.json({ status: true, message: "Success", 
+      data: {totalLicenses:totalLicenses,CountLicence:licenseDiff,userLicence:user.Licence}
+
+     });
+  } catch (error) {
+    console.error(error);
+    return res.json({ status: false, message: "Internal Server Error", data: [] });
+  }
+}
+
+
+
+  
 }
 
 module.exports = new Admin();

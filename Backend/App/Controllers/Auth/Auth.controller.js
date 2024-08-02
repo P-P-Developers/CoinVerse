@@ -12,58 +12,63 @@ const totalLicense = db.totalLicense;
 
 class Auth {
 
-  async login(req, res) {
-    try {
-      const { UserName, password } = req.body;
+    async login(req, res) {
 
-      const EmailCheck = await User_model.findOne({ UserName: UserName });
+      try {
+        const { UserName, password } = req.body;
+        const EmailCheck = await User_model.findOne({ UserName: UserName });
 
-      if (!EmailCheck) {
-        return res.send({ status: false, msg: "User Not exists", data: [] });
-      }
-
-      if (EmailCheck.ActiveStatus !== "1") {
-        return res.send({
-          status: false,
-          msg: "Account is not active",
-          data: [],
-        });
-      }
-       
-      if (EmailCheck.Role === "USER" || EmailCheck.Role === "ADMIN") {
-        const currentDate = new Date();
-        const endDate = new Date(EmailCheck.End_Date);
-  
-        if (endDate.getDate() === currentDate.getDate() && endDate.getMonth() === currentDate.getMonth()) {
-          return res.send({ status: false, msg: "Account is expired", data: [] });
+        if (!EmailCheck) {
+          return res.send({ status: false, msg: "User Not exists", data: [] });
         }
+
+        if (EmailCheck.ActiveStatus !== "1") {
+          return res.send({
+            status: false,
+            msg: "Account is not active",
+            data: [],
+          });
+        }
+        
+        if (EmailCheck.Role === "USER" || EmailCheck.Role === "ADMIN") {
+          const currentDate = new Date();
+          const endDate = new Date(EmailCheck.End_Date);
+    
+          if (
+            endDate.getDate() === currentDate.getDate() &&
+            endDate.getMonth() === currentDate.getMonth() &&
+            endDate.getFullYear() === currentDate.getFullYear()
+          ) {
+            return res.send({ status: false, msg: "Account is expired", data: [] });
+          }
+        }
+    
+        const validPassword = await bcrypt.compare(password, EmailCheck.password);
+
+        if (!validPassword) {
+          return res.send({ status: false, msg: "Password Not Match", data: [] });
+        }
+
+        // JWT TOKEN CREATE
+        var token = jwt.sign({ id: EmailCheck._id }, process.env.SECRET, {
+          expiresIn: 36000,
+        });
+
+       
+        return res.send({
+          status: true,
+          msg: "Login Successfully",
+          data: {
+            token: token,
+            Role: EmailCheck.Role,
+            user_id: EmailCheck._id,
+            UserName: EmailCheck.UserName,
+          },
+        });
+      } catch (error) {
+        res.send({ status: false, msg: "Server Side error", data: error });
       }
-  
-      const validPassword = await bcrypt.compare(password, EmailCheck.password);
-
-      if (!validPassword) {
-        return res.send({ status: false, msg: "Password Not Match", data: [] });
-      }
-
-      // JWT TOKEN CREATE
-      var token = jwt.sign({ id: EmailCheck._id }, process.env.SECRET, {
-        expiresIn: 36000,
-      });
-
-      return res.send({
-        status: true,
-        msg: "Login Successfully",
-        data: {
-          token: token,
-          Role: EmailCheck.Role,
-          user_id: EmailCheck._id,
-          UserName: EmailCheck.UserName,
-        },
-      });
-    } catch (error) {
-      res.send({ status: false, msg: "Server Side error", data: error });
     }
-  }
 
 
   async SignIn(req, res) {

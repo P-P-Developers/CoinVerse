@@ -311,3 +311,19 @@ export async function adminWalletBalance(data, token) {
     }
 
 }
+
+
+
+export async function TotalcountLicence(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}TotalcountLicence`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
