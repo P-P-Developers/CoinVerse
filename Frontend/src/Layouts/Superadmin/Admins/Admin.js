@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
-import { getUserdata, Addbalance, updateActivestatus, Delete_Admin } from "../../../Services/Superadmin/Superadmin";
+import { getUserdata, Addbalance , updateActivestatus , Delete_Admin} from "../../../Services/Superadmin/Superadmin";
 import { Link, useNavigate } from "react-router-dom";
-import { CirclePlus, Pencil, Trash2, CircleDollarSign, CircleMinus } from "lucide-react";
+import { CirclePlus, Pencil,Trash2,CircleDollarSign,CircleMinus } from "lucide-react";
 import Swal from 'sweetalert2';
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 import Loader from "../../../Utils/Loader/Loader";
+import { updateuserLicence } from "../../../Services/Admin/Addmin";
+
+
 
 
 const Admin = () => {
 
 
   const navigate = useNavigate()
-
-
-
+  
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
 
@@ -22,8 +23,13 @@ const Admin = () => {
   const [balance, setBalance] = useState("");
   const [modal, setModal] = useState(false);
   const [id, setID] = useState("");
-  const [type, setType] = useState("")
+  const [type,setType] = useState("")
+  
 
+  const [license, setLicence] = useState(false);
+  const [licenseid, setLicenceId] = useState("");
+  const [licencevalue, setLicencevalue] = useState("");
+  
 
   const [loading, setLoading] = useState(false);
 
@@ -34,9 +40,87 @@ const Admin = () => {
     { Header: "UserName", accessor: "UserName" },
     { Header: "Email", accessor: "Email" },
     { Header: "Phone No", accessor: "PhoneNo" },
+    // {
+    //   Header: "Balance",
+    //   accessor: "Balance",
+    //   Cell: ({ cell }) => (
+    //     <div
+    //       style={{
+    //         backgroundColor: "#E1FFED",
+    //         border: "none",
+    //         color: "#33B469",
+    //         padding: "6px 10px",
+    //         textAlign: "center",
+    //         textDecoration: "none",
+    //         display: "inline-block",
+    //         fontSize: "13px",
+    //         cursor: "pointer",
+    //         borderRadius: "10px",
+    //         transition: "background-color 0.3s ease",
+    //       }}
+         
+    //     >
+    //      <CircleDollarSign
+    //           style={{
+    //             height: "16px",
+    //             marginBottom: "-4px",
+    //             marginRight: "5px",
+    //             verticalAlign: "middle",
+    //           }}
+    //         />
+    //       <span style={{ fontWeight: "bold", verticalAlign: "middle" }}>
+    //         <CirclePlus
+    //           size={20}
+    //           style={{
+    //             marginBottom: "-4px",
+    //             marginRight: "5px",
+    //             verticalAlign: "middle",
+    //           }}
+    //           onClick={() => {
+    //         setModal(true);
+    //         setID(cell.row._id);
+    //         setType("CREDIT")
+    //       }}
+    //         />
+           
+    //         {cell.value}
+    //         {/* <CircleMinus 
+    //           size={20}
+    //           style={{
+    //             marginBottom: "-4px",
+    //             marginRight: "5px",
+    //             verticalAlign: "middle",
+    //           }}
+    //           onClick={() => {
+    //         setModal(true);
+    //         setID(cell.row._id);
+    //         setType("DEBIT")
+    //       }}
+    //         /> */}
+    //       </span>
+    //     </div>
+    //   ),
+    // },
     {
-      Header: "Balance",
-      accessor: "Balance",
+      Header: "ActiveStatus",
+      accessor: "ActiveStatus",
+      Cell: ({ cell }) => (
+        <label className="form-check form-switch">
+          <input
+            id={`rating_${cell.row.id}`}
+            className="form-check-input"
+            type="checkbox"
+            onChange={(event) => updateactivestatus(event, cell.row._id)}
+            defaultChecked={cell.value == 1}
+          />
+            <label htmlFor={`rating_${cell.row.id}`} className="checktoggle checkbox-bg"></label>
+
+        </label>
+      ),
+    },
+    {
+      Header: "Licence",
+      accessor: "Licence",
       Cell: ({ cell }) => (
         <div
           style={{
@@ -52,64 +136,22 @@ const Admin = () => {
             borderRadius: "10px",
             transition: "background-color 0.3s ease",
           }}
-
+          onClick={() => {
+            setLicence(true);
+            setLicenceId(cell.row._id);
+          }}
         >
-          <CircleDollarSign
-            style={{
-              height: "16px",
-              marginBottom: "-4px",
-              marginRight: "5px",
-              verticalAlign: "middle",
-            }}
-          />
           <span style={{ fontWeight: "bold", verticalAlign: "middle" }}>
             <CirclePlus
               size={20}
               style={{
-                marginBottom: "-4px",
                 marginRight: "5px",
                 verticalAlign: "middle",
-              }}
-              onClick={() => {
-                setModal(true);
-                setID(cell.row._id);
-                setType("CREDIT")
               }}
             />
-
             {cell.value}
-            {/* <CircleMinus 
-              size={20}
-              style={{
-                marginBottom: "-4px",
-                marginRight: "5px",
-                verticalAlign: "middle",
-              }}
-              onClick={() => {
-            setModal(true);
-            setID(cell.row._id);
-            setType("DEBIT")
-          }}
-            /> */}
           </span>
         </div>
-      ),
-    },
-    {
-      Header: "ActiveStatus",
-      accessor: "ActiveStatus",
-      Cell: ({ cell }) => (
-        <label className="form-check form-switch">
-          <input
-            id={`rating_${cell.row.id}`}
-            className="form-check-input"
-            type="checkbox"
-            onChange={(event) => updateactivestatus(event, cell.row._id)}
-            defaultChecked={cell.value == 1}
-          />
-          <label htmlFor={`rating_${cell.row.id}`} className="checktoggle checkbox-bg"></label>
-
-        </label>
       ),
     },
     {
@@ -118,33 +160,39 @@ const Admin = () => {
       Cell: ({ cell }) => {
         return (
           <div>
-
-            <Pencil style={{ cursor: 'pointer' }}
-              onClick={() => updateAdmin(cell.row._id, cell)}
+           
+            <Pencil style={{ cursor: 'pointer' }} 
+               onClick={() => updateAdmin(cell.row._id,cell)}
             />
-            <Trash2 style={{ cursor: 'pointer', marginRight: '10px' }}
-              onClick={() => DeleteAdmin(cell.row._id)}
+             <Trash2 style={{ cursor: 'pointer', marginRight: '10px' }}
+               onClick={() => DeleteAdmin(cell.row._id)}
             />
           </div>
         );
       },
     },
-    {
-      Header: "Create Date", accessor: "Create_Date",
-      Cell: ({ cell }) => {
+   
+     { Header: "Start Date", accessor: "Start_Date",
+      Cell: ({cell}) => {
         return fDateTime(cell.value)
-
-      },
-    },
+       
+       },
+     },
+     { Header:"End Date", accessor: "End_Date",
+      Cell: ({cell}) => {
+        return fDateTime(cell.value)
+       
+       },
+     },
   ];
 
-
+  
 
   // delete admin
 
   const DeleteAdmin = async (_id) => {
     try {
-
+  
       const confirmResult = await Swal.fire({
         title: 'Are you sure?',
         text: 'You will not be able to recover this user!',
@@ -154,17 +202,17 @@ const Admin = () => {
         cancelButtonColor: '#d33',
         confirmButtonText: 'Yes, delete it!'
       });
-
+  
       if (confirmResult.isConfirmed) {
         const data = { id: _id };
         await Delete_Admin(data);
-
+  
         Swal.fire({
           icon: 'success',
           title: 'User Deleted',
           text: 'The user has been deleted successfully.',
         });
-
+  
         getAllAdmin();
       }
     } catch (error) {
@@ -179,45 +227,71 @@ const Admin = () => {
   // update admin data 
 
 
-  const updateAdmin = (_id, obj) => {
-    navigate(`updateadmin/${_id}`, { state: { rowData: obj.row } });
-
-  };
-
-
+  const updateAdmin = (_id,obj) => {
+    navigate(`updateadmin/${_id}`,{ state: { rowData: obj.row }});
+   
+};
 
 
-  // update  balance
-  const updateBalance = async () => {
+  // update licence
+
+  const updateLicence = async () => {
     try {
-      await Addbalance({
-        id: id,
-        Balance: balance,
+      await updateuserLicence({
+        id: licenseid,
+        Licence: licencevalue,
         parent_Id: user_id,
-        Type: type
       });
 
       Swal.fire({
-        icon: 'success',
-        title: 'Balance Updated',
-        text: 'The balance has been updated successfully.',
+        icon: "success",
+        title: "Licence Updated",
+        text: "The Licence has been updated successfully.",
       });
       getAllAdmin();
-      setModal(false);
+      setLicence(false);
     } catch (error) {
       Swal.fire({
-        icon: 'error',
-        title: 'Update Failed',
-        text: 'There was an error updating the balance. Please try again.',
+        icon: "error",
+        title: "Update Failed",
+        text: "There was an error updating the Licence. Please try again.",
       });
     }
   };
 
 
 
+  // // update  balance
+  // const updateBalance = async () => {
+  //   try {
+  //    await Addbalance({
+  //       id: id,
+  //       Balance: balance,
+  //       parent_Id:user_id,
+  //       Type:type
+  //     });
+      
+  //     Swal.fire({
+  //       icon: 'success',
+  //       title: 'Balance Updated',
+  //       text: 'The balance has been updated successfully.',
+  //     });
+  //     getAllAdmin();
+  //     setModal(false);
+  //   } catch (error) {
+  //     Swal.fire({
+  //       icon: 'error',
+  //       title: 'Update Failed',
+  //       text: 'There was an error updating the balance. Please try again.',
+  //     });
+  //   }
+  // };
+  
+
+
   // update acctive status
 
-
+  
   const updateactivestatus = async (event, id) => {
     const user_active_status = event.target.checked ? 1 : 0;
 
@@ -226,7 +300,7 @@ const Admin = () => {
       showCancelButton: true,
       confirmButtonText: "Save",
       cancelButtonText: "Cancel",
-      allowOutsideClick: false,
+      allowOutsideClick: false, 
     });
 
     if (result.isConfirmed) {
@@ -241,10 +315,10 @@ const Admin = () => {
           });
           setTimeout(() => {
             Swal.close(); // Close the modal
-
+            
           }, 1000);
-        }
-
+        } 
+  
       } catch (error) {
         console.error("Error", error);
         Swal.fire("Error", "There was an error processing your request.", "error");
@@ -262,7 +336,7 @@ const Admin = () => {
     const data = { id: user_id };
     try {
       const response = await getUserdata(data);
-      setData(response.data);
+      setData(response.data); 
       setLoading(false);
     } catch (error) {
       console.log("error", error);
@@ -290,9 +364,9 @@ const Admin = () => {
                   </div>
                   <Link
                     to="/superadmin/addmin"
-                    className="float-end mb-2 btn btn-primary"
+                      className="float-end mb-2 btn btn-primary"
                   >
-                    Add Admin
+                    Add Admins
                   </Link>
                 </div>
                 <div className="card-body p-0">
@@ -303,14 +377,14 @@ const Admin = () => {
                       role="tabpanel"
                       aria-labelledby="Week-tab"
                     >
-                      <div className='mb-3 ms-4'>
-                        Search :{" "}
-                        <input
-                          className="ml-2 input-search form-control"
-                          defaultValue=""
-                          style={{ width: "20%" }}
-                        />
-                      </div>
+                        <div className='mb-3 ms-4'>
+                          Search :{" "}
+                          <input
+                            className="ml-2 input-search form-control"
+                            defaultValue=""
+                            style={{ width: "20%" }}
+                          />
+                        </div>
                       <Table columns={columns} data={data} />
                     </div>
                   </div>
@@ -321,7 +395,7 @@ const Admin = () => {
         </div>
       )}
 
-      {modal && (
+      {/* {modal && (
         <div className="modal custom-modal d-block" id="add_vendor" role="dialog">
           <div className="modal-dialog modal-dialog-centered modal-md">
             <div className="modal-content">
@@ -370,6 +444,69 @@ const Admin = () => {
                     data-bs-dismiss="modal"
                     className="btn btn-primary paid-continue-btn"
                     onClick={updateBalance}
+                  >
+                    Submit
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )} */}
+
+      {license && (
+        <div
+          className="modal custom-modal d-block"
+          id="add_vendor"
+          role="dialog"
+        >
+          <div className="modal-dialog modal-dialog-centered modal-md">
+            <div className="modal-content">
+              <div className="modal-header border-0 pb-0">
+                <div className="form-header modal-header-title text-start mb-0">
+                  <h4 className="mb-0">Add Licence</h4>
+                </div>
+                <button
+                  type="button"
+                  className="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                  onClick={() => setLicence(false)}
+                ></button>
+              </div>
+              <div>
+                <div className="modal-body">
+                  <div className="row">
+                    <div className="col-lg-12 col-sm-12">
+                      <div className="input-block mb-3">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Enter Licence"
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, "");
+                            setLicencevalue(value);
+                          }}
+                          value={licencevalue}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    data-bs-dismiss="modal"
+                    className="btn btn-back cancel-btn me-2"
+                    onClick={() => setLicence(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    data-bs-dismiss="modal"
+                    className="btn btn-primary paid-continue-btn"
+                    onClick={updateLicence}
                   >
                     Submit
                   </button>

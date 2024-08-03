@@ -8,6 +8,9 @@ import {
 import {
   updateuserLicence,
   DeleteUserdata,
+  adminWalletBalance,
+  TotalcountLicence
+  
 } from "../../../Services/Admin/Addmin";
 
 import { Link, Navigate, useNavigate } from "react-router-dom";
@@ -40,8 +43,13 @@ const Users = () => {
   const [license, setLicence] = useState(false);
   const [licenseid, setLicenceId] = useState("");
   const [licencevalue, setLicencevalue] = useState("");
+  const [checkLicence, setCheckLicence] = useState([]);
+
 
   const [loading, setLoading] = useState(false);
+
+  const [checkprice, setCheckprice] = useState("");
+
 
   const columns = [
     { Header: "FullName", accessor: "FullName" },
@@ -168,8 +176,15 @@ const Users = () => {
       ),
     },
     {
-      Header: "Create Date",
-      accessor: "Create_Date",
+      Header: "Start Date",
+      accessor: "Start_Date",
+      Cell: ({ cell }) => {
+        return fDateTime(cell.value);
+      },
+    },
+    {
+      Header: "End Date",
+      accessor: "End_Date",
       Cell: ({ cell }) => {
         return fDateTime(cell.value);
       },
@@ -197,7 +212,26 @@ const Users = () => {
         );
       },
     },
+    {
+      Header: "Trade History",
+      accessor: "Trade History",
+      Cell: ({ cell }) => {
+        return (
+          <div>
+            <Pencil
+              style={{ cursor: "pointer", color: "#33B469" }}
+              // onClick={() => updateuserpage(cell.row._id, cell)}
+            />
+          </div>
+        );
+      },
+    },
+
   ];
+
+
+  
+
 
   const updateuserpage = (_id, obj) => {
     navigate(`updateuser/${_id}`, { state: { rowData: obj.row } });
@@ -242,18 +276,30 @@ const Users = () => {
 
   const updateLicence = async () => {
     try {
+      if (parseInt(checkLicence.CountLicence) < parseInt(licencevalue)) {
+        Swal.fire({
+          title: "Alert",
+          text: "Licence is required",
+          icon: "warning",
+          timer: 1000,
+          timerProgressBar: true,
+        });
+        return;
+      }
+
       await updateuserLicence({
         id: licenseid,
         Licence: licencevalue,
         parent_Id: user_id,
       });
-
+      
       Swal.fire({
         icon: "success",
         title: "Licence Updated",
         text: "The Licence has been updated successfully.",
       });
       getAlluserdata();
+      getadminLicence();
       setLicence(false);
     } catch (error) {
       Swal.fire({
@@ -267,32 +313,31 @@ const Users = () => {
   // update  balance
   const updateBalance = async () => {
     try {
+      // Make the API call to add balance
       const response = await Addbalance({
         id: id,
         Balance: balance,
         parent_Id: user_id,
         Type: type,
       });
-
+  
+      // Show success message
       Swal.fire({
         icon: "success",
         title: "Balance Updated",
         text: response.message || "The balance has been updated successfully.",
       });
-
+  
+      // Refresh user data and close the modal
       getAlluserdata();
       setModal(false);
     } catch (error) {
-      let errorMessage =
-        "There was an error updating the balance. Please try again.";
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
+      // Handle errors and show error message
+      let errorMessage = "There was an error updating the balance. Please try again.";
+      if (error.response && error.response.data && error.response.data.message) {
         errorMessage = error.response.data.message;
       }
-
+  
       Swal.fire({
         icon: "error",
         title: "Update Failed",
@@ -300,7 +345,7 @@ const Users = () => {
       });
     }
   };
-
+  
   // update acctive status
 
   const updateactivestatus = async (event, id) => {
@@ -325,7 +370,7 @@ const Users = () => {
             timerProgressBar: true,
           });
           setTimeout(() => {
-            Swal.close(); // Close the modal
+            Swal.close();
           }, 1000);
         }
       } catch (error) {
@@ -360,10 +405,42 @@ const Users = () => {
     }
   };
 
+
+
+  
+  // // admin blaance 
+  // const getadminbalance = async () => {
+  //   const data = {userid: user_id};
+  //   try {
+  //     const response = await adminWalletBalance(data);
+  //     setCheckprice(response.Balance);
+  //   } catch (error) {
+  //     console.log("error", error);
+  //   }
+  // };
+
+
+  // check licence
+
+  const getadminLicence = async () => {
+    const data = {userid: user_id};
+    try {
+      const response = await TotalcountLicence(data);
+      setCheckLicence(response.data);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+
   useEffect(() => {
+    getadminLicence();
     getAlluserdata();
+    // getadminbalance();
   }, []);
 
+
+  
   return (
     <>
       {loading ? (

@@ -141,3 +141,20 @@ export async function Superadmindashboarddata(data, token) {
     }
 
 }
+
+
+// get all client 
+
+export async function getAllClient(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}getAllclent`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}

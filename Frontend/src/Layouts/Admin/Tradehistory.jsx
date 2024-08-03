@@ -1,123 +1,107 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import Table from "../../Utils/Table/Table";
+import { getpositionhistory } from "../../Services/Admin/Addmin";
+import { fDateTime ,fDateTimesec} from "../../Utils/Date_format/datefromat";
+
+
+
 
 const Tradehistory = () => {
-    return (
-        <div>
-            <div className='row'>
 
 
-                <div className='demo-view'>
-                    <div className='container-fluid'>
-                        <div className='row'>
-                            <div className="col-xl-12">
-                                <div className="card dz-card" id="nav-pills">
-                                    <div className="card-header flex-wrap border-0">
-                                        <h4 className="card-title">Trade History</h4>
+  const userDetails = JSON.parse(localStorage.getItem("user_details"));
+  const user_id = userDetails?.user_id;
+  const Role = userDetails?.Role;
 
-                                    </div>
-                                    <div className="tab-content" id="myTabContent3">
-                                        <div
-                                            className="tab-pane fade show active"
-                                            id="NavPills"
-                                            role="tabpanel"
-                                            aria-labelledby="home-tab3"
-                                        >
-                                            <div className="card-body pt-0">
 
-                                                <div className="tab-content">
-                                                    <div id="navpills-1" className="tab-pane active">
-                                                        <div className="row">
-                                                            <div className="col-lg-12">
-                                                                <div className="card transaction-table">
+  const [data, setData] = useState([]);
 
-                                                                    <div className="card-body p-0">
-                                                                        <div className="tab-content" id="myTabContent1">
-                                                                            <div
-                                                                                className="tab-pane fade show active"
-                                                                                id="Week"
-                                                                                role="tabpanel"
-                                                                                aria-labelledby="Week-tab"
-                                                                            >
-                                                                                <div className="table-responsive">
-                                                                                    <div className='mb-2'>
-                                                                                        Search :{" "}
-                                                                                        <input
-                                                                                            className="ml-2 input-search form-control"
-                                                                                            defaultValue=""
-                                                                                            style={{ width: "20%" }}
-                                                                                        />
-                                                                                    </div>
+  const columns = [
+    { Header: "symbol", accessor: "symbol" },
 
-                                                                                    <table className="table table-responsive-md">
-                                                                                        <thead>
-                                                                                            <tr>
-                                                                                                <th>S.No.</th>
-                                                                                                <th>Username</th>
-                                                                                                <th>Start Date</th>
-                                                                                                <th>End Date</th>
+    {
+        Header: "Buy Time",
+        accessor: "buy_time",
+        Cell: ({ cell }) => {
+          const buyTime = cell.row.buy_time; 
+          return buyTime ? fDateTime(buyTime) : "-"; 
+        }
+      },
+    { Header: "sell_time", accessor: "sell_time",
+        Cell: ({ cell }) => {
+            const sell_time = cell.row.sell_time; 
+            return sell_time ? fDateTime(sell_time) : "-"; 
+          }
+    },
+    {
+      Header: "Create Date",
+      accessor: "createdAt",
+      Cell: ({ cell }) => {
+        return fDateTimesec((cell.value))
 
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>
-                                                                                            <tr>
+      },
+    },
 
-                                                                                                <td>1</td>
-                                                                                                <td>Donalt</td>
-                                                                                                <td>01 August 2020</td>
-                                                                                                <td>01 August 2020</td>
+  ];
 
 
 
+  // getting data
+  const getuserallhistory = async () => {
+    try {
+       const data = {userid:user_id,Role:Role}
+      const response = await getpositionhistory(data);
+      setData(response.data);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
 
-                                                                                            </tr>
-                                                                                            <tr>
-
-                                                                                                <td>2</td>
-                                                                                                <td>Donalt</td>
-                                                                                                <td>01 August 2020</td>
-                                                                                                <td>01 August 2020</td>
-
-
-
-
-                                                                                            </tr>
-                                                                                            <tr>
-
-                                                                                                <td>3</td>
-                                                                                                <td>Donalt</td>
-                                                                                                <td>01 August 2020</td>
-                                                                                                <td>01 August 2020</td>
+  useEffect(() => {
+    getuserallhistory();
+  }, []);
 
 
 
-
-                                                                                            </tr>
-                                                                                        </tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
+  return (
+    <>
+      <div>
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-lg-12">
+              <div className="card transaction-table">
+                <div className="card-header border-0 flex-wrap pb-0">
+                  <div className="mb-4">
+                    <h4 className="card-title">Tradehistory</h4>
+                  </div>
                 </div>
+                <div className="card-body p-0">
+                  <div className="tab-content" id="myTabContent1">
+                    <div
+                      className="tab-pane fade show active"
+                      id="Week"
+                      role="tabpanel"
+                      aria-labelledby="Week-tab"
+                    >
+                      <div className='mb-3 ms-4'>
+                        Search :{" "}
+                        <input
+                          className="ml-2 input-search form-control"
+                          defaultValue=""
+                          style={{ width: "20%" }}
+                        />
+                      </div>
+                      <Table columns={columns} data={data && data} />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
-    );
-}
+      </div>
+    </>
+  );
+};
 
 export default Tradehistory;

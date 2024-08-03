@@ -36,6 +36,13 @@ export const superadmin_header = [
         icon: "fe fe-dollar-sign",
         route: "/superadmin/holdoff",
     },
+    {
+        id: 7,
+        name: 'Currency Setup',
+        icon: "fe fe-dollar-sign",
+        route: "/superadmin/currency",
+    },
+    
 ];
 
 
@@ -119,6 +126,12 @@ export const admin_header = [
         name: 'Currency Setup',
         icon: "fe fe-arrow-up-circle",
         route: "/admin/currency",
+    },
+    {
+        id: 12,
+        name: 'Sign Up Request',
+        icon: "fe fe-dollar-sign",
+        route: "/admin/signup",
     },
 ];
 

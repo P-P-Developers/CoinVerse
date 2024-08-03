@@ -27,7 +27,6 @@ class Superadmin {
         password,
         Otp,
         Role,
-        Balance,
         Licence,
         pertrade,
         perlot,
@@ -60,15 +59,26 @@ class Superadmin {
         }
       }
   
+
+         // Current date as start date
+      const startDate = new Date();
+      let endDate = new Date(startDate);
+      endDate.setMonth(endDate.getMonth() + Number(Licence));
+
+      if (endDate.getDate() < startDate.getDate()) {
+        endDate.setDate(0);
+      }
+       
       // // Fetch dollar price data
-      // const dollarPriceData = await MarginRequired.findOne({ adminid: parent_id }).select("dollarprice");
+      // const dollarPriceData = await MarginRequired.findOne({adminid:parent_id }).select("dollarprice");
       // if (!dollarPriceData) {
       //   return res.json({ status: false, message: "Dollar price data not found" });
       // }
   
       // // Calculate dollar count
       // const dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
-  
+   
+
       // Hash password
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password.toString(), salt);
@@ -81,27 +91,39 @@ class Superadmin {
         PhoneNo,
         parent_id,
         parent_role,
-        Balance,
-        Otp,
+        Otp:password,
         Role,
         pertrade,
         perlot,
         turn_over_percentage,
         brokerage,
         limit,
+        Licence,
         password: hashedPassword,
+        Start_Date: startDate,
+        End_Date: endDate,
       });
   
       await newUser.save();
   
-      // Create user wallet
-      const userWallet = new Wallet_model({
-        user_Id: newUser._id,
-        Balance: Balance,
-        parent_Id: parent_id
-      });
-      await userWallet.save();
+      // // Create user wallet
+      // const userWallet = new Wallet_model({
+      //   user_Id: newUser._id,
+      //   Balance: dollarcount,
+      //   parent_Id: parent_id
+      // });
+      // await userWallet.save();
   
+      let licence = new totalLicense({
+        user_Id: newUser._id,
+        Licence: Licence,
+        parent_Id: parent_id,
+        Start_Date: startDate,
+        End_Date: endDate,
+      });
+
+      await licence.save();
+
       return res.json({
         status: true,
         message: "User added successfully",
@@ -120,7 +142,7 @@ class Superadmin {
     try {
       const { id, Balance, parent_Id, Type } = req.body;
   
-      const dollarPriceData = await MarginRequired.findOne({ adminid:parent_Id }).select("dollarprice");
+      const dollarPriceData = await MarginRequired.findOne({adminid:parent_Id}).select("dollarprice");
       if (!dollarPriceData) {
         return res.json({
           status: false,
@@ -133,6 +155,8 @@ class Superadmin {
       const dollarcount = (Balance/dollarPriceData.dollarprice).toFixed(3);
   
     
+
+
       const userdata = await User_model.findOne({ _id: id });
       if (!userdata) {
         return res.json({
@@ -274,6 +298,11 @@ class Superadmin {
             Type:1
           },
         },
+        {
+          $sort:{
+            createdAt : -1 
+          }
+        }
       ]);
 
       if (!walletData || walletData.length === 0) {
@@ -412,6 +441,26 @@ class Superadmin {
       });
     }
   }
+
+
+  async getAllclent(req,res){
+    try {
+      const {userid} = req.body 
+      const result = await User_model.findOne({ _id: userid})
+       
+      if(!result){
+        return res.json({status:false,message:"not found",data:[]})
+      }
+
+      return res.json({status:true,message:"user found",data:result})
+
+      
+    } catch (error) {
+      return res.json({status:false,message:"internal error",data:[]})
+      
+    }
+  }
+
   
 
 }

@@ -9,14 +9,6 @@ const mainorderSchema = new mongoose.Schema({
     type: String,
     default: null
   },
-  orderid:{
-    type: String,
-    default: null
-  },
-  Role: {
-    type: String,
-    default: null,
-},
   symbol: {
     type: String,
     default: null
@@ -26,10 +18,46 @@ const mainorderSchema = new mongoose.Schema({
     type: String,
     default: null
   },
-  sell_type:{
-   type: String,
+  sell_type: {
+    type: String,
     default: null
   },
+
+
+  buy_price: {
+    type: Number,
+    default: null
+  },
+  sell_price: {
+    type: Number,
+    default: null
+  },
+  buy_lot: {
+    type: Number,
+    default: null
+  },
+  sell_lot: {
+    type: Number,
+    default: null
+  },
+
+  buy_qty: {
+    type: Number,
+    default: null
+  },
+  sell_qty: {
+    type: Number,
+    default: null
+  },
+  buy_time: {
+    type: Date,
+    default: null
+  },
+  sell_time: {
+    type: Date,
+    default: null
+  },
+
   totalamount: {
     type: Number,
     default: null
@@ -41,6 +69,10 @@ const mainorderSchema = new mongoose.Schema({
   type_entry_exit: {
     type: String,
     default: null
+  },
+  lotsize:{
+    type: Number,
+    default: null,
   },
   token: {
     type: String,
@@ -78,43 +110,20 @@ const mainorderSchema = new mongoose.Schema({
     type: Number,
     default: null,
   },
-  sell_price:{
-     type: Number,
-    default: null
-  },
-  buy_price:{
-     type: Number,
-    default: null
-  },
-  buy_lot:{
-    type: Number,
-    default: null
-  },
-  sell_lot:{
-    type: Number,
-    default: null
-  },
-  sell_qty:{
-    type: Number,
-    default: null
-  },
-  buy_qty:{
-    type: Number,
-    default: null
-  },
-  buy_time:{
-    type: Number,
-    default: null
-  },
-  sell_time:{
-    type: Number,
-    default: null
-  },
-  
+
+
+  orderid: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Order'
+    }
+  ],
+
+
   createdAt: {
     type: Date,
     default: Date.now
-},
+  },
 
 });
 

@@ -191,3 +191,139 @@ export async function getMarginpriceRequired(data, token) {
     }
 
 }
+
+
+// holoffsymbol
+
+export async function symbolholdoff(data, token) {
+    try {
+        const res = await axios.get(`${Config.base_url}admin/getsymbolholdoff`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+// update holdoff
+
+
+
+export async function updatesymbolstatus(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}admin/updatesymbolholoff`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// get trade history
+
+export async function getpositionhistory(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}gettardehistory`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+// get user history
+
+export async function getuserhistory(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}getOrderBook`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// balance and licence
+export async function getbalancandLicence(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}getbalancandLicence`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+
+// sign in user detail
+
+
+export async function getSignIn(data, token) {
+    try {
+        const res = await axios.get(`${Config.base_url}getSignIn`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// walletBalance
+
+export async function adminWalletBalance(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}admin/countuserBalance`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+
+export async function TotalcountLicence(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}TotalcountLicence`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}

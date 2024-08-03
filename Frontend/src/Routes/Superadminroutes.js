@@ -11,6 +11,7 @@ import Position from '../Layouts/Superadmin/Admins/Position';
 import Broadcast from '../Layouts/Superadmin/Admins/Broadcast';
 import Holdoff from '../Layouts/Superadmin/Admins/Holdoff';
 import UpdateAdmin from '../Layouts/Superadmin/Admins/UpdateAdmin';
+import Currency from "../Layouts/Superadmin/Admins/Currency"
 
 const SuperadminRoutes = () => {
     return (
@@ -28,6 +29,7 @@ const SuperadminRoutes = () => {
                     <Route path="/admin/updateadmin/:id" element={<UpdateAdmin />} />
                     <Route path="/broadcast" element={<Broadcast />} />
                     <Route path="/holdoff" element={<Holdoff />} />
+                    <Route path="/currency" element={<Currency />} />
 
                 </Routes>
             </div>

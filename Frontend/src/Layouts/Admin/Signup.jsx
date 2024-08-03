@@ -1,21 +1,30 @@
 import React, { useEffect, useState } from "react";
-import Table from "../../../Utils/Table/Table";
-import { fDateTime } from "../../../Utils/Date_format/datefromat";
+import Table from "../../Utils/Table/Table";
+import { fDateTime } from "../../Utils/Date_format/datefromat";
+import { getSignIn } from "../../Services/Admin/Addmin";
+import {Pencil} from "lucide-react";
+import { Navigate, useNavigate  } from "react-router-dom";
 
-import { gethistory } from "../../../Services/Superadmin/Superadmin";
 
-const Transection = () => {
+const Signup = () => {
 
 
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
+  
+  const navigate = useNavigate();
+ 
+
+
 
   const [data, setData] = useState([]);
+  const [currentClient, setCurrentClient] = useState(null);
 
   const columns = [
-    { Header:"UserName", accessor: "UserName" },
+    { Header: "FullName", accessor: "FullName" },
 
-    { Header: "Balance", accessor: "Balance" },
+    { Header: "UserName", accessor: "UserName" },
+    {Header: "password", accessor: "password"},
     {
       Header: "Create Date",
       accessor: "createdAt",
@@ -24,30 +33,48 @@ const Transection = () => {
 
       },
     },
-    { Header: "Status", accessor: "Type" },
+    {
+      Header: "Action",
+      accessor: "Action",
+      Cell: ({ cell }) => {
+        return (
+          <div>
+            <Pencil
+              style={{ cursor: "pointer", color: "#33B469" }}
+              onClick={() => EditClient(cell.row._id)}
+            />
+          </div>
+        );
+      },
+    },
   ];
 
+  
+ 
+  const EditClient = (rowId) => {
+    const clientData = data.find((item) => item._id === rowId);
+   
+
+    navigate("/admin/adduser", { state: { clientData } });
+  };
+
+
+
   // getting data
-  const getallhistory = async () => {
+  const getsignupuser = async () => {
     try {
-      const response = await gethistory({});
-      const result = response.data && response.data.filter((item) => {
-        return item.parent_Id == user_id
-      })
-      setData(result);
+      const response = await getSignIn({});
+      setData(response.data);
     } catch (error) {
       console.log("error", error);
     }
   };
 
   useEffect(() => {
-    getallhistory();
+    getsignupuser();
   }, []);
 
 
-  useEffect(() => {
-    getallhistory();
-  }, []);
 
   return (
     <>
@@ -57,8 +84,8 @@ const Transection = () => {
             <div className="col-lg-12">
               <div className="card transaction-table">
                 <div className="card-header border-0 flex-wrap pb-0">
-                  <div className="mb-3">
-                    <h4 className="card-title">transaction History</h4>
+                  <div className="mb-4">
+                    <h4 className="card-title">SingUp Request</h4>
                   </div>
                 </div>
                 <div className="card-body p-0">
@@ -90,4 +117,4 @@ const Transection = () => {
   );
 };
 
-export default Transection;
+export default Signup;

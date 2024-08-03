@@ -5,33 +5,27 @@ const mongoose = require('mongoose')
 const Role = require("./Role.model")
 
 
-
-// Employee Financial Information Collection
 const SignInUser = Schema({
     FullName: {
         type: String,
-        required: true,
         trim: true,
         default: null
     },
     UserName: {
         type: String,
         required: true,
-        trim: true,
-        unique: true,
         default: null
     },
-    Email: {
+    PhoneNo: {
         type: String,
         required: true,
-        trim: true,
-        unique: true,
+        min: 10,
+        max: 10,
         default: null
     },
     password:{
         type:String,
         required: true,
-        trim: true,
         default: null
     },
     createdAt: {

@@ -38,6 +38,10 @@ const orderSchema = new mongoose.Schema({
     type: Number,
     default: null,
   },
+  lotsize:{
+    type: Number,
+    default: null,
+  },
   previous_trade_id: {
     type: String,
     default: null,

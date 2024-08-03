@@ -103,6 +103,33 @@ class Users {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
+
+  
+
+
+  //margin value for user
+
+  async getmarginpriceforuser(req,res){
+    try {
+        const {userid} = req.body
+        const result1 = await User_model.find({_id:userid}).select("parent_id")
+         
+  
+        const result = await MarginRequired.findOne({adminid:result1[0].parent_id}).select("crypto forex")
+        
+
+
+        if(!result){
+            return res.json({status:false,message:"not found",data:[]})
+        }
+        return res.json({status:true,message:"getting successfully",data:result})
+
+    } catch (error) {
+        return res.json({status:false,message:"inernal error",data:[]})
+    }
+}
+
+
 }
 
 module.exports = new Users();

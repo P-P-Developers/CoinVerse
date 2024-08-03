@@ -23,6 +23,10 @@ const symbolSchema =  new mongoose.Schema({
       type: Number,
       default: 1
     },
+    status:{
+      type: Number,
+      enum: [0,1],
+    }
    
   }, { versionKey: false }); 
   

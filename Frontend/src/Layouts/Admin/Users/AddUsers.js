@@ -1,30 +1,42 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import Form from "../../../Utils/Form/Formik";
-import { AddUser } from "../../../Services/Admin/Addmin";
+import { AddUser, adminWalletBalance ,TotalcountLicence} from "../../../Services/Admin/Addmin";
+
 
 const AddUsers = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const clientData = location.state?.clientData || {};
+
+  const [checkprice, setCheckprice] = useState("");
+  const [dollarPrice, setDollarPrice] = useState(0);
+  const [checkdolarprice, setCheckdolarprice] = useState(0);
+  const [checkLicence, setCheckLicence] = useState([]);
 
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const Role = userDetails?.Role;
   const user_id = userDetails?.user_id;
 
+
+
+ 
+
   const formik = useFormik({
     initialValues: {
-      fullName: "",
-      username: "",
+      fullName: clientData.FullName || "",
+      username: clientData.UserName || "",
       email: "",
-      phone: "",
+      phone: clientData.PhoneNo || "",
       Balance: "",
-      password: "",
+      password: clientData.password || "",
       confirmPassword: "",
       Licence: "",
-      limit:"",
-      selectedOption: "", 
-      inputValue: "", 
+      limit: "",
+      selectedOption: "",
+      inputValue: "",
     },
 
     validate: (values) => {
@@ -89,13 +101,27 @@ const AddUsers = () => {
         parent_role: Role || "ADMIN",
         parent_id: user_id,
         Role: "USER",
-        limit:values.limit,
+        limit: values.limit,
         Licence: values.Licence,
         [selectedOption]: values.inputValue,
       };
 
       setSubmitting(false);
 
+      if (parseInt(checkLicence.CountLicence) < parseInt(values.Licence)) {
+        Swal.fire({
+          title: "Alert",
+          text: "Licence is required",
+          icon: "warning",
+          timer: 1000,
+          timerProgressBar: true,
+        });
+        setSubmitting(false);
+        return;
+      }
+
+      setSubmitting(false);
+      
       try {
         const response = await AddUser(data);
         if (response.status) {
@@ -119,7 +145,6 @@ const AddUsers = () => {
           });
         }
       } catch (error) {
-        console.log("Error:", error);
         Swal.fire({
           title: "Error!",
           text: "Failed to add user. Please try again later.",
@@ -130,6 +155,44 @@ const AddUsers = () => {
       }
     },
   });
+
+  const getadminbalance = async () => {
+    const data = { userid: user_id };
+    try {
+      const response = await adminWalletBalance(data);
+      setCheckprice(response.Balance);
+      setCheckdolarprice(response.dollarPriceDoc.dollarprice)
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+ 
+  const getadminLicence = async () => {
+    const data = { userid: user_id };
+    try {
+      const response = await TotalcountLicence(data);
+      setCheckLicence(response.data)
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+  
+ 
+
+
+  useEffect(() => {
+    getadminbalance();
+    getadminLicence()
+  }, []);
+
+
+
+  useEffect(() => {
+    const exchangeRate = Number(checkdolarprice) 
+    setDollarPrice(formik.values.Balance ? (parseFloat(formik.values.Balance) / exchangeRate).toFixed(2) : 0);
+  }, [formik.values.Balance]);
+
 
   const fields = [
     {
@@ -167,11 +230,12 @@ const AddUsers = () => {
     {
       name: "Balance",
       label: "Balance",
-      type: "text3",
+      type: "text",
       label_size: 12,
       col_size: 6,
       disable: false,
     },
+    
     {
       name: "password",
       label: "Password",
@@ -198,7 +262,7 @@ const AddUsers = () => {
     },
     {
       name: "limit",
-      label: "limit",
+      label: "Limit",
       type: "text3",
       label_size: 12,
       col_size: 6,
@@ -211,7 +275,6 @@ const AddUsers = () => {
       options: [
         { value: "pertrade", label: "Per Trade" },
         { value: "perlot", label: "Per Lot" },
-      
       ],
       label_size: 12,
       col_size: 6,
@@ -230,18 +293,25 @@ const AddUsers = () => {
       disable: false,
       showWhen: (values) => !!values.selectedOption,
     },
-
   ];
 
   return (
-    <Form
-      fields={fields}
-      page_title="Add User"
-      btn_name="Add User"
-      btn_name1="Cancel"
-      formik={formik}
-      btn_name1_route={"/admin/users"}
-    />
+    <div>
+      <Form
+        fields={fields}
+        page_title="Add User"
+        btn_name="Add User"
+        btn_name1="Cancel"
+        formik={formik}
+        btn_name1_route={"/admin/users"}
+      />
+      {formik.values.Balance && (
+      <div >
+        <p>Dollar Price: ${dollarPrice}</p>
+      </div>
+    )},
+  
+    </div>
   );
 };
 
