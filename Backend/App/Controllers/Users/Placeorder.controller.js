@@ -17,7 +17,7 @@ class Placeorder {
     try {
       const { userid } = req.body;
 
-      const result = await Order.find({ userid });
+      const result = await Order.find({ userid }).sort({ createdAt: -1 });;
 
       if (!result.length) {
         return res.json({
@@ -45,7 +45,7 @@ class Placeorder {
       let result;
 
       if (Role === "USER") {
-        result = await mainorder_model.find({ userid: userid });
+        result = await mainorder_model.find({ userid: userid }).sort({ createdAt: -1 });;
         if (result.length > 0) {
           return res.json({
             status: true,
@@ -160,7 +160,7 @@ class Placeorder {
           userid: userid,
           createdAt: { $gte: startOfDay, $lte: endOfDay },
         })
-        .sort({ createdAt: 1 });
+        .sort({ createdAt: -1 });
 
       if (!finduser || finduser.length === 0) {
         return res.json({
@@ -318,7 +318,7 @@ class Placeorder {
           userid: userid,
           createdAt: { $lt: startOfToday },
         })
-        .sort({ createdAt: 1 });
+        .sort({ createdAt: -1 });
 
       if (!finduser || finduser.length === 0) {
         return res.json({

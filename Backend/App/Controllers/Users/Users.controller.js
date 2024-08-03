@@ -21,7 +21,7 @@ class Users {
     try {
       const { userid, Balance, type } = req.body;
 
-      const userdata = await User_model.findById({ _id: userid});
+      const userdata = await User_model.findById({ _id: userid}).sort({ createdAt: -1 });;
 
       if (!userdata) {
         return res.json({ status: false, message: "User not found", data: [] });
@@ -63,7 +63,7 @@ class Users {
   async getpaymenthistory(req, res) {
     try {
       const { userid } = req.body;
-      const result = await PaymenetHistorySchema.find({ userid: userid });
+      const result = await PaymenetHistorySchema.find({ userid: userid }).sort({ createdAt: -1 });;
 
       if (!result) {
         return res.json({ status: false, message: "User not found", data: [] });
@@ -88,7 +88,7 @@ class Users {
 
       const result = await User_model.find({_id:userid, Role:"USER" }).select(
         "FullName Balance limit pertrade perlot turn_over_percentage brokerage UserName createdAt"
-      );
+      ).sort({ createdAt: -1 });;
 
       if (!result || result.length === 0) {
         return res.json({ status: false, message: "Data not found", data: [] });
@@ -112,7 +112,7 @@ class Users {
   async getmarginpriceforuser(req,res){
     try {
         const {userid} = req.body
-        const result1 = await User_model.find({_id:userid}).select("parent_id")
+        const result1 = await User_model.find({_id:userid}).select("parent_id").sort({ createdAt: -1 });
          
   
         const result = await MarginRequired.findOne({adminid:result1[0].parent_id}).select("crypto forex")
