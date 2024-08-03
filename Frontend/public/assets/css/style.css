@@ -34417,6 +34417,7 @@ code {
 
 .pagination {
   margin-bottom: 1.25rem;
+  justify-content: e;
 }
 
 .pagination .page-item:first-child .page-link {
