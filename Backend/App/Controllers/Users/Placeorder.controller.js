@@ -5,12 +5,12 @@ const ObjectId = mongoose.Types.ObjectId;
 const db = require("../../Models");
 const { findOne } = require("../../Models/Role.model");
 const Symbol = db.Symbol;
-const Userwatchlist = db.Userwatchlist;
 const Order = db.Order;
-const WalletRecharge = db.WalletRecharge;
 const User_model = db.user;
 const mainorder_model = db.mainorder_model;
 const BalanceStatement = db.BalanceStatement
+
+
 
 class Placeorder {
   async getOrderBook(req, res) {

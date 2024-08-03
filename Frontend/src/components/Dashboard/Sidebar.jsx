@@ -46,6 +46,7 @@ const Sidebar = () => {
         return 'fa fa-user';
       case 'currency setup':
         return 'fa-regular fa-coin';
+        
       default:
         return '';
     }
