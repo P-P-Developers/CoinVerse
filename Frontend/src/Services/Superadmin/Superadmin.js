@@ -1,0 +1,160 @@
+import axios from "axios";
+
+// import Files
+import * as Config from "../../Utils/Config";
+
+
+
+// Adding admin
+export async function AddnewUsers(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}superadmin/addminadd`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// get admin data 
+
+export async function getUserdata(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}superadmin/getAdminDetail`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// get admin recharge
+
+
+export async function Addbalance(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}admin/walletRecharge`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// get admn user_active_status
+
+
+export async function updateActivestatus(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}admin/UpdateActiveStatusAdmin`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// get history
+export async function gethistory(data, token) {
+    try {
+        const res = await axios.get(`${Config.base_url}admin/getadminhistory`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+// update admin 
+
+
+ 
+export async function Update_admin(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}admin/Update_Admin`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// delet admin by superadmin
+
+ 
+export async function Delete_Admin(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}admin/Delete_Admin`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// admin status on super admin panel
+
+export async function Superadmindashboarddata(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}SuperadminGetDashboardData`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// get all client 
+
+export async function getAllClient(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}getAllclent`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}

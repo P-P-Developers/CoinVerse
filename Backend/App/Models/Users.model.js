@@ -4,7 +4,7 @@ const { Schema, model } = require('mongoose');
 const mongoose = require('mongoose')
 const Role = require("./Role.model")
 
-// Employee Financial Information Collection
+
 const userModel = Schema({
     FullName: {
         type: String,
@@ -35,15 +35,14 @@ const userModel = Schema({
         unique: true,
         default: null
     },
-    password: {
-        type: String,
+    password:{
+        type:String,
         required: true,
         trim: true,
         default: null
     },
     Otp: {
         type: String,
-        required: true,
         trim: true,
         default: null
     },
@@ -73,6 +72,14 @@ const userModel = Schema({
         type: String,
         required: true,
     },
+    Balance: {
+        type:Number,
+        default: null
+    },
+    Licence: {
+        type:Number,
+        default: null
+    },
    
     Start_Date: {
         type: Date,
@@ -87,6 +94,18 @@ const userModel = Schema({
         required: true,
 
     },
+    pertrade :{
+        type: Number,
+        defaultValue : null
+    },
+    perlot :{
+        type: Number,
+        default : null
+    },
+    limit :{
+        type: Number,
+        default : null
+    }
     
 },
     {
