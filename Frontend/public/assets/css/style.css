@@ -43252,3 +43252,17 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .page-titles .h2 {
   font-size: 28px !important;
 }
+
+.pagination {
+  margin-top: 12px;
+  margin-bottom: 1.25rem;
+  justify-content: end;
+  margin-right: 10px;
+}
+
+.pagination button {
+
+  margin-left: 10px;
+  margin-right: 10px;
+  border: none;
+}
