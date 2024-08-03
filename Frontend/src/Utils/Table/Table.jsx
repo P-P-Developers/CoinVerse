@@ -29,6 +29,7 @@ const Table = ({
   const currentPageData = data.slice(startRowIndex, startRowIndex + rowsPerPage);
 
   return (
+    <div>
     <div className={tableContainerClassName}>
       <table className={tableClassName}>
         <thead>
@@ -54,7 +55,10 @@ const Table = ({
           ))}
         </tbody>
       </table>
-      <div className="pagination">
+    
+
+    </div>
+    <div className="pagination">
         <button 
           onClick={handlePreviousPage} 
           disabled={currentPage === 0} 
@@ -71,54 +75,8 @@ const Table = ({
           <ArrowRight size={20} />
         </button>
       </div>
-      <style jsx>{`
-        .pagination {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-top: 20px;
-          position: relative;
-          padding: 10px 0;
-          background-color: #f8f9fa;
-          border-radius: 5px;
-        }
-        .pagination-button {
-          border: none;
-          background: none;
-          cursor: pointer;
-          margin: 0 10px;
-          padding: 10px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          position: absolute;
-          top: 50%;
-          transform: translateY(-50%);
-          transition: background-color 0.3s ease, transform 0.3s ease;
-        }
-        .pagination-button-left {
-          left: 0;
-        }
-        .pagination-button-right {
-          right: 0;
-        }
-        .pagination-button:hover:not(:disabled) {
-          background-color: #e2e6ea;
-          border-radius: 50%;
-          transform: translateY(-50%) scale(1.1);
-        }
-        .pagination-button:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-        .pagination span {
-          flex-grow: 1;
-          text-align: center;
-          font-size: 1rem;
-          color: #495057;
-        }
-      `}</style>
-    </div>
+      </div>
+
   );
 };
 

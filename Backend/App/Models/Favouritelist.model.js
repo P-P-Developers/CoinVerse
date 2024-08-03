@@ -27,6 +27,6 @@ const userwatchlistSchema = new mongoose.Schema({
 },
 });
 
-const Userwatchlist2 = mongoose.model('Userwatchlist2', userwatchlistSchema);
+const Favouritelist = mongoose.model('Favouritelist', userwatchlistSchema);
 
-module.exports = Userwatchlist2;
+module.exports = Favouritelist;

@@ -10,6 +10,7 @@ const Order = db.Order;
 const WalletRecharge = db.WalletRecharge;
 const User_model = db.user;
 const mainorder_model = db.mainorder_model;
+const BalanceStatement = db.BalanceStatement
 
 class Placeorder {
   async getOrderBook(req, res) {
@@ -462,6 +463,8 @@ class Placeorder {
           reason: "Order rejected due to low Balance",
         });
 
+
+
         // Save the rejected order and return a response
         await rejectedOrder.save();
         return res.status(400).json({
@@ -471,6 +474,7 @@ class Placeorder {
         });
       }
 
+
       let brokerage = 0;
       if (checkadmin.pertrade) {
         brokerage = Number(checkadmin.pertrade);
@@ -478,6 +482,7 @@ class Placeorder {
         brokerage = Number(checkadmin.perlot) * Number(lot);
       }
 
+      
       // Create a new order object
       const newOrder = new Order({
         userid,
