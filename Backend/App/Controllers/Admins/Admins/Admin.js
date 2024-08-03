@@ -10,6 +10,11 @@ const totalLicense = db.totalLicense;
 const PaymenetHistorySchema = db.PaymenetHistorySchema;
 const MarginRequired = db.MarginRequired;
 const Symbol = db.Symbol;
+const BalanceStatement = db.BalanceStatement;
+
+
+
+
 // const nodemailer = require('nodemailer');
 
 class Admin {
@@ -69,6 +74,7 @@ class Admin {
         }
       }
 
+
       // Current date as start date
       const startDate = new Date();
       let endDate = new Date(startDate);
@@ -78,16 +84,21 @@ class Admin {
         endDate.setDate(0);
       }
 
+
       // Hash password
       var rand_password = Math.round(password);
       const salt = await bcrypt.genSalt(10);
       var hashedPassword = await bcrypt.hash(rand_password.toString(), salt);
+
+
 
       /// dollar price
       const dollarPriceData = await MarginRequired.findOne({
         adminid: parent_id,
       }).select("dollarprice");
       const dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
+
+
 
       // Create new user
       const newUser = new User_model({
@@ -120,6 +131,21 @@ class Admin {
       });
 
       await userWallet.save();
+
+       
+      // manage balance statement 
+       
+      let newstatement = new BalanceStatement({
+        userid: newUser._id,
+        Amount : dollarcount,
+        parent_Id: parent_id,
+        type:"CREDIT",
+        message:"Balance Added"
+      });
+
+      await newstatement.save();
+
+      
 
       let licence = new totalLicense({
         user_Id: newUser._id,

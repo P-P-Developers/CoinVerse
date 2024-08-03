@@ -5,9 +5,15 @@ const statementSchema = new mongoose.Schema({
     type: String,
     default: null
   },
-  balance: {
+  parent_Id: {
     type: String,
     default: null
+  },
+
+  Amount: {
+    type: Number,
+     required:true,
+
   },
   type: {
     type: String,
@@ -25,7 +31,7 @@ const statementSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
 },
-    createdAt: {
+   updatedAt: {
         type: Date,
         default: Date.now
     },

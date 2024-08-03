@@ -189,15 +189,18 @@ class Placeorder {
             acc.openPositions.push({
               symbol: trade.symbol,
               token: token,
+              requiredFund:trade.requiredFund,
               lotsize:trade.lotsize,
               buy_price: trade.buy_price,
               buy_lot: trade.buy_lot,
               buy_qty: trade.buy_qty,
+              buy_type:trade.buy_type,
               buy_time: trade.buy_time,
               sell_type: trade.sell_type,
               sell_lot: trade.sell_lot,
               sell_qty: trade.sell_qty,
               sell_time: trade.sell_time,
+              sell_price:trade.sell_price
             });
           }
           if (trade.sell_type === "sell") {
@@ -439,9 +442,7 @@ class Placeorder {
         Role: "USER",
       });
       if (!checkadmin) {
-        return res
-          .status(404)
-          .json({ status: false, message: "User not found", data: [] });
+        return res.json({ status: false, message: "User not found", data: [] });
       }
 
       const SymbolToken = await Symbol.findOne({ symbol: symbol });
@@ -505,6 +506,8 @@ class Placeorder {
 
       // Save the new order to the database
       const orderdata = await newOrder.save();
+
+
 
       // Call appropriate trade function based on order type
       if (type === "buy") {
@@ -609,7 +612,7 @@ const EntryTrade = async (
   orderdata,
   checkadmin,
   SymbolToken,
-  brokerage
+  brokerage,
 ) => {
   try {
     const {
@@ -682,8 +685,29 @@ const EntryTrade = async (
       });
 
       await tradehistory.save();
-    }
 
+    }
+      
+    const limitclaculation = parseFloat(requiredFund)/Number(checkadmin.limit)
+    
+    const updateuserbalance = parseFloat(checkadmin.Balance) - parseFloat(limitclaculation)
+    
+    await User_model.updateOne(
+      { _id: checkadmin._id },
+      { $set: { Balance: updateuserbalance} }
+    );
+    
+    
+    let newstatement = new BalanceStatement({
+      userid: orderdata._id,
+      Amount : -limitclaculation,
+      type:"DEBIT",
+      message:"Balanced used to buy"
+    });
+
+    await newstatement.save();
+
+   
     return res.status(200).json({
       status: true,
       message: "Order placed",
@@ -804,6 +828,16 @@ const ExitTrade = async (req, res, orderdata, checkadmin, brokerage) => {
         }
 
         await tradehistory.save();
+
+        let newstatement = new BalanceStatement({
+          userid: orderdata._id,
+          Amount : tradehistory.sell_price,
+          type:"CREDIT",
+          message:"Balanced used to sell"
+        });
+    
+        await newstatement.save();
+         
 
         return res.json({
           status: true,
