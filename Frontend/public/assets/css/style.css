@@ -21029,7 +21029,7 @@ svg.pulse-svg .third-circle {
 
 .wallet-open.active .header .page-titles,
 .wallet-open.active .header .header-content {
-  padding-right: 25.75rem;
+  /* padding-right: 25.75rem; */
   transition: all ease 0.5s;
 }
 
@@ -21050,7 +21050,7 @@ svg.pulse-svg .third-circle {
 }
 
 .wallet-open.active .content-body {
-  padding-right: calc(25.75rem - 40px);
+  /* padding-right: calc(25.75rem - 40px); */
   -webkit-transition: all 0.5s;
   -ms-transition: all 0.5s;
   transition: all 0.5s;
@@ -32386,7 +32386,7 @@ button:focus {
   padding: 0.59375rem 1.5rem;
   border-radius: 0.5rem;
   font-weight: 400;
-  font-size: 1rem;
+  font-size: 1rem !important;
   line-height: 1.5;
 }
 
@@ -33638,7 +33638,7 @@ button:focus {
 }
 
 .card-title {
-  font-size: 1.25rem;
+  font-size: 1.50rem;
   font-weight: 500;
   color: var(--text-dark);
   text-transform: capitalize;
@@ -38570,6 +38570,7 @@ body>* {
 
 .card-box .card-header .chart-num P {
   margin-bottom: 0;
+  font-size: 18px;
 }
 
 .card-box .card-header .chart-num P i {
@@ -38579,7 +38580,7 @@ body>* {
 .card-box .card-header .chart-num h2,
 .card-box .card-header .chart-num .h2 {
   color: #fff;
-  font-size: 1.75rem;
+  font-size: 1.30rem !important;
 }
 
 @media only screen and (max-width: 87.5rem) {
@@ -38632,7 +38633,7 @@ body>* {
 .transaction-table .card-body .table-responsive thead th {
   padding: 0.5rem 1.7rem;
   color: var(--text-dark);
-  font-size: 0.9375rem;
+  font-size: 1rem;
   background-color: var(--body-bg);
 }
 
@@ -38656,8 +38657,8 @@ body>* {
 
 .transaction-table .card-body .table-responsive tbody td {
   padding: 0.7rem 1.7rem;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.999rem;
+  font-weight: 300;
   white-space: nowrap;
 }
 
@@ -43236,4 +43237,32 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     width: 40px !important;
   }
 
+}
+
+
+[data-theme-version="dark"] .dlabnav .metismenu>li>a {
+  color: #fff
+}
+
+[data-theme-version="dark"] .dlabnav .metismenu>li>a i {
+  color: #fff
+}
+
+.page-titles h2,
+.page-titles .h2 {
+  font-size: 28px !important;
+}
+
+.pagination {
+  margin-top: 12px;
+  margin-bottom: 1.25rem;
+  justify-content: end;
+  margin-right: 10px;
+}
+
+.pagination button {
+
+  margin-left: 10px;
+  margin-right: 10px;
+  border: none;
 }
