@@ -42,8 +42,8 @@ const Holdoff = () => {
 
   // Update symbol status
   const updatestatus = async (event, symbol) => {
+    
     const user_active_status = event.target.checked ? 1 : 0;
-
     const result = await Swal.fire({
       title: "Do you want to save the changes?",
       showCancelButton: true,

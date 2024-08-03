@@ -616,7 +616,7 @@ class Admin {
 
   async updatesymbolholoff(req, res) {
     try {
-      const { symbol, status } = req.body;
+      const { symbol, user_active_status } = req.body;
 
       if (!symbol) {
         return res.json({
@@ -626,7 +626,7 @@ class Admin {
         });
       }
 
-      const result = await Symbol.updateOne({ symbol: symbol }, { status });
+      const result = await Symbol.updateOne({ symbol: symbol }, { status:user_active_status });
 
       return res.json({
         status: true,
