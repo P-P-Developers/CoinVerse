@@ -110,8 +110,6 @@ const mainorderSchema = new mongoose.Schema({
     type: Number,
     default: null,
   },
-
-
   orderid: [
     {
       type: mongoose.Schema.Types.ObjectId,

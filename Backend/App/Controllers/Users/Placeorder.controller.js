@@ -689,7 +689,6 @@ const EntryTrade = async (
     }
       
     const limitclaculation = parseFloat(requiredFund)/Number(checkadmin.limit)
-    
     const updateuserbalance = parseFloat(checkadmin.Balance) - parseFloat(limitclaculation)
     
     await User_model.updateOne(
@@ -828,6 +827,9 @@ const ExitTrade = async (req, res, orderdata, checkadmin, brokerage) => {
         }
 
         await tradehistory.save();
+
+
+
 
         let newstatement = new BalanceStatement({
           userid: orderdata._id,

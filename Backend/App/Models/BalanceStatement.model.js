@@ -9,11 +9,15 @@ const statementSchema = new mongoose.Schema({
     type: String,
     default: null
   },
-
+  orderid: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Order'
+    }
+  ],
   Amount: {
     type: Number,
      required:true,
-
   },
   type: {
     type: String,
