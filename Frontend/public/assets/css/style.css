@@ -680,6 +680,7 @@ th {
 
 label {
   display: inline-block;
+  font-size: 1rem;
 }
 
 button {
@@ -38568,9 +38569,12 @@ body>* {
   padding: 0.625rem 1.25rem;
 }
 
+
 .card-box .card-header .chart-num P {
   margin-bottom: 0;
   font-size: 18px;
+  display: flex;
+  align-items: start;
 }
 
 .card-box .card-header .chart-num P i {
@@ -42454,6 +42458,7 @@ a.btn.dz-load-more {
 
 input.form-control {
   position: relative;
+  font-size: 1rem;
 }
 
 @media only screen and (max-width: 74.9375rem) {

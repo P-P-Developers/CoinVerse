@@ -46,12 +46,14 @@ const Sidebar = () => {
         return 'fa fa-user';
       case 'currency setup':
         return 'fa-regular fa-coin';
-        
+      case 'sign up request':
+        return 'fa-solid fa-right-to-bracket';  
       default:
         return '';
     }
   };
 
+  
   return (
     <div className="dlabnav follow-info">
       <div className="menu-scroll">
