@@ -13,6 +13,8 @@ const BalanceStatement = db.BalanceStatement
 
 
 class Placeorder {
+
+
   async getOrderBook(req, res) {
     try {
       const { userid } = req.body;
@@ -81,71 +83,6 @@ class Placeorder {
     }
   }
 
-  // position
-
-  // async position(req, res) {
-  //   try {
-  //     const { userid } = req.body;
-
-  //     const today = new Date();
-  //     const startOfDay = new Date(today.setHours(0, 0, 0, 0));
-  //     const endOfDay = new Date(today.setHours(23, 59, 59, 999));
-
-  //     const finduser = await mainorder_model
-  //       .find({
-  //         userid: userid,
-  //         createdAt: { $gte: startOfDay, $lte: endOfDay },
-  //       })
-  //       .sort({ createdAt: 1 }); // Sorting in ascending order by createdAt
-
-  //     if (!finduser || finduser.length === 0) {
-  //       return res.json({
-  //         status: false,
-  //         error: "No positions found",
-  //         data: [],
-  //       });
-  //     }
-
-  //     const tokendata = await Symbol.findOne({token:finduser.token})
-  //    console.log("tokendata",tokendata)
-  //    console.log("finduser",finduser)
-
-  //     const currentPosition = finduser.reduce(
-  //       (acc, trade) => {
-  //         if (trade.buy_type === "buy") {
-  //           acc.openPositions.push({
-  //             symbol: trade.symbol,
-  //             buy_price: trade.buy_price,
-  //             buy_lot: trade.buy_lot,
-  //             buy_qty: trade.buy_qty,
-  //             buy_time: trade.buy_time,
-  //             sell_type: trade.sell_type,
-  //             sell_lot: trade.sell_lot,
-  //             sell_qty: trade.sell_qty,
-  //             sell_time: trade.sell_time,
-  //           });
-  //         }
-  //         if (trade.sell_type === "sell") {
-  //           const index = acc.openPositions.findIndex(
-  //             (pos) => pos.symbol === trade.symbol
-  //           );
-  //           if (index !== -1) {
-  //             acc.openPositions[index].sell_price = trade.sell_price;
-  //             acc.openPositions[index].sell_lot = trade.sell_lot;
-  //             acc.openPositions[index].sell_qty = trade.sell_qty;
-  //             acc.openPositions[index].sell_time = trade.sell_time;
-  //           }
-  //         }
-  //         return acc;
-  //       },
-  //       { openPositions: [] }
-  //     );
-
-  //     res.json({ status: true, data: currentPosition.openPositions });
-  //   } catch (error) {
-  //     res.json({ status: false, error: "Internal Server Error", data: [] });
-  //   }
-  // }
 
   async position(req, res) {
     try {
@@ -225,86 +162,7 @@ class Placeorder {
     }
   }
 
-  // holding
-
-  // async holding(req, res) {
-  //   try {
-  //     const { userid } = req.body;
-
-  //     const today = new Date();
-  //     const startOfToday = new Date(today.setHours(0, 0, 0, 0));
-
-  //     // Find user orders and sort them by createdAt in ascending order
-  //     const finduser = await mainorder_model
-  //       .find({
-  //         userid: userid,
-  //         createdAt: { $lt: startOfToday },
-  //       })
-  //       .sort({ createdAt: 1 });
-
-  //     if (!finduser || finduser.length === 0) {
-  //       return res.json({
-  //         status: false,
-  //         error: "No positions found",
-  //         data: [],
-  //       });
-  //     }
-
-  //     const symbols = [...new Set(finduser.map(trade => trade.symbol))];
-
-  //     // Fetch token data for all unique symbols
-  //     const tokenDataMap = await Symbol.find({ symbol: { $in: symbols } })
-  //       .then(symbolsData => symbolsData.reduce((map, symbolData) => {
-  //         map[symbolData.symbol] = symbolData.token;
-  //         return map;
-  //       }, {}));
-
-  //     const currentPosition = finduser.reduce(
-  //       (acc, trade) => {
-  //         const token = tokenDataMap[trade.symbol];
-  //         if (trade.buy_type === "buy") {
-  //           acc.openPositions.push({
-  //             symbol: trade.symbol,
-  //             token: token,
-  //             buy_price: trade.buy_price,
-  //             buy_lot: trade.buy_lot,
-  //             buy_qty: trade.buy_qty,
-  //             buy_time: trade.buy_time,
-  //             sell_type: trade.sell_type,
-  //             sell_lot: trade.sell_lot,
-  //             sell_qty: trade.sell_qty,
-  //             sell_time: trade.sell_time,
-  //             createdAt: trade.createdAt,
-  //           });
-  //         }
-  //         if (trade.sell_type === "sell") {
-  //           const index = acc.openPositions.findIndex(
-  //             (pos) => pos.symbol === trade.symbol
-  //           );
-  //           if (index !== -1) {
-  //             acc.openPositions[index].sell_price = trade.sell_price;
-  //             acc.openPositions[index].sell_lot = trade.sell_lot;
-  //             acc.openPositions[index].sell_qty = trade.sell_qty;
-  //             acc.openPositions[index].sell_time = trade.sell_time;
-  //           }
-  //         }
-  //         return acc;
-  //       },
-  //       { openPositions: [] }
-  //     );
-
-  //     // Sort open positions by createdAt
-  //     currentPosition.openPositions.sort(
-  //       (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
-  //     );
-
-  //     res.json({ status: true, data: currentPosition.openPositions });
-  //   } catch (error) {
-
-  //     res.json({ status: false, error: "Internal Server Error", data: [] });
-  //   }
-  // }
-
+ 
   async holding(req, res) {
     try {
       const { userid } = req.body;
