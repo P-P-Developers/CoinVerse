@@ -314,7 +314,26 @@ export async function adminWalletBalance(data, token) {
 
 
 
+// total count licence
+
 export async function TotalcountLicence(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}TotalcountLicence`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// manage logs of user logout 
+
+export async function LogoutUser(data, token) {
     try {
         const res = await axios.post(`${Config.base_url}TotalcountLicence`, data, {
             data: {},
