@@ -173,9 +173,9 @@ class Auth {
            console.log("user_detail",user_detail)
          
 
+           
            return
 
-            
         const user_login = new user_logs({
             userid: EmailCheck[0]._id,
             admin_Id: EmailCheck[0].parent_id,
