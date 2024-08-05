@@ -175,6 +175,23 @@ class Auth {
       return res.send({ status: true, msg: "Logout Succesfully", data: [] });
     } catch (error) {}
   }
+
+
+
+   // get logoutUser data
+   async getlogsuser(req,res){
+    try {
+      const {userid} = req.body
+      const result = await user_logs.find({admin_Id:userid})
+      if(!result){
+        return res.send({ status:false, message:"user not found", data: [] });
+      }
+
+    } catch (error) {
+      return res.send({ status:false, message:"internal error", data: [] })
+    }
+   }
+
 }
 
 module.exports = new Auth();
