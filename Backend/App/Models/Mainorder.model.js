@@ -22,8 +22,6 @@ const mainorderSchema = new mongoose.Schema({
     type: String,
     default: null
   },
-
-
   buy_price: {
     type: Number,
     default: null
@@ -57,7 +55,10 @@ const mainorderSchema = new mongoose.Schema({
     type: Date,
     default: null
   },
-
+  signal_type:{
+    type: String,
+    default: null
+  },
   totalamount: {
     type: Number,
     default: null

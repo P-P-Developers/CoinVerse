@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 const User_model = db.user;
 const Sign_In = db.Sign_In;
 const totalLicense = db.totalLicense;
-
+const user_logs  = db.user_logs
 
 
 class Auth {
@@ -17,7 +17,7 @@ class Auth {
       try {
         const { UserName, password } = req.body;
         const EmailCheck = await User_model.findOne({ UserName: UserName });
-
+        
         if (!EmailCheck) {
           return res.send({ status: false, msg: "User Not exists", data: [] });
         }
@@ -30,6 +30,7 @@ class Auth {
           });
         }
         
+
         if (EmailCheck.Role === "USER" || EmailCheck.Role === "ADMIN") {
           const currentDate = new Date();
           const endDate = new Date(EmailCheck.End_Date);
@@ -53,8 +54,17 @@ class Auth {
         var token = jwt.sign({ id: EmailCheck._id }, process.env.SECRET, {
           expiresIn: 36000,
         });
+         
+        const user_login = new user_logs({
+          user_Id: EmailCheck._id,
+          admin_Id: EmailCheck.parent_id,
+          login_status:"Panel On",
+          role: EmailCheck.Role,
+         
 
-       
+      })
+          await user_login.save();
+
         return res.send({
           status: true,
           msg: "Login Successfully",
@@ -149,6 +159,43 @@ class Auth {
       });
     }
   }
+
+
+
+  async logoutUser(req, res) {
+
+
+    try {
+        const { userid } = req.body;
+        
+          const user_detail = await findOne({_id:userid})
+           
+           console.log("user_detail",user_detail)
+         
+
+           return
+
+            
+        const user_login = new user_logs({
+            userid: EmailCheck[0]._id,
+            admin_Id: EmailCheck[0].parent_id,
+            login_status: "Panel off",
+            role: EmailCheck[0].Role,
+            system_ip: system_ip
+        })
+        await user_login.save();
+
+        return res.send({ status: true, msg: "Logout Succesfully", data: [] })
+
+
+    } catch (error) {
+
+    }
+}
+
+
+
+
 }
 
 module.exports = new Auth();

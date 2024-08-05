@@ -421,8 +421,10 @@ class Placeorder {
     }
   }
 
-  // placeorder
 
+
+
+  // placeorder
   async placeorder(req, res) {
     try {
       // Destructure request body to extract order details
@@ -438,7 +440,7 @@ class Placeorder {
         lotsize,
         entry_exit,
       } = req.body;
-
+      
       // Check if the user exists and has the role of "USER"
       const checkadmin = await User_model.findOne({
         _id: userid,
@@ -468,7 +470,6 @@ class Placeorder {
         });
 
 
-
         // Save the rejected order and return a response
         await rejectedOrder.save();
         return res.status(400).json({
@@ -481,11 +482,11 @@ class Placeorder {
 
       let brokerage = 0;
       if (checkadmin.pertrade) {
-        brokerage = Number(checkadmin.pertrade);
+        brokerage = parseFloat(checkadmin.pertrade);
       } else if (checkadmin.perlot) {
-        brokerage = Number(checkadmin.perlot) * Number(lot);
+        brokerage = parseFloat(checkadmin.perlot) * parseFloat(lot);
       }
-
+      
       
       // Create a new order object
       const newOrder = new Order({
@@ -509,9 +510,7 @@ class Placeorder {
 
       // Save the new order to the database
       const orderdata = await newOrder.save();
-
-
-
+    
       // Call appropriate trade function based on order type
       if (type === "buy") {
         await EntryTrade(
@@ -537,77 +536,18 @@ class Placeorder {
           .json({ status: false, message: "Invalid request" });
       }
     } catch (error) {
-      // Return server error response
       res.json({
         status: false,
-        message: "Server error",
+        message: "internal error",
         error: error.message,
       });
     }
   }
 }
 
+
+
 // place order entry trade
-
-// const EntryTrade = async (req, res, orderdata, checkadmin, SymbolToken ,brokerage) => {
-//   try {
-//     const { userid, symbol, price, lot, qty, requiredFund, token, type } =
-//       req.body;
-
-//     const priceNum = parseFloat(price);
-//     const lotNum = parseFloat(lot, 10);
-//     const qtyNum = parseFloat(qty, 10);
-//     const requiredFundNum = parseFloat(requiredFund);
-
-//     let tradehistory = await mainorder_model.findOne({ userid,symbol,createdAt});
-
-//     if (tradehistory) {
-//       const totalQuantity = tradehistory.buy_lot + lotNum;
-//       const totalCost =
-//         tradehistory.buy_price * tradehistory.buy_lot + priceNum * lotNum;
-//       const avgPrice = totalCost / totalQuantity;
-
-//       tradehistory.buy_price = avgPrice;
-//       tradehistory.buy_lot += lotNum;
-//       tradehistory.buy_qty += qtyNum;
-//       tradehistory.buy_type = type;
-
-//       await tradehistory.save();
-//     } else {
-//       tradehistory = new mainorder_model({
-//         orderid: orderdata._id,
-//         userid,
-//         symbol,
-//         buy_type: type,
-//         buy_price: price,
-//         buy_lot: lot,
-//         buy_qty: qty,
-//         buy_time: new Date(),
-//         requiredFund,
-//         token: SymbolToken.token,
-//         adminid: checkadmin.parent_id,
-//         pertrade: checkadmin.userdata,
-//         perlot: checkadmin.perlot,
-//         turn_over_percentage: checkadmin.turn_over_percentage,
-//         brokerage:brokerage,
-//         limit: checkadmin.limit,
-//         status: "Completed",
-//       });
-
-//       await tradehistory.save();
-//     }
-
-//     return res.status(200).json({
-//       status: true,
-//       message: "Order placed",
-//     });
-//   } catch (error) {
-//     console.log("error", error);
-//     return res
-//       .status(500)
-//       .json({ status: false, message: "Server error", data: [] });
-//   }
-// };
 
 const EntryTrade = async (
   req,
@@ -626,9 +566,9 @@ const EntryTrade = async (
       qty,
       requiredFund,
       lotsize,
-      token,
       type,
     } = req.body;
+  
 
     const priceNum = parseFloat(price);
     const lotNum = parseFloat(lot, 10);
@@ -686,6 +626,7 @@ const EntryTrade = async (
         limit: checkadmin.limit,
         status: "Completed",
         createdAt: currentTime,
+        signal_type:"buy_sell"
       });
 
       await tradehistory.save();
@@ -711,8 +652,11 @@ const EntryTrade = async (
       type:"DEBIT",
       message:"Balanced used to buy"
     });
-
     await newstatement.save();
+
+
+
+
 
    
     return res.status(200).json({
@@ -722,7 +666,7 @@ const EntryTrade = async (
   } catch (error) {
     return res
       .status(500)
-      .json({ status: false, message: "Server error", data: [] });
+      .json({ status: false, message: "internal error", data: [] });
   }
 };
 
@@ -730,58 +674,8 @@ const EntryTrade = async (
 
 
 
-// placeorder exit trade
-
-// const ExitTrade = async (req, res, orderdata, checkadmin , brokerage) => {
-//   const { userid, symbol, price, type, lot, qty } = req.body;
-
-//   const priceNum = parseFloat(price);
-//   const lotNum = parseFloat(lot, 10);
-//   const qtyNum = parseFloat(qty, 10);
-//   // const requiredFundNum = parseFloat(requiredFund);
-
-//   let tradehistory = await mainorder_model.findOne({ userid, symbol });
-
-//   if (tradehistory) {
-//     if (
-//       tradehistory.buy_lot >=
-//       parseFloat(lot) + parseFloat(tradehistory.sell_lot || 0)
-//     ) {
-//       if (tradehistory.sell_lot == null && tradehistory.sell_price == null) {
-//         tradehistory.sell_price = price;
-//         tradehistory.sell_lot = lot;
-//         tradehistory.sell_qty = qty;
-//         tradehistory.sell_type = type;
-//         tradehistory.sell_time = new Date();
-//         await tradehistory.save();
-//       } else {
-//         const totalQuantity = tradehistory.sell_lot + lotNum;
-//         const totalCost =
-//           tradehistory.sell_price * tradehistory.sell_lot + priceNum * lotNum;
-//         const avgPrice = totalCost / totalQuantity;
-
-//         tradehistory.sell_price = avgPrice;
-//         tradehistory.sell_lot += lotNum;
-//         tradehistory.sell_qty += qtyNum;
-//         tradehistory.sell_type = type;
-
-//         await tradehistory.save();
-//       }
-//     } else {
-//       console.log("Entry Not Exist");
-//     }
-//   } else {
-//     console.log("Entry Not Exist");
-//   }
-
-//   return res.status(200).json({
-//     status: true,
-//     message: "Order placed",
-//   });
-// };
-
-const ExitTrade = async (req, res, orderdata, checkadmin, brokerage) => {
-  const { userid, symbol, price, type, lot, qty , lotsize } = req.body;
+const ExitTrade = async (req, res, orderdata, checkadmin,SymbolToken, brokerage) => {
+  const { userid, symbol, price, type, lot, qty , lotsize,requiredFund } = req.body;
 
   const priceNum = parseFloat(price);
   const lotNum = parseFloat(lot, 10);
@@ -798,6 +692,7 @@ const ExitTrade = async (req, res, orderdata, checkadmin, brokerage) => {
         $lt: new Date().setHours(23, 59, 59, 999),
       },
     });
+
 
     if (tradehistory) {
       const totalSellLot = (tradehistory.sell_lot || 0) + lotNum;
@@ -820,7 +715,7 @@ const ExitTrade = async (req, res, orderdata, checkadmin, brokerage) => {
   
           const totalQuantity = tradehistory.sell_lot + lotNum;
           const totalCost =
-         tradehistory.sell_price * tradehistory.sell_lot + priceNum * lotNum;
+            tradehistory.sell_price * tradehistory.sell_lot + priceNum * lotNum;
           const avgPrice = totalCost / totalQuantity;
 
           tradehistory.sell_price = avgPrice;
@@ -864,17 +759,46 @@ const ExitTrade = async (req, res, orderdata, checkadmin, brokerage) => {
           status: true,
           message: "Order placed",
         });
-      } else {
+      } 
+      else {
         return res.json({
           status: false,
           message: "Insufficient buy lot for the sell order",
         });
       }
     } else {
-      return res.json({
-        status: false,
-        message: "Entry not found",
+      
+      tradehistory = new mainorder_model({
+        orderid: orderdata._id,
+        userid,
+        symbol,
+        sell_type: type,
+        sell_price: price,
+        sell_lot: lot,
+        sell_qty: qty,
+        sell_time: currentTime,
+        requiredFund,
+        lotsize:lotsize,
+        token: SymbolToken.token,
+        adminid: checkadmin.parent_id,
+        pertrade: checkadmin.userdata,
+        perlot: checkadmin.perlot,
+        turn_over_percentage: checkadmin.turn_over_percentage,
+        brokerage: brokerage,
+        limit: checkadmin.limit,
+        status: "Completed",
+        createdAt: currentTime,
+        signal_type:"sell_buy"
       });
+
+      await tradehistory.save();
+
+
+      return res.json({
+        status: true,
+        message: "Order placed",
+      });
+   
     }
   } catch (error) {
     console.error("Error processing sell order:", error);
@@ -884,5 +808,9 @@ const ExitTrade = async (req, res, orderdata, checkadmin, brokerage) => {
     });
   }
 };
+
+
+
+
 
 module.exports = new Placeorder();

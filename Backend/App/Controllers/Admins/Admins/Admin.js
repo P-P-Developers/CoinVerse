@@ -128,6 +128,7 @@ class Admin {
         user_Id: newUser._id,
         Balance: dollarcount,
         parent_Id: parent_id,
+        type:"CREDIT",
       });
 
       await userWallet.save();
@@ -280,6 +281,8 @@ class Admin {
     }
   }
 
+
+
   // update user
   async updateUser(req, res) {
     try {
@@ -345,6 +348,8 @@ class Admin {
     }
   }
 
+
+
   // user by id
 
   async DeleteUser(req, res) {
@@ -369,6 +374,9 @@ class Admin {
         .json({ success: false, message: "Internal server error", data: [] });
     }
   }
+
+
+
 
   // Employee updare
 
@@ -399,6 +407,7 @@ class Admin {
     }
   }
 
+  
   // delete Employee User
 
   async Delete_Employee(req, res) {
