@@ -698,7 +698,8 @@ const EntryTrade = async (
     
     
     let newstatement = new BalanceStatement({
-      userid: orderdata._id,
+      userid :userid,
+      orderid: orderdata._id,
       Amount : -limitclaculation,
       type:"DEBIT",
       message:"Balanced used to buy"
@@ -812,7 +813,7 @@ const ExitTrade = async (req, res, orderdata, checkadmin, brokerage) => {
   
           const totalQuantity = tradehistory.sell_lot + lotNum;
           const totalCost =
-            tradehistory.sell_price * tradehistory.sell_lot + priceNum * lotNum;
+         tradehistory.sell_price * tradehistory.sell_lot + priceNum * lotNum;
           const avgPrice = totalCost / totalQuantity;
 
           tradehistory.sell_price = avgPrice;
@@ -826,13 +827,12 @@ const ExitTrade = async (req, res, orderdata, checkadmin, brokerage) => {
           }
         }
 
+
         await tradehistory.save();
 
-
-
-
         let newstatement = new BalanceStatement({
-          userid: orderdata._id,
+          userid :userid,
+          orderid: orderdata._id,
           Amount : tradehistory.sell_price,
           type:"CREDIT",
           message:"Balanced used to sell"
