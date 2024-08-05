@@ -349,6 +349,8 @@ class Placeorder {
                 token: token,
                 lotsize:trade.lotsize,
                 total_buy_price: 0,
+                requiredFund:trade.requiredFund,
+                lotsize:0,
                 total_buy_qty: 0,
                 total_buy_lot: 0,
                 buy_time: trade.buy_time,
@@ -393,6 +395,7 @@ class Placeorder {
           symbol: pos.symbol,
           token: pos.token,
           lotsize:pos.lotsize,
+          requiredFund:pos.requiredFund,
           avg_buy_price: avg_buy_price,
           total_buy_qty: pos.total_buy_qty,
           total_buy_lot: pos.total_buy_lot,
@@ -653,13 +656,14 @@ const EntryTrade = async (
       tradehistory.buy_lot += lotNum;
       tradehistory.buy_qty += qtyNum;
       tradehistory.buy_type = type;
+      tradehistory.requiredFund += requiredFund;
+
 
       if (Array.isArray(tradehistory.orderid)) {
         tradehistory.orderid.push(orderdata._id);
       } else {
         tradehistory.orderid = [tradehistory.orderid, orderdata._id];
       }
-
       await tradehistory.save();
     } else {
       tradehistory = new mainorder_model({
@@ -690,10 +694,13 @@ const EntryTrade = async (
       
     const limitclaculation = parseFloat(requiredFund)/Number(checkadmin.limit)
     const updateuserbalance = parseFloat(checkadmin.Balance) - parseFloat(limitclaculation)
-    
+  
+    const Totalupdateuserbalance = parseFloat(updateuserbalance) -parseFloat(brokerage)
+
+ 
     await User_model.updateOne(
       { _id: checkadmin._id },
-      { $set: { Balance: updateuserbalance} }
+      { $set: { Balance: Totalupdateuserbalance} }
     );
     
     
@@ -827,13 +834,25 @@ const ExitTrade = async (req, res, orderdata, checkadmin, brokerage) => {
           }
         }
 
-
         await tradehistory.save();
+
+
+        const limitclaculation = parseFloat( tradehistory.sell_price)/Number(checkadmin.limit)
+        const updateuserbalance = parseFloat(checkadmin.Balance) + parseFloat(limitclaculation)
+        
+        const Totalupdateuserbalance = parseFloat(updateuserbalance) -parseFloat(brokerage)
+
+        await User_model.updateOne(
+          { _id: checkadmin._id },
+          { $set: { Balance: Totalupdateuserbalance} }
+        );
+        
+
 
         let newstatement = new BalanceStatement({
           userid :userid,
           orderid: orderdata._id,
-          Amount : tradehistory.sell_price,
+          Amount : limitclaculation,
           type:"CREDIT",
           message:"Balanced used to sell"
         });
