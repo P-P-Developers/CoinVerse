@@ -130,7 +130,7 @@ export const admin_header = [
     {
         id: 12,
         name: 'Sign Up Request',
-        icon: "fe fe-dollar-sign",
+        icon: "fa fa-dollar-sign",
         route: "/admin/signup",
     },
 ];
