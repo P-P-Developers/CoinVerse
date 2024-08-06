@@ -18,7 +18,18 @@ const Tradehistory = () => {
 
   const columns = [
     { Header: "symbol", accessor: "symbol" },
-
+    { Header: "buy Price", accessor: "buy_price" ,
+      Cell: ({ cell }) => {
+        const buy_price = cell.row.buy_price; 
+        return buy_price ? buy_price : "-"; 
+      }
+    },
+    { Header: "sell Price", accessor: "sell_price" ,
+      Cell: ({ cell }) => {
+        const sell_price = cell.row.sell_price; 
+        return sell_price ? sell_price : "-"; 
+      }
+    },
     {
         Header: "Buy Time",
         accessor: "buy_time",
@@ -43,7 +54,6 @@ const Tradehistory = () => {
     },
 
   ];
-
 
 
   // getting data

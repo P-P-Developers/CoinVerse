@@ -8,18 +8,14 @@ const Symbol = db.Symbol;
 const Order = db.Order;
 const User_model = db.user;
 const mainorder_model = db.mainorder_model;
-const BalanceStatement = db.BalanceStatement
-
-
+const BalanceStatement = db.BalanceStatement;
 
 class Placeorder {
-
-
   async getOrderBook(req, res) {
     try {
       const { userid } = req.body;
 
-      const result = await Order.find({ userid }).sort({ createdAt: -1 });;
+      const result = await Order.find({ userid }).sort({ createdAt: -1 });
 
       if (!result.length) {
         return res.json({
@@ -47,7 +43,9 @@ class Placeorder {
       let result;
 
       if (Role === "USER") {
-        result = await mainorder_model.find({ userid: userid }).sort({ createdAt: -1 });;
+        result = await mainorder_model
+          .find({ userid: userid })
+          .sort({ createdAt: -1 });
         if (result.length > 0) {
           return res.json({
             status: true,
@@ -83,7 +81,6 @@ class Placeorder {
     }
   }
 
-
   async position(req, res) {
     try {
       const { userid } = req.body;
@@ -107,10 +104,8 @@ class Placeorder {
         });
       }
 
-      // Find all unique symbols in the trades
       const symbols = [...new Set(finduser.map((trade) => trade.symbol))];
 
-      // Fetch token data for all unique symbols
       const tokenDataMap = await Symbol.find({ symbol: { $in: symbols } }).then(
         (symbolsData) =>
           symbolsData.reduce((map, symbolData) => {
@@ -128,6 +123,7 @@ class Placeorder {
             token: token,
             requiredFund: trade.requiredFund,
             lotsize: trade.lotsize,
+            signal_type: trade.signal_type,
             buy_price: trade.buy_price,
             buy_lot: trade.buy_lot,
             buy_qty: trade.buy_qty,
@@ -137,9 +133,8 @@ class Placeorder {
             sell_lot: trade.sell_lot,
             sell_qty: trade.sell_qty,
             sell_time: trade.sell_time,
-            sell_price: trade.sell_price
+            sell_price: trade.sell_price,
           });
-
 
           return acc;
         },
@@ -151,7 +146,6 @@ class Placeorder {
       res.json({ status: false, error: "Internal Server Error", data: [] });
     }
   }
-
 
   async holding(req, res) {
     try {
@@ -269,9 +263,6 @@ class Placeorder {
     }
   }
 
-
-
-
   // placeorder
   async placeorder(req, res) {
     try {
@@ -301,32 +292,30 @@ class Placeorder {
       const SymbolToken = await Symbol.findOne({ symbol: symbol });
 
       // Check if the user has sufficient balance for the order
-      if (checkadmin.Balance < requiredFund) {
-        const rejectedOrder = new Order({
-          userid,
-          symbol,
-          price,
-          lot,
-          qty,
-          adminid: checkadmin.parent_id,
-          requiredFund,
-          token,
-          type,
-          lotsize,
-          status: "rejected",
-          reason: "Order rejected due to low Balance",
-        });
+      // if (checkadmin.Balance < requiredFund) {
+      //   const rejectedOrder = new Order({
+      //     userid,
+      //     symbol,
+      //     price,
+      //     lot,
+      //     qty,
+      //     adminid: checkadmin.parent_id,
+      //     requiredFund,
+      //     token,
+      //     type,
+      //     lotsize,
+      //     status: "rejected",
+      //     reason: "Order rejected due to low Balance",
+      //   });
 
-
-        // Save the rejected order and return a response
-        await rejectedOrder.save();
-        return res.status(400).json({
-          status: false,
-          message: "Order rejected due to low Balance",
-          order: rejectedOrder,
-        });
-      }
-
+      //   // Save the rejected order and return a response
+      //   await rejectedOrder.save();
+      //   return res.status(400).json({
+      //     status: false,
+      //     message: "Order rejected due to low Balance",
+      //     order: rejectedOrder,
+      //   });
+      // }
 
       let brokerage = 0;
       if (checkadmin.pertrade) {
@@ -334,7 +323,6 @@ class Placeorder {
       } else if (checkadmin.perlot) {
         brokerage = parseFloat(checkadmin.perlot) * parseFloat(lot);
       }
-
 
       // Create a new order object
       const newOrder = new Order({
@@ -393,8 +381,6 @@ class Placeorder {
   }
 }
 
-
-
 // place order entry trade
 
 const EntryTrade = async (
@@ -403,20 +389,11 @@ const EntryTrade = async (
   orderdata,
   checkadmin,
   SymbolToken,
-  brokerage,
+  brokerage
 ) => {
   try {
-    const {
-      userid,
-      symbol,
-      price,
-      lot,
-      qty,
-      requiredFund,
-      lotsize,
-      type,
-    } = req.body;
-
+    const { userid, symbol, price, lot, qty, requiredFund, lotsize, type } =
+      req.body;
 
     const priceNum = parseFloat(price);
     const lotNum = parseFloat(lot, 10);
@@ -446,7 +423,6 @@ const EntryTrade = async (
       tradehistory.buy_type = type;
       tradehistory.requiredFund += requiredFund;
 
-
       if (Array.isArray(tradehistory.orderid)) {
         tradehistory.orderid.push(orderdata._id);
       } else {
@@ -474,38 +450,33 @@ const EntryTrade = async (
         limit: checkadmin.limit,
         status: "Completed",
         createdAt: currentTime,
-        signal_type: "buy_sell"
+        signal_type: "buy_sell",
       });
 
       await tradehistory.save();
-
     }
 
-    const limitclaculation = parseFloat(requiredFund) / Number(checkadmin.limit)
-    const updateuserbalance = parseFloat(checkadmin.Balance) - parseFloat(limitclaculation)
+    const limitclaculation =
+      parseFloat(requiredFund) / Number(checkadmin.limit);
+    const updateuserbalance =
+      parseFloat(checkadmin.Balance) - parseFloat(limitclaculation);
 
-    const Totalupdateuserbalance = parseFloat(updateuserbalance) - parseFloat(brokerage)
-
+    const Totalupdateuserbalance =
+      parseFloat(updateuserbalance) - parseFloat(brokerage);
 
     await User_model.updateOne(
       { _id: checkadmin._id },
       { $set: { Balance: Totalupdateuserbalance } }
     );
 
-
     let newstatement = new BalanceStatement({
       userid: userid,
       orderid: orderdata._id,
       Amount: -limitclaculation,
       type: "DEBIT",
-      message: "Balanced used to buy"
+      message: "Balanced used to buy",
     });
     await newstatement.save();
-
-
-
-
-
 
     return res.status(200).json({
       status: true,
@@ -518,12 +489,16 @@ const EntryTrade = async (
   }
 };
 
-
-
-
-
-const ExitTrade = async (req, res, orderdata, checkadmin, SymbolToken, brokerage) => {
-  const { userid, symbol, price, type, lot, qty, lotsize, requiredFund } = req.body;
+const ExitTrade = async (
+  req,
+  res,
+  orderdata,
+  checkadmin,
+  SymbolToken,
+  brokerage
+) => {
+  const { userid, symbol, price, type, lot, qty, lotsize, requiredFund } =
+    req.body;
 
   const priceNum = parseFloat(price);
   const lotNum = parseFloat(lot, 10);
@@ -541,14 +516,11 @@ const ExitTrade = async (req, res, orderdata, checkadmin, SymbolToken, brokerage
       },
     });
 
-
     if (tradehistory) {
       const totalSellLot = (tradehistory.sell_lot || 0) + lotNum;
 
-      if (tradehistory.buy_lot >= totalSellLot) {
+      // if (tradehistory.buy_lot >= totalSellLot) {
         if (tradehistory.sell_lot == null && tradehistory.sell_price == null) {
-
-
           tradehistory.sell_price = priceNum;
           tradehistory.sell_lot = lotNum;
           tradehistory.sell_qty = qtyNum;
@@ -560,7 +532,6 @@ const ExitTrade = async (req, res, orderdata, checkadmin, SymbolToken, brokerage
             tradehistory.orderid = [tradehistory.orderid, orderdata._id];
           }
         } else {
-
           const totalQuantity = tradehistory.sell_lot + lotNum;
           const totalCost =
             tradehistory.sell_price * tradehistory.sell_lot + priceNum * lotNum;
@@ -579,43 +550,40 @@ const ExitTrade = async (req, res, orderdata, checkadmin, SymbolToken, brokerage
 
         await tradehistory.save();
 
+        const limitclaculation =
+          parseFloat(tradehistory.sell_price) / Number(checkadmin.limit);
+        const updateuserbalance =
+          parseFloat(checkadmin.Balance) + parseFloat(limitclaculation);
 
-        const limitclaculation = parseFloat(tradehistory.sell_price) / Number(checkadmin.limit)
-        const updateuserbalance = parseFloat(checkadmin.Balance) + parseFloat(limitclaculation)
-
-        const Totalupdateuserbalance = parseFloat(updateuserbalance) - parseFloat(brokerage)
+        const Totalupdateuserbalance =
+          parseFloat(updateuserbalance) - parseFloat(brokerage);
 
         await User_model.updateOne(
           { _id: checkadmin._id },
           { $set: { Balance: Totalupdateuserbalance } }
         );
 
-
-
         let newstatement = new BalanceStatement({
           userid: userid,
           orderid: orderdata._id,
           Amount: limitclaculation,
           type: "CREDIT",
-          message: "Balanced used to sell"
+          message: "Balanced used to sell",
         });
 
         await newstatement.save();
-
 
         return res.json({
           status: true,
           message: "Order placed",
         });
-      }
-      else {
-        return res.json({
-          status: false,
-          message: "Insufficient buy lot for the sell order",
-        });
-      }
+      // } else {
+      //   return res.json({
+      //     status: false,
+      //     message: "Insufficient buy lot for the sell order",
+      //   });
+      // }
     } else {
-
       tradehistory = new mainorder_model({
         orderid: orderdata._id,
         userid,
@@ -636,17 +604,15 @@ const ExitTrade = async (req, res, orderdata, checkadmin, SymbolToken, brokerage
         limit: checkadmin.limit,
         status: "Completed",
         createdAt: currentTime,
-        signal_type: "sell_buy"
+        signal_type: "sell_buy",
       });
 
       await tradehistory.save();
-
 
       return res.json({
         status: true,
         message: "Order placed",
       });
-
     }
   } catch (error) {
     console.error("Error processing sell order:", error);
@@ -656,9 +622,5 @@ const ExitTrade = async (req, res, orderdata, checkadmin, SymbolToken, brokerage
     });
   }
 };
-
-
-
-
 
 module.exports = new Placeorder();

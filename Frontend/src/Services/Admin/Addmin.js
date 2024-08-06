@@ -346,3 +346,20 @@ export async function LogoutUser(data, token) {
     }
 
 }
+
+
+// manage logspanel 
+
+export async function getlogoutuser(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}getlogsuser`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}

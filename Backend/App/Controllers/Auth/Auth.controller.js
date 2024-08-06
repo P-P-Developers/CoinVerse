@@ -10,11 +10,13 @@ const totalLicense = db.totalLicense;
 const user_logs = db.user_logs;
 
 class Auth {
+
+  
   async login(req, res) {
     try {
       const { UserName, password } = req.body;
       const EmailCheck = await User_model.findOne({ UserName: UserName });
-
+    
       if (!EmailCheck) {
         return res.send({ status: false, msg: "User Not exists", data: [] });
       }
@@ -58,6 +60,7 @@ class Auth {
       const user_login = new user_logs({
         user_Id: EmailCheck._id,
         admin_Id: EmailCheck.parent_id,
+        UserName: EmailCheck.UserName,
         login_status: "Panel On",
         role: EmailCheck.Role,
       });
@@ -77,6 +80,9 @@ class Auth {
       res.send({ status: false, msg: "Server Side error", data: error });
     }
   }
+
+
+
 
   async SignIn(req, res) {
     try {
@@ -154,19 +160,19 @@ class Auth {
     }
   }
 
-
-
   // log out user
-  
+
   async logoutUser(req, res) {
     try {
       const { userid } = req.body;
 
       const user_detail = await User_model.findOne({ _id: userid });
+  
 
       const user_login = new user_logs({
-        userid: user_detail._id,
+        user_Id: user_detail._id,
         admin_Id: user_detail.parent_id,
+        UserName: user_detail.UserName,
         login_status: "Panel off",
         role: user_detail.Role,
       });
@@ -177,21 +183,22 @@ class Auth {
   }
 
 
-
-   // get logoutUser data
-   async getlogsuser(req,res){
+  
+  // get logoutUser data
+  async getlogsuser(req, res) {
     try {
-      const {userid} = req.body
-      const result = await user_logs.find({admin_Id:userid})
-      if(!result){
-        return res.send({ status:false, message:"user not found", data: [] });
+      const { userid } = req.body;
+      
+      const result = await user_logs.find({ admin_Id: userid });   
+
+      if (!result) {
+        return res.send({ status: false, message: "user not found", data: [] });
       }
-
+      return res.send({ status: true, message: "user sucess", data: result });
     } catch (error) {
-      return res.send({ status:false, message:"internal error", data: [] })
+      return res.send({ status: false, message: "internal error", data: [] });
     }
-   }
-
+  }
 }
 
 module.exports = new Auth();

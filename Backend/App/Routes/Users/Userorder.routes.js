@@ -6,7 +6,7 @@ const { addSymbol,symbolSearch,userSymbollist,deletwatchlistsymbol , getFavourit
     Favouritelist
 } = require("../../Controllers/Users/Symbol.controller")
 const {placeorder ,getOrderBook , gettardehistory ,position,holding } = require("../../Controllers/Users/Placeorder.controller")
-const {userWithdrawalanddeposite,getpaymenthistory, getUserDetail , getmarginpriceforuser} = require("../../Controllers/Users/Users.controller")
+const {userWithdrawalanddeposite,getpaymenthistory, getUserDetail , getmarginpriceforuser,getAllstatement} = require("../../Controllers/Users/Users.controller")
 const {statement} = require("../../Controllers/Users/Statement.controller")
 
 
@@ -27,6 +27,7 @@ router.post('/statement',statement);
 router.post('/getmarginvalue',getmarginpriceforuser);
 router.post('/getFavouritelist',getFavouritelist);
 router.post('/Favouritelist',Favouritelist);
+router.post('/getAllstatement',getAllstatement);
 
 
 

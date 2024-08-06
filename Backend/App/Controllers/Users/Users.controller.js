@@ -9,7 +9,7 @@ const PaymenetHistorySchema = db.PaymenetHistorySchema;
 const User_model = db.user;
 const Wallet_model = db.WalletRecharge;
 const MarginRequired = db.MarginRequired
-
+const BalanceStatement = db.BalanceStatement
 
 class Users {
   
@@ -128,6 +128,27 @@ class Users {
         return res.json({status:false,message:"inernal error",data:[]})
     }
 }
+
+
+
+ async getAllstatement(req,res){
+  try {
+      
+      const {userid} = req.body
+      const result = await BalanceStatement.find({userid:userid})
+
+      if(!result){
+        return res.json({status:false,message : "user not found",data:[]})
+      }
+
+      return res.json({status:true,message : "user found",data:result})
+
+    
+  } catch (error) {
+    return res.json({status:false, message : "internal error",data:[]})
+  }
+
+ }
 
 
 }
