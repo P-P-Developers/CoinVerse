@@ -10,6 +10,10 @@ const User_model = db.user;
 const Wallet_model = db.WalletRecharge;
 const MarginRequired = db.MarginRequired
 const BalanceStatement = db.BalanceStatement
+const mainorder_model = db.mainorder_model;
+
+
+
 
 class Users {
   
@@ -60,6 +64,9 @@ class Users {
     }
   }
 
+  
+
+  // get payment history 
   async getpaymenthistory(req, res) {
     try {
       const { userid } = req.body;
@@ -131,6 +138,8 @@ class Users {
 
 
 
+// get all statement 
+
  async getAllstatement(req,res){
   try {
       
@@ -149,6 +158,57 @@ class Users {
   }
 
  }
+
+
+
+ // get all orderposition of today 
+ 
+ async getuserorderdata(req, res) {
+  try {
+      const { userid, symbol } = req.body;
+
+      // Get current date at midnight
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+
+      // Get next day at midnight
+      const endOfDay = new Date(startOfDay);
+      endOfDay.setDate(endOfDay.getDate() + 1);
+
+      const result = await mainorder_model.find({
+          userid: userid,
+          symbol: symbol,
+          createdAt: {
+              $gte: startOfDay,
+              $lt: endOfDay
+          }
+      });
+
+      if (!result || result.length === 0) {
+          return res.json({
+              status: false,
+              message: "Data not found",
+              data: []
+          });
+      }
+
+      return res.json({
+          status: true,
+          message: "Data found",
+          data: result
+      });
+
+  } catch (error) {
+      return res.json({
+          status: false,
+          message: "Internal error",
+          data: []
+      });
+  }
+}
+
+
+
 
 
 }

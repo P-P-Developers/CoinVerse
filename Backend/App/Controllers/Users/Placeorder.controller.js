@@ -266,7 +266,6 @@ class Placeorder {
   // placeorder
   async placeorder(req, res) {
     try {
-      // Destructure request body to extract order details
       const {
         userid,
         symbol,
@@ -277,10 +276,8 @@ class Placeorder {
         token,
         type,
         lotsize,
-        entry_exit,
       } = req.body;
 
-      // Check if the user exists and has the role of "USER"
       const checkadmin = await User_model.findOne({
         _id: userid,
         Role: "USER",
@@ -291,7 +288,6 @@ class Placeorder {
 
       const SymbolToken = await Symbol.findOne({ symbol: symbol });
 
-      // Check if the user has sufficient balance for the order
       // if (checkadmin.Balance < requiredFund) {
       //   const rejectedOrder = new Order({
       //     userid,
@@ -344,6 +340,7 @@ class Placeorder {
         status: "Completed",
       });
 
+
       // Save the new order to the database
       const orderdata = await newOrder.save();
 
@@ -368,7 +365,6 @@ class Placeorder {
         );
       } else {
         return res
-          .status(400)
           .json({ status: false, message: "Invalid request" });
       }
     } catch (error) {
@@ -423,6 +419,8 @@ const EntryTrade = async (
       tradehistory.buy_type = type;
       tradehistory.requiredFund += requiredFund;
 
+
+
       if (Array.isArray(tradehistory.orderid)) {
         tradehistory.orderid.push(orderdata._id);
       } else {
@@ -430,6 +428,32 @@ const EntryTrade = async (
       }
       await tradehistory.save();
     } else {
+
+      if (checkadmin.Balance < requiredFund) {
+        const rejectedOrder = new Order({
+          userid,
+          symbol,
+          price,
+          lot,
+          qty,
+          adminid: checkadmin.parent_id,
+          requiredFund,
+          token,
+          type,
+          lotsize,
+          status: "rejected",
+          reason: "Order rejected due to low Balance",
+        });
+
+        // Save the rejected order and return a response
+        await rejectedOrder.save();
+        return res.status(400).json({
+          status: false,
+          message: "Order rejected due to low Balance",
+          order: rejectedOrder,
+        });
+      }
+
       tradehistory = new mainorder_model({
         orderid: orderdata._id,
         userid,
@@ -517,9 +541,12 @@ const ExitTrade = async (
     });
 
     if (tradehistory) {
-      const totalSellLot = (tradehistory.sell_lot || 0) + lotNum;
+      const totalSellLot = (tradehistory.sell_qty || 0) + qtyNum;
 
-      // if (tradehistory.buy_lot >= totalSellLot) {
+      if (tradehistory.buy_qty < totalSellLot) {
+       let sellQty = totalSellLot - tradehistory.buy_qty 
+      
+    }
         if (tradehistory.sell_lot == null && tradehistory.sell_price == null) {
           tradehistory.sell_price = priceNum;
           tradehistory.sell_lot = lotNum;
@@ -577,13 +604,34 @@ const ExitTrade = async (
           status: true,
           message: "Order placed",
         });
-      // } else {
-      //   return res.json({
-      //     status: false,
-      //     message: "Insufficient buy lot for the sell order",
-      //   });
-      // }
+   
     } else {
+
+      if (checkadmin.Balance < requiredFund) {
+        const rejectedOrder = new Order({
+          userid,
+          symbol,
+          price,
+          lot,
+          qty,
+          adminid: checkadmin.parent_id,
+          requiredFund,
+          token,
+          type,
+          lotsize,
+          status: "rejected",
+          reason: "Order rejected due to low Balance",
+        });
+
+        // Save the rejected order and return a response
+        await rejectedOrder.save();
+        return res.status(400).json({
+          status: false,
+          message: "Order rejected due to low Balance",
+          order: rejectedOrder,
+        });
+      }
+
       tradehistory = new mainorder_model({
         orderid: orderdata._id,
         userid,

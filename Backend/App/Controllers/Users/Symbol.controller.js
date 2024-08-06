@@ -113,34 +113,6 @@ class UserSymbol {
   }
 
 
-  // user symbol list
-  // async userSymbollist(req, res) {
-  //   try {
-
-  //     const userWatchlistRecords = await Userwatchlist.find({
-  //       userid: req.body.userid,
-
-  //     })
-  //       .select("-createdAt -_id")
-  //       .sort({ _id: -1 });
-
-  //     if (userWatchlistRecords.length > 0) {
-  //       return res.json({ status: true, data: userWatchlistRecords });
-
-  //     } else {
-  //       res.json({ status: false, message: "No data available", data: [] });
-  //     }
-
-  //   } catch (err) {
-
-  //     return res.json({
-  //       status: false,
-  //       message: err.message || "An error occurred while retrieving the User Symbol List.",
-  //       data: []
-  //     });
-  //   }
-  // }
-
 
 // user userwalist list
   async userSymbollist(req, res) {
