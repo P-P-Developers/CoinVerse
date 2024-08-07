@@ -11,6 +11,7 @@ const PaymenetHistorySchema = db.PaymenetHistorySchema;
 const MarginRequired = db.MarginRequired;
 const Symbol = db.Symbol;
 const BalanceStatement = db.BalanceStatement;
+const mainorder_model = db.mainorder_model;
 
 
 
@@ -777,7 +778,9 @@ class Admin {
     }
   }
 
+   
 
+  // totalcount Licence
   async  TotalcountLicence(req, res) {
   try {
     const { userid } = req.body;
@@ -807,6 +810,25 @@ class Admin {
     return res.json({ status: false, message: "Internal Server Error", data: [] });
   }
 }
+
+
+async getclienttradehistory(req, res) {
+  try {
+    const { userid } = req.body;
+   
+    const result = await mainorder_model.find({ userid:userid });
+
+    if(!result){
+      return  res.json({status:false,message:"user not found",data:[]})
+    }
+
+    return res.json({status:true,message:"user found",data:result});
+
+  } catch (error) {
+    return res.json({status:false,message:"internal error",data:[]});
+  }
+}
+ 
 
 
 

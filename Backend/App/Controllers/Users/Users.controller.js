@@ -145,7 +145,9 @@ class Users {
       
       const {userid} = req.body
       const result = await BalanceStatement.find({userid:userid})
-
+       
+      const result1 = await mainorder_model.find({userid:userid})
+       
       if(!result){
         return res.json({status:false,message : "user not found",data:[]})
       }

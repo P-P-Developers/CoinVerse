@@ -79,12 +79,12 @@ export const admin_header = [
         icon: "fe fe-file-text",
         route: "/admin/report",
     },
-    {
-        id: 6,
-        name: 'Trade History',
-        icon: "fe fe-activity",
-        route: "/admin/tradehistory",
-    },
+    // {
+    //     id: 6,
+    //     name: 'Trade History',
+    //     icon: "fe fe-activity",
+    //     route: "/admin/tradehistory",
+    // },
     {
         id: 7,
         name: 'Login Status',

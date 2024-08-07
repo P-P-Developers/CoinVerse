@@ -212,25 +212,28 @@ const Users = () => {
         );
       },
     },
-    // {
-    //   Header: "Trade History",
-    //   accessor: "Trade History",
-    //   Cell: ({ cell }) => {
-    //     return (
-    //       <div>
-    //         <Pencil
-    //           style={{ cursor: "pointer", color: "#33B469" }}
-    //           // onClick={() => updateuserpage(cell.row._id, cell)}
-    //         />
-    //       </div>
-    //     );
-    //   },
-    // },
+    {
+      Header: "Trade History",
+      accessor: "Trade History",
+      Cell: ({ cell }) => {
+        return (
+          <div>
+            <Pencil
+              style={{ cursor: "pointer", color: "#33B469" }}
+              onClick={() => Clienthistory(cell.row._id)}
+            />
+          </div>
+        );
+      },
+    },
 
   ];
 
 
-  
+  const Clienthistory = (_id) => {
+    navigate(`tradehistory/${_id}`);
+  };
+
 
 
   const updateuserpage = (_id, obj) => {

@@ -363,3 +363,21 @@ export async function getlogoutuser(data, token) {
     }
 
 }
+
+
+// getclienttradehistory 
+
+
+export async function Clienthistory(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}getclienttradehistory`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
