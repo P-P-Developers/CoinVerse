@@ -11,6 +11,8 @@ const mainorder_model = db.mainorder_model;
 const BalanceStatement = db.BalanceStatement;
 
 class Placeorder {
+
+
   async getOrderBook(req, res) {
     try {
       const { userid } = req.body;
@@ -121,6 +123,7 @@ class Placeorder {
           const token = tokenDataMap[trade.symbol];
 
           acc.openPositions.push({
+            _id:trade._id,
             symbol: trade.symbol,
             token: token,
             requiredFund: trade.requiredFund,
@@ -148,6 +151,8 @@ class Placeorder {
       res.json({ status: false, error: "Internal Server Error", data: [] });
     }
   }
+
+
 
   async holding(req, res) {
     try {
@@ -307,6 +312,8 @@ class Placeorder {
         const Totalupdateuserbalance =
         parseFloat(updateuserbalance) - parseFloat(brokerage);
         
+    
+
         await User_model.updateOne(
           { _id: checkadmin._id },
           { $set: { Balance: Totalupdateuserbalance } }
@@ -319,7 +326,7 @@ class Placeorder {
           type: "CREDIT",
           message: "Balanced used to sell",
           symbol:symbol,
-          brokerage:checkadmin.brokerage
+          brokerage:brokerage
         });
         
         await newstatement.save();
@@ -397,11 +404,13 @@ class Placeorder {
         type,
         lotsize,
       } = req.body;
-
-      const checkadmin = await checkadmin.findOne({
+     
+      
+      const checkadmin = await User_model.findOne({
         _id: userid,
         Role: "USER",
       });
+     
       if (!checkadmin) {
         return res.json({ status: false, message: "User not found", data: [] });
       }
@@ -432,7 +441,7 @@ class Placeorder {
       //     order: rejectedOrder,
       //   });
       // }
-
+      
       let brokerage = 0;
       if (checkadmin.pertrade) {
         brokerage = parseFloat(checkadmin.pertrade);
@@ -499,6 +508,8 @@ class Placeorder {
 
 // place order entry trade
 
+
+
 const EntryTrade = async (
   req,
   res,
@@ -538,17 +549,17 @@ const EntryTrade = async (
     //   tradehistory.buy_qty += qtyNum;
     //   tradehistory.buy_type = type;
     //   tradehistory.requiredFund += requiredFund;
-
-
-
+    
+    
+    
     //   if (Array.isArray(tradehistory.orderid)) {
-    //     tradehistory.orderid.push(orderdata._id);
-    //   } else {
-    //     tradehistory.orderid = [tradehistory.orderid, orderdata._id];
-    //   }
-    //   await tradehistory.save();
-//   } else {
-
+      //     tradehistory.orderid.push(orderdata._id);
+      //   } else {
+        //     tradehistory.orderid = [tradehistory.orderid, orderdata._id];
+        //   }
+        //   await tradehistory.save();
+        //   } else {
+          
       if (checkadmin.Balance < requiredFund) {
         const rejectedOrder = new Order({
           userid,
@@ -600,6 +611,7 @@ const EntryTrade = async (
       await tradehistory.save();
     // }
 
+
     const limitclaculation =
       parseFloat(requiredFund) / Number(checkadmin.limit);
     const updateuserbalance =
@@ -638,6 +650,9 @@ const EntryTrade = async (
       .json({ status: false, message: "internal error", data: [] });
   }
 };
+
+
+
 
 const ExitTrade = async (
   req,
@@ -824,12 +839,6 @@ const ExitTrade = async (
     });
   }
 };
-
-
-
-
-
-
 
 
 

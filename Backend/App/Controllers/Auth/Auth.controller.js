@@ -16,11 +16,14 @@ class Auth {
     try {
       const { UserName, password } = req.body;
       const EmailCheck = await User_model.findOne({ UserName: UserName });
-    
+       
+      
       if (!EmailCheck) {
         return res.send({ status: false, msg: "User Not exists", data: [] });
       }
-
+      
+      
+      
       if (EmailCheck.ActiveStatus !== "1") {
         return res.send({
           status: false,
@@ -28,11 +31,11 @@ class Auth {
           data: [],
         });
       }
-
+      
       if (EmailCheck.Role === "USER" || EmailCheck.Role === "ADMIN") {
         const currentDate = new Date();
         const endDate = new Date(EmailCheck.End_Date);
-
+        
         if (
           endDate.getDate() === currentDate.getDate() &&
           endDate.getMonth() === currentDate.getMonth() &&
@@ -49,22 +52,28 @@ class Auth {
       const validPassword = await bcrypt.compare(password, EmailCheck.password);
 
       if (!validPassword) {
-        return res.send({ status: false, msg: "Password Not Match", data: [] });
+        return res.send({ status: false, message: "Password Not Match", data: [] });
       }
 
       // JWT TOKEN CREATE
       var token = jwt.sign({ id: EmailCheck._id }, process.env.SECRET, {
         expiresIn: 36000,
       });
+      
+    
+      console.log("EmailCheck.parent_id",EmailCheck.parent_id)
+      
 
       const user_login = new user_logs({
         user_Id: EmailCheck._id,
-        admin_Id: EmailCheck.parent_id,
+        admin_Id: EmailCheck.parent_id ||"",
         UserName: EmailCheck.UserName,
         login_status: "Panel On",
         role: EmailCheck.Role,
       });
+
       await user_login.save();
+
 
       return res.send({
         status: true,

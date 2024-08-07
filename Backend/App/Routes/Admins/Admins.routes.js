@@ -6,7 +6,8 @@ const { GetDashboardData} = require("../../Controllers/Admins/AdminDashboard/Das
 const {AddUser , updateLicence , updateUser , DeleteUser,Update_Employe ,Delete_Employee,getuserpaymentstatus,UpdateStatus , getsymbolholdoff ,updatesymbolholoff,getbalancandLicence,
     countuserBalance,
     TotalcountLicence,
-    getclienttradehistory
+    getclienttradehistory,
+    getlicensedata
 } = require("../../Controllers/Admins/Admins/Admin")
 const {marginupdate , getmarginprice} = require("../../Controllers/Admins/Admins/MarginReq")
 
@@ -31,6 +32,7 @@ router.post('/getbalancandLicence', getbalancandLicence);
 router.post('/admin/countuserBalance', countuserBalance);
 router.post('/TotalcountLicence', TotalcountLicence);
 router.post('/getclienttradehistory', getclienttradehistory);
+router.post('/getlicensedata', getlicensedata);
 
      
 

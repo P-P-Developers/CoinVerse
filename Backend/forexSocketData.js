@@ -1,3 +1,5 @@
+const db = require("../Backend/App/Models")
+const forexlivedata = db.forexlivedata
 
 module.exports = function (app, io) {
     const WebSocket = require('ws');
@@ -7,10 +9,10 @@ module.exports = function (app, io) {
 
 
     const forexSocket = () => {
-        console.log("inside")
+        // console.log("inside")
         const ws = new WebSocket('wss://api.tiingo.com/fx');
         ws.on('open', function open() {
-            console.log('Connected to Tiingo FX WebSocket');
+            // console.log('Connected to Tiingo FX WebSocket');
 
             // Subscribe to a currency pair
             const subscribeMessage = {
@@ -48,22 +50,32 @@ module.exports = function (app, io) {
             };
 
             ws.send(JSON.stringify(subscribeMessage));
-            console.log('Sent subscription message:', subscribeMessage);
+            // console.log('Sent subscription message:', subscribeMessage);
         });
 
-        ws.on('message', function incoming(data) {
-            //console.log('Received:', JSON.parse(data));
+        ws.on('message',async function incoming(data) {
+            // console.log('Received:', JSON.parse(data));
             const response = JSON.parse(data);
-           console.log('Received data:', response);
+        //    console.log('Received data:', response);
             if (response.messageType == "A") {
 
                 if (response.data != undefined && response.data.length > 0) {
                     // console.log('Received data - :', response.data[0]);
                     if (response.data[0] == "Q") {
-                        let token = response.data[1];
-                        let price = response.data[5];
+                        // let token = response.data[1];
+                        // let price = response.data[5];
+                        const filter = { token: response.data[1] };
+                        const update = {
+                            $set: {
+                                token:response.data[1],
+                                price: response.data[5]
+                            },
+                        };
+                        // const result = await stock_live_price.updateOne(filter, update, { upsert: true });
+                        await forexlivedata.updateOne(filter, update, { upsert: true });
 
-
+                
+                        
                         //io.emit("receive_data_forex", {data:response.data , type:'forex'});
                     }
 
@@ -106,7 +118,7 @@ module.exports = function (app, io) {
     const cryptoSocket = () => {
         const ws = new WebSocket('wss://api.tiingo.com/crypto');
         ws.on('open', function open() {
-            console.log('Connected to Tiingo crypto WebSocket');
+            // console.log('Connected to Tiingo crypto WebSocket');
 
             // Subscribe to a currency pair
             const subscribeMessage = {
@@ -133,10 +145,10 @@ module.exports = function (app, io) {
             };
 
             ws.send(JSON.stringify(subscribeMessage));
-            console.log('Sent subscription message:', subscribeMessage);
+            // console.log('Sent subscription message:', subscribeMessage);
         });
 
-        ws.on('message', function incoming(data) {
+        ws.on('message', async function incoming(data) {
             ///console.log('Received:', JSON.parse(data));
             const response = JSON.parse(data);
             //console.log('Received data:', response);
@@ -144,8 +156,17 @@ module.exports = function (app, io) {
 
                 if (response.data != undefined && response.data.length > 0) {
                     if (response.data[0] == "Q") {
-                        let token = response.data[1];
-                        let price = response.data[6];
+                       
+                        const filter = { token: response.data[1] };
+                        const update = {
+                            $set: {
+                                token:response.data[1],
+                                price: response.data[6]
+                            },
+                        };
+                        // const result = await stock_live_price.updateOne(filter, update, { upsert: true });
+                        await forexlivedata.updateOne(filter, update, { upsert: true });
+
                        // io.emit("receive_data_forex", {data:response.data , type:'crypto'});
                     }
             
@@ -175,7 +196,7 @@ module.exports = function (app, io) {
         });
 
         ws.on('close', function close() {
-            console.log('Disconnected from Tiingo FX WebSocket');
+            // console.log('Disconnected from Tiingo FX WebSocket');
         });
 
         ws.on('error', function error(err) {

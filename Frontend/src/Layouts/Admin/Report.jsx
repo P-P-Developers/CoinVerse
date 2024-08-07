@@ -1,6 +1,61 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import { getlicencedata } from '../../Services/Admin/Addmin';
+import { fDateTime } from "../../Utils/Date_format/datefromat";
+import Table from "../../Utils/Table/Table";
+
+
 
 const Report = () => {
+
+    const userDetails = JSON.parse(localStorage.getItem("user_details"));
+    const user_id = userDetails?.user_id;
+
+
+  const [alllivedata, setAlllivedata] = useState([]);
+  const [activedata, setActivedata] = useState([]);
+  const [expired, setExpired] = useState([]);
+  
+  const columns = [
+    { Header: "UserName", accessor: "UserName" },
+    {
+      Header: "Start Date",
+      accessor: "Start_Date",
+      Cell: ({ cell }) => {
+        return fDateTime(cell.value)
+
+      },
+    },
+    {
+        Header: "End Date",
+        accessor: "End_Date",
+        Cell: ({ cell }) => {
+          return fDateTime(cell.value)
+  
+        },
+      },
+
+  ];
+
+
+   // getting data
+   const getlicensehistory = async () => {
+    try {
+        const data = {userid :user_id}
+      const response = await getlicencedata(data);
+      setAlllivedata(response.data.allData);
+      setActivedata(response.data.liveData);
+      setExpired(response.data.expiredData);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+  useEffect(() => {
+    getlicensehistory();
+  }, []);
+
+
+
     return (
         <div>
             <div className='row'>
@@ -31,7 +86,7 @@ const Report = () => {
                                                             data-bs-toggle="tab"
                                                             aria-expanded="false"
                                                         >
-                                                            All live Clients
+                                                            All Clients
                                                         </a>
                                                     </li>
                                                     <li className="nav-item">
@@ -79,52 +134,7 @@ const Report = () => {
                                                                                         />
                                                                                     </div>
 
-                                                                                    <table className="table table-responsive-md">
-                                                                                        <thead>
-                                                                                            <tr>
-                                                                                                <th>#</th>
-                                                                                                <th>Username</th>
-                                                                                                <th>Start Date</th>
-                                                                                                <th>End Date</th>
-
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>
-                                                                                            <tr>
-
-                                                                                                <td>1</td>
-                                                                                                <td>Donalt</td>
-                                                                                                <td>01 August 2020</td>
-                                                                                                <td>01 August 2020</td>
-
-
-
-
-                                                                                            </tr>
-                                                                                            <tr>
-
-                                                                                                <td>2</td>
-                                                                                                <td>Donalt</td>
-                                                                                                <td>01 August 2020</td>
-                                                                                                <td>01 August 2020</td>
-
-
-
-
-                                                                                            </tr>
-                                                                                            <tr>
-
-                                                                                                <td>3</td>
-                                                                                                <td>Donalt</td>
-                                                                                                <td>01 August 2020</td>
-                                                                                                <td>01 August 2020</td>
-
-
-
-
-                                                                                            </tr>
-                                                                                        </tbody>
-                                                                                    </table>
+                                                                                    <Table columns={columns} data={alllivedata && alllivedata} />
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -157,53 +167,8 @@ const Report = () => {
                                                                                         />
                                                                                     </div>
 
-                                                                                    <table className="table table-responsive-md">
+                                                                                    <Table columns={columns} data={activedata && activedata} />
 
-                                                                                        <thead>
-                                                                                            <tr>
-                                                                                                <th>#</th>
-                                                                                                <th>Username</th>
-                                                                                                <th>Start Date</th>
-                                                                                                <th>End Date</th>
-
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>
-                                                                                            <tr>
-
-                                                                                                <td>1</td>
-                                                                                                <td>MS Dhoni</td>
-                                                                                                <td>01 August 2020</td>
-                                                                                                <td>02 August 2024</td>
-
-
-
-
-                                                                                            </tr>
-                                                                                            <tr>
-
-                                                                                                <td>2</td>
-                                                                                                <td>Donalt Trump</td>
-                                                                                                <td>01 August 2020</td>
-                                                                                                <td>03 August 2024</td>
-
-
-
-
-                                                                                            </tr>
-                                                                                            <tr>
-
-                                                                                                <td>3</td>
-                                                                                                <td>Donalt kesh</td>
-                                                                                                <td>01 August 2020</td>
-                                                                                                <td>05 August 2025</td>
-
-
-
-
-                                                                                            </tr>
-                                                                                        </tbody>
-                                                                                    </table>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -214,11 +179,73 @@ const Report = () => {
                                                         </div>
                                                     </div>
                                                     <div id="navpills-3" className="tab-pane">
-                                                        <div className="row">
-                                                            <div className="col-md-12">
-                                                                <p className='text-center'>There are no records to display</p>
-                                                            </div>
-                                                        </div>
+                                                    <div
+  className="tab-pane fade show active"
+  id="Week"
+  role="tabpanel"
+  aria-labelledby="Week-tab"
+>
+  <div className="table-responsive">
+    <div className="mb-2">
+      Search :{" "}
+      <input
+        className="ml-2 input-search form-control"
+        defaultValue=""
+        style={{ width: "20%" }}
+      />
+    </div>
+    <div>
+      <div className="table-responsive">
+      <Table columns={columns} data={expired && expired} />
+
+      </div>
+      <div className="pagination">
+        <button
+          disabled=""
+          className="pagination-button pagination-button-left"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width={20}
+            height={20}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="lucide lucide-arrow-left"
+          >
+            <path d="m12 19-7-7 7-7" />
+            <path d="M19 12H5" />
+          </svg>
+        </button>
+        <span>Page 1 of 1</span>
+        <button
+          className="pagination-button pagination-button-right"
+          disabled=""
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width={20}
+            height={20}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="lucide lucide-arrow-right"
+          >
+            <path d="M5 12h14" />
+            <path d="m12 5 7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -229,110 +256,7 @@ const Report = () => {
                                             role="tabpanel"
                                             aria-labelledby="home-tab3"
                                         >
-                                            <div className="card-body p-0 code-area">
-                                                <pre className="m-0">
-                                                    <code className="language-html">
-                                                        &lt;ul class="nav nav-pills mb-4 light"&gt;{"\n"}
-                                                        {"\t"}&lt;li class=" nav-item"&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;a href="#navpills-1" class="nav-link active"
-                                                        data-bs-toggle="tab" aria-expanded="false"&gt;Tab One&lt;/a&gt;
-                                                        {"\n"}
-                                                        {"\t"}&lt;/li&gt;{"\n"}
-                                                        {"\t"}&lt;li class="nav-item"&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;a href="#navpills-2" class="nav-link"
-                                                        data-bs-toggle="tab" aria-expanded="false"&gt;Tab Two&lt;/a&gt;
-                                                        {"\n"}
-                                                        {"\t"}&lt;/li&gt;{"\n"}
-                                                        {"\t"}&lt;li class="nav-item"&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;a href="#navpills-3" class="nav-link"
-                                                        data-bs-toggle="tab" aria-expanded="true"&gt;Tab Three&lt;/a&gt;
-                                                        {"\n"}
-                                                        {"\t"}&lt;/li&gt;{"\n"}&lt;/ul&gt;{"\n"}&lt;div
-                                                        class="tab-content"&gt;{"\n"}
-                                                        {"\t"}&lt;div id="navpills-1" class="tab-pane active"&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;div class="row"&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;div class="col-md-12"&gt; Raw denim you probably haven't
-                                                        heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua,
-                                                        retro synth master cleanse. Mustache cliche tempor, williamsburg
-                                                        carles vegan helvetica.{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;p&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;br /&gt; Reprehenderit butcher retro keffiyeh
-                                                        dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry
-                                                        richardson ex squid.&lt;/p&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;/div&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;/div&gt;{"\n"}
-                                                        {"\t"}&lt;/div&gt;{"\n"}
-                                                        {"\t"}&lt;div id="navpills-2" class="tab-pane"&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;div class="row"&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;div class="col-md-12"&gt; Raw denim you probably haven't
-                                                        heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua,
-                                                        retro synth master cleanse. Mustache cliche tempor, williamsburg
-                                                        carles vegan helvetica.{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;p&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;br /&gt; Reprehenderit butcher retro keffiyeh
-                                                        dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry
-                                                        richardson ex squid.&lt;/p&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;/div&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;/div&gt;{"\n"}
-                                                        {"\t"}&lt;/div&gt;{"\n"}
-                                                        {"\t"}&lt;div id="navpills-3" class="tab-pane"&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;div class="row"&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;div class="col-md-12"&gt; Raw denim you probably haven't
-                                                        heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua,
-                                                        retro synth master cleanse. Mustache cliche tempor, williamsburg
-                                                        carles vegan helvetica.{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;p&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;br /&gt; Reprehenderit butcher retro keffiyeh
-                                                        dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry
-                                                        richardson ex squid.&lt;/p&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;/div&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;/div&gt;{"\n"}
-                                                        {"\t"}&lt;/div&gt;{"\n"}&lt;/div&gt;
-                                                    </code>
-                                                </pre>
-                                            </div>
+                                           
                                         </div>
                                     </div>
                                 </div>

@@ -786,7 +786,7 @@ class Admin {
     const { userid } = req.body;
 
     if (!userid) {
-      return res.json({ status: false, message: "User ID is required" });
+      return res.json({ status: false, message: "User ID is required" , data:[] });
     }
 
     const licenses = await totalLicense.find({ parent_Id: userid }).select("Licence");
@@ -796,10 +796,11 @@ class Admin {
     const user = await User_model.findOne({ _id: userid });
 
     if (!user) {
-      return res.json({ status: false, message: "User not found" });
+      return res.json({ status: false, message: "User not found" , data:[]});
     }
   
     const licenseDiff =  Number(user.Licence) - Number(totalLicenses)
+
 
     return res.json({ status: true, message: "Success", 
       data: {totalLicenses:totalLicenses,CountLicence:licenseDiff,userLicence:user.Licence}
@@ -810,6 +811,8 @@ class Admin {
     return res.json({ status: false, message: "Internal Server Error", data: [] });
   }
 }
+
+
 
 
 async getclienttradehistory(req, res) {
@@ -829,6 +832,55 @@ async getclienttradehistory(req, res) {
   }
 }
  
+
+//  async getlicensedata(req,res){
+//     try {
+//        const {userid} = req.body
+//        const result = await User_model.find({parent_id:userid})
+
+//        if(!result){
+//         return res.json({ status: false, message: "User not found" , data:[]});
+//        }
+//        return res.json({ status: true, message: "User found" , data:result});
+      
+//     } catch (error) {
+//       return res.json({ status: false, message: "internal error" , data:[]})
+//     }
+//  }
+
+
+async getlicensedata(req, res){
+  try {
+    const { userid } = req.body;
+    const result = await User_model.find({ parent_id: userid }).select("UserName Start_Date End_Date");
+
+    if (!result || result.length === 0) {
+      return res.json({ status: false, message: "User not found", data: [] });
+    }
+
+    const currentDate = new Date();
+    const allData = result;
+    const liveData = result.filter(record => {
+      const startDate = new Date(record.Start_Date);
+      const endDate = new Date(record.End_Date);
+      return startDate <= currentDate && currentDate <= endDate;
+    });
+    const expiredData = result.filter(record => {
+      const endDate = new Date(record.End_Date);
+      return currentDate > endDate;
+    });
+
+    return res.json({
+      status: true,
+      message: "User found",
+      data: { allData, liveData, expiredData }
+    });
+
+  } catch (error) {
+    return res.json({ status: false, message: "internal error", data: [] });
+  }
+};
+
 
 
 

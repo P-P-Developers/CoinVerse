@@ -146,7 +146,7 @@ class Users {
       const {userid} = req.body
       const result = await BalanceStatement.find({userid:userid})
        
-      const result1 = await mainorder_model.find({userid:userid})
+      
        
       if(!result){
         return res.json({status:false,message : "user not found",data:[]})
@@ -162,9 +162,39 @@ class Users {
  }
 
 
+// async getAllstatement(req, res) {
+//   try {
+//     const { userid } = req.body;
+//     const result = await BalanceStatement.aggregate([
+//       { $match: { userid: userid } },
+//       { 
+//         $lookup: {
+//           from: 'orders', 
+//           localField: 'orderid',
+//           foreignField: '_id', 
+//           as: 'orderDetails'
+//         }
+//       }
+//     ]);
+
+//     if (!result.length) {
+//       return res.json({ status: false, message: "User not found", data: [] });
+//     }
+
+//     return res.json({ status: true, message: "User found", data: result });
+//   } catch (error) {
+//     return res.json({ status: false, message: "Internal error", data: [] });
+//   }
+// }
+
+
+
 
  // get all orderposition of today 
  
+
+
+
  async getuserorderdata(req, res) {
   try {
       const { userid, symbol } = req.body;
@@ -208,6 +238,7 @@ class Users {
       });
   }
 }
+
 
 
 

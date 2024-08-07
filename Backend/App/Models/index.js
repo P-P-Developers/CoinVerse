@@ -14,5 +14,6 @@ module.exports = {
     Statement : require("./statement.model"),
     Favouritelist:require("./Favouritelist.model"),
     BalanceStatement:require("./BalanceStatement.model"),
-    user_logs :require("./User_logs.model")
+    user_logs :require("./User_logs.model"),
+    forexlivedata:require("./forexlivedata.model")
 };

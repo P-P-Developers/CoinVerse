@@ -22,17 +22,45 @@ const Tradehistory = () => {
 
 
   const columns = [
-    { Header: "symbol", accessor: "symbol" },
+    { Header: "Symbol", accessor: "symbol" },
     { Header: "buy Price", accessor: "buy_price" ,
       Cell: ({ cell }) => {
         const buy_price = cell.row.buy_price; 
         return buy_price ? buy_price : "-"; 
       }
     },
-    { Header: "sell Price", accessor: "sell_price" ,
+    { Header: "Sell Price", accessor: "sell_price" ,
       Cell: ({ cell }) => {
         const sell_price = cell.row.sell_price; 
         return sell_price ? sell_price : "-"; 
+      }
+    },
+    { Header: "Buy lot", accessor: "buy_lot" ,
+      Cell: ({ cell }) => {
+        const buy_lot = cell.row.buy_lot; 
+        return buy_lot ? buy_lot : "-"; 
+      }
+    },
+    { Header: "Sell lot", accessor: "sell_lot" ,
+      Cell: ({ cell }) => {
+        const sell_lot = cell.row.sell_lot; 
+        return sell_lot ? sell_lot : "-"; 
+      }
+    },
+    {
+      Header: "Buy qty",
+      accessor: "buy_qty",
+      Cell: ({ cell }) => {
+        const buy_qty = cell.row.buy_qty; 
+        return buy_qty ? buy_qty : "-"; 
+      }
+    },
+    {
+      Header: "Sell qty",
+      accessor: "sell_qty",
+      Cell: ({ cell }) => {
+        const buy_qty = cell.row.buy_qty; 
+        return buy_qty ? buy_qty : "-"; 
       }
     },
     {
@@ -49,6 +77,7 @@ const Tradehistory = () => {
             return sell_time ? fDateTime(sell_time) : "-"; 
           }
     },
+   
     {
       Header: "Create Date",
       accessor: "createdAt",

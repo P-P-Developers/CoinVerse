@@ -381,3 +381,20 @@ export async function Clienthistory(data, token) {
     }
 
 }
+
+// get license data 
+
+
+export async function getlicencedata(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}getlicensedata`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
