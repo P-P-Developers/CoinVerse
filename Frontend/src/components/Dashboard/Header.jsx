@@ -1,8 +1,16 @@
 import { Link, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from 'react';
+import { LogoutUser } from "../../Services/Admin/Addmin";
+
 const Header = () => {
   const location = useLocation();
   const user_role = JSON.parse(localStorage.getItem("user_role"));
+  const user_details = JSON.parse(localStorage.getItem("user_details"));
+
+  const user_id = user_details?.user_id
+   
+
+
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -28,6 +36,20 @@ const Header = () => {
   const toggleHamburger = () => {
     setIsActive(!isActive);
   };
+
+
+  const logoutuser=()=>{
+    try {
+       const data = {userid:user_id}
+       const response = LogoutUser(data)
+         if(response.status){
+            console.log("logout success")
+         }
+    } catch (error) {
+        console.log("error")
+    }
+  }
+
 
   return (
     <div>
@@ -635,12 +657,13 @@ const Header = () => {
                               strokeWidth={2}
                               strokeLinecap="round"
                               strokeLinejoin="round"
+                            
                             >
                               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
                               <polyline points="16 17 21 12 16 7" />
                               <line x1={21} y1={12} x2={9} y2={12} />
                             </svg>
-                            <span className="ms-2 text-danger">Logout </span>
+                            <span className="ms-2 text-danger" onClick={logoutuser}>Logout </span>
                           </Link>
                         </div>
                       </div>
@@ -1342,7 +1365,7 @@ const Header = () => {
                                 <polyline points="16 17 21 12 16 7" />
                                 <line x1={21} y1={12} x2={9} y2={12} />
                               </svg>
-                              <span className="ms-2 text-danger">Logout </span>
+                              <span className="ms-2 text-danger" onClick={logoutuser}>Logout </span>
                             </Link>
                           </div>
                         </div>
@@ -2044,7 +2067,7 @@ const Header = () => {
                                 <polyline points="16 17 21 12 16 7" />
                                 <line x1={21} y1={12} x2={9} y2={12} />
                               </svg>
-                              <span className="ms-2 text-danger">Logout </span>
+                              <span className="ms-2 text-danger"  onClick={logoutuser}>Logout </span>
                             </Link>
                           </div>
                         </div>

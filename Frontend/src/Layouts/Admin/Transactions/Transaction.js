@@ -29,7 +29,15 @@ const Transaction = () => {
 
       },
     },
-    { Header: "Status", accessor: "Type" },
+    {
+      Header: "Status",
+      accessor: "Type",
+      Cell: ({ cell }) => (
+        <span style={{ color: cell.value === "CREDIT" ? "green" : "red" }}>
+          {cell.value}
+        </span>
+      ),
+    },
   ];
 
 

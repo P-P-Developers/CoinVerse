@@ -12,5 +12,7 @@ module.exports = {
     MarginRequired: require("./MarginReq.model"),
     mainorder_model : require("./Mainorder.model"),
     Statement : require("./statement.model"),
-    Userwatchlist2:require("./UserWatchlist2.model")
+    Favouritelist:require("./Favouritelist.model"),
+    BalanceStatement:require("./BalanceStatement.model"),
+    user_logs :require("./User_logs.model")
 };

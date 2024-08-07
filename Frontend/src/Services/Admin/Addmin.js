@@ -314,9 +314,63 @@ export async function adminWalletBalance(data, token) {
 
 
 
+// total count licence
+
 export async function TotalcountLicence(data, token) {
     try {
         const res = await axios.post(`${Config.base_url}TotalcountLicence`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// manage logs of user logout 
+
+export async function LogoutUser(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}logoutUser`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// manage logspanel 
+
+export async function getlogoutuser(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}getlogsuser`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// getclienttradehistory 
+
+
+export async function Clienthistory(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}getclienttradehistory`, data, {
             data: {},
         })
         return await res?.data;

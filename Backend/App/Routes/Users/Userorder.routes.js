@@ -2,9 +2,13 @@
 
 const router = require("express").Router()
 
-const { addSymbol,symbolSearch,userSymbollist,deletwatchlistsymbol} = require("../../Controllers/Users/Symbol.controller")
-const {placeorder ,getOrderBook , gettardehistory ,position,holding } = require("../../Controllers/Users/Placeorder.controller")
-const {userWithdrawalanddeposite,getpaymenthistory, getUserDetail , getmarginpriceforuser} = require("../../Controllers/Users/Users.controller")
+const { addSymbol,symbolSearch,userSymbollist,deletwatchlistsymbol , getFavouritelist ,
+    Favouritelist
+} = require("../../Controllers/Users/Symbol.controller")
+const {placeorder ,getOrderBook , gettardehistory ,position,holding, Squareoff} = require("../../Controllers/Users/Placeorder.controller")
+const {userWithdrawalanddeposite,getpaymenthistory, getUserDetail , getmarginpriceforuser,getAllstatement,
+    getuserorderdata
+} = require("../../Controllers/Users/Users.controller")
 const {statement} = require("../../Controllers/Users/Statement.controller")
 
 
@@ -23,6 +27,12 @@ router.post('/position',position);
 router.post('/holding',holding);
 router.post('/statement',statement);
 router.post('/getmarginvalue',getmarginpriceforuser);
+router.post('/getFavouritelist',getFavouritelist);
+router.post('/Favouritelist',Favouritelist);
+router.post('/getAllstatement',getAllstatement);
+router.post('/getuserorderdata',getuserorderdata);
+router.post('/Squareoff',Squareoff);
+
 
 
 

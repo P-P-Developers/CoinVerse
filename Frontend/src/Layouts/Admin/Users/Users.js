@@ -220,7 +220,7 @@ const Users = () => {
           <div>
             <Pencil
               style={{ cursor: "pointer", color: "#33B469" }}
-              // onClick={() => updateuserpage(cell.row._id, cell)}
+              onClick={() => Clienthistory(cell.row._id)}
             />
           </div>
         );
@@ -230,7 +230,10 @@ const Users = () => {
   ];
 
 
-  
+  const Clienthistory = (_id) => {
+    navigate(`tradehistory/${_id}`);
+  };
+
 
 
   const updateuserpage = (_id, obj) => {

@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../Utils/Table/Table";
-import { getpositionhistory } from "../../Services/Admin/Addmin";
 import { fDateTime ,fDateTimesec} from "../../Utils/Date_format/datefromat";
+import { useParams } from "react-router-dom";
+import { Clienthistory } from "../../Services/Admin/Addmin";
 
 
 
 
 const Tradehistory = () => {
+
+  const {id} = useParams()
 
 
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
@@ -16,9 +19,22 @@ const Tradehistory = () => {
 
   const [data, setData] = useState([]);
 
+
+
   const columns = [
     { Header: "symbol", accessor: "symbol" },
-
+    { Header: "buy Price", accessor: "buy_price" ,
+      Cell: ({ cell }) => {
+        const buy_price = cell.row.buy_price; 
+        return buy_price ? buy_price : "-"; 
+      }
+    },
+    { Header: "sell Price", accessor: "sell_price" ,
+      Cell: ({ cell }) => {
+        const sell_price = cell.row.sell_price; 
+        return sell_price ? sell_price : "-"; 
+      }
+    },
     {
         Header: "Buy Time",
         accessor: "buy_time",
@@ -27,7 +43,7 @@ const Tradehistory = () => {
           return buyTime ? fDateTime(buyTime) : "-"; 
         }
       },
-    { Header: "sell_time", accessor: "sell_time",
+    { Header: "Sell time", accessor: "sell_time",
         Cell: ({ cell }) => {
             const sell_time = cell.row.sell_time; 
             return sell_time ? fDateTime(sell_time) : "-"; 
@@ -45,12 +61,11 @@ const Tradehistory = () => {
   ];
 
 
-
   // getting data
   const getuserallhistory = async () => {
     try {
-       const data = {userid:user_id,Role:Role}
-      const response = await getpositionhistory(data);
+      const data = {userid:id}
+      const response = await Clienthistory(data);
       setData(response.data);
     } catch (error) {
       console.log("error", error);
@@ -59,7 +74,7 @@ const Tradehistory = () => {
 
   useEffect(() => {
     getuserallhistory();
-  }, []);
+  }, [id]);
 
 
 

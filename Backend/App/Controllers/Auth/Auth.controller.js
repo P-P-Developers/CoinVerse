@@ -7,75 +7,87 @@ const jwt = require("jsonwebtoken");
 const User_model = db.user;
 const Sign_In = db.Sign_In;
 const totalLicense = db.totalLicense;
-
-
+const user_logs = db.user_logs;
 
 class Auth {
 
-    async login(req, res) {
+  
+  async login(req, res) {
+    try {
+      const { UserName, password } = req.body;
+      const EmailCheck = await User_model.findOne({ UserName: UserName });
+    
+      if (!EmailCheck) {
+        return res.send({ status: false, msg: "User Not exists", data: [] });
+      }
 
-      try {
-        const { UserName, password } = req.body;
-        const EmailCheck = await User_model.findOne({ UserName: UserName });
+      if (EmailCheck.ActiveStatus !== "1") {
+        return res.send({
+          status: false,
+          msg: "Account is not active",
+          data: [],
+        });
+      }
 
-        if (!EmailCheck) {
-          return res.send({ status: false, msg: "User Not exists", data: [] });
-        }
+      if (EmailCheck.Role === "USER" || EmailCheck.Role === "ADMIN") {
+        const currentDate = new Date();
+        const endDate = new Date(EmailCheck.End_Date);
 
-        if (EmailCheck.ActiveStatus !== "1") {
+        if (
+          endDate.getDate() === currentDate.getDate() &&
+          endDate.getMonth() === currentDate.getMonth() &&
+          endDate.getFullYear() === currentDate.getFullYear()
+        ) {
           return res.send({
             status: false,
-            msg: "Account is not active",
+            msg: "Account is expired",
             data: [],
           });
         }
-        
-        if (EmailCheck.Role === "USER" || EmailCheck.Role === "ADMIN") {
-          const currentDate = new Date();
-          const endDate = new Date(EmailCheck.End_Date);
-    
-          if (
-            endDate.getDate() === currentDate.getDate() &&
-            endDate.getMonth() === currentDate.getMonth() &&
-            endDate.getFullYear() === currentDate.getFullYear()
-          ) {
-            return res.send({ status: false, msg: "Account is expired", data: [] });
-          }
-        }
-    
-        const validPassword = await bcrypt.compare(password, EmailCheck.password);
-
-        if (!validPassword) {
-          return res.send({ status: false, msg: "Password Not Match", data: [] });
-        }
-
-        // JWT TOKEN CREATE
-        var token = jwt.sign({ id: EmailCheck._id }, process.env.SECRET, {
-          expiresIn: 36000,
-        });
-
-       
-        return res.send({
-          status: true,
-          msg: "Login Successfully",
-          data: {
-            token: token,
-            Role: EmailCheck.Role,
-            user_id: EmailCheck._id,
-            UserName: EmailCheck.UserName,
-          },
-        });
-      } catch (error) {
-        res.send({ status: false, msg: "Server Side error", data: error });
       }
+
+      const validPassword = await bcrypt.compare(password, EmailCheck.password);
+
+      if (!validPassword) {
+        return res.send({ status: false, msg: "Password Not Match", data: [] });
+      }
+
+      // JWT TOKEN CREATE
+      var token = jwt.sign({ id: EmailCheck._id }, process.env.SECRET, {
+        expiresIn: 36000,
+      });
+
+      const user_login = new user_logs({
+        user_Id: EmailCheck._id,
+        admin_Id: EmailCheck.parent_id,
+        UserName: EmailCheck.UserName,
+        login_status: "Panel On",
+        role: EmailCheck.Role,
+      });
+      await user_login.save();
+
+      return res.send({
+        status: true,
+        msg: "Login Successfully",
+        data: {
+          token: token,
+          Role: EmailCheck.Role,
+          user_id: EmailCheck._id,
+          UserName: EmailCheck.UserName,
+        },
+      });
+    } catch (error) {
+      res.send({ status: false, msg: "Server Side error", data: error });
     }
+  }
+
+
 
 
   async SignIn(req, res) {
     try {
       const { FullName, UserName, PhoneNo, password } = req.body;
-       
-     
+
       if (!FullName || !UserName || !PhoneNo || !password) {
         return res.json({
           status: false,
@@ -84,11 +96,11 @@ class Auth {
         });
       }
 
-
-  
       // Check if username already exists
-      const existingUsers = await User_model.find({ UserName: { $in: [UserName] } });
-  
+      const existingUsers = await User_model.find({
+        UserName: { $in: [UserName] },
+      });
+
       if (existingUsers.length > 0) {
         return res.json({
           status: false,
@@ -96,8 +108,7 @@ class Auth {
           data: [],
         });
       }
-  
-    
+
       // Create new user
       const signinuser = new Sign_In({
         FullName,
@@ -105,7 +116,7 @@ class Auth {
         password,
         PhoneNo,
       });
-  
+
       const result = await signinuser.save();
 
       if (!result) {
@@ -115,11 +126,11 @@ class Auth {
           data: [],
         });
       }
-  
+
       return res.json({
         status: true,
         message: "Signed in successfully",
-        data: result,  
+        data: result,
       });
     } catch (error) {
       console.error(error); // Log the error for debugging
@@ -130,7 +141,6 @@ class Auth {
       });
     }
   }
-  
 
   async getSignIn(req, res) {
     try {
@@ -147,6 +157,46 @@ class Auth {
         message: "Internal error",
         data: [],
       });
+    }
+  }
+
+  // log out user
+
+  async logoutUser(req, res) {
+    try {
+      const { userid } = req.body;
+
+      const user_detail = await User_model.findOne({ _id: userid });
+  
+
+      const user_login = new user_logs({
+        user_Id: user_detail._id,
+        admin_Id: user_detail.parent_id,
+        UserName: user_detail.UserName,
+        login_status: "Panel off",
+        role: user_detail.Role,
+      });
+      await user_login.save();
+
+      return res.send({ status: true, msg: "Logout Succesfully", data: [] });
+    } catch (error) {}
+  }
+
+
+  
+  // get logoutUser data
+  async getlogsuser(req, res) {
+    try {
+      const { userid } = req.body;
+      
+      const result = await user_logs.find({ admin_Id: userid });   
+
+      if (!result) {
+        return res.send({ status: false, message: "user not found", data: [] });
+      }
+      return res.send({ status: true, message: "user sucess", data: result });
+    } catch (error) {
+      return res.send({ status: false, message: "internal error", data: [] });
     }
   }
 }

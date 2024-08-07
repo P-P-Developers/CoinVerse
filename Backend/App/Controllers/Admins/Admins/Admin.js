@@ -10,6 +10,12 @@ const totalLicense = db.totalLicense;
 const PaymenetHistorySchema = db.PaymenetHistorySchema;
 const MarginRequired = db.MarginRequired;
 const Symbol = db.Symbol;
+const BalanceStatement = db.BalanceStatement;
+const mainorder_model = db.mainorder_model;
+
+
+
+
 // const nodemailer = require('nodemailer');
 
 class Admin {
@@ -69,6 +75,7 @@ class Admin {
         }
       }
 
+
       // Current date as start date
       const startDate = new Date();
       let endDate = new Date(startDate);
@@ -78,16 +85,21 @@ class Admin {
         endDate.setDate(0);
       }
 
+
       // Hash password
       var rand_password = Math.round(password);
       const salt = await bcrypt.genSalt(10);
       var hashedPassword = await bcrypt.hash(rand_password.toString(), salt);
+
+
 
       /// dollar price
       const dollarPriceData = await MarginRequired.findOne({
         adminid: parent_id,
       }).select("dollarprice");
       const dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
+
+
 
       // Create new user
       const newUser = new User_model({
@@ -117,9 +129,25 @@ class Admin {
         user_Id: newUser._id,
         Balance: dollarcount,
         parent_Id: parent_id,
+        type:"CREDIT",
       });
 
       await userWallet.save();
+
+       
+      // manage balance statement 
+       
+      let newstatement = new BalanceStatement({
+        userid: newUser._id,
+        Amount : dollarcount,
+        parent_Id: parent_id,
+        type:"CREDIT",
+        message:"Balance Added"
+      });
+
+      await newstatement.save();
+
+      
 
       let licence = new totalLicense({
         user_Id: newUser._id,
@@ -254,6 +282,8 @@ class Admin {
     }
   }
 
+
+
   // update user
   async updateUser(req, res) {
     try {
@@ -319,6 +349,8 @@ class Admin {
     }
   }
 
+
+
   // user by id
 
   async DeleteUser(req, res) {
@@ -343,6 +375,9 @@ class Admin {
         .json({ success: false, message: "Internal server error", data: [] });
     }
   }
+
+
+
 
   // Employee updare
 
@@ -373,6 +408,7 @@ class Admin {
     }
   }
 
+  
   // delete Employee User
 
   async Delete_Employee(req, res) {
@@ -590,7 +626,7 @@ class Admin {
 
   async updatesymbolholoff(req, res) {
     try {
-      const { symbol, status } = req.body;
+      const { symbol, user_active_status } = req.body;
 
       if (!symbol) {
         return res.json({
@@ -600,7 +636,7 @@ class Admin {
         });
       }
 
-      const result = await Symbol.updateOne({ symbol: symbol }, { status });
+      const result = await Symbol.updateOne({ symbol: symbol }, { status:user_active_status });
 
       return res.json({
         status: true,
@@ -742,7 +778,9 @@ class Admin {
     }
   }
 
+   
 
+  // totalcount Licence
   async  TotalcountLicence(req, res) {
   try {
     const { userid } = req.body;
@@ -772,6 +810,25 @@ class Admin {
     return res.json({ status: false, message: "Internal Server Error", data: [] });
   }
 }
+
+
+async getclienttradehistory(req, res) {
+  try {
+    const { userid } = req.body;
+   
+    const result = await mainorder_model.find({ userid:userid });
+
+    if(!result){
+      return  res.json({status:false,message:"user not found",data:[]})
+    }
+
+    return res.json({status:true,message:"user found",data:result});
+
+  } catch (error) {
+    return res.json({status:false,message:"internal error",data:[]});
+  }
+}
+ 
 
 
 

@@ -1,107 +1,103 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import Table from "../../Utils/Table/Table"
+import {fDateTime} from "../../Utils/Date_format/datefromat"
+import {getlogoutuser} from "../../Services/Admin/Addmin"
 
-const Loginstatus = () => {
-    return (
-        <div>
-            <div className='row'>
-                <div className='demo-view'>
-                    <div className='container-fluid'>
-                        <div className='row'>
-                            <div className="col-xl-12">
-                                <div className="card dz-card" id="nav-pills">
-                                    <div className="card-header flex-wrap border-0">
-                                        <h4 className="card-title">Login Status</h4>
-                                    </div>
-
-                                    <div className="card-body pt-0">
-
-                                        <div className="tab-content">
-                                            <div id="navpills-1" className="tab-pane active">
-                                                <div className="row">
-                                                    <div className="col-lg-12">
-                                                        <div className="card transaction-table">
-
-                                                            <div className="card-body p-0">
-
-
-                                                                <div className="table-responsive">
-                                                                    <div className='mb-2'>
-                                                                        Search :{" "}
-                                                                        <input
-                                                                            className="ml-2 input-search form-control"
-                                                                            defaultValue=""
-                                                                            style={{ width: "20%" }}
-                                                                        />
-                                                                    </div>
-
-                                                                    <table className="table table-responsive-md">
-                                                                        <thead>
-                                                                            <tr>
-                                                                                <th>S.No</th>
-                                                                                <th>Username</th>
-                                                                                <th>Panel Status</th>
-                                                                                <th>Date and Time</th>
-
-                                                                            </tr>
-                                                                        </thead>
-                                                                        <tbody>
-                                                                            <tr>
-
-                                                                                <td>1</td>
-                                                                                <td>Donalt</td>
-                                                                                <td>01 August 2020</td>
-                                                                                <td>01 August 2020</td>
 
 
 
 
-                                                                            </tr>
-                                                                            <tr>
+const Loginstatus = () => {
 
-                                                                                <td>2</td>
-                                                                                <td>Donalt</td>
-                                                                                <td>01 August 2020</td>
-                                                                                <td>01 August 2020</td>
+
+  const userDetails = JSON.parse(localStorage.getItem("user_details"));
+  const user_id = userDetails?.user_id;
 
 
 
+  const [data, setData] = useState([]);
 
-                                                                            </tr>
-                                                                            <tr>
+  const columns = [
+    { Header: "UserName", accessor: "UserName" },
 
-                                                                                <td>3</td>
-                                                                                <td>Donalt</td>
-                                                                                <td>01 August 2020</td>
-                                                                                <td>01 August 2020</td>
+    { Header: "Role", accessor: "role" },
+    {
+      Header: "Create Date",
+      accessor: "createdAt",
+      Cell: ({ cell }) => {
+        return fDateTime(cell.value)
+
+      },
+    },
+    {
+      Header: "login_status",
+      accessor: "login_status",
+      Cell: ({ cell }) => (
+        <span style={{ color: cell.value === "Panel On" ? "green" : "red" }}>
+          {cell.value}
+        </span>
+      ),
+    },
+  ];
 
 
 
+  // getting data
+  const getlogsuser = async () => {
+    try {
+      const data = {userid :user_id}
+      const response = await getlogoutuser(data);
+      setData(response.data);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
 
-                                                                            </tr>
-                                                                        </tbody>
-                                                                    </table>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+  useEffect(() => {
+    getlogsuser();
+  }, []);
 
-                                        </div>
-                                    </div>
 
-                                </div>
-                            </div>
-                        </div>
 
-                    </div>
+  return (
+    <>
+      <div>
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-lg-12">
+              <div className="card transaction-table">
+                <div className="card-header border-0 flex-wrap pb-0">
+                  <div className="mb-4">
+                    <h4 className="card-title">Login status</h4>
+                  </div>
                 </div>
+                <div className="card-body p-0">
+                  <div className="tab-content" id="myTabContent1">
+                    <div
+                      className="tab-pane fade show active"
+                      id="Week"
+                      role="tabpanel"
+                      aria-labelledby="Week-tab"
+                    >
+                      <div className='mb-3 ms-4'>
+                        Search :{" "}
+                        <input
+                          className="ml-2 input-search form-control"
+                          defaultValue=""
+                          style={{ width: "20%" }}
+                        />
+                      </div>
+                      <Table columns={columns} data={data && data} />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-
+          </div>
         </div>
-
-
-    );
-}
+      </div>
+    </>
+  );
+};
 
 export default Loginstatus;
