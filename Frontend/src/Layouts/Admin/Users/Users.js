@@ -39,6 +39,7 @@ const Users = () => {
   const [modal, setModal] = useState(false);
   const [id, setID] = useState("");
   const [type, setType] = useState("");
+  const [refresh,setrefresh] = useState(false)
 
   const [license, setLicence] = useState(false);
   const [licenseid, setLicenceId] = useState("");
@@ -227,7 +228,9 @@ const Users = () => {
       },
     },
 
-  ];
+  ,];
+
+
 
 
   const Clienthistory = (_id) => {
@@ -235,13 +238,15 @@ const Users = () => {
   };
 
 
-
   const updateuserpage = (_id, obj) => {
     navigate(`updateuser/${_id}`, { state: { rowData: obj.row } });
   };
 
-  //delete user
 
+
+
+
+  //delete user
   const DeleteUser = async (_id) => {
     try {
       const confirmResult = await Swal.fire({
@@ -263,7 +268,7 @@ const Users = () => {
           title: "User Deleted",
           text: "The user has been deleted successfully.",
         });
-
+        // setrefresh(!refresh)
         getAlluserdata();
       }
     } catch (error) {
@@ -275,8 +280,10 @@ const Users = () => {
     }
   };
 
-  // update Licence
 
+
+
+  // update Licence
   const updateLicence = async () => {
     try {
       if (parseInt(checkLicence.CountLicence) < parseInt(licencevalue)) {
@@ -301,6 +308,8 @@ const Users = () => {
         title: "Licence Updated",
         text: "The Licence has been updated successfully.",
       });
+      // setrefresh(!refresh)
+       
       getAlluserdata();
       getadminLicence();
       setLicence(false);
@@ -312,6 +321,9 @@ const Users = () => {
       });
     }
   };
+
+
+
 
   // update  balance
   const updateBalance = async () => {
@@ -332,23 +344,21 @@ const Users = () => {
       });
   
       // Refresh user data and close the modal
+
       getAlluserdata();
       setModal(false);
     } catch (error) {
-      // Handle errors and show error message
-      let errorMessage = "There was an error updating the balance. Please try again.";
-      if (error.response && error.response.data && error.response.data.message) {
-        errorMessage = error.response.data.message;
-      }
-  
       Swal.fire({
         icon: "error",
         title: "Update Failed",
-        text: errorMessage,
+        text: "error",
       });
     }
   };
   
+
+
+
   // update acctive status
 
   const updateactivestatus = async (event, id) => {
@@ -384,10 +394,14 @@ const Users = () => {
         );
       }
     } else if (result.dismiss === Swal.DismissReason.cancel) {
+      // setrefresh(!refresh)
+
       getAlluserdata();
     }
   };
 
+
+  
   // get all admin
   const getAlluserdata = async () => {
     setLoading(true);
@@ -398,18 +412,29 @@ const Users = () => {
         response.data &&
         response.data.filter((item) => {
           return item.Role === "USER";
-        });
 
-      setData(result);
+        }); 
+        const searchfilter = result?.filter((item)=>{
+          const searchInputMatch =
+          search == "" ||
+          item.FullName &&  item.FullName.toLowerCase().includes(search.toLowerCase()) ||
+          item.UserName &&  item.UserName.toLowerCase().includes(search.toLowerCase()) ||
+          item.Email && item.Email.toLowerCase().includes(search.toLowerCase()) 
+        
+        return searchInputMatch
+        })
+
+      setData(search ? searchfilter : result);
       setFilteredData(result);
       setLoading(false);
+
     } catch (error) {
       console.log("error", error);
     }
   };
 
 
-
+  
   
   // // admin blaance 
   // const getadminbalance = async () => {
@@ -437,9 +462,13 @@ const Users = () => {
 
 
   useEffect(() => {
-    getadminLicence();
     getAlluserdata();
-    // getadminbalance();
+  }, [search , refresh]);
+
+
+  useEffect(() => {
+    getadminLicence();
+   
   }, []);
 
 
@@ -476,15 +505,16 @@ const Users = () => {
                         Search :{" "}
                         <input
                           className="ml-2 input-search form-control"
-                          defaultValue=""
                           style={{ width: "20%" }}
                           type="text"
                           placeholder="Search..."
                           value={search}
+                          autoFocus
                           onChange={(e) => setSearch(e.target.value)}
                         />
                       </div>
-                      <Table columns={columns} data={data} />
+                     
+                      <Table columns={columns} data={data && data} />
                     </div>
                   </div>
                 </div>
@@ -518,16 +548,16 @@ const Users = () => {
                 <div className="modal-body">
                   <div className="row">
                     <div className="col-lg-12 col-sm-12">
-                      <div className="input-block mb-3">
+                    <div className="mb-3 ms-4">
+                        Search :{" "}
                         <input
+                          className="ml-2 input-search form-control"
+                          style={{ width: "20%" }}
                           type="text"
-                          className="form-control"
-                          placeholder="Enter Fund"
-                          onChange={(e) => {
-                            const value = e.target.value.replace(/\D/g, "");
-                            setBalance(value);
-                          }}
-                          value={balance}
+                          placeholder="Search..."
+                          autoFocus
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
                         />
                       </div>
                     </div>

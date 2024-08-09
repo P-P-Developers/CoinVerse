@@ -1,33 +1,22 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
-
 import { gethistory } from "../../../Services/Superadmin/Superadmin";
 
-
-
-
 const Transaction = () => {
-
-
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
 
-
-
   const [data, setData] = useState([]);
+  const [search, setSearch] = useState("");
 
   const columns = [
     { Header: "UserName", accessor: "UserName" },
-
     { Header: "Balance", accessor: "Balance" },
     {
       Header: "Create Date",
       accessor: "createdAt",
-      Cell: ({ cell }) => {
-        return fDateTime(cell.value)
-
-      },
+      Cell: ({ cell }) => fDateTime(cell.value),
     },
     {
       Header: "Status",
@@ -40,16 +29,22 @@ const Transaction = () => {
     },
   ];
 
-
-
   // getting data
   const getallhistory = async () => {
     try {
       const response = await gethistory({});
-      const result = response.data && response.data.filter((item) => {
-        return item.parent_Id == user_id
-      })
-      setData(result);
+      const result = response.data?.filter((item) => item.parent_Id == user_id);
+
+      const searchfilter = result?.filter((item) => {
+        const searchInputMatch =
+          search === "" ||
+          (item.UserName && item.UserName.toLowerCase().includes(search.toLowerCase())) ||
+          (item.Type && item.Type.toLowerCase().includes(search.toLowerCase()));
+
+        return searchInputMatch;
+      });
+
+      setData(search ? searchfilter : result);
     } catch (error) {
       console.log("error", error);
     }
@@ -57,9 +52,7 @@ const Transaction = () => {
 
   useEffect(() => {
     getallhistory();
-  }, []);
-
-
+  }, [search]);
 
   return (
     <>
@@ -70,7 +63,7 @@ const Transaction = () => {
               <div className="card transaction-table">
                 <div className="card-header border-0 flex-wrap pb-0">
                   <div className="mb-4">
-                    <h4 className="card-title">transaction History</h4>
+                    <h4 className="card-title">Transaction History</h4>
                   </div>
                 </div>
                 <div className="card-body p-0">
@@ -81,15 +74,18 @@ const Transaction = () => {
                       role="tabpanel"
                       aria-labelledby="Week-tab"
                     >
-                      <div className='mb-3 ms-4'>
+                      <div className="mb-3 ms-4">
                         Search :{" "}
                         <input
                           className="ml-2 input-search form-control"
-                          defaultValue=""
                           style={{ width: "20%" }}
+                          type="text"
+                          placeholder="Search..."
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
                         />
                       </div>
-                      <Table columns={columns} data={data && data} />
+                      <Table columns={columns} data={data || []} />
                     </div>
                   </div>
                 </div>

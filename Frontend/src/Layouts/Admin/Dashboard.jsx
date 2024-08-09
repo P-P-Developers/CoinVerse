@@ -14,6 +14,8 @@ const Dashboard = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
 
+
+
   const getdashboard = async () => {
     try {
       const data = { parent_id: user_id };
@@ -1448,14 +1450,14 @@ const Dashboard = () => {
                       role="tabpanel"
                       aria-labelledby="Week-tab"
                     >
-                      <div className='mb-3 ms-4'>
+                      {/* <div className='mb-3 ms-4'>
                         Search :{" "}
                         <input
                           className="ml-2 input-search form-control"
                           defaultValue=""
                           style={{ width: "20%" }}
                         />
-                      </div>
+                      </div> */}
                       <Table columns={columns} data={data && data} />
                     </div>
                   </div>

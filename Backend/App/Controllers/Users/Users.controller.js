@@ -144,7 +144,7 @@ class Users {
   try {
       
       const {userid} = req.body
-      const result = await BalanceStatement.find({userid:userid})
+      const result = await BalanceStatement.find({userid:userid}).sort({ createdAt: -1 });
        
       
        

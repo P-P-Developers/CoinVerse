@@ -24,6 +24,8 @@ const Setting = () => {
         }));
     };
 
+
+    
     const updateMargin = async () => {
         try {
             const response = await MarginpriceRequired({

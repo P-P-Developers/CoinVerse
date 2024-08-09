@@ -9,6 +9,8 @@ const Deposit = () => {
     const [data, setData] = useState([]);
     const [activeTab, setActiveTab] = useState('Pending');
     const [selectedValues, setSelectedValues] = useState({});
+  const [search, setSearch] = useState("");
+
 
     const userDetails = JSON.parse(localStorage.getItem("user_details"));
     const user_id = userDetails?.user_id;
@@ -105,7 +107,17 @@ const Deposit = () => {
                 const filtertype = response.data && response.data.filter((item)=>{
                     return item.type == 1
                 })
-                setData(filtertype);
+                const searchfilter = filtertype?.filter((item) => {
+                    const searchInputMatch =
+                      search === "" ||
+                      (item.UserName && item.UserName.toLowerCase().includes(search.toLowerCase()))
+                    
+            
+                    return searchInputMatch;
+                  });
+
+
+                setData(search ?searchfilter : filtertype);
             }
         } catch (error) {
             console.log("error");
@@ -116,7 +128,7 @@ const Deposit = () => {
 
     useEffect(() => {
         getAllfundsstatus();
-    }, []);
+    }, [search]);
 
     const filterDataByStatus = (status) => {
         return data.filter(item => item.status === status);
@@ -125,14 +137,17 @@ const Deposit = () => {
     const renderTable = (status) => {
         return (
             <div className="table-responsive">
-                <div className='mb-2'>
-                    Search :{" "}
-                    <input
-                        className="ml-2 input-search form-control"
-                        defaultValue=""
-                        style={{ width: "20%" }}
-                    />
-                </div>
+               <div className="mb-3 ms-4">
+                        Search :{" "}
+                        <input
+                          className="ml-2 input-search form-control"
+                          style={{ width: "20%" }}
+                          type="text"
+                          placeholder="Search..."
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                        />
+                      </div>
                 <h5>{activeTab}Transactions</h5>
                 <Table columns={columns} data={filterDataByStatus(status)} />
             </div>

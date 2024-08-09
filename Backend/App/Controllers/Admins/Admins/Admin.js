@@ -13,161 +13,152 @@ const Symbol = db.Symbol;
 const BalanceStatement = db.BalanceStatement;
 const mainorder_model = db.mainorder_model;
 
-
-
-
 // const nodemailer = require('nodemailer');
 
 class Admin {
-  async AddUser(req, res) {
-    try {
-      const {
-        FullName,
-        UserName,
-        Email,
-        PhoneNo,
-        parent_id,
-        parent_role,
-        password,
-        Otp,
-        Role,
-        Balance,
-        Licence,
-        pertrade,
-        perlot,
-        turn_over_percentage,
-        brokerage,
-        limit,
-      } = req.body;
+  // async AddUser(req, res) {
+  //   try {
+  //     const {
+  //       FullName,
+  //       UserName,
+  //       Email,
+  //       PhoneNo,
+  //       parent_id,
+  //       parent_role,
+  //       password,
+  //       Otp,
+  //       Role,
+  //       Balance,
+  //       Licence,
+  //       pertrade,
+  //       perlot,
+  //       turn_over_percentage,
+  //       brokerage,
+  //       limit,
+  //     } = req.body;
 
-      if (!FullName || !UserName || !Email || !PhoneNo || !password || !Role) {
-        return res.json({ status: false, message: "Missing required fields" });
-      }
+  //     if (!FullName || !UserName || !Email || !PhoneNo || !password || !Role) {
+  //       return res.json({ status: false, message: "Missing required fields" });
+  //     }
 
-      // Check if user already exists
-      const existingUser = await User_model.findOne({
-        $or: [{ UserName }, { Email }, { PhoneNo }],
-      });
+  //     // Check if user already exists
+  //     const existingUser = await User_model.findOne({
+  //       $or: [{ UserName }, { Email }, { PhoneNo }],
+  //     });
 
-      if (existingUser) {
-        if (existingUser.UserName === UserName) {
-          return res.send({
-            status: false,
-            message: "Username already exists",
-            data: [],
-          });
-        }
+  //     if (existingUser) {
+  //       if (existingUser.UserName === UserName) {
+  //         return res.send({
+  //           status: false,
+  //           message: "Username already exists",
+  //           data: [],
+  //         });
+  //       }
 
-        if (existingUser.Email === Email) {
-          return res.send({
-            status: false,
-            message: "Email already exists",
-            data: [],
-          });
-        }
+  //       if (existingUser.Email === Email) {
+  //         return res.send({
+  //           status: false,
+  //           message: "Email already exists",
+  //           data: [],
+  //         });
+  //       }
 
-        if (existingUser.PhoneNo === PhoneNo) {
-          return res.send({
-            status: false,
-            message: "Phone Number already exists",
-            data: [],
-          });
-        }
-      }
+  //       if (existingUser.PhoneNo === PhoneNo) {
+  //         return res.send({
+  //           status: false,
+  //           message: "Phone Number already exists",
+  //           data: [],
+  //         });
+  //       }
+  //     }
 
+  //     // Current date as start date
+  //     const startDate = new Date();
+  //     let endDate = new Date(startDate);
+  //     endDate.setMonth(endDate.getMonth() + Number(Licence));
 
-      // Current date as start date
-      const startDate = new Date();
-      let endDate = new Date(startDate);
-      endDate.setMonth(endDate.getMonth() + Number(Licence));
+  //     if (endDate.getDate() < startDate.getDate()) {
+  //       endDate.setDate(0);
+  //     }
 
-      if (endDate.getDate() < startDate.getDate()) {
-        endDate.setDate(0);
-      }
+  //     // Hash password
+  //     var rand_password = Math.round(password);
+  //     const salt = await bcrypt.genSalt(10);
+  //     var hashedPassword = await bcrypt.hash(rand_password.toString(), salt);
 
+  //     /// dollar price
+  //     const dollarPriceData = await MarginRequired.findOne({
+  //       adminid: parent_id,
+  //     }).select("dollarprice");
+  //     const dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
 
-      // Hash password
-      var rand_password = Math.round(password);
-      const salt = await bcrypt.genSalt(10);
-      var hashedPassword = await bcrypt.hash(rand_password.toString(), salt);
+  //     const brokeragepertrade = (parseFloat(pertrade) / dollarPriceData.dollarprice);
+  //     const brokerageperlot = (parseFloat(perlot) / dollarPriceData.dollarprice);
 
+  //     // Create new user
+  //     const newUser = new User_model({
+  //       FullName,
+  //       UserName,
+  //       Email,
+  //       PhoneNo,
+  //       parent_id,
+  //       parent_role,
+  //       Balance: dollarcount,
+  //       Otp: password,
+  //       Role,
+  //       Licence,
+  //       pertrade:brokeragepertrade,
+  //       perlot:brokerageperlot,
+  //       turn_over_percentage,
+  //       brokerage,
+  //       limit,
+  //       password: hashedPassword,
+  //       Start_Date: startDate,
+  //       End_Date: endDate,
+  //     });
 
+  //     await newUser.save();
 
-      /// dollar price
-      const dollarPriceData = await MarginRequired.findOne({
-        adminid: parent_id,
-      }).select("dollarprice");
-      const dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
+  //     let userWallet = new Wallet_model({
+  //       user_Id: newUser._id,
+  //       Balance: dollarcount,
+  //       parent_Id: parent_id,
+  //       type:"CREDIT",
+  //     });
 
+  //     await userWallet.save();
 
+  //     // manage balance statement
 
-      // Create new user
-      const newUser = new User_model({
-        FullName,
-        UserName,
-        Email,
-        PhoneNo,
-        parent_id,
-        parent_role,
-        Balance: dollarcount,
-        Otp: password,
-        Role,
-        Licence,
-        pertrade,
-        perlot,
-        turn_over_percentage,
-        brokerage,
-        limit,
-        password: hashedPassword,
-        Start_Date: startDate,
-        End_Date: endDate,
-      });
+  //     let newstatement = new BalanceStatement({
+  //       userid: newUser._id,
+  //       Amount : dollarcount,
+  //       parent_Id: parent_id,
+  //       type:"CREDIT",
+  //       message:"Balance Added"
+  //     });
 
-      await newUser.save();
+  //     await newstatement.save();
 
-      let userWallet = new Wallet_model({
-        user_Id: newUser._id,
-        Balance: dollarcount,
-        parent_Id: parent_id,
-        type:"CREDIT",
-      });
+  //     let licence = new totalLicense({
+  //       user_Id: newUser._id,
+  //       Licence: Licence,
+  //       parent_Id: parent_id,
+  //       Start_Date: startDate,
+  //       End_Date: endDate,
+  //     });
 
-      await userWallet.save();
+  //     await licence.save();
 
-       
-      // manage balance statement 
-       
-      let newstatement = new BalanceStatement({
-        userid: newUser._id,
-        Amount : dollarcount,
-        parent_Id: parent_id,
-        type:"CREDIT",
-        message:"Balance Added"
-      });
-
-      await newstatement.save();
-
-      
-
-      let licence = new totalLicense({
-        user_Id: newUser._id,
-        Licence: Licence,
-        parent_Id: parent_id,
-        Start_Date: startDate,
-        End_Date: endDate,
-      });
-
-      await licence.save();
-
-      return res.json({
-        status: true,
-        message: "Users added successfully",
-        data: newUser,
-      });
-    } catch (error) {
-      res.json({ status: false, message: "Failed to add User", data: [] });
-    }
-  }
+  //     return res.json({
+  //       status: true,
+  //       message: "Users added successfully",
+  //       data: newUser,
+  //     });
+  //   } catch (error) {
+  //     res.json({ status: false, message: "Failed to add User", data: [] });
+  //   }
+  // }
 
   // update Licence
 
@@ -228,6 +219,143 @@ class Admin {
   //   }
   // }
 
+  async AddUser(req, res) {
+    try {
+      const {
+        FullName,
+        UserName,
+        Email,
+        PhoneNo,
+        parent_id,
+        parent_role,
+        password,
+        Otp,
+        Role,
+        Balance,
+        Licence,
+        pertrade,
+        perlot,
+        turn_over_percentage,
+        brokerage,
+        limit,
+      } = req.body;
+
+      if (!FullName || !UserName || !Email || !PhoneNo || !password || !Role) {
+        return res.json({ status: false, message: "Missing required fields" });
+      }
+
+      // Check if user already exists
+      const existingUser = await User_model.findOne({
+        $or: [{ UserName }, { Email }, { PhoneNo }],
+      });
+
+      if (existingUser) {
+        const duplicateField =
+          existingUser.UserName === UserName
+            ? "Username"
+            : existingUser.Email === Email
+            ? "Email"
+            : "Phone Number";
+
+        return res.json({
+          status: false,
+          message: `${duplicateField} already exists`,
+          data: [],
+        });
+      }
+
+      // Set end date based on license duration
+      const startDate = new Date();
+      const endDate = new Date(startDate);
+      endDate.setMonth(endDate.getMonth() + Number(Licence));
+
+      // Hash password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password.toString(), salt);
+
+      // Fetch dollar price
+      const dollarPriceData = await MarginRequired.findOne({
+        adminid: parent_id,
+      }).select("dollarprice");
+      const dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
+
+      let brokeragepertrade = (
+        parseFloat(pertrade) / dollarPriceData.dollarprice
+      ).toFixed(3);
+      let brokerageperlot = (
+        parseFloat(perlot) / dollarPriceData.dollarprice
+      ).toFixed(3);
+
+      brokeragepertrade = isNaN(brokeragepertrade) ? null : brokeragepertrade;
+      brokerageperlot = isNaN(brokerageperlot) ? null : brokerageperlot;
+
+      // Create new user
+      const newUser = new User_model({
+        FullName,
+        UserName,
+        Email,
+        PhoneNo,
+        parent_id,
+        parent_role,
+        Balance: dollarcount,
+        Otp: password,
+        Role,
+        Licence,
+        pertrade: brokeragepertrade || "",
+        perlot: brokerageperlot || "",
+        turn_over_percentage,
+        brokerage,
+        limit,
+        password: hashedPassword,
+        Start_Date: startDate,
+        End_Date: endDate,
+      });
+
+      await newUser.save();
+
+      // Create wallet and balance statement
+      const userWallet = new Wallet_model({
+        user_Id: newUser._id,
+        Balance: dollarcount,
+        parent_Id: parent_id,
+        type: "CREDIT",
+      });
+      await userWallet.save();
+
+      const newStatement = new BalanceStatement({
+        userid: newUser._id,
+        Amount: dollarcount,
+        parent_Id: parent_id,
+        type: "CREDIT",
+        message: "Balance Added",
+      });
+      await newStatement.save();
+
+      // Create license record
+      const licenceRecord = new totalLicense({
+        user_Id: newUser._id,
+        Licence,
+        parent_Id: parent_id,
+        Start_Date: startDate,
+        End_Date: endDate,
+      });
+      await licenceRecord.save();
+
+      return res.json({
+        status: true,
+        message: "User added successfully",
+        data: newUser,
+      });
+    } catch (error) {
+      console.error("Error adding user:", error); // Log error for debugging
+      return res.json({
+        status: false,
+        message: "Failed to add User",
+        data: [],
+      });
+    }
+  }
+
   async updateLicence(req, res) {
     try {
       const { id, Licence, parent_Id } = req.body;
@@ -282,20 +410,107 @@ class Admin {
     }
   }
 
-
-
   // update user
+  // async updateUser(req, res) {
+  //   try {
+  //     const { id, perlot, pertrade, ...rest } = req.body;
+
+  //     const values = [perlot, pertrade];
+  //     const nonZeroValues = values.filter(
+  //       (value) => value !== undefined && value !== 0
+  //     );
+
+  //     if (nonZeroValues.length > 1) {
+  //       return res.status(400).send({
+  //         status: false,
+  //         msg: "Only one of perlot or pertrade can have a non-zero value",
+  //       });
+  //     }
+
+  //     // Initialize dataToUpdate with default zero values
+  //     let dataToUpdate = {
+  //       perlot: 0,
+  //       pertrade: 0,
+  //       ...rest,
+  //     };
+
+  //     // Assign non-zero values accordingly
+  //     if (perlot !== undefined && perlot !== 0) {
+  //       dataToUpdate.perlot = perlot;
+  //     } else if (pertrade !== undefined && pertrade !== 0) {
+  //       dataToUpdate.pertrade = pertrade;
+  //     }
+
+  //     const filter = { _id: id };
+  //     const updateOperation = { $set: dataToUpdate };
+
+  //     const updatedUser = await User_model.findOneAndUpdate(
+  //       filter,
+  //       updateOperation,
+  //       {
+  //         new: true,
+  //         upsert: true,
+  //       }
+  //     );
+
+  //     if (!updatedUser) {
+  //       return res.status(404).send({
+  //         status: false,
+  //         msg: "Data not updated",
+  //         data: [],
+  //       });
+  //     }
+
+  //     return res.send({
+  //       status: true,
+  //       msg: "Data updated successfully",
+  //       data: updatedUser,
+  //     });
+  //   } catch (error) {
+  //     console.error("Internal error:", error);
+  //     return res.status(500).send({
+  //       status: false,
+  //       msg: "Internal server error",
+  //     });
+  //   }
+  // }
+
   async updateUser(req, res) {
     try {
       const { id, perlot, pertrade, ...rest } = req.body;
 
-      const values = [perlot, pertrade];
+      const userdetail = await User_model.findOne({_id:id})
+      const dollarPriceData = await MarginRequired.findOne({
+        adminid: userdetail.parent_id,
+      }).select("dollarprice");
+
+
+      if (!dollarPriceData) {
+        return res.send({
+          status: false,
+          msg: "Dollar price not found",
+        });
+      }
+
+      // Convert perlot and pertrade using the dollar price
+      let brokeragepertrade = pertrade
+        ? (parseFloat(pertrade) / dollarPriceData.dollarprice).toFixed(3)
+        : 0;
+      let brokerageperlot = perlot
+        ? (parseFloat(perlot) / dollarPriceData.dollarprice).toFixed(3)
+        : 0;
+
+      // Handle NaN cases
+      brokeragepertrade = isNaN(brokeragepertrade) ? null : brokeragepertrade;
+      brokerageperlot = isNaN(brokerageperlot) ? null : brokerageperlot;
+
+      const values = [brokerageperlot, brokeragepertrade];
       const nonZeroValues = values.filter(
-        (value) => value !== undefined && value !== 0
+        (value) => value !== null && value !== 0
       );
 
       if (nonZeroValues.length > 1) {
-        return res.status(400).send({
+        return res.send({
           status: false,
           msg: "Only one of perlot or pertrade can have a non-zero value",
         });
@@ -308,11 +523,11 @@ class Admin {
         ...rest,
       };
 
-      // Assign non-zero values accordingly
-      if (perlot !== undefined && perlot !== 0) {
-        dataToUpdate.perlot = perlot;
-      } else if (pertrade !== undefined && pertrade !== 0) {
-        dataToUpdate.pertrade = pertrade;
+      // Assign non-zero converted values accordingly
+      if (brokerageperlot !== null && brokerageperlot !== 0) {
+        dataToUpdate.perlot = brokerageperlot;
+      } else if (brokeragepertrade !== null && brokeragepertrade !== 0) {
+        dataToUpdate.pertrade = brokeragepertrade;
       }
 
       const filter = { _id: id };
@@ -328,7 +543,7 @@ class Admin {
       );
 
       if (!updatedUser) {
-        return res.status(404).send({
+        return res.send({
           status: false,
           msg: "Data not updated",
           data: [],
@@ -342,12 +557,14 @@ class Admin {
       });
     } catch (error) {
       console.error("Internal error:", error);
-      return res.status(500).send({
+      return res.send({
         status: false,
         msg: "Internal server error",
       });
     }
   }
+
+
 
 
 
@@ -375,9 +592,6 @@ class Admin {
         .json({ success: false, message: "Internal server error", data: [] });
     }
   }
-
-
-
 
   // Employee updare
 
@@ -408,7 +622,6 @@ class Admin {
     }
   }
 
-  
   // delete Employee User
 
   async Delete_Employee(req, res) {
@@ -636,7 +849,10 @@ class Admin {
         });
       }
 
-      const result = await Symbol.updateOne({ symbol: symbol }, { status:user_active_status });
+      const result = await Symbol.updateOne(
+        { symbol: symbol },
+        { status: user_active_status }
+      );
 
       return res.json({
         status: true,
@@ -750,7 +966,6 @@ class Admin {
       const counttotalbalance =
         Number(findadmin.Balance) - Number(totalBalance);
 
-
       const dollarPriceDoc = await MarginRequired.findOne({ adminid: userid });
       if (!dollarPriceDoc || !dollarPriceDoc.dollarprice) {
         return res.json({
@@ -778,113 +993,118 @@ class Admin {
     }
   }
 
-   
-
   // totalcount Licence
-  async  TotalcountLicence(req, res) {
-  try {
-    const { userid } = req.body;
+  async TotalcountLicence(req, res) {
+    try {
+      const { userid } = req.body;
 
-    if (!userid) {
-      return res.json({ status: false, message: "User ID is required" , data:[] });
+      if (!userid) {
+        return res.json({
+          status: false,
+          message: "User ID is required",
+          data: [],
+        });
+      }
+
+      const licenses = await totalLicense
+        .find({ parent_Id: userid })
+        .select("Licence");
+
+      const totalLicenses = licenses.reduce(
+        (acc, curr) => acc + curr.Licence,
+        0
+      );
+
+      const user = await User_model.findOne({ _id: userid });
+
+      if (!user) {
+        return res.json({ status: false, message: "User not found", data: [] });
+      }
+
+      const licenseDiff = Number(user.Licence) - Number(totalLicenses);
+
+      return res.json({
+        status: true,
+        message: "Success",
+        data: {
+          totalLicenses: totalLicenses,
+          CountLicence: licenseDiff,
+          userLicence: user.Licence,
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      return res.json({
+        status: false,
+        message: "Internal Server Error",
+        data: [],
+      });
     }
-
-    const licenses = await totalLicense.find({ parent_Id: userid }).select("Licence");
-
-    const totalLicenses = licenses.reduce((acc, curr) => acc + curr.Licence, 0);
-
-    const user = await User_model.findOne({ _id: userid });
-
-    if (!user) {
-      return res.json({ status: false, message: "User not found" , data:[]});
-    }
-  
-    const licenseDiff =  Number(user.Licence) - Number(totalLicenses)
-
-
-    return res.json({ status: true, message: "Success", 
-      data: {totalLicenses:totalLicenses,CountLicence:licenseDiff,userLicence:user.Licence}
-
-     });
-  } catch (error) {
-    console.error(error);
-    return res.json({ status: false, message: "Internal Server Error", data: [] });
   }
-}
 
+  async getclienttradehistory(req, res) {
+    try {
+      const { userid } = req.body;
 
+      const result = await mainorder_model.find({ userid: userid });
 
+      if (!result) {
+        return res.json({ status: false, message: "user not found", data: [] });
+      }
 
-async getclienttradehistory(req, res) {
-  try {
-    const { userid } = req.body;
-   
-    const result = await mainorder_model.find({ userid:userid });
-
-    if(!result){
-      return  res.json({status:false,message:"user not found",data:[]})
+      return res.json({ status: true, message: "user found", data: result });
+    } catch (error) {
+      return res.json({ status: false, message: "internal error", data: [] });
     }
-
-    return res.json({status:true,message:"user found",data:result});
-
-  } catch (error) {
-    return res.json({status:false,message:"internal error",data:[]});
   }
-}
- 
 
-//  async getlicensedata(req,res){
-//     try {
-//        const {userid} = req.body
-//        const result = await User_model.find({parent_id:userid})
+  //  async getlicensedata(req,res){
+  //     try {
+  //        const {userid} = req.body
+  //        const result = await User_model.find({parent_id:userid})
 
-//        if(!result){
-//         return res.json({ status: false, message: "User not found" , data:[]});
-//        }
-//        return res.json({ status: true, message: "User found" , data:result});
-      
-//     } catch (error) {
-//       return res.json({ status: false, message: "internal error" , data:[]})
-//     }
-//  }
+  //        if(!result){
+  //         return res.json({ status: false, message: "User not found" , data:[]});
+  //        }
+  //        return res.json({ status: true, message: "User found" , data:result});
 
+  //     } catch (error) {
+  //       return res.json({ status: false, message: "internal error" , data:[]})
+  //     }
+  //  }
 
-async getlicensedata(req, res){
-  try {
-    const { userid } = req.body;
-    const result = await User_model.find({ parent_id: userid }).select("UserName Start_Date End_Date");
+  async getlicensedata(req, res) {
+    try {
+      const { userid } = req.body;
+      const result = await User_model.find({ parent_id: userid }).select(
+        "UserName Start_Date End_Date"
+      );
 
-    if (!result || result.length === 0) {
-      return res.json({ status: false, message: "User not found", data: [] });
+      if (!result || result.length === 0) {
+        return res.json({ status: false, message: "User not found", data: [] });
+      }
+
+      const currentDate = new Date();
+      const allData = result;
+      const liveData = result.filter((record) => {
+        const startDate = new Date(record.Start_Date);
+        const endDate = new Date(record.End_Date);
+        return startDate <= currentDate && currentDate <= endDate;
+      });
+      const expiredData = result.filter((record) => {
+        const endDate = new Date(record.End_Date);
+        return currentDate > endDate;
+      });
+
+      return res.json({
+        status: true,
+        message: "User found",
+        data: { allData, liveData, expiredData },
+      });
+    } catch (error) {
+      return res.json({ status: false, message: "internal error", data: [] });
     }
-
-    const currentDate = new Date();
-    const allData = result;
-    const liveData = result.filter(record => {
-      const startDate = new Date(record.Start_Date);
-      const endDate = new Date(record.End_Date);
-      return startDate <= currentDate && currentDate <= endDate;
-    });
-    const expiredData = result.filter(record => {
-      const endDate = new Date(record.End_Date);
-      return currentDate > endDate;
-    });
-
-    return res.json({
-      status: true,
-      message: "User found",
-      data: { allData, liveData, expiredData }
-    });
-
-  } catch (error) {
-    return res.json({ status: false, message: "internal error", data: [] });
   }
-};
-
-
-
-
-  
 }
 
 module.exports = new Admin();

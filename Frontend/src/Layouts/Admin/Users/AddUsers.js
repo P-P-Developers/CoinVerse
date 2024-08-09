@@ -108,6 +108,22 @@ const AddUsers = () => {
 
       setSubmitting(false);
 
+
+      if (dollarPrice == 0 || dollarPrice == null || dollarPrice === Infinity || isNaN(dollarPrice)) {
+        Swal.fire({
+          title: "Alert",
+          text: "Please updated Dollarprice",
+          icon: "warning",
+          timer: 1000,
+          timerProgressBar: true,
+        });
+        setSubmitting(false);
+        return;
+      }
+      setSubmitting(false);
+
+    
+
       if (parseInt(checkLicence.CountLicence) < parseInt(values.Licence)) {
         Swal.fire({
           title: "Alert",
@@ -119,9 +135,8 @@ const AddUsers = () => {
         setSubmitting(false);
         return;
       }
-
       setSubmitting(false);
-      
+        
       try {
         const response = await AddUser(data);
         if (response.status) {
@@ -156,6 +171,9 @@ const AddUsers = () => {
     },
   });
 
+
+
+  
   const getadminbalance = async () => {
     const data = { userid: user_id };
     try {
@@ -190,7 +208,7 @@ const AddUsers = () => {
 
   useEffect(() => {
     const exchangeRate = Number(checkdolarprice) 
-    setDollarPrice(formik.values.Balance ? (parseFloat(formik.values.Balance) / exchangeRate).toFixed(2) : 0);
+    setDollarPrice(formik.values.Balance ? (parseFloat(formik.values.Balance) / exchangeRate) : 0);
   }, [formik.values.Balance]);
 
 

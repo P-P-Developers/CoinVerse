@@ -15,6 +15,8 @@ const Position = () => {
 
 
   const [data, setData] = useState([]);
+  const [search, setSearch] = useState("");
+
 
   const columns = [
     { Header: "symbol", accessor: "symbol" },
@@ -58,9 +60,15 @@ const Position = () => {
       const filterdata = response.data && response.data.filter((item)=>{
           return item.buy_qty !== item.sell_qty;
       })
+      const searchfilter = filterdata?.filter((item) => {
+        const searchInputMatch =
+          search === "" ||
+          (item.symbol && item.symbol.toLowerCase().includes(search.toLowerCase())) 
+          
 
-      setData(filterdata);
-      // setData(response.data);
+        return searchInputMatch;
+      });
+      setData(search  ?searchfilter : filterdata);
     } catch (error) {
       console.log("error", error);
     }
@@ -68,7 +76,7 @@ const Position = () => {
 
   useEffect(() => {
     getuserallhistory();
-  }, []);
+  }, [search]);
 
 
 
@@ -92,12 +100,15 @@ const Position = () => {
                       role="tabpanel"
                       aria-labelledby="Week-tab"
                     >
-                      <div className='mb-3 ms-4'>
+                     <div className="mb-3 ms-4">
                         Search :{" "}
                         <input
                           className="ml-2 input-search form-control"
-                          defaultValue=""
                           style={{ width: "20%" }}
+                          type="text"
+                          placeholder="Search..."
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
                         />
                       </div>
                       <Table columns={columns} data={data && data} />

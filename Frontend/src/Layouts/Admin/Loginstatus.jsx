@@ -16,6 +16,8 @@ const Loginstatus = () => {
 
 
   const [data, setData] = useState([]);
+  const [search, setSearch] = useState("");
+
 
   const columns = [
     { Header: "UserName", accessor: "UserName" },
@@ -47,7 +49,15 @@ const Loginstatus = () => {
     try {
       const data = {userid :user_id}
       const response = await getlogoutuser(data);
-      setData(response.data);
+      const searchfilter = response.data?.filter((item) => {
+        const searchInputMatch =
+          search === "" ||
+          (item.UserName && item.UserName.toLowerCase().includes(search.toLowerCase())) ||
+          (item.login_status && item.login_status.toLowerCase().includes(search.toLowerCase()));
+
+        return searchInputMatch;
+      });
+      setData(search ? searchfilter : response.data);
     } catch (error) {
       console.log("error", error);
     }
@@ -55,7 +65,7 @@ const Loginstatus = () => {
 
   useEffect(() => {
     getlogsuser();
-  }, []);
+  }, [search]);
 
 
 
@@ -79,12 +89,15 @@ const Loginstatus = () => {
                       role="tabpanel"
                       aria-labelledby="Week-tab"
                     >
-                      <div className='mb-3 ms-4'>
+                      <div className="mb-3 ms-4">
                         Search :{" "}
                         <input
                           className="ml-2 input-search form-control"
-                          defaultValue=""
                           style={{ width: "20%" }}
+                          type="text"
+                          placeholder="Search..."
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
                         />
                       </div>
                       <Table columns={columns} data={data && data} />
