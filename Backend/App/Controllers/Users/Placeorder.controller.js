@@ -447,11 +447,11 @@ class Placeorder {
      
      
 
-      console.log("Calculatefund",Calculatefund)
-      console.log("totalcalculatefund",totalcalculatefund)
-      console.log("Totalupdateuserbalance",Totalupdateuserbalance)
-       console.log("Totalupdateuserbalance",Totalupdateuserbalance)
-       console.log("totaladdbalance",totaladdbalance)
+      // console.log("Calculatefund",Calculatefund)
+      // console.log("totalcalculatefund",totalcalculatefund)
+      // console.log("Totalupdateuserbalance",Totalupdateuserbalance)
+      //  console.log("Totalupdateuserbalance",Totalupdateuserbalance)
+      //  console.log("totaladdbalance",totaladdbalance)
 
 
 
@@ -645,27 +645,7 @@ const EntryTrade = async (
         },
       });
       
-      
-      // if (tradehistory) {
-        //   const totalQuantity = tradehistory.buy_lot + lotNum;
-    //   const totalCost =
-    //     tradehistory.buy_price * tradehistory.buy_lot + priceNum * lotNum;
-    //   const avgPrice = totalCost / totalQuantity;
-    
-    //   tradehistory.buy_price = avgPrice;
-    //   tradehistory.buy_lot += lotNum;
-    //   tradehistory.buy_qty += qtyNum;
-    //   tradehistory.buy_type = type;
-    //   tradehistory.requiredFund += requiredFund;
-    
-    //   if (Array.isArray(tradehistory.orderid)) {
-      //     tradehistory.orderid.push(orderdata._id);
-      //   } else {
-        //     tradehistory.orderid = [tradehistory.orderid, orderdata._id];
-        //   }
-        //   await tradehistory.save();
-        //   } else {
-          
+         
         
         
         if (checkadmin.Balance < requiredFund) {

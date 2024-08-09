@@ -3,6 +3,7 @@ import Table from "../../Utils/Table/Table";
 import { getFundstatus } from '../../Services/Admin/Addmin';
 import { UpdatestatusForpaymenthistory } from '../../Services/Admin/Addmin';
 import Swal from 'sweetalert2';
+import {fDateTime} from "../../Utils/Date_format/datefromat"
 
 const Withdraw = () => {
 
@@ -23,7 +24,11 @@ const Withdraw = () => {
             Cell: ({ cell }) => (cell.row.type == 0 ? 'Withdrawal' : cell),
           },
         { Header: "Balance", accessor: "Balance" },
-        { Header: "Date", accessor: "createdAt" },
+        {
+            Header: "Date",
+            accessor: "createdAt",
+            Cell: ({ cell }) => fDateTime(cell.value),
+          },
     ];
 
     if (activeTab === 'Pending') {

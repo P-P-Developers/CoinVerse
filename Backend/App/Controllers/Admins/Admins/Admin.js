@@ -318,9 +318,10 @@ class Admin {
         user_Id: newUser._id,
         Balance: dollarcount,
         parent_Id: parent_id,
-        type: "CREDIT",
+        Type: "CREDIT",
       });
       await userWallet.save();
+  
 
       const newStatement = new BalanceStatement({
         userid: newUser._id,

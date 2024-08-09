@@ -3,13 +3,15 @@ import Table from "../../Utils/Table/Table";
 import { getFundstatus } from '../../Services/Admin/Addmin';
 import { UpdatestatusForpaymenthistory } from '../../Services/Admin/Addmin';
 import Swal from 'sweetalert2';
+import {fDateTime} from "../../Utils/Date_format/datefromat"
+
 
 const Deposit = () => {
 
     const [data, setData] = useState([]);
     const [activeTab, setActiveTab] = useState('Pending');
     const [selectedValues, setSelectedValues] = useState({});
-  const [search, setSearch] = useState("");
+    const [search, setSearch] = useState("");
 
 
     const userDetails = JSON.parse(localStorage.getItem("user_details"));
@@ -23,7 +25,11 @@ const Deposit = () => {
             Cell: ({ cell }) => (cell.row.type == 1 ? 'Deposite' : cell),
           },
         { Header: "Balance", accessor: "Balance" },
-        { Header: "Date", accessor: "createdAt" },
+        {
+            Header: "Date",
+            accessor: "createdAt",
+            Cell: ({ cell }) => fDateTime(cell.value),
+          },
     ];
 
     if (activeTab === 'Pending') {
