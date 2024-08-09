@@ -9,7 +9,7 @@ const Withdraw = () => {
     const [data, setData] = useState([]);
     const [activeTab, setActiveTab] = useState('Pending');
     const [selectedValues, setSelectedValues] = useState({});
-  const [search, setSearch] = useState("");
+     const [search, setSearch] = useState("");
 
 
     const userDetails = JSON.parse(localStorage.getItem("user_details"));

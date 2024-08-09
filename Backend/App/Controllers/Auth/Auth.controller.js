@@ -198,7 +198,7 @@ class Auth {
     try {
       const { userid } = req.body;
       
-      const result = await user_logs.find({ admin_Id: userid });   
+      const result = await user_logs.find({ admin_Id: userid }).sort({ createdAt: -1 });;   
 
       if (!result) {
         return res.send({ status: false, message: "user not found", data: [] });

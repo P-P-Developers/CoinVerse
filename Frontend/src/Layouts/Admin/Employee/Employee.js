@@ -255,6 +255,8 @@ const Employee = () => {
     }
   };
 
+
+
   // get all admin
   const getAlluserdata = async () => {
     setLoading(true);
@@ -290,15 +292,15 @@ const Employee = () => {
     }
   };
 
+
+
   useEffect(() => {
     getAlluserdata();
   }, [search]);
 
   return (
     <>
-      {loading ? (
-        <Loader />
-      ) : (
+     
         <div className="container-fluid">
           <div className="row">
             <div className="col-lg-12">
@@ -334,8 +336,12 @@ const Employee = () => {
                           onChange={(e) => setSearch(e.target.value)}
                         />
                       </div>
-
-                      <Table columns={columns} data={data} />
+                    {
+                      loading ? (
+                        <Loader />
+     
+                     ) :(<Table columns={columns} data={data} />
+                    )}
                     </div>
                   </div>
                 </div>
@@ -343,7 +349,7 @@ const Employee = () => {
             </div>
           </div>
         </div>
-      )}
+    
 
       {modal && (
         <div

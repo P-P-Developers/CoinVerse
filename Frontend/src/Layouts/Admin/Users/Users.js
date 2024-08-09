@@ -9,8 +9,7 @@ import {
   updateuserLicence,
   DeleteUserdata,
   adminWalletBalance,
-  TotalcountLicence
-  
+  TotalcountLicence,
 } from "../../../Services/Admin/Addmin";
 
 import { Link, Navigate, useNavigate } from "react-router-dom";
@@ -39,18 +38,16 @@ const Users = () => {
   const [modal, setModal] = useState(false);
   const [id, setID] = useState("");
   const [type, setType] = useState("");
-  const [refresh,setrefresh] = useState(false)
+  const [refresh, setrefresh] = useState(false);
 
   const [license, setLicence] = useState(false);
   const [licenseid, setLicenceId] = useState("");
   const [licencevalue, setLicencevalue] = useState("");
   const [checkLicence, setCheckLicence] = useState([]);
 
-
   const [loading, setLoading] = useState(false);
 
   const [checkprice, setCheckprice] = useState("");
-
 
   const columns = [
     { Header: "FullName", accessor: "FullName" },
@@ -228,23 +225,16 @@ const Users = () => {
       },
     },
 
-  ,];
-
-
-
+    ,
+  ];
 
   const Clienthistory = (_id) => {
     navigate(`tradehistory/${_id}`);
   };
 
-
   const updateuserpage = (_id, obj) => {
     navigate(`updateuser/${_id}`, { state: { rowData: obj.row } });
   };
-
-
-
-
 
   //delete user
   const DeleteUser = async (_id) => {
@@ -280,9 +270,6 @@ const Users = () => {
     }
   };
 
-
-
-
   // update Licence
   const updateLicence = async () => {
     try {
@@ -302,14 +289,14 @@ const Users = () => {
         Licence: licencevalue,
         parent_Id: user_id,
       });
-      
+
       Swal.fire({
         icon: "success",
         title: "Licence Updated",
         text: "The Licence has been updated successfully.",
       });
       // setrefresh(!refresh)
-       
+
       getAlluserdata();
       getadminLicence();
       setLicence(false);
@@ -322,9 +309,6 @@ const Users = () => {
     }
   };
 
-
-
-
   // update  balance
   const updateBalance = async () => {
     try {
@@ -335,14 +319,14 @@ const Users = () => {
         parent_Id: user_id,
         Type: type,
       });
-  
+
       // Show success message
       Swal.fire({
         icon: "success",
         title: "Balance Updated",
         text: response.message || "The balance has been updated successfully.",
       });
-  
+
       // Refresh user data and close the modal
 
       getAlluserdata();
@@ -355,9 +339,6 @@ const Users = () => {
       });
     }
   };
-  
-
-
 
   // update acctive status
 
@@ -400,8 +381,6 @@ const Users = () => {
     }
   };
 
-
-  
   // get all admin
   const getAlluserdata = async () => {
     setLoading(true);
@@ -412,31 +391,29 @@ const Users = () => {
         response.data &&
         response.data.filter((item) => {
           return item.Role === "USER";
-
-        }); 
-        const searchfilter = result?.filter((item)=>{
-          const searchInputMatch =
+        });
+      const searchfilter = result?.filter((item) => {
+        const searchInputMatch =
           search == "" ||
-          item.FullName &&  item.FullName.toLowerCase().includes(search.toLowerCase()) ||
-          item.UserName &&  item.UserName.toLowerCase().includes(search.toLowerCase()) ||
-          item.Email && item.Email.toLowerCase().includes(search.toLowerCase()) 
-        
-        return searchInputMatch
-        })
+          (item.FullName &&
+            item.FullName.toLowerCase().includes(search.toLowerCase())) ||
+          (item.UserName &&
+            item.UserName.toLowerCase().includes(search.toLowerCase())) ||
+          (item.Email &&
+            item.Email.toLowerCase().includes(search.toLowerCase()));
+
+        return searchInputMatch;
+      });
 
       setData(search ? searchfilter : result);
       setFilteredData(result);
       setLoading(false);
-
     } catch (error) {
       console.log("error", error);
     }
   };
 
-
-  
-  
-  // // admin blaance 
+  // // admin blaance
   // const getadminbalance = async () => {
   //   const data = {userid: user_id};
   //   try {
@@ -447,11 +424,10 @@ const Users = () => {
   //   }
   // };
 
-
   // check licence
 
   const getadminLicence = async () => {
-    const data = {userid: user_id};
+    const data = { userid: user_id };
     try {
       const response = await TotalcountLicence(data);
       setCheckLicence(response.data);
@@ -460,69 +436,63 @@ const Users = () => {
     }
   };
 
-
   useEffect(() => {
     getAlluserdata();
-  }, [search , refresh]);
-
+  }, [search, refresh]);
 
   useEffect(() => {
     getadminLicence();
-   
   }, []);
 
-
-  
   return (
     <>
-      {loading ? (
-        <Loader />
-      ) : (
-        <div className="container-fluid">
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="card transaction-table">
-                <div className="card-header border-0 flex-wrap pb-0">
-                  <div className="mb-4">
-                    <h4 className="card-title">All Users</h4>
-                  </div>
-                  <Link
-                    to="/admin/adduser"
-                    className="float-end mb-4 btn btn-primary"
-                  >
-                    Add User
-                  </Link>
+      <div className="container-fluid">
+        <div className="row">
+          <div className="col-lg-12">
+            <div className="card transaction-table">
+              <div className="card-header border-0 flex-wrap pb-0">
+                <div className="mb-4">
+                  <h4 className="card-title">All Users</h4>
                 </div>
-                <div className="card-body p-0">
-                  <div className="tab-content" id="myTabContent1">
-                    <div
-                      className="tab-pane fade show active"
-                      id="Week"
-                      role="tabpanel"
-                      aria-labelledby="Week-tab"
-                    >
-                      <div className="mb-3 ms-4">
-                        Search :{" "}
-                        <input
-                          className="ml-2 input-search form-control"
-                          style={{ width: "20%" }}
-                          type="text"
-                          placeholder="Search..."
-                          value={search}
-                          autoFocus
-                          onChange={(e) => setSearch(e.target.value)}
-                        />
-                      </div>
-                     
-                      <Table columns={columns} data={data && data} />
+                <Link
+                  to="/admin/adduser"
+                  className="float-end mb-4 btn btn-primary"
+                >
+                  Add User
+                </Link>
+              </div>
+              <div className="card-body p-0">
+                <div className="tab-content" id="myTabContent1">
+                  <div
+                    className="tab-pane fade show active"
+                    id="Week"
+                    role="tabpanel"
+                    aria-labelledby="Week-tab"
+                  >
+                    <div className="mb-3 ms-4">
+                      Search :{" "}
+                      <input
+                        className="ml-2 input-search form-control"
+                        style={{ width: "20%" }}
+                        type="text"
+                        placeholder="Search..."
+                        value={search}
+                        autoFocus
+                        onChange={(e) => setSearch(e.target.value)}
+                      />
                     </div>
+                    {loading ? (
+                      <Loader />
+                    ) : (
+                      <Table columns={columns} data={data && data} />
+                    )}
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      )}
+      </div>
 
       {modal && (
         <div
@@ -548,16 +518,16 @@ const Users = () => {
                 <div className="modal-body">
                   <div className="row">
                     <div className="col-lg-12 col-sm-12">
-                    <div className="mb-3 ms-4">
-                        Search :{" "}
+                    <div className="input-block mb-3">
                         <input
-                          className="ml-2 input-search form-control"
-                          style={{ width: "20%" }}
                           type="text"
-                          placeholder="Search..."
-                          autoFocus
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
+                          className="form-control"
+                          placeholder="Enter Fund"
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, "");
+                            setBalance(value);
+                          }}
+                          value={balance}
                         />
                       </div>
                     </div>

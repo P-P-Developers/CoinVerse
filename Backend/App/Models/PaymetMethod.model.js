@@ -22,6 +22,10 @@ const PaymenetHistory = new mongoose.Schema(
       enum: [0,1,2],
       default: 0,
     },
+    message:{
+      type: String,
+      default: null,
+    },
     notification_title: {
       type: String,
       default: null,

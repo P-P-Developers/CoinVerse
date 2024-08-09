@@ -10,7 +10,11 @@ const User_model = db.user;
 const mainorder_model = db.mainorder_model;
 const BalanceStatement = db.BalanceStatement;
 
+
+
+
 class Placeorder {
+
   async getOrderBook(req, res) {
     try {
       const { userid } = req.body;
@@ -87,8 +91,6 @@ class Placeorder {
 
 
   // position 
-
-
   async position(req, res) {
     try {
       const { userid } = req.body;
@@ -160,32 +162,149 @@ class Placeorder {
 
   // holding
 
+  // async holding(req, res) {
+  //   try {
+  //     const { userid } = req.body;
+
+  //     const today = new Date();
+  //     const startOfToday = new Date(today.setHours(0, 0, 0, 0));
+
+  //     // Find user orders and sort them by createdAt in ascending order
+  //     const finduser = await mainorder_model
+  //       .find({
+  //         userid: userid,
+  //         createdAt: { $lt: startOfToday },
+  //       })
+  //       .sort({ createdAt: -1 });
+
+  //     if (!finduser || finduser.length === 0) {
+  //       return res.json({
+  //         status: false,
+  //         error: "No positions found",
+  //         data: [],
+  //       });
+  //     }
+
+  //     const symbols = [...new Set(finduser.map((trade) => trade.symbol))];
+
+  //     // Fetch token data for all unique symbols
+  //     const tokenDataMap = await Symbol.find({ symbol: { $in: symbols } }).then(
+  //       (symbolsData) =>
+  //         symbolsData.reduce((map, symbolData) => {
+  //           map[symbolData.symbol] = symbolData.token;
+  //           return map;
+  //         }, {})
+  //     );
+
+  //     const currentPosition = finduser.reduce(
+  //       (acc, trade) => {
+  //         const token = tokenDataMap[trade.symbol];
+  //         if (trade.buy_type === "buy") {
+  //           if (!acc.openPositions[trade.symbol]) {
+  //             acc.openPositions[trade.symbol] = {
+  //               _id:trade._id,
+  //               signal_type:trade.signal_type,
+  //               symbol: trade.symbol,
+  //               token: token,
+  //               lotsize:trade.lotsize,
+  //               total_buy_price: 0,
+  //               requiredFund: trade.requiredFund,
+  //               total_buy_qty: 0,
+  //               total_buy_lot: 0,
+  //               buy_time: trade.buy_time,
+  //               total_sell_price: 0,
+  //               total_sell_qty: 0,
+  //               total_sell_lot: 0,
+  //               sell_time: null,
+  //               createdAt: trade.createdAt,
+  //             };
+  //           }
+  //           acc.openPositions[trade.symbol].total_buy_price +=
+  //             trade.buy_price * trade.buy_qty;
+  //           acc.openPositions[trade.symbol].total_buy_qty += trade.buy_qty;
+  //           acc.openPositions[trade.symbol].total_buy_lot += trade.buy_lot;
+  //         }
+
+  //         if (trade.sell_type === "sell") {
+  //           if (acc.openPositions[trade.symbol]) {
+  //             acc.openPositions[trade.symbol].total_sell_price +=
+  //               trade.sell_price * trade.sell_qty;
+  //             acc.openPositions[trade.symbol].total_sell_qty += trade.sell_qty;
+  //             acc.openPositions[trade.symbol].total_sell_lot += trade.sell_lot;
+  //             acc.openPositions[trade.symbol].sell_time = trade.sell_time;
+  //           }
+  //         }
+  //         return acc;
+  //       },
+  //       { openPositions: {} }
+  //     );
+
+  //     // Calculate average holding and format the response
+  //     const formattedPositions = Object.values(
+  //       currentPosition.openPositions
+  //     ).map((pos) => {
+  //       const avg_buy_price = pos.total_buy_qty
+  //         ? pos.total_buy_price / pos.total_buy_qty
+  //         : 0;
+  //       const avg_sell_price = pos.total_sell_qty
+  //         ? pos.total_sell_price / pos.total_sell_qty
+  //         : 0;
+  //       return {
+  //         _id:pos._id,
+  //         signal_type:pos.signal_type,
+  //         symbol: pos.symbol,
+  //         token: pos.token,
+  //         lotsize: pos.lotsize,
+  //         requiredFund: pos.requiredFund,
+  //         avg_buy_price: avg_buy_price,
+  //         total_buy_qty: pos.total_buy_qty,
+  //         total_buy_lot: pos.total_buy_lot,
+  //         total_buy_price: pos.total_buy_price, // Total buy price
+  //         buy_time: pos.buy_time,
+  //         avg_sell_price: avg_sell_price,
+  //         total_sell_qty: pos.total_sell_qty,
+  //         total_sell_lot: pos.total_sell_lot,
+  //         total_sell_price: pos.total_sell_price, // Total sell price
+  //         sell_time: pos.sell_time,
+  //         createdAt: pos.createdAt,
+  //       };
+  //     });
+
+  //     // Sort open positions by createdAt
+  //     formattedPositions.sort(
+  //       (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+  //     );
+
+  //     res.json({ status: true, data: formattedPositions });
+  //   } catch (error) {
+  //     res.json({ status: false, error: "Internal Server Error", data: [] });
+  //   }
+  // }
   async holding(req, res) {
     try {
       const { userid } = req.body;
-
+  
       const today = new Date();
-      const startOfToday = new Date(today.setHours(0, 0, 0, 0));
-
-      // Find user orders and sort them by createdAt in ascending order
+      const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+  
+      // Fetch all records before today
       const finduser = await mainorder_model
         .find({
           userid: userid,
-          createdAt: { $lt: startOfToday },
+          createdAt: { $lt: startOfDay }, 
         })
         .sort({ createdAt: -1 });
-
+  
       if (!finduser || finduser.length === 0) {
         return res.json({
           status: false,
-          error: "No positions found",
+          error: "No holdings found",
           data: [],
         });
       }
-
+  
       const symbols = [...new Set(finduser.map((trade) => trade.symbol))];
-
-      // Fetch token data for all unique symbols
+  
       const tokenDataMap = await Symbol.find({ symbol: { $in: symbols } }).then(
         (symbolsData) =>
           symbolsData.reduce((map, symbolData) => {
@@ -193,90 +312,47 @@ class Placeorder {
             return map;
           }, {})
       );
-
-      const currentPosition = finduser.reduce(
+  
+      const currentHoldings = finduser.reduce(
         (acc, trade) => {
+         
+          if (trade.buy_lot === trade.sell_lot) {
+            return acc;
+          }
+  
           const token = tokenDataMap[trade.symbol];
-          if (trade.buy_type === "buy") {
-            if (!acc.openPositions[trade.symbol]) {
-              acc.openPositions[trade.symbol] = {
-                symbol: trade.symbol,
-                token: token,
-                lotsize: trade.lotsize,
-                total_buy_price: 0,
-                requiredFund: trade.requiredFund,
-                lotsize: 0,
-                total_buy_qty: 0,
-                total_buy_lot: 0,
-                buy_time: trade.buy_time,
-                total_sell_price: 0,
-                total_sell_qty: 0,
-                total_sell_lot: 0,
-                sell_time: null,
-                createdAt: trade.createdAt,
-              };
-            }
-            acc.openPositions[trade.symbol].total_buy_price +=
-              trade.buy_price * trade.buy_qty;
-            acc.openPositions[trade.symbol].total_buy_qty += trade.buy_qty;
-            acc.openPositions[trade.symbol].total_buy_lot += trade.buy_lot;
-          }
-
-          if (trade.sell_type === "sell") {
-            if (acc.openPositions[trade.symbol]) {
-              acc.openPositions[trade.symbol].total_sell_price +=
-                trade.sell_price * trade.sell_qty;
-              acc.openPositions[trade.symbol].total_sell_qty += trade.sell_qty;
-              acc.openPositions[trade.symbol].total_sell_lot += trade.sell_lot;
-              acc.openPositions[trade.symbol].sell_time = trade.sell_time;
-            }
-          }
+  
+          acc.holdings.push({
+            _id: trade._id,
+            symbol: trade.symbol,
+            token: token,
+            requiredFund: trade.requiredFund,
+            lotsize: trade.lotsize,
+            signal_type: trade.signal_type,
+            buy_price: trade.buy_price,
+            buy_lot: trade.buy_lot,
+            buy_qty: trade.buy_qty,
+            buy_type: trade.buy_type,
+            buy_time: trade.buy_time,
+            sell_type: trade.sell_type,
+            sell_lot: trade.sell_lot,
+            sell_qty: trade.sell_qty,
+            sell_time: trade.sell_time,
+            sell_price: trade.sell_price,
+          });
+  
           return acc;
         },
-        { openPositions: {} }
+        { holdings: [] }
       );
-
-      // Calculate average holding and format the response
-      const formattedPositions = Object.values(
-        currentPosition.openPositions
-      ).map((pos) => {
-        const avg_buy_price = pos.total_buy_qty
-          ? pos.total_buy_price / pos.total_buy_qty
-          : 0;
-        const avg_sell_price = pos.total_sell_qty
-          ? pos.total_sell_price / pos.total_sell_qty
-          : 0;
-        return {
-          symbol: pos.symbol,
-          token: pos.token,
-          lotsize: pos.lotsize,
-          requiredFund: pos.requiredFund,
-          avg_buy_price: avg_buy_price,
-          total_buy_qty: pos.total_buy_qty,
-          total_buy_lot: pos.total_buy_lot,
-          total_buy_price: pos.total_buy_price, // Total buy price
-          buy_time: pos.buy_time,
-          avg_sell_price: avg_sell_price,
-          total_sell_qty: pos.total_sell_qty,
-          total_sell_lot: pos.total_sell_lot,
-          total_sell_price: pos.total_sell_price, // Total sell price
-          sell_time: pos.sell_time,
-          createdAt: pos.createdAt,
-        };
-      });
-
-      // Sort open positions by createdAt
-      formattedPositions.sort(
-        (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
-      );
-
-      res.json({ status: true, data: formattedPositions });
+  
+      res.json({ status: true, data: currentHoldings.holdings });
     } catch (error) {
       res.json({ status: false, error: "Internal Server Error", data: [] });
     }
   }
-
-
+  
+  
 
 
   // squareoff
@@ -332,6 +408,10 @@ class Placeorder {
         });
       }
   
+     
+
+
+
       // Create a new order
       const newOrder = new Order({
         userid,
@@ -359,9 +439,22 @@ class Placeorder {
         tradehistory.orderid = [orderdata._id];
       }
   
-      let limitclaculation, updateuserbalance, Totalupdateuserbalance;
-  
-    
+        
+      let Calculatefund = parseFloat(price) * parseInt(qty)
+      let totalcalculatefund = Calculatefund/Number(checkadmin.limit);
+      let Totalupdateuserbalance = totalcalculatefund - parseFloat(brokerage);
+       let totaladdbalance = parseFloat(checkadmin.Balance) + Totalupdateuserbalance
+     
+     
+
+      console.log("Calculatefund",Calculatefund)
+      console.log("totalcalculatefund",totalcalculatefund)
+      console.log("Totalupdateuserbalance",Totalupdateuserbalance)
+       console.log("Totalupdateuserbalance",Totalupdateuserbalance)
+       console.log("totaladdbalance",totaladdbalance)
+
+
+
       if (type === "buy") {
         const totalQuantity = (tradehistory.buy_lot || 0) + lotNum;
         const totalCost = (tradehistory.buy_price * tradehistory.buy_lot || 0) + (priceNum * lotNum);
@@ -374,9 +467,6 @@ class Placeorder {
         // tradehistory.requiredFund = requiredFund;
         tradehistory.buy_time = new Date();
   
-        limitclaculation = parseFloat(tradehistory.sell_price) / Number(checkadmin.limit);
-        updateuserbalance = parseFloat(checkadmin.Balance) + limitclaculation;
-        Totalupdateuserbalance = updateuserbalance - brokerage;
   
         await tradehistory.save();
       } else if (type === "sell") {
@@ -389,10 +479,7 @@ class Placeorder {
         tradehistory.sell_qty = (tradehistory.sell_qty || 0) + qtyNum;
         tradehistory.sell_type = type;
         tradehistory.sell_time = new Date();
-  
-        limitclaculation = parseFloat(tradehistory.sell_price) / Number(checkadmin.limit);
-        updateuserbalance = parseFloat(checkadmin.Balance) + limitclaculation;
-        Totalupdateuserbalance = updateuserbalance - brokerage;
+          
   
         await tradehistory.save();
       }
@@ -400,14 +487,14 @@ class Placeorder {
       // Update user balance
       await User_model.updateOne(
         { _id: checkadmin._id },
-        { $set: { Balance: Totalupdateuserbalance } }
+        { $set: { Balance: totaladdbalance } }
       );
   
       // Create a new balance statement
       const newstatement = new BalanceStatement({
         userid: userid,
         orderid: tradehistory._id,
-        Amount: limitclaculation,
+        Amount: Totalupdateuserbalance,
         type: "CREDIT",
         message: "Balanced used to sell",
         symbol: symbol,
@@ -540,61 +627,65 @@ const EntryTrade = async (
   try {
     const { userid, symbol, price, lot, qty, requiredFund, lotsize, type } =
       req.body;
-
-    const priceNum = parseFloat(price);
-    const lotNum = parseFloat(lot, 10);
-    const qtyNum = parseFloat(qty, 10);
-    const requiredFundNum = parseFloat(requiredFund);
-
-    const currentTime = new Date();
-
-    let tradehistory = await mainorder_model.findOne({
-      userid,
-      symbol,
-      createdAt: {
-        $gte: new Date().setHours(0, 0, 0, 0),
-        $lt: new Date().setHours(23, 59, 59, 999),
-      },
-    });
-
-    // if (tradehistory) {
-    //   const totalQuantity = tradehistory.buy_lot + lotNum;
+  
+      
+      const priceNum = parseFloat(price);
+      const lotNum = parseFloat(lot, 10);
+      const qtyNum = parseFloat(qty, 10);
+      const requiredFundNum = parseFloat(requiredFund);
+      
+      const currentTime = new Date();
+      
+      let tradehistory = await mainorder_model.findOne({
+        userid,
+        symbol,
+        createdAt: {
+          $gte: new Date().setHours(0, 0, 0, 0),
+          $lt: new Date().setHours(23, 59, 59, 999),
+        },
+      });
+      
+      
+      // if (tradehistory) {
+        //   const totalQuantity = tradehistory.buy_lot + lotNum;
     //   const totalCost =
     //     tradehistory.buy_price * tradehistory.buy_lot + priceNum * lotNum;
     //   const avgPrice = totalCost / totalQuantity;
-
+    
     //   tradehistory.buy_price = avgPrice;
     //   tradehistory.buy_lot += lotNum;
     //   tradehistory.buy_qty += qtyNum;
     //   tradehistory.buy_type = type;
     //   tradehistory.requiredFund += requiredFund;
-
+    
     //   if (Array.isArray(tradehistory.orderid)) {
-    //     tradehistory.orderid.push(orderdata._id);
-    //   } else {
-    //     tradehistory.orderid = [tradehistory.orderid, orderdata._id];
-    //   }
-    //   await tradehistory.save();
-    //   } else {
-
-    if (checkadmin.Balance < requiredFund) {
-      const rejectedOrder = new Order({
-        userid,
-        symbol,
-        price,
-        lot,
-        qty,
-        adminid: checkadmin.parent_id,
-        requiredFund,
-        token,
-        type,
-        lotsize,
-        status: "rejected",
-        reason: "Order rejected due to low Balance",
-      });
-
-      // Save the rejected order and return a response
-      await rejectedOrder.save();
+      //     tradehistory.orderid.push(orderdata._id);
+      //   } else {
+        //     tradehistory.orderid = [tradehistory.orderid, orderdata._id];
+        //   }
+        //   await tradehistory.save();
+        //   } else {
+          
+        
+        
+        if (checkadmin.Balance < requiredFund) {
+          const rejectedOrder = new Order({
+            userid,
+            symbol,
+            price,
+            lot,
+            qty,
+            adminid: checkadmin.parent_id,
+            requiredFund,
+            token,
+            type,
+            lotsize,
+            status: "rejected",
+            reason: "Order rejected due to low Balance",
+          });
+          
+          // Save the rejected order and return a response
+          await rejectedOrder.save();
       return res.status(400).json({
         status: false,
         message: "Order rejected due to low Balance",
@@ -630,16 +721,21 @@ const EntryTrade = async (
 
     const limitclaculation =
       parseFloat(requiredFund) / Number(checkadmin.limit);
-    const updateuserbalance =
-      parseFloat(checkadmin.Balance) - parseFloat(limitclaculation);
+     const updateuserbalance =
+     parseFloat(checkadmin.Balance) - parseFloat(limitclaculation);
+
 
     const Totalupdateuserbalance =
       parseFloat(updateuserbalance) - parseFloat(brokerage);
+
+
 
     await User_model.updateOne(
       { _id: checkadmin._id },
       { $set: { Balance: Totalupdateuserbalance } }
     );
+
+
 
     let newstatement = new BalanceStatement({
       userid: userid,
@@ -666,9 +762,8 @@ const EntryTrade = async (
 
 
 
+
 // Exit trade
-
-
 const ExitTrade = async (
   req,
   res,
@@ -852,5 +947,7 @@ const ExitTrade = async (
     });
   }
 };
+
+
 
 module.exports = new Placeorder();

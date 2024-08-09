@@ -720,6 +720,9 @@ class Admin {
     }
   }
 
+
+
+
   // update by status
 
   async UpdateStatus(req, res) {
@@ -767,6 +770,7 @@ class Admin {
             Balance: paymentHistoryFind.Balance,
             parent_Id: paymentHistoryFind.adminid,
             Type: "DEBIT",
+    
           });
 
           await walletUpdateResult.save();
