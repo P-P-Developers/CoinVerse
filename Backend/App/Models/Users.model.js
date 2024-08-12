@@ -47,6 +47,11 @@ const userModel = Schema({
         trim: true,
         default: null
     },
+    employee :{
+         type:String,
+         trim: true,
+         default: null
+    },
     Create_Date: {
         type: Date,
         default: Date.now

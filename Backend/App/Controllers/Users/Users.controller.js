@@ -140,52 +140,52 @@ class Users {
 
 // get all statement 
 
- async getAllstatement(req,res){
-  try {
+//  async getAllstatement(req,res){
+//   try {
       
-      const {userid} = req.body
-      const result = await BalanceStatement.find({userid:userid}).sort({ createdAt: -1 });
+//       const {userid} = req.body
+//       const result = await BalanceStatement.find({userid:userid}).sort({ createdAt: -1 });
        
       
        
-      if(!result){
-        return res.json({status:false,message : "user not found",data:[]})
-      }
+//       if(!result){
+//         return res.json({status:false,message : "user not found",data:[]})
+//       }
 
-      return res.json({status:true,message : "user found",data:result})
+//       return res.json({status:true,message : "user found",data:result})
 
     
-  } catch (error) {
-    return res.json({status:false, message : "internal error",data:[]})
-  }
-
- }
-
-
-// async getAllstatement(req, res) {
-//   try {
-//     const { userid } = req.body;
-//     const result = await BalanceStatement.aggregate([
-//       { $match: { userid: userid } },
-//       { 
-//         $lookup: {
-//           from: 'orders', 
-//           localField: 'orderid',
-//           foreignField: '_id', 
-//           as: 'orderDetails'
-//         }
-//       }
-//     ]);
-
-//     if (!result.length) {
-//       return res.json({ status: false, message: "User not found", data: [] });
-//     }
-
-//     return res.json({ status: true, message: "User found", data: result });
 //   } catch (error) {
-//     return res.json({ status: false, message: "Internal error", data: [] });
+//     return res.json({status:false, message : "internal error",data:[]})
 //   }
-// }
+
+//  }
+
+
+async getAllstatement(req, res) {
+  try {
+    const { userid } = req.body;
+    const result = await BalanceStatement.aggregate([
+      { $match: { userid: userid } },
+      { 
+        $lookup: {
+          from: 'orders', 
+          localField: 'orderid',
+          foreignField: '_id', 
+          as: 'orderDetails'
+        }
+      }
+    ]);
+
+    if (!result.length) {
+      return res.json({ status: false, message: "User not found", data: [] });
+    }
+
+    return res.json({ status: true, message: "User found", data: result });
+  } catch (error) {
+    return res.json({ status: false, message: "Internal error", data: [] });
+  }
+}
 
 
 

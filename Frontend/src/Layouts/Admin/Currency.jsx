@@ -28,12 +28,23 @@ const Setting = () => {
     
     const updateMargin = async () => {
         try {
+
+            if (!updatemargin.forex || !updatemargin.crypto || !updatemargin.dollarprice) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid Input',
+                    text: 'Please ensure all values are non-zero and not null.',
+                });
+                return; 
+            }
+
             const response = await MarginpriceRequired({
                 adminid: user_id,
                 forex: updatemargin.forex,
                 crypto: updatemargin.crypto,
                 dollarprice: updatemargin.dollarprice
             });
+
 
             if (response.status) {
                 Swal.fire({
@@ -79,10 +90,11 @@ const Setting = () => {
     }, []);
 
 
-    useEffect(() => {
-        getmarginprice()
-    }, [])
+    // useEffect(() => {
+    //     getmarginprice()
+    // }, [])
 
+    
     return (
         <div>
             <div className="container-fluid" style={{ minHeight: 723 }}>

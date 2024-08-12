@@ -1,5 +1,7 @@
 import React from 'react';
 
+
+
 const Profile = () => {
     return (
         <div>
@@ -12,7 +14,8 @@ const Profile = () => {
                                     <div className="p-5">
                                         <div className="author-profile">
                                             <div className="author-media">
-                                                <img src="/assets/images/jd.jpg" alt="" />
+                                                <img src="/assets/images/man.png
+                                                " alt="" />
                                                 <div
                                                     className="upload-link"
                                                     title=""

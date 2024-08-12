@@ -12,6 +12,7 @@ const MarginRequired = db.MarginRequired;
 const Symbol = db.Symbol;
 const BalanceStatement = db.BalanceStatement;
 const mainorder_model = db.mainorder_model;
+;
 
 // const nodemailer = require('nodemailer');
 
@@ -219,6 +220,8 @@ class Admin {
   //   }
   // }
 
+
+  
   async AddUser(req, res) {
     try {
       const {
@@ -238,6 +241,7 @@ class Admin {
         turn_over_percentage,
         brokerage,
         limit,
+        employee,
       } = req.body;
 
       if (!FullName || !UserName || !Email || !PhoneNo || !password || !Role) {
@@ -295,6 +299,7 @@ class Admin {
         UserName,
         Email,
         PhoneNo,
+        employee,
         parent_id,
         parent_role,
         Balance: dollarcount,
@@ -357,6 +362,9 @@ class Admin {
     }
   }
 
+
+
+  
   async updateLicence(req, res) {
     try {
       const { id, Licence, parent_Id } = req.body;
@@ -564,8 +572,6 @@ class Admin {
       });
     }
   }
-
-
 
 
 
@@ -1051,7 +1057,7 @@ class Admin {
     try {
       const { userid } = req.body;
 
-      const result = await mainorder_model.find({ userid: userid });
+      const result = await mainorder_model.find({ userid: userid }).sort({createdAt: -1 });
 
       if (!result) {
         return res.json({ status: false, message: "user not found", data: [] });
