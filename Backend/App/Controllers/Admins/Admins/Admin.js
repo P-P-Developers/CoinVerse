@@ -17,211 +17,7 @@ const mainorder_model = db.mainorder_model;
 // const nodemailer = require('nodemailer');
 
 class Admin {
-  // async AddUser(req, res) {
-  //   try {
-  //     const {
-  //       FullName,
-  //       UserName,
-  //       Email,
-  //       PhoneNo,
-  //       parent_id,
-  //       parent_role,
-  //       password,
-  //       Otp,
-  //       Role,
-  //       Balance,
-  //       Licence,
-  //       pertrade,
-  //       perlot,
-  //       turn_over_percentage,
-  //       brokerage,
-  //       limit,
-  //     } = req.body;
 
-  //     if (!FullName || !UserName || !Email || !PhoneNo || !password || !Role) {
-  //       return res.json({ status: false, message: "Missing required fields" });
-  //     }
-
-  //     // Check if user already exists
-  //     const existingUser = await User_model.findOne({
-  //       $or: [{ UserName }, { Email }, { PhoneNo }],
-  //     });
-
-  //     if (existingUser) {
-  //       if (existingUser.UserName === UserName) {
-  //         return res.send({
-  //           status: false,
-  //           message: "Username already exists",
-  //           data: [],
-  //         });
-  //       }
-
-  //       if (existingUser.Email === Email) {
-  //         return res.send({
-  //           status: false,
-  //           message: "Email already exists",
-  //           data: [],
-  //         });
-  //       }
-
-  //       if (existingUser.PhoneNo === PhoneNo) {
-  //         return res.send({
-  //           status: false,
-  //           message: "Phone Number already exists",
-  //           data: [],
-  //         });
-  //       }
-  //     }
-
-  //     // Current date as start date
-  //     const startDate = new Date();
-  //     let endDate = new Date(startDate);
-  //     endDate.setMonth(endDate.getMonth() + Number(Licence));
-
-  //     if (endDate.getDate() < startDate.getDate()) {
-  //       endDate.setDate(0);
-  //     }
-
-  //     // Hash password
-  //     var rand_password = Math.round(password);
-  //     const salt = await bcrypt.genSalt(10);
-  //     var hashedPassword = await bcrypt.hash(rand_password.toString(), salt);
-
-  //     /// dollar price
-  //     const dollarPriceData = await MarginRequired.findOne({
-  //       adminid: parent_id,
-  //     }).select("dollarprice");
-  //     const dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
-
-  //     const brokeragepertrade = (parseFloat(pertrade) / dollarPriceData.dollarprice);
-  //     const brokerageperlot = (parseFloat(perlot) / dollarPriceData.dollarprice);
-
-  //     // Create new user
-  //     const newUser = new User_model({
-  //       FullName,
-  //       UserName,
-  //       Email,
-  //       PhoneNo,
-  //       parent_id,
-  //       parent_role,
-  //       Balance: dollarcount,
-  //       Otp: password,
-  //       Role,
-  //       Licence,
-  //       pertrade:brokeragepertrade,
-  //       perlot:brokerageperlot,
-  //       turn_over_percentage,
-  //       brokerage,
-  //       limit,
-  //       password: hashedPassword,
-  //       Start_Date: startDate,
-  //       End_Date: endDate,
-  //     });
-
-  //     await newUser.save();
-
-  //     let userWallet = new Wallet_model({
-  //       user_Id: newUser._id,
-  //       Balance: dollarcount,
-  //       parent_Id: parent_id,
-  //       type:"CREDIT",
-  //     });
-
-  //     await userWallet.save();
-
-  //     // manage balance statement
-
-  //     let newstatement = new BalanceStatement({
-  //       userid: newUser._id,
-  //       Amount : dollarcount,
-  //       parent_Id: parent_id,
-  //       type:"CREDIT",
-  //       message:"Balance Added"
-  //     });
-
-  //     await newstatement.save();
-
-  //     let licence = new totalLicense({
-  //       user_Id: newUser._id,
-  //       Licence: Licence,
-  //       parent_Id: parent_id,
-  //       Start_Date: startDate,
-  //       End_Date: endDate,
-  //     });
-
-  //     await licence.save();
-
-  //     return res.json({
-  //       status: true,
-  //       message: "Users added successfully",
-  //       data: newUser,
-  //     });
-  //   } catch (error) {
-  //     res.json({ status: false, message: "Failed to add User", data: [] });
-  //   }
-  // }
-
-  // update Licence
-
-  // async updateLicence(req, res) {
-  //   try {
-  //     const { id, Licence, parent_Id } = req.body;
-
-  //     const userdata = await User_model.findOne({ _id: id });
-  //     if (!userdata) {
-  //       return res.json({
-  //         status: false,
-  //         message: "Licence not found",
-  //         data: [],
-  //       });
-  //     }
-
-  //     const startDate = new Date();
-  //     let endDate = new Date(startDate);
-  //     endDate.setMonth(endDate.getMonth() + Number(Licence));
-
-  //     if (endDate.getDate() !== startDate.getDate()) {
-  //       endDate = new Date(endDate.getFullYear(), endDate.getMonth(), 0);
-  //     }
-
-  //     const startDate1 = new Date();
-  //     let newEndDate = new Date(startDate1);
-  //     endDate.setMonth(endDate.getMonth() + Number(newLicence));
-
-  //     if (endDate.getDate() !== startDate.getDate()) {
-  //       endDate = new Date(endDate.getFullYear(), endDate.getMonth(), 0);
-  //     }
-
-  //     const newLicence = Number(userdata.Licence || 0) + Number(Licence);
-  //     const result1 = await User_model.updateOne(
-  //       { _id: userdata._id },
-  //       { $set: { Licence: newLicence ,
-  //         End_Date: newEndDate
-  //       },
-  //     }
-  //     );
-
-  //     const result = new totalLicense({
-  //       user_Id: userdata._id,
-  //       Licence: Licence,
-  //       parent_Id: parent_Id,
-  //       Start_Date: startDate,
-  //       End_Date: endDate,
-  //     });
-  //     await result.save();
-
-  //     return res.json({
-  //       status: true,
-  //       message: "Licence is updated",
-  //       data: result,
-  //     });
-  //   } catch (error) {
-  //     return res.json({ status: false, message: "Internal error", data: [] });
-  //   }
-  // }
-
-
-  
   async AddUser(req, res) {
     try {
       const {
@@ -241,17 +37,21 @@ class Admin {
         turn_over_percentage,
         brokerage,
         limit,
-        employee,
+        Employee,
       } = req.body;
+      
+     console.log("req.body",req.body)
 
       if (!FullName || !UserName || !Email || !PhoneNo || !password || !Role) {
         return res.json({ status: false, message: "Missing required fields" });
       }
 
+
       // Check if user already exists
       const existingUser = await User_model.findOne({
         $or: [{ UserName }, { Email }, { PhoneNo }],
       });
+
 
       if (existingUser) {
         const duplicateField =
@@ -268,20 +68,29 @@ class Admin {
         });
       }
 
+      
       // Set end date based on license duration
       const startDate = new Date();
       const endDate = new Date(startDate);
       endDate.setMonth(endDate.getMonth() + Number(Licence));
 
+
+
+
       // Hash password
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password.toString(), salt);
+
+
 
       // Fetch dollar price
       const dollarPriceData = await MarginRequired.findOne({
         adminid: parent_id,
       }).select("dollarprice");
       const dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
+
+
+
 
       let brokeragepertrade = (
         parseFloat(pertrade) / dollarPriceData.dollarprice
@@ -290,8 +99,12 @@ class Admin {
         parseFloat(perlot) / dollarPriceData.dollarprice
       ).toFixed(3);
 
+
+
       brokeragepertrade = isNaN(brokeragepertrade) ? null : brokeragepertrade;
       brokerageperlot = isNaN(brokerageperlot) ? null : brokerageperlot;
+
+
 
       // Create new user
       const newUser = new User_model({
@@ -299,7 +112,7 @@ class Admin {
         UserName,
         Email,
         PhoneNo,
-        employee,
+        employee:Employee,
         parent_id,
         parent_role,
         Balance: dollarcount,
@@ -318,6 +131,8 @@ class Admin {
 
       await newUser.save();
 
+
+
       // Create wallet and balance statement
       const userWallet = new Wallet_model({
         user_Id: newUser._id,
@@ -328,6 +143,7 @@ class Admin {
       await userWallet.save();
   
 
+      
       const newStatement = new BalanceStatement({
         userid: newUser._id,
         Amount: dollarcount,
@@ -336,6 +152,7 @@ class Admin {
         message: "Balance Added",
       });
       await newStatement.save();
+
 
       // Create license record
       const licenceRecord = new totalLicense({
@@ -347,13 +164,16 @@ class Admin {
       });
       await licenceRecord.save();
 
+
+
       return res.json({
         status: true,
         message: "User added successfully",
         data: newUser,
       });
+
     } catch (error) {
-      console.error("Error adding user:", error); // Log error for debugging
+      console.error("Error adding user:", error); 
       return res.json({
         status: false,
         message: "Failed to add User",

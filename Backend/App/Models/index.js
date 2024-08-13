@@ -15,5 +15,6 @@ module.exports = {
     Favouritelist:require("./Favouritelist.model"),
     BalanceStatement:require("./BalanceStatement.model"),
     user_logs :require("./User_logs.model"),
-    forexlivedata:require("./forexlivedata.model")
+    forexlivedata:require("./forexlivedata.model"),
+    employee_model:require("./employee.model")
 };
