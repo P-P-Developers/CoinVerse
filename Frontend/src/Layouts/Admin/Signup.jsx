@@ -19,6 +19,8 @@ const Signup = () => {
 
   const [data, setData] = useState([]);
   const [currentClient, setCurrentClient] = useState(null);
+  const [search, setSearch] = useState("");
+
 
   const columns = [
     { Header: "FullName", accessor: "FullName" },
@@ -64,7 +66,15 @@ const Signup = () => {
   const getsignupuser = async () => {
     try {
       const response = await getSignIn({});
-      setData(response.data);
+      const searchfilter = response.data?.filter((item) => {
+        const searchInputMatch =
+          search === "" ||
+          (item.UserName && item.UserName.toLowerCase().includes(search.toLowerCase())) 
+          
+
+        return searchInputMatch;
+      });
+      setData(search ?searchfilter : response.data);
     } catch (error) {
       console.log("error", error);
     }
@@ -72,7 +82,7 @@ const Signup = () => {
 
   useEffect(() => {
     getsignupuser();
-  }, []);
+  }, [search]);
 
 
 
@@ -96,12 +106,15 @@ const Signup = () => {
                       role="tabpanel"
                       aria-labelledby="Week-tab"
                     >
-                      <div className='mb-3 ms-4'>
+                       <div className="mb-3 ms-4">
                         Search :{" "}
                         <input
                           className="ml-2 input-search form-control"
-                          defaultValue=""
                           style={{ width: "20%" }}
+                          type="text"
+                          placeholder="Search..."
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
                         />
                       </div>
                       <Table columns={columns} data={data && data} />

@@ -9,7 +9,8 @@ const Holdoff = () => {
 
   const [refresh, setRefresh] = useState(false);
   const [data, setData] = useState([]);
-
+  const [search, setSearch] = useState("");
+ 
 
 
   const columns = [
@@ -42,8 +43,8 @@ const Holdoff = () => {
 
   // Update symbol status
   const updatestatus = async (event, symbol) => {
+    
     const user_active_status = event.target.checked ? 1 : 0;
-
     const result = await Swal.fire({
       title: "Do you want to save the changes?",
       showCancelButton: true,
@@ -81,7 +82,16 @@ const Holdoff = () => {
   const Symbolholdoff = async () => {
     try {
       const response = await symbolholdoff({});
-      setData(response.data);
+
+      const searchfilter = response.data?.filter((item) => {
+        const searchInputMatch =
+          search === "" ||
+          (item.symbol && item.symbol.toLowerCase().includes(search.toLowerCase())) 
+          
+
+        return searchInputMatch;
+      });
+      setData(search ? searchfilter : response.data);
     } catch (error) {
       console.log("error", error);
     }
@@ -89,7 +99,7 @@ const Holdoff = () => {
 
   useEffect(() => {
     Symbolholdoff();
-  }, [refresh]);
+  }, [refresh,search]);
 
 
 
@@ -114,11 +124,14 @@ const Holdoff = () => {
                       aria-labelledby="Week-tab"
                     >
                       <div className="mb-3 ms-4">
-                        Search:{" "}
+                        Search :{" "}
                         <input
                           className="ml-2 input-search form-control"
-                          defaultValue=""
                           style={{ width: "20%" }}
+                          type="text"
+                          placeholder="Search..."
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
                         />
                       </div>
                       <Table columns={columns} data={data} />

@@ -3,7 +3,7 @@ import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import Form from "../../../Utils/Form/Formik";
-import { AddUser } from "../../../Services/Admin/Addmin";
+import { Employee_request } from "../../../Services/Employee/Employee";
 
 const AddUsers = () => {
   const navigate = useNavigate();
@@ -86,7 +86,7 @@ const AddUsers = () => {
         PhoneNo: values.phone,
         Balance: values.Balance,
         password: values.password,
-        parent_role: Role || "ADMIN",
+        parent_role: Role || "EMPLOYE",
         parent_id: user_id,
         Role: "USER",
         limit:values.limit,
@@ -97,7 +97,7 @@ const AddUsers = () => {
       setSubmitting(false);
 
       try {
-        const response = await AddUser(data);
+        const response = await Employee_request(data);
         if (response.status) {
           Swal.fire({
             title: "User Added!",

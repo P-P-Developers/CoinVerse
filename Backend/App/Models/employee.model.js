@@ -6,7 +6,7 @@ const Role = require("./Role.model")
 
 
 
-const userModel = Schema({
+const employee = Schema({
     FullName: {
         type: String,
         required: true,
@@ -119,8 +119,8 @@ const userModel = Schema({
     },
 
 )
-const User_model = model('USER', userModel);
+const employee_model = model('employee', employee);
 
 
 
-module.exports = User_model;
+module.exports = employee_model;

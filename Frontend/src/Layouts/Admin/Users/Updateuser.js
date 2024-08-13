@@ -108,6 +108,8 @@ const Updateuser = () => {
     },
   });
 
+
+
   useEffect(() => {
     if (rowData) {
       const determineSelectedOption = () => {
@@ -133,11 +135,15 @@ const Updateuser = () => {
     }
   }, [rowData]);
 
+
+
   const getInputValueLabel = (selectedOption) => {
     if (selectedOption === "pertrade") return "Enter Value for Per Trade";
     if (selectedOption === "perlot") return "Enter Value for Per Lot";
     return "Enter Value";
   };
+
+
 
   // Form fields configuration
   const fields = [
@@ -220,6 +226,9 @@ const Updateuser = () => {
     },
   ];
 
+
+
+  
   return (
     <Form
       fields={fields}

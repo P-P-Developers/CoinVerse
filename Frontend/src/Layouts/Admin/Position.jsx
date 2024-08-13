@@ -15,30 +15,36 @@ const Position = () => {
 
 
   const [data, setData] = useState([]);
+  const [search, setSearch] = useState("");
+
 
   const columns = [
     { Header: "symbol", accessor: "symbol" },
-
     {
-        Header: "Buy Time",
-        accessor: "buy_time",
-        Cell: ({ cell }) => {
-          const buyTime = cell.row.buy_time; 
-          return buyTime ? fDateTime(buyTime) : "-"; 
-        }
-      },
-    { Header: "sell_time", accessor: "sell_time",
-        Cell: ({ cell }) => {
-            const sell_time = cell.row.sell_time; 
-            return sell_time ? fDateTime(sell_time) : "-"; 
-          }
+      Header: "Buy qty",
+      accessor: "buy_qty",
+      Cell: ({ cell }) => {
+        const buy_qty = cell.row.buy_qty; 
+        return buy_qty ? buy_qty : "-"; 
+      }
     },
     {
-      Header: "Create Date",
-      accessor: "createdAt",
+      Header: "Sell qty",
+      accessor: "sell_qty",
       Cell: ({ cell }) => {
-        return fDateTimesec((cell.value))
-
+        const sell_qty = cell.row.sell_qty; 
+        return sell_qty ? sell_qty : "-"; 
+      }
+    },
+    {
+      Header: "Position Avg",
+      accessor: "Position Avg",
+      Cell: ({ cell }) => {
+        const { sell_qty, buy_qty } = cell.row; 
+        const availablePosition = buy_qty - sell_qty;
+        return (
+          <span>{availablePosition}</span>
+        );
       },
     },
 
@@ -51,7 +57,18 @@ const Position = () => {
     try {
        const data = {userid:user_id,Role:Role}
       const response = await getpositionhistory(data);
-      setData(response.data);
+      const filterdata = response.data && response.data.filter((item)=>{
+          return item.buy_qty !== item.sell_qty;
+      })
+      const searchfilter = filterdata?.filter((item) => {
+        const searchInputMatch =
+          search === "" ||
+          (item.symbol && item.symbol.toLowerCase().includes(search.toLowerCase())) 
+          
+
+        return searchInputMatch;
+      });
+      setData(search  ?searchfilter : filterdata);
     } catch (error) {
       console.log("error", error);
     }
@@ -59,7 +76,7 @@ const Position = () => {
 
   useEffect(() => {
     getuserallhistory();
-  }, []);
+  }, [search]);
 
 
 
@@ -83,12 +100,15 @@ const Position = () => {
                       role="tabpanel"
                       aria-labelledby="Week-tab"
                     >
-                      <div className='mb-3 ms-4'>
+                     <div className="mb-3 ms-4">
                         Search :{" "}
                         <input
                           className="ml-2 input-search form-control"
-                          defaultValue=""
                           style={{ width: "20%" }}
+                          type="text"
+                          placeholder="Search..."
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
                         />
                       </div>
                       <Table columns={columns} data={data && data} />

@@ -3,8 +3,12 @@ import { useFormik } from "formik";
 import { useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import Form from "../../../Utils/Form/Formik";
-import { AddUser, adminWalletBalance ,TotalcountLicence} from "../../../Services/Admin/Addmin";
-
+import {
+  AddUser,
+  adminWalletBalance,
+  TotalcountLicence,
+} from "../../../Services/Admin/Addmin";
+import { getUserdata } from "../../../Services/Superadmin/Superadmin";
 
 const AddUsers = () => {
   const navigate = useNavigate();
@@ -16,13 +20,11 @@ const AddUsers = () => {
   const [checkdolarprice, setCheckdolarprice] = useState(0);
   const [checkLicence, setCheckLicence] = useState([]);
 
+  const [data, setData] = useState([]);
+
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const Role = userDetails?.Role;
   const user_id = userDetails?.user_id;
-
-
-
- 
 
   const formik = useFormik({
     initialValues: {
@@ -30,6 +32,7 @@ const AddUsers = () => {
       username: clientData.UserName || "",
       email: "",
       phone: clientData.PhoneNo || "",
+      employee: "",
       Balance: "",
       password: clientData.password || "",
       confirmPassword: "",
@@ -84,7 +87,9 @@ const AddUsers = () => {
       if (!values.limit) {
         errors.limit = "Please enter a value for Limit";
       }
-
+      if (!values.employee) {
+        errors.employee = "Please select a Employee";
+      }
       return errors;
     },
 
@@ -96,6 +101,7 @@ const AddUsers = () => {
         UserName: values.username,
         Email: values.email,
         PhoneNo: values.phone,
+        Employee: values.employee,
         Balance: values.Balance,
         password: values.password,
         parent_role: Role || "ADMIN",
@@ -106,6 +112,24 @@ const AddUsers = () => {
         [selectedOption]: values.inputValue,
       };
 
+      setSubmitting(false);
+
+      if (
+        dollarPrice == 0 ||
+        dollarPrice == null ||
+        dollarPrice === Infinity ||
+        isNaN(dollarPrice)
+      ) {
+        Swal.fire({
+          title: "Alert",
+          text: "Please updated Dollarprice",
+          icon: "warning",
+          timer: 1000,
+          timerProgressBar: true,
+        });
+        setSubmitting(false);
+        return;
+      }
       setSubmitting(false);
 
       if (parseInt(checkLicence.CountLicence) < parseInt(values.Licence)) {
@@ -119,9 +143,8 @@ const AddUsers = () => {
         setSubmitting(false);
         return;
       }
-
       setSubmitting(false);
-      
+
       try {
         const response = await AddUser(data);
         if (response.status) {
@@ -161,37 +184,55 @@ const AddUsers = () => {
     try {
       const response = await adminWalletBalance(data);
       setCheckprice(response.Balance);
-      setCheckdolarprice(response.dollarPriceDoc.dollarprice)
+      setCheckdolarprice(response.dollarPriceDoc.dollarprice);
     } catch (error) {
       console.log("error", error);
     }
   };
 
- 
   const getadminLicence = async () => {
     const data = { userid: user_id };
     try {
       const response = await TotalcountLicence(data);
-      setCheckLicence(response.data)
+      setCheckLicence(response.data);
     } catch (error) {
       console.log("error", error);
     }
   };
-  
- 
 
+  const getAlluserdata = async () => {
+    const data = { id: user_id };
+    try {
+      const response = await getUserdata(data);
+      const result =
+        response.data &&
+        response.data.filter((item) => {
+          return item.Role === "EMPLOYE";
+        });
+      setData(result);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+  // console.log("data", data);
 
   useEffect(() => {
     getadminbalance();
-    getadminLicence()
+    getadminLicence();
+    getAlluserdata();
   }, []);
 
-
-
   useEffect(() => {
-    const exchangeRate = Number(checkdolarprice) 
-    setDollarPrice(formik.values.Balance ? (parseFloat(formik.values.Balance) / exchangeRate).toFixed(2) : 0);
+    const exchangeRate = Number(checkdolarprice);
+    setDollarPrice(
+      formik.values.Balance
+        ? parseFloat(formik.values.Balance) / exchangeRate
+        : 0
+    );
   }, [formik.values.Balance]);
+
+
 
 
   const fields = [
@@ -235,7 +276,24 @@ const AddUsers = () => {
       col_size: 6,
       disable: false,
     },
-    
+    {
+      name: "employee",
+      label: "Employee",
+      type: "select",
+      options: [
+        { label: "None", value: "none" }, 
+        ...(data
+          ? data.map((item) => ({
+              label: item.UserName,
+              value: item.UserName,
+            }))
+          : []),
+      ],
+      label_size: 12,
+      col_size: 6,
+      disable: false,
+    },
+
     {
       name: "password",
       label: "Password",
@@ -306,11 +364,11 @@ const AddUsers = () => {
         btn_name1_route={"/admin/users"}
       />
       {formik.values.Balance && (
-      <div >
-        <p>Dollar Price: ${dollarPrice}</p>
-      </div>
-    )},
-  
+        <div>
+          <p>Dollar Price: ${dollarPrice}</p>
+        </div>
+      )}
+      ,
     </div>
   );
 };

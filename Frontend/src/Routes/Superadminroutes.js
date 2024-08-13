@@ -29,7 +29,7 @@ const SuperadminRoutes = () => {
                     <Route path="/admin/updateadmin/:id" element={<UpdateAdmin />} />
                     <Route path="/broadcast" element={<Broadcast />} />
                     <Route path="/holdoff" element={<Holdoff />} />
-                    <Route path="/currency" element={<Currency />} />
+                    {/* <Route path="/currency" element={<Currency />} /> */}
 
                 </Routes>
             </div>

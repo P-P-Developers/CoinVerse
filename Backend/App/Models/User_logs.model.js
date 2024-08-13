@@ -7,7 +7,16 @@ const userActivitySchema = new mongoose.Schema({
     },
     admin_Id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "USER"
+        ref: "USER",
+        default: null
+    },
+    UserName: {
+        type: String,
+        default: null
+    },
+    login_status:{
+         type: String,
+         default: null
     },
    
     role: {

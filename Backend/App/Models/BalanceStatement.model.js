@@ -5,9 +5,19 @@ const statementSchema = new mongoose.Schema({
     type: String,
     default: null
   },
-  balance: {
+  parent_Id: {
     type: String,
     default: null
+  },
+  orderid: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Order'
+    }
+  ],
+  Amount: {
+    type: Number,
+     required:true,
   },
   type: {
     type: String,
@@ -21,11 +31,19 @@ const statementSchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  symbol: {
+    type: String,
+    default: null
+  },
+  brokerage: {
+    type: Number,
+    default: null,
+  },
   createdAt: {
         type: Date,
         default: Date.now
 },
-    createdAt: {
+   updatedAt: {
         type: Date,
         default: Date.now
     },

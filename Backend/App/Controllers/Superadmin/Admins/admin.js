@@ -9,6 +9,7 @@ const Role = db.role;
 const Wallet_model = db.WalletRecharge;
 const totalLicense = db.totalLicense
 const MarginRequired = db.MarginRequired
+const BalanceStatement = db.BalanceStatement;
 
 
 
@@ -154,9 +155,7 @@ class Superadmin {
 
       const dollarcount = (Balance/dollarPriceData.dollarprice).toFixed(3);
   
-    
-
-
+  
       const userdata = await User_model.findOne({ _id: id });
       if (!userdata) {
         return res.json({
@@ -191,8 +190,9 @@ class Superadmin {
         { _id: userdata._id },
         { $set: { Balance: newBalance } }
       );
+   
   
-    
+ 
       const result = new Wallet_model({
         user_Id: userdata._id,
         Balance: dollarcount,  
@@ -201,7 +201,18 @@ class Superadmin {
       });
   
       await result.save();
+    
+
+      let newstatement = new BalanceStatement({
+        userid: userdata._id,
+        Amount :dollarcount,
+        parent_Id: parent_Id,
+        type:"CREDIT",
+        message:"Balance Credit"
+      });
+      await newstatement.save();
   
+
       return res.json({
         status: true,
         message: "Balance is updated",

@@ -19,7 +19,7 @@ class statement{
   
     async  statement(req, res) {
         try {
-            const data = await Order.find({ userid: req.body.userid }).sort({ _id: -1 });
+            const data = await Order.find({ userid: req.body.userid }).sort({ createdAt: -1 });;
     
             const result = data.map((item) => ({
                 Symbol: item.symbol,
