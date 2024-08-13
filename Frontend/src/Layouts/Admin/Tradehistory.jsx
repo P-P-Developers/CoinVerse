@@ -27,7 +27,7 @@ const Tradehistory = () => {
           return buyTime ? fDateTime(buyTime) : "-"; 
         }
       },
-    { Header: "sell_time", accessor: "sell_time",
+    { Header: "sell time", accessor: "sell time",
         Cell: ({ cell }) => {
             const sell_time = cell.row.sell_time; 
             return sell_time ? fDateTime(sell_time) : "-"; 
