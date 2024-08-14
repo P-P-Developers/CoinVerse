@@ -1,30 +1,50 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import Form from "../../../Utils/Form/Formik";
-import { Employee_request } from "../../../Services/Employee/Employee";
+import {
+  AddUser,
+  adminWalletBalance,
+  TotalcountLicence,
+} from "../../../Services/Admin/Addmin";
+// import { getUserdata } from "../../../Services/Superadmin/Superadmin";
+import { getAllClient } from "../../../Services/Superadmin/Superadmin";
 
 const AddUsers = () => {
+
+
   const navigate = useNavigate();
+  const location = useLocation();
+
+
+  const [checkprice, setCheckprice] = useState("");
+  const [dollarPrice, setDollarPrice] = useState(0);
+  const [checkdolarprice, setCheckdolarprice] = useState(0);
+  const [checkLicence, setCheckLicence] = useState([]);
+
+  
+  const [getid,setGetid] = useState([])
 
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const Role = userDetails?.Role;
   const user_id = userDetails?.user_id;
+  const user_name = userDetails?.UserName
 
   const formik = useFormik({
     initialValues: {
-      fullName: "",
-      username: "",
+      fullName:"",
+      username:"",
       email: "",
-      phone: "",
+      phone:"",
+      employee_id:"",
       Balance: "",
-      password: "",
+      password:"",
       confirmPassword: "",
       Licence: "",
-      limit:"",
-      selectedOption: "", 
-      inputValue: "", 
+      limit: "",
+      selectedOption: "",
+      inputValue: "",
     },
 
     validate: (values) => {
@@ -72,7 +92,7 @@ const AddUsers = () => {
       if (!values.limit) {
         errors.limit = "Please enter a value for Limit";
       }
-
+     
       return errors;
     },
 
@@ -84,20 +104,52 @@ const AddUsers = () => {
         UserName: values.username,
         Email: values.email,
         PhoneNo: values.phone,
+        employee_id: user_id,
         Balance: values.Balance,
         password: values.password,
         parent_role: Role || "EMPLOYE",
-        parent_id: user_id,
+        parent_id: getid,
         Role: "USER",
-        limit:values.limit,
+        limit: values.limit,
         Licence: values.Licence,
         [selectedOption]: values.inputValue,
       };
 
       setSubmitting(false);
 
+      if (
+        dollarPrice == 0 ||
+        dollarPrice == null ||
+        dollarPrice === Infinity ||
+        isNaN(dollarPrice)
+      ) {
+        Swal.fire({
+          title: "Alert",
+          text: "Please updated Dollarprice",
+          icon: "warning",
+          timer: 1000,
+          timerProgressBar: true,
+        });
+        setSubmitting(false);
+        return;
+      }
+      setSubmitting(false);
+
+      if (parseInt(checkLicence.CountLicence) < parseInt(values.Licence)) {
+        Swal.fire({
+          title: "Alert",
+          text: "Licence is required",
+          icon: "warning",
+          timer: 1000,
+          timerProgressBar: true,
+        });
+        setSubmitting(false);
+        return;
+      }
+      setSubmitting(false);
+
       try {
-        const response = await Employee_request(data);
+        const response = await AddUser(data);
         if (response.status) {
           Swal.fire({
             title: "User Added!",
@@ -119,7 +171,6 @@ const AddUsers = () => {
           });
         }
       } catch (error) {
-        console.log("Error:", error);
         Swal.fire({
           title: "Error!",
           text: "Failed to add user. Please try again later.",
@@ -131,6 +182,73 @@ const AddUsers = () => {
     },
   });
 
+
+
+
+  const getadminbalance = async () => {
+    const data = { userid: getid };
+    try {
+      const response = await adminWalletBalance(data);
+      setCheckprice(response.Balance);
+      setCheckdolarprice(response.dollarPriceDoc.dollarprice);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+
+
+  const getadminLicence = async () => {
+    const data = { userid: getid };
+    try {
+      const response = await TotalcountLicence(data);
+      setCheckLicence(response.data);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+
+
+
+
+  const getallclient=async()=>{
+    try {
+      const data = {userid:user_id}
+      const response = await getAllClient(data)
+      if(response.status){
+
+        setGetid(response.data.parent_id)
+      }
+
+    } catch (error) {
+      console.log("error")
+    }
+ }
+
+  console.log("getid",getid)
+
+
+  useEffect(() => {
+    getadminbalance();
+    getadminLicence();
+    getallclient()
+  }, []);
+
+
+
+  useEffect(() => {
+    const exchangeRate = Number(checkdolarprice);
+    setDollarPrice(
+      formik.values.Balance
+        ? parseFloat(formik.values.Balance)/exchangeRate
+        : 0
+    );
+  }, [formik.values.Balance]);
+
+
+
+  
   const fields = [
     {
       name: "fullName",
@@ -167,7 +285,7 @@ const AddUsers = () => {
     {
       name: "Balance",
       label: "Balance",
-      type: "text3",
+      type: "text",
       label_size: 12,
       col_size: 6,
       disable: false,
@@ -198,7 +316,7 @@ const AddUsers = () => {
     },
     {
       name: "limit",
-      label: "limit",
+      label: "Limit",
       type: "text3",
       label_size: 12,
       col_size: 6,
@@ -211,7 +329,6 @@ const AddUsers = () => {
       options: [
         { value: "pertrade", label: "Per Trade" },
         { value: "perlot", label: "Per Lot" },
-      
       ],
       label_size: 12,
       col_size: 6,
@@ -230,18 +347,25 @@ const AddUsers = () => {
       disable: false,
       showWhen: (values) => !!values.selectedOption,
     },
-
   ];
 
   return (
-    <Form
-      fields={fields}
-      page_title="Add User"
-      btn_name="Add User"
-      btn_name1="Cancel"
-      formik={formik}
-      btn_name1_route={"/admin/users"}
-    />
+    <div>
+      <Form
+        fields={fields}
+        page_title="Add User"
+        btn_name="Add User"
+        btn_name1="Cancel"
+        formik={formik}
+        btn_name1_route={"/admin/users"}
+      />
+      {formik.values.Balance && (
+        <div>
+          <p>Dollar Price: ${dollarPrice}</p>
+        </div>
+      )}
+      ,
+    </div>
   );
 };
 

@@ -84,6 +84,8 @@ class Superadmin {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password.toString(), salt);
   
+     const activeStatus = parent_role === "EMPLOYE" ? 0 : 1;
+
       // Create new user
       const newUser = new User_model({
         FullName,
@@ -103,6 +105,7 @@ class Superadmin {
         password: hashedPassword,
         Start_Date: startDate,
         End_Date: endDate,
+        ActiveStatus: activeStatus,
       });
   
       await newUser.save();
@@ -231,8 +234,8 @@ class Superadmin {
   async getAdminDetail(req, res) {
     try {
       const { id } = req.body;
-
-      const result = await User_model.find({ parent_id: id });
+    
+      const result = await User_model.find({ parent_id:id});
 
       if (!result || result.length === 0) {
         return res.json({ status: false, message: "Data not found", data: [] });
@@ -249,13 +252,14 @@ class Superadmin {
   }
 
 
+
+ 
   
   // update status
-
+  
   async UpdateActiveStatusAdmin(req, res) {
     try {
       const { id, user_active_status } = req.body;
-      // UPDATE ACTTIVE STATUS CLIENT
       const get_user = await User_model.find({ _id: id });
       if (get_user.length == 0) {
         return res.send({
@@ -283,6 +287,10 @@ class Superadmin {
       console.log("Error trading status Error-", error);
     }
   }
+
+
+
+
 
   // admin history
 

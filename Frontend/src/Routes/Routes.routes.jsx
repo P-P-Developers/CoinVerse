@@ -4,8 +4,7 @@ import Login from '../Layouts/Auth/Login';
 import Dashboard from '../Layouts/Admin/Dashboard';
 import Superadminroutes from './Superadminroutes';
 import Adminroutes from './AdminRoutes';
-import Employeeroutes from './Employeeroutes';
-
+import EmployeeRoutes from './Employeeroutes';
 import Register from '../Layouts/Auth/Register';
 
 
@@ -58,7 +57,7 @@ const Routing = () => {
                     navigate("/user/dashboard");
                 }
                 break;
-            case "EMPLOYEE":
+            case "EMPLOYE":
                 if (location.pathname === "/login" || location.pathname === "/" || !location.pathname.startsWith("/employee")) {
                     navigate("/employee/dashboard");
                 }
@@ -75,7 +74,7 @@ const Routing = () => {
 
             <Route path="/admin/*" element={(roles === "ADMIN") ? <Adminroutes /> : <Login />} />
 
-            <Route path="/employee/*" element={(roles === "EMPLOYE") ? <Employeeroutes /> : <Login />} />
+            <Route path="/employee/*" element={(roles === "EMPLOYE") ? <EmployeeRoutes /> : <Login />} />
 
 
             <Route path="/login" element={<Login />} />

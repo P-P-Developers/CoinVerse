@@ -450,6 +450,7 @@ class Placeorder {
 
       let Calculatefund = priceNum * qtyNum
       let totalcalculatefund = Calculatefund/Number(checkadmin.limit);
+
       let Totalupdateuserbalance = totalcalculatefund - parseFloat(brokerage);
       let totaladdbalance = parseFloat(checkadmin.Balance) + Totalupdateuserbalance
      

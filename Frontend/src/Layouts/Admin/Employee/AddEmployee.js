@@ -67,7 +67,7 @@ const AddEmployee = () => {
         PhoneNo: values.phone,
         Licence: values.Licence,
         password: values.password,
-        parent_role: Role || "ADMIN",
+        parent_role: Role ||"ADMIN",
         parent_id: user_id,
         Role: "EMPLOYE",
       };
