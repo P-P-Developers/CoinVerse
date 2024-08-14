@@ -5,9 +5,9 @@ import * as Config from "../../Utils/Config";
 
 
 // Add employee
-export async function Employee_request(data, token) {
+export async function getEmployeedata(data, token) {
     try {
-        const res = await axios.post(`${Config.base_url}admin/GetDashboardData`, data, {
+        const res = await axios.post(`${Config.base_url}getEmployeedata`, data, {
             data: {},
         })
         return await res?.data;

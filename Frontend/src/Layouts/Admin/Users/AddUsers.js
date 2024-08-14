@@ -10,7 +10,10 @@ import {
 } from "../../../Services/Admin/Addmin";
 import { getUserdata } from "../../../Services/Superadmin/Superadmin";
 
+
 const AddUsers = () => {
+
+
   const navigate = useNavigate();
   const location = useLocation();
   const clientData = location.state?.clientData || {};
@@ -32,7 +35,7 @@ const AddUsers = () => {
       username: clientData.UserName || "",
       email: "",
       phone: clientData.PhoneNo || "",
-      employee: "",
+      employee_id:"",
       Balance: "",
       password: clientData.password || "",
       confirmPassword: "",
@@ -87,8 +90,8 @@ const AddUsers = () => {
       if (!values.limit) {
         errors.limit = "Please enter a value for Limit";
       }
-      if (!values.employee) {
-        errors.employee = "Please select a Employee";
+      if (!values.employee_id) {
+        errors.employee_id = "Please select a Employee";
       }
       return errors;
     },
@@ -101,7 +104,7 @@ const AddUsers = () => {
         UserName: values.username,
         Email: values.email,
         PhoneNo: values.phone,
-        Employee: values.employee,
+        employee_id:values.employee_id,
         Balance: values.Balance,
         password: values.password,
         parent_role: Role || "ADMIN",
@@ -179,6 +182,8 @@ const AddUsers = () => {
     },
   });
 
+
+
   const getadminbalance = async () => {
     const data = { userid: user_id };
     try {
@@ -215,7 +220,8 @@ const AddUsers = () => {
     }
   };
 
-  // console.log("data", data);
+
+
 
   useEffect(() => {
     getadminbalance();
@@ -277,15 +283,16 @@ const AddUsers = () => {
       disable: false,
     },
     {
-      name: "employee",
+      name: "employee_id",
       label: "Employee",
       type: "select",
       options: [
         { label: "None", value: "none" }, 
         ...(data
           ? data.map((item) => ({
+            
               label: item.UserName,
-              value: item.UserName,
+              value: item._id,
             }))
           : []),
       ],

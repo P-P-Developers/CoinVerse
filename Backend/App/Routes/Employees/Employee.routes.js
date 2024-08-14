@@ -1,10 +1,12 @@
 "use strict"
 
 const router = require("express").Router()
+ 
+const {getEmployeedata} = require("../../Controllers/Employees/Employe")
 
-const {employee_request} = require("../../Controllers/Employees/Employe")
 
-router.post('/employee_request', employee_request);
+router.post('/getEmployeedata', getEmployeedata);
+
 
 
 

@@ -37,11 +37,10 @@ class Admin {
         turn_over_percentage,
         brokerage,
         limit,
-        Employee,
+        employee_id,
       } = req.body;
       
-     console.log("req.body",req.body)
-
+    
       if (!FullName || !UserName || !Email || !PhoneNo || !password || !Role) {
         return res.json({ status: false, message: "Missing required fields" });
       }
@@ -81,17 +80,26 @@ class Admin {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password.toString(), salt);
 
+  
+      let dollarPriceData, dollarcount;
 
-
-      // Fetch dollar price
-      const dollarPriceData = await MarginRequired.findOne({
-        adminid: parent_id,
-      }).select("dollarprice");
-      const dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
-
-
-
-
+      // if (parent_role === "EMPLOYE") {
+      //   const empoyeedata = await User_model.findOne({ _id: parent_id });
+  
+      //   dollarPriceData = await MarginRequired.findOne({
+      //     adminid: empoyeedata.parent_id,
+      //   }).select("dollarprice");
+  
+      //   dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
+      // } else {
+        // Fetch dollar price
+        dollarPriceData = await MarginRequired.findOne({
+          adminid: parent_id,
+        }).select("dollarprice");
+  
+        dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
+      // }
+      
       let brokeragepertrade = (
         parseFloat(pertrade) / dollarPriceData.dollarprice
       ).toFixed(3);
@@ -99,20 +107,22 @@ class Admin {
         parseFloat(perlot) / dollarPriceData.dollarprice
       ).toFixed(3);
 
-
-
+    
       brokeragepertrade = isNaN(brokeragepertrade) ? null : brokeragepertrade;
       brokerageperlot = isNaN(brokerageperlot) ? null : brokerageperlot;
+     
 
+     // Set ActiveStatus based on parent_role
+     const activeStatus = parent_role === "EMPLOYE" ? 0 : 1;
 
-
+     
       // Create new user
       const newUser = new User_model({
         FullName,
         UserName,
         Email,
         PhoneNo,
-        employee:Employee,
+        employee_id,
         parent_id,
         parent_role,
         Balance: dollarcount,
@@ -127,10 +137,10 @@ class Admin {
         password: hashedPassword,
         Start_Date: startDate,
         End_Date: endDate,
+        ActiveStatus: activeStatus,
       });
 
       await newUser.save();
-
 
 
       // Create wallet and balance statement
@@ -163,7 +173,6 @@ class Admin {
         End_Date: endDate,
       });
       await licenceRecord.save();
-
 
 
       return res.json({
@@ -797,7 +806,10 @@ class Admin {
       const counttotalbalance =
         Number(findadmin.Balance) - Number(totalBalance);
 
+
       const dollarPriceDoc = await MarginRequired.findOne({ adminid: userid });
+
+      
       if (!dollarPriceDoc || !dollarPriceDoc.dollarprice) {
         return res.json({
           status: false,
@@ -806,8 +818,10 @@ class Admin {
         });
       }
 
+
       const conversionRate = dollarPriceDoc.dollarprice;
       const balanceInRupees = counttotalbalance * conversionRate;
+
 
       return res.json({
         status: true,

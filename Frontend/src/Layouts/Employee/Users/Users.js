@@ -22,6 +22,8 @@ import {
 import Swal from "sweetalert2";
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 import Loader from "../../../Utils/Loader/Loader";
+import { getEmployeedata } from "../../../Services/Employee/Employee";
+
 
 const Users = () => {
   const navigate = useNavigate();
@@ -42,6 +44,8 @@ const Users = () => {
   const [licencevalue, setLicencevalue] = useState("");
 
   const [loading, setLoading] = useState(false);
+
+
 
   const columns = [
     { Header: "FullName", accessor: "FullName" },
@@ -112,25 +116,40 @@ const Users = () => {
       ),
     },
     {
-      Header: "ActiveStatus",
+      Header: "Status",
       accessor: "ActiveStatus",
       Cell: ({ cell }) => (
-        <label className="form-check form-switch">
-          <input
-            id={`rating_${cell.row.id}`}
-            className="form-check-input"
-            type="checkbox"
-            role="switch"
-            onChange={(event) => updateactivestatus(event, cell.row._id)}
-            defaultChecked={cell.value == 1}
-          />
-          <label
-            htmlFor={`rating_${cell.row.id}`}
-            className="checktoggle checkbox-bg"
-          ></label>
-        </label>
+        <span
+          style={{
+            color: cell.row.ActiveStatus == 1 ? 'green' : 'red',
+            fontWeight: 'bold',
+          }}
+        >
+          {cell.row.ActiveStatus == 1 ? 'Approved' : 'Pending'}
+        </span>
       ),
     },
+    
+    // {
+    //   Header: "ActiveStatus",
+    //   accessor: "ActiveStatus",
+    //   Cell: ({ cell }) => (
+    //     <label className="form-check form-switch">
+    //       <input
+    //         id={`rating_${cell.row.id}`}
+    //         className="form-check-input"
+    //         type="checkbox"
+    //         role="switch"
+    //         onChange={(event) => updateactivestatus(event, cell.row._id)}
+    //         defaultChecked={cell.value == 1}
+    //       />
+    //       <label
+    //         htmlFor={`rating_${cell.row.id}`}
+    //         className="checktoggle checkbox-bg"
+    //       ></label>
+    //     </label>
+    //   ),
+    // },
     {
       Header: "Licence",
       accessor: "Licence",
@@ -203,6 +222,10 @@ const Users = () => {
     navigate(`updateuser/${_id}`, { state: { rowData: obj.row } });
   };
 
+
+
+
+
   //delete user
 
   const DeleteUser = async (_id) => {
@@ -238,6 +261,10 @@ const Users = () => {
     }
   };
 
+
+
+
+
   // update Licence
 
   const updateLicence = async () => {
@@ -263,6 +290,10 @@ const Users = () => {
       });
     }
   };
+
+
+
+
 
   // update  balance
   const updateBalance = async () => {
@@ -301,57 +332,65 @@ const Users = () => {
     }
   };
 
+
+
+
+
   // update acctive status
 
-  const updateactivestatus = async (event, id) => {
-    const user_active_status = event.target.checked ? 1 : 0;
+  // const updateactivestatus = async (event, id) => {
+  //   const user_active_status = event.target.checked ? 1 : 0;
 
-    const result = await Swal.fire({
-      title: "Do you want to save the changes?",
-      showCancelButton: true,
-      confirmButtonText: "Save",
-      cancelButtonText: "Cancel",
-      allowOutsideClick: false,
-    });
+  //   const result = await Swal.fire({
+  //     title: "Do you want to save the changes?",
+  //     showCancelButton: true,
+  //     confirmButtonText: "Save",
+  //     cancelButtonText: "Cancel",
+  //     allowOutsideClick: false,
+  //   });
 
-    if (result.isConfirmed) {
-      try {
-        const response = await updateActivestatus({ id, user_active_status });
-        if (response.status) {
-          Swal.fire({
-            title: "Saved!",
-            icon: "success",
-            timer: 1000,
-            timerProgressBar: true,
-          });
-          setTimeout(() => {
-            Swal.close(); // Close the modal
-          }, 1000);
-        }
-      } catch (error) {
-        Swal.fire(
-          "Error",
-          "There was an error processing your request.",
-          "error"
-        );
-      }
-    } else if (result.dismiss === Swal.DismissReason.cancel) {
-      getAlluserdata();
-    }
-  };
+  //   if (result.isConfirmed) {
+  //     try {
+  //       const response = await updateActivestatus({ id, user_active_status });
+  //       if (response.status) {
+  //         Swal.fire({
+  //           title: "Saved!",
+  //           icon: "success",
+  //           timer: 1000,
+  //           timerProgressBar: true,
+  //         });
+  //         setTimeout(() => {
+  //           Swal.close(); // Close the modal
+  //         }, 1000);
+  //       }
+  //     } catch (error) {
+  //       Swal.fire(
+  //         "Error",
+  //         "There was an error processing your request.",
+  //         "error"
+  //       );
+  //     }
+  //   } else if (result.dismiss === Swal.DismissReason.cancel) {
+  //     getAlluserdata();
+  //   }
+  // };
+
+
+
+
 
   // get all admin
   const getAlluserdata = async () => {
     setLoading(true);
     const data = { id: user_id };
     try {
-      const response = await getUserdata(data);
+      const response = await getEmployeedata(data);
       const result =
         response.data &&
         response.data.filter((item) => {
           return item.Role === "USER";
         });
-
+     console.log("response",response.data)
       setData(result);
       setFilteredData(result);
       setLoading(false);
@@ -359,6 +398,8 @@ const Users = () => {
       console.log("error", error);
     }
   };
+
+
 
   useEffect(() => {
     getAlluserdata();
@@ -378,7 +419,7 @@ const Users = () => {
                     <h4 className="card-title">All Users</h4>
                   </div>
                   <Link
-                    to="/admin/adduser"
+                    to="/employee/adduser"
                     className="float-end mb-4 btn btn-primary"
                   >
                     Add User

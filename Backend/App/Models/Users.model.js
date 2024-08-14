@@ -47,7 +47,7 @@ const userModel = Schema({
         trim: true,
         default: null
     },
-    employee :{
+    employee_id :{
          type:String,
          trim: true,
          default: null
@@ -68,7 +68,7 @@ const userModel = Schema({
     ActiveStatus: {
         type: String,
         enum: ['1', '0'],
-        default: '1'
+        default: '0'
     },
     createdAt: {
         type: Date,
