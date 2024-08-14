@@ -3,14 +3,14 @@ import Table from "../../Utils/Table/Table";
 import { getFundstatus } from '../../Services/Admin/Addmin';
 import { UpdatestatusForpaymenthistory } from '../../Services/Admin/Addmin';
 import Swal from 'sweetalert2';
-import {fDateTime} from "../../Utils/Date_format/datefromat"
+import { fDateTime } from "../../Utils/Date_format/datefromat"
 
 const Withdraw = () => {
 
     const [data, setData] = useState([]);
     const [activeTab, setActiveTab] = useState('Pending');
     const [selectedValues, setSelectedValues] = useState({});
-     const [search, setSearch] = useState("");
+    const [search, setSearch] = useState("");
 
 
     const userDetails = JSON.parse(localStorage.getItem("user_details"));
@@ -22,13 +22,13 @@ const Withdraw = () => {
             Header: 'Request',
             accessor: 'type',
             Cell: ({ cell }) => (cell.row.type == 0 ? 'Withdrawal' : cell),
-          },
+        },
         { Header: "Balance", accessor: "Balance" },
         {
             Header: "Date",
             accessor: "createdAt",
             Cell: ({ cell }) => fDateTime(cell.value),
-          },
+        },
     ];
 
     if (activeTab === 'Pending') {
@@ -37,7 +37,7 @@ const Withdraw = () => {
             accessor: 'Action',
             Cell: ({ cell }) => (
                 <div>
-                    <select 
+                    <select
                         className='form-select'
                         onChange={(event) => handleSelectChange(cell.row.id, cell.row, event)}
                         defaultValue={selectedValues[cell.row.id] || "0"}
@@ -61,18 +61,18 @@ const Withdraw = () => {
     };
 
 
-  
+
     const Updatestatus = async (id, status) => {
         try {
             const data = { id, status };
             const response = await UpdatestatusForpaymenthistory(data);
-            
+
             if (response.status) {
                 Swal.fire({
                     icon: 'success',
                     title: 'Success',
                     text: response.message || "An unexpected error occurred. Please try again.",
-                    timer:2000
+                    timer: 2000
                 });
                 getAllfundsstatus();
             } else {
@@ -80,7 +80,7 @@ const Withdraw = () => {
                     icon: 'error',
                     title: 'Error',
                     text: response.message || 'Failed to update the request. Please try again.',
-                    timer:2000
+                    timer: 2000
                 });
 
             }
@@ -89,16 +89,16 @@ const Withdraw = () => {
                 icon: 'error',
                 title: 'Error',
                 text: error.message || 'An unexpected error occurred. Please try again.',
-                timer:2000
+                timer: 2000
             });
             console.log("Error:", error);
         }
     }
-    
 
 
 
-    
+
+
     const handleTabClick = (tab) => {
         setActiveTab(tab);
     };
@@ -109,20 +109,20 @@ const Withdraw = () => {
             const data = { adminid: user_id };
             let response = await getFundstatus(data);
             if (response.status) {
-                const filtertype = response.data && response.data.filter((item)=>{
+                const filtertype = response.data && response.data.filter((item) => {
                     return item.type == 0
                 })
                 const searchfilter = filtertype?.filter((item) => {
                     const searchInputMatch =
-                      search === "" ||
-                      (item.UserName && item.UserName.toLowerCase().includes(search.toLowerCase())) 
-                     
-            
+                        search === "" ||
+                        (item.UserName && item.UserName.toLowerCase().includes(search.toLowerCase()))
+
+
                     return searchInputMatch;
-                  });
+                });
 
 
-                setData(search ?searchfilter : filtertype);
+                setData(search ? searchfilter : filtertype);
             }
         } catch (error) {
             console.log("error");
@@ -137,21 +137,21 @@ const Withdraw = () => {
         return data.filter(item => item.status === status);
     };
 
-    
+
     const renderTable = (status) => {
         return (
             <div className="table-responsive">
                 <div className="mb-3 ms-4">
-                        Search :{" "}
-                        <input
-                          className="ml-2 input-search form-control"
-                          style={{ width: "20%" }}
-                          type="text"
-                          placeholder="Search..."
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
-                        />
-                      </div>
+                    Search :{" "}
+                    <input
+                        className="ml-2 input-search form-control"
+                        style={{ width: "20%" }}
+                        type="text"
+                        placeholder="Search..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
+                </div>
                 <h5>{activeTab}Transactions</h5>
                 <Table columns={columns} data={filterDataByStatus(status)} />
             </div>
