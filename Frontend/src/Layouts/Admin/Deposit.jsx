@@ -39,6 +39,7 @@ const Deposit = () => {
             Cell: ({ cell }) => (
                 <div>
                     <select 
+                    className='form-select'
                         onChange={(event) => handleSelectChange(cell.row.id, cell.row, event)}
                         defaultValue={selectedValues[cell.row.id] || "0"}
                     >
