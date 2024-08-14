@@ -117,6 +117,15 @@ const Users = () => {
         </div>
       ),
     },
+    // {
+    //   Header: "Employee",
+    //   accessor: (cell) => {
+       
+    //     const employee = data.find(emp => emp._id === cell.employee_id);
+    //     return employee ? employee.Username : "N/A"; 
+    //   }
+    // },
+    
     {
       Header: "ActiveStatus",
       accessor: "ActiveStatus",
@@ -232,9 +241,13 @@ const Users = () => {
     navigate(`tradehistory/${_id}`);
   };
 
+
+
   const updateuserpage = (_id, obj) => {
     navigate(`updateuser/${_id}`, { state: { rowData: obj.row } });
   };
+
+
 
   //delete user
   const DeleteUser = async (_id) => {

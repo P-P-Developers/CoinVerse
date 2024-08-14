@@ -1,14 +1,18 @@
-import React, { useEffect } from "react";
+import React, { useEffect,useState } from "react";
 import { useFormik } from "formik";
 import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import Form from "../../../Utils/Form/Formik"; // Assuming this is your custom Form component
 import { updateuserdata } from "../../../Services/Admin/Addmin";
+import { getUserdata } from "../../../Services/Superadmin/Superadmin";
 
 const Updateuser = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { rowData } = location.state;
+
+  const [data, setData] = useState([]);
+
 
   // Retrieving user details from localStorage (ensure secure usage)
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
@@ -22,6 +26,7 @@ const Updateuser = () => {
       email: "",
       phone: "",
       Balance: "",
+      employee_id:"",
       Licence: "",
       limit: "",
       selectedOption: "",
@@ -63,6 +68,9 @@ const Updateuser = () => {
       if (!values.limit) {
         errors.limit = "Please enter a value for Limit";
       }
+      if (!values.employee_id) {
+        errors.employee_id = "Please select a Employee";
+      }
       return errors;
     },
     onSubmit: async (values, { setSubmitting }) => {
@@ -70,6 +78,7 @@ const Updateuser = () => {
       const data = {
         id: rowData && rowData._id,
         limit: values.limit,
+        employee_id:values.employee_id,
         Licence: values.Licence,
         [selectedOption]: values.inputValue,
       };
@@ -124,6 +133,7 @@ const Updateuser = () => {
         email: rowData.Email || "",
         phone: rowData.PhoneNo || "",
         Balance: rowData.Balance || "",
+        employee_id:rowData.employee_id || "",
         Licence: rowData.Licence || "",
         selectedOption: rowData.selectedOption || determineSelectedOption(),
         inputValue:
@@ -143,6 +153,26 @@ const Updateuser = () => {
     return "Enter Value";
   };
 
+
+  const getAlluserdata = async () => {
+    const data = { id: user_id };
+    try {
+      const response = await getUserdata(data);
+      const result =
+        response.data &&
+        response.data.filter((item) => {
+          return item.Role === "EMPLOYE";
+        });
+      setData(result);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+
+  useEffect(() => {
+    getAlluserdata();
+  }, []);
 
 
   // Form fields configuration
@@ -183,6 +213,24 @@ const Updateuser = () => {
       name: "Balance",
       label: "Balance",
       type: "text3",
+      label_size: 12,
+      col_size: 6,
+      disable: false,
+    },
+    {
+      name: "employee_id",
+      label: "Employee",
+      type: "select",
+      options: [
+        { label: "None", value: "none" }, 
+        ...(data
+          ? data.map((item) => ({
+            
+              label: item.UserName,
+              value: item._id,
+            }))
+          : []),
+      ],
       label_size: 12,
       col_size: 6,
       disable: false,

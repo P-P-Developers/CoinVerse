@@ -236,6 +236,15 @@ class Superadmin {
       const { id } = req.body;
     
       const result = await User_model.find({ parent_id:id});
+      
+      // const filterUsername = result
+      // .filter(item => item.employee_id )
+      // .map(item => ({
+      //   _id: item.employee_id,
+      //   UserName: item.UserName
+      // }));
+
+
 
       if (!result || result.length === 0) {
         return res.json({ status: false, message: "Data not found", data: [] });

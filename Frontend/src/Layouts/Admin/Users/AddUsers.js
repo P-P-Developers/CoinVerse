@@ -195,6 +195,8 @@ const AddUsers = () => {
     }
   };
 
+
+
   const getadminLicence = async () => {
     const data = { userid: user_id };
     try {
@@ -205,6 +207,9 @@ const AddUsers = () => {
     }
   };
 
+
+
+  
   const getAlluserdata = async () => {
     const data = { id: user_id };
     try {

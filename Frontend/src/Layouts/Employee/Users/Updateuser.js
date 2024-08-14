@@ -22,6 +22,7 @@ const Updateuser = () => {
       email: "",
       phone: "",
       Balance: "",
+      employee_id:"",
       Licence: "",
       limit: "",
       selectedOption: "",
