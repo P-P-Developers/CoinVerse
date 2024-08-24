@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import Form from "../../../Utils/Form/Formik"; // Assuming this is your custom Form component
 import { updateuserdata } from "../../../Services/Admin/Addmin";
 
+
 const Updateuser = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -228,7 +229,7 @@ const Updateuser = () => {
       btn_name="Update User"
       btn_name1="Cancel"
       formik={formik}
-      btn_name1_route={"/admin/users"} 
+      btn_name1_route={"/employee/users"} 
     />
   );
 };

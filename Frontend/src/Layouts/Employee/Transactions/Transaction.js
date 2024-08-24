@@ -34,13 +34,15 @@ const Transaction = () => {
 
 
 
+  
   // getting data
   const getallhistory = async () => {
     try {
       const response = await gethistory({});
       const result = response.data && response.data.filter((item) => {
-        return item.parent_Id == user_id
+        return item._id === user_id
       })
+      console.log("result",result)
       setData(result);
     } catch (error) {
       console.log("error", error);

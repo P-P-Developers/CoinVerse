@@ -128,7 +128,7 @@ const Employee = () => {
           <div>
             <Pencil
               style={{ cursor: "pointer", color: "#33B469" }}
-              onClick={() => updateEmploye(cell.row._id, cell)}
+              onClick={() => updateEmploye(cell.row._id, cell || cell.permissions)}
             />
             <Trash2
               style={{
@@ -153,7 +153,7 @@ const Employee = () => {
   ];
 
   const updateEmploye = (_id, obj) => {
-    navigate(`updateemploye/${_id}`, { state: { rowData: obj.row } });
+    navigate(`updateemploye/${_id}`, { state: { rowData: obj.row} });
   };
 
   // delet employee

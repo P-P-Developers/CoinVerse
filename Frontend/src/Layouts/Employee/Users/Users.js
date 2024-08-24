@@ -23,7 +23,7 @@ import Swal from "sweetalert2";
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 import Loader from "../../../Utils/Loader/Loader";
 import { getEmployeedata } from "../../../Services/Employee/Employee";
-
+import { getEmployee_permissiondata } from "../../../Services/Employee/Employee";
 
 const Users = () => {
   const navigate = useNavigate();
@@ -44,6 +44,8 @@ const Users = () => {
   const [licencevalue, setLicencevalue] = useState("");
 
   const [loading, setLoading] = useState(false);
+  const [getaccess, setGetaccess] = useState({});
+
 
 
 
@@ -52,7 +54,7 @@ const Users = () => {
     { Header: "UserName", accessor: "UserName" },
     { Header: "Email", accessor: "Email" },
     { Header: "Phone No", accessor: "PhoneNo" },
-    {
+    getaccess.Balance_edit === 1 &&{
       Header: "Balance",
       accessor: "Balance",
       Cell: ({ cell }) => (
@@ -150,7 +152,9 @@ const Users = () => {
     //     </label>
     //   ),
     // },
-    {
+   
+   
+    getaccess.Licence_Edit === 1 && {
       Header: "Licence",
       accessor: "Licence",
       Cell: ({ cell }) => (
@@ -186,6 +190,7 @@ const Users = () => {
         </div>
       ),
     },
+  
     {
       Header: "Create Date",
       accessor: "Create_Date",
@@ -193,7 +198,7 @@ const Users = () => {
         return fDateTime(cell.value);
       },
     },
-    {
+    getaccess.Edit === 1 && {
       Header: "Action",
       accessor: "Action",
       Cell: ({ cell }) => {
@@ -377,7 +382,22 @@ const Users = () => {
 
 
 
+  
+  const getpermission = async () => {
+    try {
+      const data = { id: user_id };
+      const response = await getEmployee_permissiondata(data);
+      if (response.status) {
+         
+        setGetaccess(response.data[0]);
+      }
+    } catch (error) {
+      console.error("Error fetching permissions:", error);
+    }
+  };
 
+
+  console.log("getaccess",getaccess)
 
   // get all admin
   const getAlluserdata = async () => {
@@ -390,7 +410,7 @@ const Users = () => {
         response.data.filter((item) => {
           return item.Role === "USER";
         });
-     console.log("response",response.data)
+    //  console.log("response",response.data)
       setData(result);
       setFilteredData(result);
       setLoading(false);
@@ -400,10 +420,12 @@ const Users = () => {
   };
 
 
-
   useEffect(() => {
     getAlluserdata();
+    getpermission()
   }, []);
+
+
 
   return (
     <>
@@ -418,12 +440,14 @@ const Users = () => {
                   <div className="mb-4">
                     <h4 className="card-title">All Users</h4>
                   </div>
+                  {getaccess.client_add===1 && 
                   <Link
                     to="/employee/adduser"
                     className="float-end mb-4 btn btn-primary"
                   >
                     Add User
                   </Link>
+                  }
                 </div>
                 <div className="card-body p-0">
                   <div className="tab-content" id="myTabContent1">

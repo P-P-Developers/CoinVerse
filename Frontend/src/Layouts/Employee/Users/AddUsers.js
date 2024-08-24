@@ -159,7 +159,7 @@ const AddUsers = () => {
             timerProgressBar: true,
           });
           setTimeout(() => {
-            navigate("/admin/users");
+            navigate("/employee/users");
           }, 1000);
         } else {
           Swal.fire({
@@ -217,7 +217,7 @@ const AddUsers = () => {
       const data = {userid:user_id}
       const response = await getAllClient(data)
       if(response.status){
-
+        // console.log("response",response.data.parent_id)
         setGetid(response.data.parent_id)
       }
 
@@ -226,7 +226,7 @@ const AddUsers = () => {
     }
  }
 
-  console.log("getid",getid)
+  // console.log("getid",getid)
 
 
   useEffect(() => {

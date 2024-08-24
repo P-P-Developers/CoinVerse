@@ -18,3 +18,20 @@ export async function getEmployeedata(data, token) {
     }
 
 }
+
+// get employee permission data 
+
+
+export async function getEmployee_permissiondata(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}getEmployee_permissiondata`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}

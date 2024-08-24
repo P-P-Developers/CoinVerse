@@ -12,7 +12,7 @@ const MarginRequired = db.MarginRequired;
 const Symbol = db.Symbol;
 const BalanceStatement = db.BalanceStatement;
 const mainorder_model = db.mainorder_model;
-;
+const employee_permission = db.employee_permission;
 
 // const nodemailer = require('nodemailer');
 
@@ -431,16 +431,48 @@ class Admin {
 
   // Employee updare
 
+  // async Update_Employe(req, res) {
+  //   try {
+       
+  //     const data = req.body;
+  //     const id = req.body.id;
+    
+
+  //     const filter = { _id: id };
+  //     const updateOperation = { $set: data };
+
+  //     const result = await User_model.updateOne(filter, updateOperation);
+
+  //     if (result.nModified === 0) {
+  //       return res.json({
+  //         status: false,
+  //         message: "Data not updated",
+  //         data: [],
+  //       });
+  //     }
+  //     return res.json({ status: true, message: "Data updated", data: result });
+  //   } catch (error) {
+  //     return res.json({
+  //       status: false,
+  //       message: "Internal server error",
+  //       error: error.message,
+  //     });
+  //   }
+  // }
+
+
   async Update_Employe(req, res) {
     try {
+
       const data = req.body;
       const id = req.body.id;
+      const employeePermissionData = req.body.Employee_permission; 
+  
 
       const filter = { _id: id };
       const updateOperation = { $set: data };
-
       const result = await User_model.updateOne(filter, updateOperation);
-
+  
       if (result.nModified === 0) {
         return res.json({
           status: false,
@@ -448,6 +480,12 @@ class Admin {
           data: [],
         });
       }
+  
+  
+      const permissionFilter = {employee_id: id }; 
+      const permissionUpdateOperation = { $set: employeePermissionData };
+      await employee_permission.updateOne(permissionFilter, permissionUpdateOperation, { upsert: true });
+  
       return res.json({ status: true, message: "Data updated", data: result });
     } catch (error) {
       return res.json({
@@ -457,6 +495,8 @@ class Admin {
       });
     }
   }
+  
+
 
   // delete Employee User
 
@@ -950,6 +990,48 @@ class Admin {
       return res.json({ status: false, message: "internal error", data: [] });
     }
   }
+
+   
+  async employee_permission(req, res) {
+    try {
+      const {
+        employee_id,
+        Edit,
+        trade_history,
+        open_position,
+        Licence_Edit,
+        pertrade_edit,
+        perlot_edit,
+        limit_edit
+      } = req.body;
+  
+      const employee = await employee_permission.findById(employee_id);
+  
+      if (!employee) {
+        return res.json({status:false, message: "Employee not found",data:[] });
+      }
+  
+      employee.Edit = Edit;
+      employee.trade_history = trade_history;
+      employee.open_position = open_position;
+      employee.Licence_Edit = Licence_Edit;
+      employee.pertrade_edit = pertrade_edit;
+      employee.perlot_edit = perlot_edit;
+      employee.limit_edit = limit_edit;
+  
+      await employee.save();
+  
+      return res.status.json({status:true, message: "Employee permissions updated successfully" });
+    } catch (error) {
+      return res.status.json({status:false, message: "Server error",data:[] });
+    }
+  }
+  
+
+
+
+
+
 }
 
 module.exports = new Admin();

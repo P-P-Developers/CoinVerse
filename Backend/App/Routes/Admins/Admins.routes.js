@@ -7,7 +7,8 @@ const {AddUser , updateLicence , updateUser , DeleteUser,Update_Employe ,Delete_
     countuserBalance,
     TotalcountLicence,
     getclienttradehistory,
-    getlicensedata
+    getlicensedata,
+    employee_permission
 } = require("../../Controllers/Admins/Admins/Admin")
 const {marginupdate , getmarginprice} = require("../../Controllers/Admins/Admins/MarginReq")
 
@@ -33,6 +34,7 @@ router.post('/admin/countuserBalance', countuserBalance);
 router.post('/TotalcountLicence', TotalcountLicence);
 router.post('/getclienttradehistory', getclienttradehistory);
 router.post('/getlicensedata', getlicensedata);
+router.post('/employee_permission', employee_permission);
 
      
 

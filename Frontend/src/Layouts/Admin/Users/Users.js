@@ -119,13 +119,15 @@ const Users = () => {
     },
     // {
     //   Header: "Employee",
-    //   accessor: (cell) => {
-       
+    //   Cell: (cell) => {
+    //     console.log(data)
     //     const employee = data.find(emp => emp._id === cell.employee_id);
-    //     return employee ? employee.Username : "N/A"; 
+    //     console.log(employee)
+
+    //     return employee ? employee.UserName : "N/A"; 
     //   }
     // },
-    
+    // { Header: "Employee", accessor: "employee_id" },
     {
       Header: "ActiveStatus",
       accessor: "ActiveStatus",

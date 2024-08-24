@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Header from '../components/Dashboard/Header';
 import Sidebar from '../components/Dashboard/Sidebar';
@@ -26,11 +26,19 @@ import Setting from '../Layouts/Employee/Setting';
 
 
 const EmployeeRoutes = () => {
+
+    
     const [isMenuToggled, setIsMenuToggled] = useState(false);
+    
 
     const handleToggleClick = () => {
         setIsMenuToggled(!isMenuToggled);
     }
+
+
+   
+
+
     return (
         <div id="main-wrapper" className={`wallet-open show ${isMenuToggled ? 'menu-toggle' : ''}`}>
             <Header />

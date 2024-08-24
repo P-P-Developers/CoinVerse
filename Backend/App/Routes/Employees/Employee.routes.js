@@ -2,10 +2,11 @@
 
 const router = require("express").Router()
  
-const {getEmployeedata} = require("../../Controllers/Employees/Employe")
+const {getEmployeedata , getEmployee_permissiondata} = require("../../Controllers/Employees/Employe")
 
 
 router.post('/getEmployeedata', getEmployeedata);
+router.post('/getEmployee_permissiondata', getEmployee_permissiondata);
 
 
 

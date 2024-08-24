@@ -10,6 +10,7 @@ const Wallet_model = db.WalletRecharge;
 const totalLicense = db.totalLicense
 const MarginRequired = db.MarginRequired
 const BalanceStatement = db.BalanceStatement;
+const employee_permission = db.employee_permission;
 
 
 
@@ -34,6 +35,7 @@ class Superadmin {
         turn_over_percentage,
         brokerage,
         limit,
+        Employee_permission,
       } = req.body;
   
       if (!FullName || !UserName || !Email || !PhoneNo || !password || !Role) {
@@ -128,6 +130,35 @@ class Superadmin {
 
       await licence.save();
 
+  if (Employee_permission) {
+    const {
+      Edit,
+      trade_history,
+      open_position,
+      Licence_Edit,
+      pertrade_edit,
+      perlot_edit,
+      limit_edit,
+      Balance_edit
+    } = Employee_permission;
+
+    const newPermission = new employee_permission({
+      employee_id: newUser._id,
+      Edit,
+      trade_history,
+      open_position,
+      Licence_Edit,
+      pertrade_edit,
+      perlot_edit,
+      limit_edit,
+      Balance_edit
+    });
+
+   
+    await newPermission.save();
+  }
+
+
       return res.json({
         status: true,
         message: "User added successfully",
@@ -138,10 +169,9 @@ class Superadmin {
       return res.json({ status: false, message: "Failed to add user", data: [] });
     }
   }
+
+
   
-
-  //updated balance
-
   async walletRecharge(req, res) {
     try {
       const { id, Balance, parent_Id, Type } = req.body;
@@ -227,42 +257,66 @@ class Superadmin {
   }
   
 
-  
 
   // get all admin detail
 
+  // async getAdminDetail(req, res) {
+  //   try {
+  //     const { id } = req.body;
+    
+  //     const result = await User_model.find({ parent_id:id});
+       
+  //     const adminIds = result.map(result => result._id);
+
+  //     const permissions = await employee_permission.find({ employee_id: { $in: adminIds } });
+    
+  //     if (!result || result.length === 0) {
+  //       return res.json({ status: false, message: "Data not found", data: [] });
+  //     }
+
+  //     return res.json({
+  //       status: true,
+  //       message: "getting data",
+  //       data: result,permissions,
+  //     });
+  //   } catch (error) {
+  //     return res.json({ status: false, message: "Internal error", data: [] });
+  //   }
+  // }
+
   async getAdminDetail(req, res) {
     try {
-      const { id } = req.body;
-    
-      const result = await User_model.find({ parent_id:id});
-      
-      // const filterUsername = result
-      // .filter(item => item.employee_id )
-      // .map(item => ({
-      //   _id: item.employee_id,
-      //   UserName: item.UserName
-      // }));
+        const { id } = req.body;
+        const result = await User_model.find({ parent_id: id });
+        
+        const adminIds = result.map(user => user._id);
+        const permissions = await employee_permission.find({ employee_id: { $in: adminIds } });
 
+        if (!result || result.length === 0) {
+            return res.json({ status: false, message: "Data not found", data: [] });
+        }
 
+        const combinedData = result.map(user => {
+            const userPermissions = permissions.filter(permission => permission.employee_id.equals(user._id));
 
-      if (!result || result.length === 0) {
-        return res.json({ status: false, message: "Data not found", data: [] });
-      }
+            return {
+                ...user.toObject(),
+                permissions: userPermissions
+            };
+        });
 
-      return res.json({
-        status: true,
-        message: "getting data",
-        data: result,
-      });
+        return res.json({
+            status: true,
+            message: "Getting data",
+            data: combinedData
+        });
     } catch (error) {
-      return res.json({ status: false, message: "Internal error", data: [] });
+        return res.json({ status: false, message: "Internal error", data: [] });
     }
-  }
+}
 
+  
 
-
- 
   
   // update status
   
