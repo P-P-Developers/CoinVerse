@@ -19,6 +19,7 @@ import {
   Trash2,
   CircleDollarSign,
   CircleMinus,
+  Eye,
 } from "lucide-react";
 
 import Swal from "sweetalert2";
@@ -227,7 +228,7 @@ const Users = () => {
       Cell: ({ cell }) => {
         return (
           <div>
-            <Pencil
+            <Eye
               style={{ cursor: "pointer", color: "#33B469" }}
               onClick={() => Clienthistory(cell.row._id)}
             />

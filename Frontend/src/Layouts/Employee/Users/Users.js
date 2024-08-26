@@ -17,6 +17,7 @@ import {
   Trash2,
   CircleDollarSign,
   CircleMinus,
+  Eye,
 } from "lucide-react";
 
 import Swal from "sweetalert2";
@@ -221,6 +222,20 @@ const Users = () => {
         );
       },
     },
+    {
+      Header: "Trade History",
+      accessor: "Trade History",
+      Cell: ({ cell }) => {
+        return (
+          <div>
+            <Eye
+              style={{ cursor: "pointer", color: "#33B469" }}
+              onClick={() => Clienthistory(cell.row._id)}
+            />
+          </div>
+        );
+      },
+    },
   ];
 
   const updateuserpage = (_id, obj) => {
@@ -228,6 +243,9 @@ const Users = () => {
   };
 
 
+  const Clienthistory = (_id) => {
+    navigate(`tradehistory/${_id}`);
+  };
 
 
 
@@ -397,7 +415,7 @@ const Users = () => {
   };
 
 
-  console.log("getaccess",getaccess)
+  // console.log("getaccess",getaccess)
 
   // get all admin
   const getAlluserdata = async () => {

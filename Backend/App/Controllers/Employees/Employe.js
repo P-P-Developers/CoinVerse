@@ -63,6 +63,28 @@ class employee{
   }
 
 
+
+  async getEmployeeUserHistory(req,res){
+    try {
+       
+      const {employee_id} = req.body
+      const result = await User_model.find({employee_id:employee_id})
+        
+      return res.json({
+              status: true,
+              message: "Successfully fetched data",
+              data: result,
+            });
+      
+    } catch (error) {
+      return res
+        .status(500)
+      .json({ status: false, message: "Internal server error", data: [] });
+    }
+  } 
+
+
+
 }
 
 module.exports = new employee();

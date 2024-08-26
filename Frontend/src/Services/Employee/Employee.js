@@ -35,3 +35,20 @@ export async function getEmployee_permissiondata(data, token) {
     }
 
 }
+
+
+// get employee user detail  getEmployeeUserHistory
+
+export async function getEmployeeUserHistory(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}getEmployeeUserHistory`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}

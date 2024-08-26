@@ -4,7 +4,7 @@ import { fDateTime } from "../../../Utils/Date_format/datefromat";
 
 import { gethistory } from "../../../Services/Superadmin/Superadmin";
 
-
+import { getEmployeeUserHistory } from "../../../Services/Employee/Employee";
 
 
 const Transaction = () => {
@@ -16,6 +16,7 @@ const Transaction = () => {
 
 
   const [data, setData] = useState([]);
+  const [getparentid, setGetparentid] = useState([]);
 
   const columns = [
     { Header: "UserName", accessor: "UserName" },
@@ -33,6 +34,21 @@ const Transaction = () => {
   ];
 
 
+  const getEmployeeUser = async () => {
+    try {
+      const data = {employee_id:user_id}
+      const response = await getEmployeeUserHistory(data);
+      const parentIds = response.data && response.data.map((item) => item.parent_id);
+      // console.log("parentIds",parentIds)
+      // console.log("response",response)
+      setGetparentid(parentIds)
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+  
+  // console.log("getparentid",getparentid)
 
   
   // getting data
@@ -40,9 +56,9 @@ const Transaction = () => {
     try {
       const response = await gethistory({});
       const result = response.data && response.data.filter((item) => {
-        return item._id === user_id
+        return item.parent_Id === getparentid
       })
-      console.log("result",result)
+      // console.log("result123",result)
       setData(result);
     } catch (error) {
       console.log("error", error);
@@ -51,6 +67,7 @@ const Transaction = () => {
 
   useEffect(() => {
     getallhistory();
+    getEmployeeUser()
   }, []);
 
 

@@ -51,7 +51,7 @@ const EmployeeRoutes = () => {
                     <Route path="/footer" element={<Footer />} />
                     <Route path="/report" element={<Report />} />
                     <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/tradehistory" element={<Tradehistory />} />
+                    <Route path="/users/tradehistory/:id" element={<Tradehistory />} />
                     <Route path="/loginstatus" element={<Loginstatus />} />
                     <Route path="/withdrawal" element={<Withdraw />} />
                     <Route path="/deposit" element={<Deposit />} />
