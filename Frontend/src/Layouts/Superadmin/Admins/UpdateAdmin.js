@@ -24,7 +24,7 @@ const UpdateAdmin = () => {
       username: rowData?.UserName || "",
       email: rowData?.Email || "",
       phone: rowData?.PhoneNo || "",
-      Balance: rowData?.Balance || "",
+      Licence: rowData?.Licence || "",
       password: "",
       confirmPassword: ""
     },
@@ -47,7 +47,7 @@ const UpdateAdmin = () => {
       } else if (!/^\d{10}$/.test(values.phone)) {
         errors.phone = "Please enter a valid 10-digit phone number.";
       }
-      if (!values.Balance) {
+      if (!values.Licence) {
         errors.Balance = "Please Enter Balance";
       }
       // Add password validation if necessary
@@ -67,7 +67,7 @@ const UpdateAdmin = () => {
         UserName: values.username,
         Email: values.email,
         PhoneNo: values.phone,
-        Balance: values.Balance,
+        Licence: values.Licence,
         // Password: values.password,
       };
 
@@ -114,7 +114,7 @@ const UpdateAdmin = () => {
       username: rowData?.UserName || "",
       email: rowData?.Email || "",
       phone: rowData?.PhoneNo || "",
-      Balance: rowData?.Balance || "",
+      Licence: rowData?.Licence || "",
       password: "",
       confirmPassword: ""
     });
@@ -154,8 +154,8 @@ const UpdateAdmin = () => {
       disable: false,
     },
     {
-      name: "Balance",
-      label: "Balance",
+      name: "Licence",
+      label: "Licence",
       type: "text3",
       label_size: 12,
       col_size: 6,

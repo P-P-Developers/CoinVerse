@@ -1,106 +1,131 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import Table from "../../Utils/Table/Table";
+import { getpositionhistory } from "../../Services/Admin/Addmin";
+import { fDateTime ,fDateTimesec} from "../../Utils/Date_format/datefromat";
+import {getEmployeeUserposition } from "../../Services/Employee/Employee";
+
+
+
 
 const Position = () => {
+
+
+  const userDetails = JSON.parse(localStorage.getItem("user_details"));
+  const user_id = userDetails?.user_id;
+  const Role = userDetails?.Role;
+
+
+  const [data, setData] = useState([]);
+  const [search, setSearch] = useState("");
+  
+
+
+  const columns = [
+    { Header: "symbol", accessor: "symbol" },
+    {
+      Header: "Buy qty",
+      accessor: "buy_qty",
+      Cell: ({ cell }) => {
+        const buy_qty = cell.row.buy_qty; 
+        return buy_qty ? buy_qty : "-"; 
+      }
+    },
+    {
+      Header: "Sell qty",
+      accessor: "sell_qty",
+      Cell: ({ cell }) => {
+        const sell_qty = cell.row.sell_qty; 
+        return sell_qty ? sell_qty : "-"; 
+      }
+    },
+    {
+      Header: "Position Avg",
+      accessor: "Position Avg",
+      Cell: ({ cell }) => {
+        const { sell_qty, buy_qty } = cell.row; 
+        const availablePosition = buy_qty - sell_qty;
+        return (
+          <span>{availablePosition}</span>
+        );
+      },
+    },
+
+  ];
+
+
+
+
+  // getting data
+  const getuserallhistory = async () => {
+    try {
+      const data = { userid: user_id };
+      const response = await getEmployeeUserposition(data);
+      const filterdata = response.data && response.data.filter((item) => {
+        return item.buy_qty !== item.sell_qty;
+      });
+      const searchfilter = filterdata?.filter((item) => {
+        const searchInputMatch =
+          search === "" ||
+          (item.symbol && item.symbol.toLowerCase().includes(search.toLowerCase()));
+  
+        return searchInputMatch;
+      });
+      setData(search ? searchfilter : filterdata);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+  
+
+  useEffect(() => {
+      getuserallhistory();
+  }, [search]);
+  
+
+
+
   return (
-    <div>
-      <div className='row'>
-        <div className='demo-view'>
-          <div className='container-fluid'>
-            <div className='row'>
-              <div className="col-xl-12">
-                <div className="card dz-card" id="nav-pills">
-                  <div className="card-header flex-wrap border-0">
-                    <h4 className="card-title">Available Position</h4>
+    <>
+      <div>
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-lg-12">
+              <div className="card transaction-table">
+                <div className="card-header border-0 flex-wrap pb-0">
+                  <div className="mb-4">
+                    <h4 className="card-title">Position</h4>
                   </div>
-
-                  <div className="card-body pt-0">
-
-                    <div className="tab-content">
-                      <div id="navpills-1" className="tab-pane active">
-                        <div className="row">
-                          <div className="col-lg-12">
-                            <div className="card transaction-table">
-
-                              <div className="card-body p-0">
-
-
-                                <div className="table-responsive">
-
-                                  <div className='mb-2'>
-                                    Search :{" "}
-                                    <input
-                                      className="ml-2 input-search form-control"
-                                      defaultValue=""
-                                      style={{ width: "20%" }}
-                                    />
-                                  </div>
-                                  <table className="table table-responsive-md">
-                                    <thead>
-                                      <tr>
-                                        <th>S.No.</th>
-                                        <th>Trading Symbol</th>
-                                        <th>Buy QTY	</th>
-                                        <th>Sell QTY</th>
-                                        <th>Avg Position</th>
-
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      <tr>
-
-                                        <td>1</td>
-                                        <td>Donalt</td>
-                                        <td>01 August 2020</td>
-                                        <td>01 August 2020</td>
-                                        <td>Donalt</td>
-
-
-
-                                      </tr>
-                                      <tr>
-
-                                        <td>2</td>
-                                        <td>Donalt</td>
-                                        <td>01 August 2020</td>
-                                        <td>01 August 2020</td>
-                                        <td>Donalt</td>
-
-
-
-                                      </tr>
-                                      <tr>
-
-                                        <td>3</td>
-                                        <td>Donalt</td>
-                                        <td>01 August 2020</td>
-                                        <td>01 August 2020</td>
-                                        <td>Donalt</td>
-
-
-
-                                      </tr>
-                                    </tbody>
-                                  </table>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                </div>
+                <div className="card-body p-0">
+                  <div className="tab-content" id="myTabContent1">
+                    <div
+                      className="tab-pane fade show active"
+                      id="Week"
+                      role="tabpanel"
+                      aria-labelledby="Week-tab"
+                    >
+                     <div className="mb-3 ms-4">
+                        Search :{" "}
+                        <input
+                          className="ml-2 input-search form-control"
+                          style={{ width: "20%" }}
+                          type="text"
+                          placeholder="Search..."
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                        />
                       </div>
-
+                      <Table columns={columns} data={data && data} />
                     </div>
                   </div>
-
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </div>
-
-    </div>
+    </>
   );
-}
+};
 
 export default Position;

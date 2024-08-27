@@ -4,6 +4,8 @@ import { fDateTime, fDateTimesec } from "../../Utils/Date_format/datefromat";
 import { useParams } from "react-router-dom";
 import { Clienthistory } from "../../Services/Admin/Addmin";
 import { DollarSign  } from 'lucide-react'
+import { Link, Navigate, useNavigate } from "react-router-dom";
+
 
 const Tradehistory = () => {
   const { id } = useParams();
@@ -142,6 +144,12 @@ const Tradehistory = () => {
                   <div className="mb-4">
                     <h4 className="card-title">Trade History</h4>
                   </div>
+                  <Link
+                  to="/employee/users"
+                  className="float-end mb-4 btn btn-primary"
+                >
+                  Back
+                </Link>
                 </div>
                 <div className="card-body p-0">
                   <div className="tab-content" id="myTabContent1">

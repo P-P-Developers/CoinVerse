@@ -32,6 +32,8 @@ const Users = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
 
+
+
   const [filteredData, setFilteredData] = useState([]);
   const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
@@ -55,7 +57,7 @@ const Users = () => {
     { Header: "UserName", accessor: "UserName" },
     { Header: "Email", accessor: "Email" },
     { Header: "Phone No", accessor: "PhoneNo" },
-    getaccess.Balance_edit === 1 &&{
+    getaccess.Balance_edit === 1 && {
       Header: "Balance",
       accessor: "Balance",
       Cell: ({ cell }) => (
@@ -132,7 +134,7 @@ const Users = () => {
         </span>
       ),
     },
-    
+
     // {
     //   Header: "ActiveStatus",
     //   accessor: "ActiveStatus",
@@ -153,8 +155,8 @@ const Users = () => {
     //     </label>
     //   ),
     // },
-   
-   
+
+
     getaccess.Licence_Edit === 1 && {
       Header: "Licence",
       accessor: "Licence",
@@ -191,7 +193,7 @@ const Users = () => {
         </div>
       ),
     },
-  
+
     {
       Header: "Create Date",
       accessor: "Create_Date",
@@ -400,13 +402,13 @@ const Users = () => {
 
 
 
-  
+
   const getpermission = async () => {
     try {
       const data = { id: user_id };
       const response = await getEmployee_permissiondata(data);
       if (response.status) {
-         
+
         setGetaccess(response.data[0]);
       }
     } catch (error) {
@@ -414,7 +416,7 @@ const Users = () => {
     }
   };
 
-
+  
   // console.log("getaccess",getaccess)
 
   // get all admin
@@ -428,8 +430,20 @@ const Users = () => {
         response.data.filter((item) => {
           return item.Role === "USER";
         });
-    //  console.log("response",response.data)
-      setData(result);
+      const searchfilter = result?.filter((item) => {
+        const searchInputMatch =
+          search == "" ||
+          (item.FullName &&
+            item.FullName.toLowerCase().includes(search.toLowerCase())) ||
+          (item.UserName &&
+            item.UserName.toLowerCase().includes(search.toLowerCase())) ||
+          (item.Email &&
+            item.Email.toLowerCase().includes(search.toLowerCase()));
+
+        return searchInputMatch;
+      });
+
+      setData(search ? searchfilter : result);
       setFilteredData(result);
       setLoading(false);
     } catch (error) {
@@ -441,61 +455,59 @@ const Users = () => {
   useEffect(() => {
     getAlluserdata();
     getpermission()
-  }, []);
+  }, [search]);
 
 
 
   return (
     <>
-      {loading ? (
-        <Loader />
-      ) : (
-        <div className="container-fluid">
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="card transaction-table">
-                <div className="card-header border-0 flex-wrap pb-0">
-                  <div className="mb-4">
-                    <h4 className="card-title">All Users</h4>
-                  </div>
-                  {getaccess.client_add===1 && 
-                  <Link
-                    to="/employee/adduser"
-                    className="float-end mb-4 btn btn-primary"
-                  >
-                    Add User
-                  </Link>
-                  }
+      <div className="container-fluid">
+        <div className="row">
+          <div className="col-lg-12">
+            <div className="card transaction-table">
+              <div className="card-header border-0 flex-wrap pb-0">
+                <div className="mb-4">
+                  <h4 className="card-title">All Users</h4>
                 </div>
-                <div className="card-body p-0">
-                  <div className="tab-content" id="myTabContent1">
-                    <div
-                      className="tab-pane fade show active"
-                      id="Week"
-                      role="tabpanel"
-                      aria-labelledby="Week-tab"
-                    >
-                      <div className="mb-3 ms-4">
-                        Search :{" "}
-                        <input
-                          className="ml-2 input-search form-control"
-                          defaultValue=""
-                          style={{ width: "20%" }}
-                          type="text"
-                          placeholder="Search..."
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
-                        />
-                      </div>
-                      <Table columns={columns} data={data} />
+                <Link
+                  to="/admin/adduser"
+                  className="float-end mb-4 btn btn-primary"
+                >
+                  Add User
+                </Link>
+              </div>
+              <div className="card-body p-0">
+                <div className="tab-content" id="myTabContent1">
+                  <div
+                    className="tab-pane fade show active"
+                    id="Week"
+                    role="tabpanel"
+                    aria-labelledby="Week-tab"
+                  >
+                    <div className="mb-3 ms-4">
+                      Search :{" "}
+                      <input
+                        className="ml-2 input-search form-control"
+                        style={{ width: "20%" }}
+                        type="text"
+                        placeholder="Search..."
+                        value={search}
+                        autoFocus
+                        onChange={(e) => setSearch(e.target.value)}
+                      />
                     </div>
+                    {loading ? (
+                      <Loader />
+                    ) : (
+                      <Table columns={columns} data={data && data} />
+                    )}
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      )}
+      </div>
 
       {modal && (
         <div

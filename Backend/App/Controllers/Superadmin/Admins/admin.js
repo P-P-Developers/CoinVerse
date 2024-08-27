@@ -542,8 +542,77 @@ class Superadmin {
       
     }
   }
+ 
+ 
+  //get admin user detail
 
-  
+
+  async getadminuserdetail(req,res){
+    try {
+         const {userid} = req.body
+         const result = await User_model.find({parent_id:userid})
+
+         if(!result){
+          return res.json({status:false,message:"not found",data:[]})
+        }
+     
+        return res.json({status:true,message:"user found",data:result})
+
+    } catch (error) {
+
+      return res.json({status:false,message:"internal error",data:[]})
+      
+    }
+  }
+
+ // get employee user 
+
+ async getEmployeeuserdetail(req,res){
+  try {
+       const {userid} = req.body
+       const result = await User_model.find({employee_id:userid})
+
+       if(!result){
+        return res.json({status:false,message:"not found",data:[]})
+      }
+   
+      return res.json({status:true,message:"user found",data:result})
+
+  } catch (error) {
+
+    return res.json({status:false,message:"internal error",data:[]})
+    
+  }
+}
+
+
+// get licence detail 
+async getlicencedetail(req, res) {
+  try {
+      const { userid } = req.body;
+      const licenses = await totalLicense.find({ parent_Id: userid }).sort({ createdAt: -1 }) ;
+      const userIds = licenses.map(license => license.user_Id);
+      const users = await User_model.find({ _id: { $in: userIds } });
+
+    
+      const userMap = users.reduce((map, user) => {
+          map[user._id] = user.UserName;
+          return map;
+      }, {});
+
+      const resultWithUsernames = licenses.map(license => ({
+          ...license.toObject(),
+          username: userMap[license.user_Id] || null 
+      }));
+
+     return  res.json({status:true,message:"data find ",data:resultWithUsernames}); 
+  } catch (error) {
+    
+     return  res.json({staus:false, message: "Error fetching license details" ,data:[]});
+  }
+}
+
+
 
 }
 

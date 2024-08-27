@@ -52,3 +52,37 @@ export async function getEmployeeUserHistory(data, token) {
     }
 
 }
+
+
+// dashboard data
+
+export async function getEmployeeUserdata(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}GetEmployeeUserDashboardData`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// get employee user position data
+
+export async function getEmployeeUserposition(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}getEmployeeUserposition`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}

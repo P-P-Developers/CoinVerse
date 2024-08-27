@@ -158,3 +158,54 @@ export async function getAllClient(data, token) {
     }
 
 }
+
+
+// admin user data 
+
+export async function getadminuserdetail(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}getadminuserdetail`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// get employee user 
+
+
+export async function getEmployeeuserdetail(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}getEmployeeuserdetail`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+// get licence detail 
+
+export async function getlicencedetailforsuperadmin(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}getlicencedetail`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 
-import { gethistory } from "../../../Services/Superadmin/Superadmin";
+import { getlicencedetailforsuperadmin } from "../../../Services/Superadmin/Superadmin";
 
 const Transection = () => {
 
@@ -11,11 +11,13 @@ const Transection = () => {
   const user_id = userDetails?.user_id;
 
   const [data, setData] = useState([]);
+  const [search, setSearch] = useState("");
+
 
   const columns = [
-    { Header:"UserName", accessor: "UserName" },
+    { Header:"UserName", accessor: "username" },
 
-    { Header: "Balance", accessor: "Balance" },
+    { Header: "Licence", accessor: "Licence" },
     {
       Header: "Create Date",
       accessor: "createdAt",
@@ -24,30 +26,43 @@ const Transection = () => {
 
       },
     },
-    { Header: "Status", accessor: "Type" },
+    { Header: "Start_Date", accessor: "Start_Date",
+      Cell: ({ cell }) => {
+        return fDateTime(cell.value)
+
+      },
+     },
+    { Header: "End_Date", accessor: "End_Date",
+      Cell: ({ cell }) => {
+        return fDateTime(cell.value)
+
+      },
+     },
   ];
 
   // getting data
-  const getallhistory = async () => {
+  const getlicensedetail = async () => {
     try {
-      const response = await gethistory({});
-      const result = response.data && response.data.filter((item) => {
-        return item.parent_Id == user_id
-      })
-      setData(result);
+      const data = {userid:user_id}
+      const response = await getlicencedetailforsuperadmin(data);
+      const searchfilter = response.data?.filter((item) => {
+        const searchInputMatch =
+          search === "" ||
+          (item.username && item.username.toLowerCase().includes(search.toLowerCase())) 
+          
+
+        return searchInputMatch;
+      });
+      setData(search ? searchfilter : response.data);
     } catch (error) {
       console.log("error", error);
     }
   };
 
-  useEffect(() => {
-    getallhistory();
-  }, []);
-
 
   useEffect(() => {
-    getallhistory();
-  }, []);
+    getlicensedetail();
+  }, [search]);
 
   return (
     <>
@@ -69,12 +84,15 @@ const Transection = () => {
                       role="tabpanel"
                       aria-labelledby="Week-tab"
                     >
-                      <div className='mb-3 ms-4'>
+                      <div className="mb-3 ms-4">
                         Search :{" "}
                         <input
                           className="ml-2 input-search form-control"
-                          defaultValue=""
                           style={{ width: "20%" }}
+                          type="text"
+                          placeholder="Search..."
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
                         />
                       </div>
                       <Table columns={columns} data={data && data} />

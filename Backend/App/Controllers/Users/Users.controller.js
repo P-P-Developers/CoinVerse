@@ -174,7 +174,8 @@ async getAllstatement(req, res) {
           foreignField: '_id', 
           as: 'orderDetails'
         }
-      }
+      },
+      { $sort: { createdAt: -1 } } 
     ]);
 
     if (!result.length) {

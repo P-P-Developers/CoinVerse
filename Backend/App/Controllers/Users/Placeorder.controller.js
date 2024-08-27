@@ -9,6 +9,7 @@ const Order = db.Order;
 const User_model = db.user;
 const mainorder_model = db.mainorder_model;
 const BalanceStatement = db.BalanceStatement;
+const MarginRequired = db.MarginRequired
 
 
 
@@ -68,8 +69,9 @@ class Placeorder {
           });
         }
       } else {
-        result = await mainorder_model.find({ adminid: userid });
 
+        result = await mainorder_model.find({ adminid: userid });
+        
         if (result.length > 0) {
           return res.json({
             status: true,
@@ -88,6 +90,9 @@ class Placeorder {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
+
+
+
 
 
 
@@ -444,14 +449,13 @@ class Placeorder {
       } else {
         tradehistory.orderid = [orderdata._id];
       }
-  
-     
-    
+   
 
       let Calculatefund = priceNum * qtyNum
       let totalcalculatefund = Calculatefund/Number(checkadmin.limit);
-
+      // let calculate_margin = 
       let Totalupdateuserbalance = totalcalculatefund - parseFloat(brokerage);
+      
       let totaladdbalance = parseFloat(checkadmin.Balance) + Totalupdateuserbalance
      
 
