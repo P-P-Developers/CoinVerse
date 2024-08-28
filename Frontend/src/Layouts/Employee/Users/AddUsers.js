@@ -197,6 +197,7 @@ const AddUsers = () => {
   };
 
 
+  // console.log("getid",getid)
 
   const getadminLicence = async () => {
     const data = { userid: getid };
@@ -233,7 +234,7 @@ const AddUsers = () => {
     getadminbalance();
     getadminLicence();
     getallclient()
-  }, []);
+  }, [getid]);
 
 
 
@@ -357,7 +358,7 @@ const AddUsers = () => {
         btn_name="Add User"
         btn_name1="Cancel"
         formik={formik}
-        btn_name1_route={"/admin/users"}
+        btn_name1_route={"/employee/users"}
       />
       {formik.values.Balance && (
         <div>

@@ -470,7 +470,7 @@ const Users = () => {
                   <h4 className="card-title">All Users</h4>
                 </div>
                 <Link
-                  to="/admin/adduser"
+                  to="/employee/adduser"
                   className="float-end mb-4 btn btn-primary"
                 >
                   Add User

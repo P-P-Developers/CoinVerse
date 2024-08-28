@@ -209,3 +209,19 @@ export async function getlicencedetailforsuperadmin(data, token) {
     }
 
 }
+
+// get position detail 
+
+export async function getavailableposition(data, token) {
+    try {
+        const res = await axios.get(`${Config.base_url}getPosition_detail`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}

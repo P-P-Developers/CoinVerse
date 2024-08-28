@@ -11,6 +11,7 @@ const totalLicense = db.totalLicense
 const MarginRequired = db.MarginRequired
 const BalanceStatement = db.BalanceStatement;
 const employee_permission = db.employee_permission;
+const mainorder_model = db.mainorder_model;
 
 
 
@@ -600,17 +601,45 @@ async getlicencedetail(req, res) {
           return map;
       }, {});
 
+
+
       const resultWithUsernames = licenses.map(license => ({
           ...license.toObject(),
           username: userMap[license.user_Id] || null 
       }));
 
-     return  res.json({status:true,message:"data find ",data:resultWithUsernames}); 
+     return  res.json({status:true,message:"data find ",data:resultWithUsernames});
+
   } catch (error) {
     
      return  res.json({staus:false, message: "Error fetching license details" ,data:[]});
   }
 }
+
+
+
+
+
+// get all available position 
+
+async getPosition_detail(req, res) {
+  try {
+   
+    let result = await mainorder_model.find({
+      $expr: { $ne: ["$buy_lot", "$sell_lot"] }
+    }).sort({ createdAt: -1 });
+
+    if (!result || result.length === 0) {
+      return res.json({ status: false, message: "Data not found" });
+    }
+
+    return res.json({ status: true, message: "Data found", data: result });
+
+  } catch (error) {
+    return res.json({ status: false, message: "Internal error", data: [] });
+  }
+}
+
 
 
 

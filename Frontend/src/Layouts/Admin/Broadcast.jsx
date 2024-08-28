@@ -1,6 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { broadcastmessage } from '../../Services/Admin/Addmin';
 
 const Broadcast = () => {
+  
+    const {message,setmessage} = useState()
+
+    // const sendmessage
+
     return (
         <div>
             <div className="container-fluid">

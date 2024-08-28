@@ -23,6 +23,8 @@ router.post('/admin/Delete_Employee', Delete_Employee);
 router.post('/admin/getuserpaymentstatus', getuserpaymentstatus);
 router.post('/admin/Updatestatus', UpdateStatus);
 
+
+
 // margin required
 
 router.post('/admin/marginupdate', marginupdate);

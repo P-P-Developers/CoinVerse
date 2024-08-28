@@ -16,5 +16,6 @@ module.exports = {
     BalanceStatement:require("./BalanceStatement.model"),
     user_logs :require("./User_logs.model"),
     forexlivedata:require("./forexlivedata.model"),
-    employee_permission:require("./Employeepermission.model")
+    employee_permission:require("./Employeepermission.model"),
+    broadcasting:require("./Broadcastmessage.model")
 };

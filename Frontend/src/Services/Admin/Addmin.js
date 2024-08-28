@@ -398,3 +398,21 @@ export async function getlicencedata(data, token) {
     }
 
 }
+
+
+// add broadcast message 
+
+
+export async function broadcastmessage(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}broadcastmessage`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}

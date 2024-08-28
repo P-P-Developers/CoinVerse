@@ -393,7 +393,11 @@ class Placeorder {
         });
       }
   
+      // console.log(checkadmin) 
+      //   const marginvalued = await MarginRequired.findOne({adminid:checkadmin.parent_id})
 
+      //   console.log("marginvalued",marginvalued)
+        
       // Calculate brokerage
       let brokerage = 0;
       if (checkadmin.pertrade) {
@@ -617,6 +621,7 @@ class Placeorder {
       });
     }
   }
+  
 }
 
 

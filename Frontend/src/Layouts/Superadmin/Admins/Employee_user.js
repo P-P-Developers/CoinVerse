@@ -39,7 +39,7 @@ const Employee_user = () => {
         }
         ,
         { Header: "PhoneNo", accessor: "PhoneNo" },
-        { Header: "Licence", accessor: "Licence" },
+        // { Header: "Licence", accessor: "Licence" },
         {
             Header: "createdAt", accessor: "createdAt",
             Cell: ({ cell }) => {

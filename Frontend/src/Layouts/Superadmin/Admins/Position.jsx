@@ -1,334 +1,124 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import Table from "../../../Utils/Table/Table";
+import { getavailableposition } from "../../../Services/Superadmin/Superadmin";
+import { fDateTime } from "../../../Utils/Date_format/datefromat";
+
+
+
 
 const Position = () => {
-    return (
-        <div>
-            <div className='row'>
 
 
-                <div className='demo-view'>
-                    <div className='container-fluid'>
-                        <div className='row'>
-                            <div className="col-xl-12">
-                                <div className="card dz-card" id="nav-pills">
-                                    <div className="card-header flex-wrap border-0">
-                                        <h4 className="card-title">Available Position</h4>
+  const userDetails = JSON.parse(localStorage.getItem("user_details"));
+  const user_id = userDetails?.user_id;
+  const Role = userDetails?.Role;
 
-                                    </div>
-                                    <div className="tab-content" id="myTabContent3">
-                                        <div
-                                            className="tab-pane fade show active"
-                                            id="NavPills"
-                                            role="tabpanel"
-                                            aria-labelledby="home-tab3"
-                                        >
-                                            <div className="card-body pt-0">
-                                                <ul className="nav nav-pills navpills mb-4 light ">
-                                                    <li className=" nav-item">
-                                                        <a
-                                                            href="#navpills-1"
-                                                            className="nav-link active navlink"
-                                                            data-bs-toggle="tab"
-                                                            aria-expanded="false"
-                                                        >
-                                                            Admin Wise
-                                                        </a>
-                                                    </li>
-                                                    <li className="nav-item">
-                                                        <a
-                                                            href="#navpills-2"
-                                                            className="nav-link navlink"
-                                                            data-bs-toggle="tab"
-                                                            aria-expanded="false"
-                                                        >
-                                                            All Over Admin Wise
-                                                        </a>
-                                                    </li>
 
-                                                </ul>
-                                                <div className="tab-content">
-                                                    <div id="navpills-1" className="tab-pane active">
-                                                        <div className="row">
-                                                            <div className="col-lg-12">
-                                                                <div className="card transaction-table">
+  const [data, setData] = useState([]);
+  const [search, setSearch] = useState("");
 
-                                                                    <div className="card-body p-0">
-                                                                        <div className="tab-content" id="myTabContent1">
-                                                                            <div
-                                                                                className="tab-pane fade show active"
-                                                                                id="Week"
-                                                                                role="tabpanel"
-                                                                                aria-labelledby="Week-tab"
-                                                                            >
-                                                                                <div className="table-responsive">
-                                                                                    <div className='mb-2'>
-                                                                                        Search :{" "}
-                                                                                        <input
-                                                                                            className="ml-2 input-search form-control"
-                                                                                            defaultValue=""
-                                                                                            style={{ width: "20%" }}
-                                                                                        />
-                                                                                    </div>
 
-                                                                                    <table className="table table-responsive-md">
-                                                                                        <thead>
-                                                                                            <tr>
-                                                                                                <th>#</th>
-                                                                                                <th>Username</th>
-                                                                                                <th>Start Date</th>
-                                                                                                <th>End Date</th>
+  const columns = [
+    { Header: "symbol", accessor: "symbol" },
+    {
+      Header: "Buy qty",
+      accessor: "buy_qty",
+      Cell: ({ cell }) => {
+        const buy_qty = cell.row.buy_qty; 
+        return buy_qty ? buy_qty : "-"; 
+      }
+    },
+    {
+      Header: "Sell qty",
+      accessor: "sell_qty",
+      Cell: ({ cell }) => {
+        const sell_qty = cell.row.sell_qty; 
+        return sell_qty ? sell_qty : "-"; 
+      }
+    },
+    {
+      Header: "Position Avg",
+      accessor: "Position Avg",
+      Cell: ({ cell }) => {
+        const { sell_qty, buy_qty } = cell.row; 
+        const availablePosition = buy_qty - sell_qty;
+        return (
+          <span>{availablePosition}</span>
+        );
+      },
+    },
 
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>
-                                                                                            <tr>
-
-                                                                                                <td>1</td>
-                                                                                                <td>Donalt</td>
-                                                                                                <td>01 August 2020</td>
-                                                                                                <td>01 August 2020</td>
+  ];
 
 
 
+  // getting data
+  const getuserallhistory = async () => {
+    try {
+      const response = await getavailableposition({});
 
-                                                                                            </tr>
-                                                                                            <tr>
+      const searchfilter = response.data?.filter((item) => {
+        const searchInputMatch =
+          search === "" ||
+          (item.symbol && item.symbol.toLowerCase().includes(search.toLowerCase())) 
+          
 
-                                                                                                <td>2</td>
-                                                                                                <td>Donalt</td>
-                                                                                                <td>01 August 2020</td>
-                                                                                                <td>01 August 2020</td>
+        return searchInputMatch;
+      });
+      setData(search  ?searchfilter : response.data);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
 
-
-
-
-                                                                                            </tr>
-                                                                                            <tr>
-
-                                                                                                <td>3</td>
-                                                                                                <td>Donalt</td>
-                                                                                                <td>01 August 2020</td>
-                                                                                                <td>01 August 2020</td>
-
-
-
-
-                                                                                            </tr>
-                                                                                        </tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-                                                    </div>
-                                                    <div id="navpills-2" className="tab-pane">
-                                                        <div className="row">
-                                                            <div className="col-lg-12">
-                                                                <div className="card transaction-table">
-
-                                                                    <div className="card-body p-0">
-                                                                        <div className="tab-content" id="myTabContent1">
-                                                                            <div
-                                                                                className="tab-pane fade show active"
-                                                                                id="Week"
-                                                                                role="tabpanel"
-                                                                                aria-labelledby="Week-tab"
-                                                                            >
-                                                                                <div className="table-responsive">
-                                                                                    <div className="mb-2">
-                                                                                        Search :{" "}
-                                                                                        <input
-                                                                                            className="ml-2 input-search form-control"
-                                                                                            defaultValue=""
-                                                                                            style={{ width: "20%" }}
-                                                                                        />
-                                                                                    </div>
-
-                                                                                    <table className="table table-responsive-md">
-
-                                                                                        <thead>
-                                                                                            <tr>
-                                                                                                <th>#</th>
-                                                                                                <th>Username</th>
-                                                                                                <th>Start Date</th>
-                                                                                                <th>End Date</th>
-
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>
-                                                                                            <tr>
-
-                                                                                                <td>1</td>
-                                                                                                <td>MS Dhoni</td>
-                                                                                                <td>01 August 2020</td>
-                                                                                                <td>02 August 2024</td>
+  useEffect(() => {
+    getuserallhistory();
+  }, [search]);
 
 
 
-
-                                                                                            </tr>
-                                                                                            <tr>
-
-                                                                                                <td>2</td>
-                                                                                                <td>Donalt Trump</td>
-                                                                                                <td>01 August 2020</td>
-                                                                                                <td>03 August 2024</td>
-
-
-
-
-                                                                                            </tr>
-                                                                                            <tr>
-
-                                                                                                <td>3</td>
-                                                                                                <td>Donalt kesh</td>
-                                                                                                <td>01 August 2020</td>
-                                                                                                <td>05 August 2025</td>
-
-
-
-
-                                                                                            </tr>
-                                                                                        </tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div
-                                            className="tab-pane fade"
-                                            id="NavPills-html"
-                                            role="tabpanel"
-                                            aria-labelledby="home-tab3"
-                                        >
-                                            <div className="card-body p-0 code-area">
-                                                <pre className="m-0">
-                                                    <code className="language-html">
-                                                        &lt;ul class="nav nav-pills mb-4 light"&gt;{"\n"}
-                                                        {"\t"}&lt;li class=" nav-item"&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;a href="#navpills-1" class="nav-link active"
-                                                        data-bs-toggle="tab" aria-expanded="false"&gt;Tab One&lt;/a&gt;
-                                                        {"\n"}
-                                                        {"\t"}&lt;/li&gt;{"\n"}
-                                                        {"\t"}&lt;li class="nav-item"&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;a href="#navpills-2" class="nav-link"
-                                                        data-bs-toggle="tab" aria-expanded="false"&gt;Tab Two&lt;/a&gt;
-                                                        {"\n"}
-                                                        {"\t"}&lt;/li&gt;{"\n"}
-                                                        {"\t"}&lt;li class="nav-item"&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;a href="#navpills-3" class="nav-link"
-                                                        data-bs-toggle="tab" aria-expanded="true"&gt;Tab Three&lt;/a&gt;
-                                                        {"\n"}
-                                                        {"\t"}&lt;/li&gt;{"\n"}&lt;/ul&gt;{"\n"}&lt;div
-                                                        class="tab-content"&gt;{"\n"}
-                                                        {"\t"}&lt;div id="navpills-1" class="tab-pane active"&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;div class="row"&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;div class="col-md-12"&gt; Raw denim you probably haven't
-                                                        heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua,
-                                                        retro synth master cleanse. Mustache cliche tempor, williamsburg
-                                                        carles vegan helvetica.{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;p&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;br /&gt; Reprehenderit butcher retro keffiyeh
-                                                        dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry
-                                                        richardson ex squid.&lt;/p&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;/div&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;/div&gt;{"\n"}
-                                                        {"\t"}&lt;/div&gt;{"\n"}
-                                                        {"\t"}&lt;div id="navpills-2" class="tab-pane"&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;div class="row"&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;div class="col-md-12"&gt; Raw denim you probably haven't
-                                                        heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua,
-                                                        retro synth master cleanse. Mustache cliche tempor, williamsburg
-                                                        carles vegan helvetica.{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;p&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;br /&gt; Reprehenderit butcher retro keffiyeh
-                                                        dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry
-                                                        richardson ex squid.&lt;/p&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;/div&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;/div&gt;{"\n"}
-                                                        {"\t"}&lt;/div&gt;{"\n"}
-                                                        {"\t"}&lt;div id="navpills-3" class="tab-pane"&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;div class="row"&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;div class="col-md-12"&gt; Raw denim you probably haven't
-                                                        heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua,
-                                                        retro synth master cleanse. Mustache cliche tempor, williamsburg
-                                                        carles vegan helvetica.{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;p&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;br /&gt; Reprehenderit butcher retro keffiyeh
-                                                        dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry
-                                                        richardson ex squid.&lt;/p&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;/div&gt;{"\n"}
-                                                        {"\t"}
-                                                        {"\t"}&lt;/div&gt;{"\n"}
-                                                        {"\t"}&lt;/div&gt;{"\n"}&lt;/div&gt;
-                                                    </code>
-                                                </pre>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
+  return (
+    <>
+      <div>
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-lg-12">
+              <div className="card transaction-table">
+                <div className="card-header border-0 flex-wrap pb-0">
+                  <div className="mb-4">
+                    <h4 className="card-title">Position</h4>
+                  </div>
                 </div>
+                <div className="card-body p-0">
+                  <div className="tab-content" id="myTabContent1">
+                    <div
+                      className="tab-pane fade show active"
+                      id="Week"
+                      role="tabpanel"
+                      aria-labelledby="Week-tab"
+                    >
+                     <div className="mb-3 ms-4">
+                        Search :{" "}
+                        <input
+                          className="ml-2 input-search form-control"
+                          style={{ width: "20%" }}
+                          type="text"
+                          placeholder="Search..."
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                        />
+                      </div>
+                      <Table columns={columns} data={data && data} />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
-    );
-}
+      </div>
+    </>
+  );
+};
 
 export default Position;
