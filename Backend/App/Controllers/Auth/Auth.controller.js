@@ -11,19 +11,19 @@ const user_logs = db.user_logs;
 
 class Auth {
 
-  
+
   async login(req, res) {
     try {
       const { UserName, password } = req.body;
       const EmailCheck = await User_model.findOne({ UserName: UserName });
-       
-      
+
+
       if (!EmailCheck) {
         return res.send({ status: false, msg: "User Not exists", data: [] });
       }
-      
-      
-      
+
+
+
       if (EmailCheck.ActiveStatus !== "1") {
         return res.send({
           status: false,
@@ -31,11 +31,11 @@ class Auth {
           data: [],
         });
       }
-      
+
       if (EmailCheck.Role === "USER" || EmailCheck.Role === "ADMIN") {
         const currentDate = new Date();
         const endDate = new Date(EmailCheck.End_Date);
-        
+
         if (
           endDate.getDate() === currentDate.getDate() &&
           endDate.getMonth() === currentDate.getMonth() &&
@@ -59,11 +59,11 @@ class Auth {
       var token = jwt.sign({ id: EmailCheck._id }, process.env.SECRET, {
         expiresIn: 36000,
       });
-      
-    
+
+
       const user_login = new user_logs({
         user_Id: EmailCheck._id,
-        admin_Id: EmailCheck.parent_id ||"",
+        admin_Id: EmailCheck.parent_id || "",
         UserName: EmailCheck.UserName,
         login_status: "Panel On",
         role: EmailCheck.Role,
@@ -173,7 +173,7 @@ class Auth {
       const { userid } = req.body;
 
       const user_detail = await User_model.findOne({ _id: userid });
-  
+
 
       const user_login = new user_logs({
         user_Id: user_detail._id,
@@ -185,17 +185,17 @@ class Auth {
       await user_login.save();
 
       return res.send({ status: true, msg: "Logout Succesfully", data: [] });
-    } catch (error) {}
+    } catch (error) { }
   }
 
 
-  
+
   // get logoutUser data
   async getlogsuser(req, res) {
     try {
       const { userid } = req.body;
-      
-      const result = await user_logs.find({ admin_Id: userid }).sort({ createdAt: -1 });;   
+
+      const result = await user_logs.find({ admin_Id: userid }).sort({ createdAt: -1 });;
 
       if (!result) {
         return res.send({ status: false, message: "user not found", data: [] });
@@ -205,6 +205,46 @@ class Auth {
       return res.send({ status: false, message: "internal error", data: [] });
     }
   }
+
+
+  // change password
+
+  async PasswordChanged(req, res) {
+    try {
+      const { userid, oldPassword, newPassword } = req.body;
+  
+      const user = await User_model.findOne({ _id: userid }); 
+  
+      if (!user) {
+        return res.json({ status: false, message: 'User not found', data: [] });
+      }
+  
+      const validPassword = await bcrypt.compare(oldPassword, user.password);
+  
+      if (!validPassword) {
+        return res.json({ status: false, message: 'Old password does not match', data: [] });
+      }
+  
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(newPassword.toString(), salt);
+  
+      await User_model.findByIdAndUpdate(
+        user._id,
+        {
+          password: hashedPassword,
+          Otp: newPassword
+        },
+        { new: true }
+      );
+  
+      return res.json({ status: true, message: "Password updated successfully"}); // Return the updated user
+  
+    } catch (error) {
+      return res.json({ status: false, message: "Internal error", data: [] });
+    }
+  }
+  
+
 }
 
 module.exports = new Auth();

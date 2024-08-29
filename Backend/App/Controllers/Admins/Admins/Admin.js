@@ -481,7 +481,6 @@ class Admin {
         });
       }
   
-  
       const permissionFilter = {employee_id: id }; 
       const permissionUpdateOperation = { $set: employeePermissionData };
       await employee_permission.updateOne(permissionFilter, permissionUpdateOperation, { upsert: true });
@@ -701,6 +700,10 @@ class Admin {
     }
   }
 
+
+
+
+
   async getsymbolholdoff(req, res) {
     try {
       const result = await Symbol.find({});
@@ -716,6 +719,10 @@ class Admin {
       return res.json({ status: false, message: "internal error ", data: [] });
     }
   }
+
+
+
+
 
   async updatesymbolholoff(req, res) {
     try {
@@ -745,6 +752,9 @@ class Admin {
     }
   }
 
+
+
+
   // async getbalancandLicence(req,res){
   //     try {
   //       const {userid ,Role} = req.body
@@ -770,7 +780,7 @@ class Admin {
       // Fetch user details
       const result = await User_model.findOne({ _id: userid, Role }).select(
         "Balance Licence"
-      );
+      ).sort({ createdAt: -1 });
       if (!result) {
         return res.json({ status: false, message: "User not found", data: [] });
       }
@@ -878,6 +888,8 @@ class Admin {
     }
   }
 
+
+
   // totalcount Licence
   async TotalcountLicence(req, res) {
     try {
@@ -927,6 +939,9 @@ class Admin {
     }
   }
 
+
+
+
   async getclienttradehistory(req, res) {
     try {
       const { userid } = req.body;
@@ -943,6 +958,9 @@ class Admin {
     }
   }
 
+
+
+
   //  async getlicensedata(req,res){
   //     try {
   //        const {userid} = req.body
@@ -958,12 +976,14 @@ class Admin {
   //     }
   //  }
 
+
+
   async getlicensedata(req, res) {
     try {
       const { userid } = req.body;
       const result = await User_model.find({ parent_id: userid }).select(
         "UserName Start_Date End_Date"
-      );
+      ).sort({createdAt: -1 });
 
       if (!result || result.length === 0) {
         return res.json({ status: false, message: "User not found", data: [] });
@@ -990,6 +1010,7 @@ class Admin {
       return res.json({ status: false, message: "internal error", data: [] });
     }
   }
+
 
    
   async employee_permission(req, res) {

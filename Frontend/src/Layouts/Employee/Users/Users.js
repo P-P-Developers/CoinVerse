@@ -4,6 +4,7 @@ import {
   getUserdata,
   Addbalance,
   updateActivestatus,
+  getAllClient
 } from "../../../Services/Superadmin/Superadmin";
 import {
   updateuserLicence,
@@ -49,6 +50,7 @@ const Users = () => {
   const [loading, setLoading] = useState(false);
   const [getaccess, setGetaccess] = useState({});
 
+  const [getid,setGetid] = useState([])
 
 
 
@@ -201,6 +203,7 @@ const Users = () => {
         return fDateTime(cell.value);
       },
     },
+
     getaccess.Edit === 1 && {
       Header: "Action",
       accessor: "Action",
@@ -224,7 +227,8 @@ const Users = () => {
         );
       },
     },
-    {
+    
+    getaccess.trade_history === 1 && {
       Header: "Trade History",
       accessor: "Trade History",
       Cell: ({ cell }) => {
@@ -326,7 +330,7 @@ const Users = () => {
       const response = await Addbalance({
         id: id,
         Balance: balance,
-        parent_Id: user_id,
+        parent_Id: getid,
         Type: type,
       });
 
@@ -451,10 +455,29 @@ const Users = () => {
     }
   };
 
+  
+  const getallclient=async()=>{
+    try {
+      const data = {userid:user_id}
+      const response = await getAllClient(data)
+      if(response.status){
+        // console.log("response",response.data.parent_id)
+        setGetid(response.data.parent_id)
+      }
+
+    } catch (error) {
+      console.log("error")
+    }
+ }
+
+ 
+
+
 
   useEffect(() => {
     getAlluserdata();
     getpermission()
+    getallclient()
   }, [search]);
 
 

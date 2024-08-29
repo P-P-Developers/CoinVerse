@@ -288,7 +288,7 @@ class Superadmin {
   async getAdminDetail(req, res) {
     try {
         const { id } = req.body;
-        const result = await User_model.find({ parent_id: id });
+        const result = await User_model.find({ parent_id: id }).sort({createdAt: -1});
         
         const adminIds = result.map(user => user._id);
         const permissions = await employee_permission.find({ employee_id: { $in: adminIds } });
@@ -298,7 +298,7 @@ class Superadmin {
         }
 
         const combinedData = result.map(user => {
-            const userPermissions = permissions.filter(permission => permission.employee_id.equals(user._id));
+            const userPermissions = permissions.filter(permission => permission.employee_id.equals(user._id))
 
             return {
                 ...user.toObject(),

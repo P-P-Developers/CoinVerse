@@ -49,7 +49,12 @@ const Users = () => {
   const [loading, setLoading] = useState(false);
 
   const [checkprice, setCheckprice] = useState("");
+   
+  const [employeename,setEmployeename] = useState([])
+ 
 
+  
+   
   const columns = [
     { Header: "FullName", accessor: "FullName" },
     { Header: "UserName", accessor: "UserName" },
@@ -118,16 +123,17 @@ const Users = () => {
         </div>
       ),
     },
-    // {
-    //   Header: "Employee",
-    //   Cell: (cell) => {
-    //     console.log(data)
-    //     const employee = data.find(emp => emp._id === cell.employee_id);
-    //     console.log(employee)
-
-    //     return employee ? employee.UserName : "N/A"; 
-    //   }
-    // },
+    {
+      Header: "Employee Allotment",
+      accessor: "employee_id",
+      Cell: ({ cell, row }) => {
+        const employee_id = cell.row.employee_id;
+        
+        const employee = employeename.find(emp => emp._id === employee_id);
+    
+        return employee ? employee.UserName : 'N/A';
+      }
+    },
     // { Header: "Employee", accessor: "employee_id" },
     {
       Header: "ActiveStatus",
@@ -325,6 +331,9 @@ const Users = () => {
     }
   };
 
+
+
+
   // update  balance
   const updateBalance = async () => {
     try {
@@ -355,6 +364,8 @@ const Users = () => {
       });
     }
   };
+
+
 
   // update acctive status
 
@@ -397,10 +408,15 @@ const Users = () => {
     }
   };
 
+
+
+
   // get all admin
   const getAlluserdata = async () => {
     setLoading(true);
     const data = { id: user_id };
+
+
     try {
       const response = await getUserdata(data);
       const result =
@@ -408,6 +424,11 @@ const Users = () => {
         response.data.filter((item) => {
           return item.Role === "USER";
         });
+     
+        const filterusername = response.data && response.data.filter((item)=>{
+           return  item._id
+        })
+
       const searchfilter = result?.filter((item) => {
         const searchInputMatch =
           search == "" ||
@@ -421,6 +442,8 @@ const Users = () => {
         return searchInputMatch;
       });
 
+      // console.log("filterusername",filterusername[0].UserName)
+      setEmployeename(filterusername)
       setData(search ? searchfilter : result);
       setFilteredData(result);
       setLoading(false);
@@ -442,6 +465,8 @@ const Users = () => {
 
   // check licence
 
+
+
   const getadminLicence = async () => {
     const data = { userid: user_id };
     try {
@@ -452,13 +477,20 @@ const Users = () => {
     }
   };
 
+
+
   useEffect(() => {
     getAlluserdata();
   }, [search, refresh]);
 
+
+
   useEffect(() => {
     getadminLicence();
   }, []);
+
+
+
 
   return (
     <>
@@ -509,6 +541,8 @@ const Users = () => {
           </div>
         </div>
       </div>
+
+
 
       {modal && (
         <div
@@ -572,6 +606,8 @@ const Users = () => {
           </div>
         </div>
       )}
+
+
 
       {license && (
         <div

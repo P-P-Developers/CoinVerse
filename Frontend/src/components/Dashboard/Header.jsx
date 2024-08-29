@@ -1,14 +1,21 @@
 import { Link, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from 'react';
 import { LogoutUser } from "../../Services/Admin/Addmin";
-
+import { getbroadcastmessageforuser } from "../../Services/Admin/Addmin";
+import { fDateTime } from "../../Utils/Date_format/datefromat";
 const Header = () => {
+
+
   const location = useLocation();
   const user_role = JSON.parse(localStorage.getItem("user_role"));
   const user_details = JSON.parse(localStorage.getItem("user_details"));
 
   const user_id = user_details?.user_id
-   
+
+  const [isActive, setIsActive] = useState(false);
+  const [notification, setNotification] = useState([]);
+
+
 
 
   const capitalizeFirstLetter = (string) => {
@@ -31,24 +38,45 @@ const Header = () => {
   const lastPathSegment = getLastPathSegment(location.pathname);
   const formattedSegment = capitalizeFirstLetter(lastPathSegment);
 
-  const [isActive, setIsActive] = useState(false);
 
   const toggleHamburger = () => {
     setIsActive(!isActive);
   };
 
 
-  const logoutuser=()=>{
+  const logoutuser = () => {
     try {
-       const data = {userid:user_id}
-       const response = LogoutUser(data)
-         if(response.status){
-            console.log("logout success")
-         }
+      const data = { userid: user_id }
+      const response = LogoutUser(data)
+      if (response.status) {
+        console.log("logout success")
+      }
     } catch (error) {
-        console.log("error")
+      console.log("error")
     }
   }
+
+
+
+  const getnotificaton = async () => {
+    try {
+      const data = { userid: user_id }
+      const response = await getbroadcastmessageforuser(data)
+      if (response.status) {
+        // console.log("response", response.data)
+        setNotification(response.data)
+      }
+
+    } catch (error) {
+
+    }
+  }
+
+
+  useEffect(() => {
+    getnotificaton()
+  }, [])
+
 
 
   return (
@@ -488,7 +516,6 @@ const Header = () => {
                                 </div>
                               </div>
                             </li>
-
                             <li>
                               <div className="timeline-panel">
                                 <div className="media me-2 media-danger">KG</div>
@@ -657,7 +684,7 @@ const Header = () => {
                               strokeWidth={2}
                               strokeLinecap="round"
                               strokeLinejoin="round"
-                            
+
                             >
                               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
                               <polyline points="16 17 21 12 16 7" />
@@ -687,7 +714,7 @@ const Header = () => {
         </div>
       )}
       {
-        user_role && user_role === 'ADMIN'  && (
+        user_role && user_role === 'ADMIN' && (
           <div>
             <div
               className="header-banner"
@@ -1056,107 +1083,39 @@ const Header = () => {
                             style={{ height: 380 }}
                           >
                             <ul className="timeline">
-                              <li>
-                                <div className="timeline-panel">
-                                  <div className="media me-2">
-                                    <img
-                                      alt="image"
-                                      width={50}
-                                      src="/assets/images/avatar/1.jpg"
-                                    />
-                                  </div>
-                                  <div className="media-body">
-                                    <h6 className="mb-1">
-                                      Dr sultads Send you Photo
-                                    </h6>
-                                    <small className="d-block">
-                                      29 July 2020 - 02:26 PM
-                                    </small>
-                                  </div>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="timeline-panel">
-                                  <div className="media me-2 media-info">KG</div>
-                                  <div className="media-body">
-                                    <h6 className="mb-1">
-                                      Resport created successfully
-                                    </h6>
-                                    <small className="d-block">
-                                      29 July 2020 - 02:26 PM
-                                    </small>
-                                  </div>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="timeline-panel">
-                                  <div className="media me-2 media-success">
-                                    <i className="fa fa-home" />
-                                  </div>
-                                  <div className="media-body">
-                                    <h6 className="mb-1">
-                                      Reminder : Treatment Time!
-                                    </h6>
-                                    <small className="d-block">
-                                      29 July 2020 - 02:26 PM
-                                    </small>
-                                  </div>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="timeline-panel">
-                                  <div className="media me-2">
-                                    <img
-                                      alt="image"
-                                      width={50}
-                                      src="/assets/images/avatar/1.jpg"
-                                    />
-                                  </div>
-                                  <div className="media-body">
-                                    <h6 className="mb-1">
-                                      Dr sultads Send you Photo
-                                    </h6>
-                                    <small className="d-block">
-                                      29 July 2020 - 02:26 PM
-                                    </small>
-                                  </div>
-                                </div>
-                              </li>
-
-                              <li>
-                                <div className="timeline-panel">
-                                  <div className="media me-2 media-danger">KG</div>
-                                  <div className="media-body">
-                                    <h6 className="mb-1">
-                                      Resport created successfully
-                                    </h6>
-                                    <small className="d-block">
-                                      29 July 2020 - 02:26 PM
-                                    </small>
-                                  </div>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="timeline-panel">
-                                  <div className="media me-2 media-primary">
-                                    <i className="fa fa-home" />
-                                  </div>
-                                  <div className="media-body">
-                                    <h6 className="mb-1">
-                                      Reminder : Treatment Time!
-                                    </h6>
-                                    <small className="d-block">
-                                      29 July 2020 - 02:26 PM
-                                    </small>
-                                  </div>
-                                </div>
-                              </li>
+                              {notification && notification.map((item) => (
+                                <li key={item.id}> 
+                                  <div className="timeline-panel">
+                                    <div className="media me-2">
+                                      <img
+                                        alt="image"
+                                        width={40}
+                                        src="/assets/images/avatar/1.png"
+                                      />
+                                    </div>
+                                    
+                                    <div className="media-body">
+                                      <h6 className="mb-1">
+                                        {item.message} 
+                                      </h6>
+                                      <small className="d-block">
+                                        {fDateTime(item.createdAt)} 
+                                      </small>
+                                    </div>
+                                    <h6 className="mb-4">
+                                        {item.UserName} 
+                                      </h6>
+                                     </div>
+                          
+                                </li>
+                              ))}
                             </ul>
                           </div>
                           <a className="all-notification" href="javascript:void(0);">
                             See all notifications <i className="ti-arrow-end" />
                           </a>
                         </div>
+
                       </li>
 
 
@@ -1315,7 +1274,7 @@ const Header = () => {
                             </Link>
 
                             <Link
-                              to="/admin/setting"
+                              to="/admin/changedpassword"
                               className="dropdown-item ai-icon "
                             >
                               <svg
@@ -2017,7 +1976,7 @@ const Header = () => {
                             </Link>
 
                             <Link
-                              to="/employee/setting"
+                              to="/employee/changedpassword"
                               className="dropdown-item ai-icon "
                             >
                               <svg
@@ -2067,7 +2026,7 @@ const Header = () => {
                                 <polyline points="16 17 21 12 16 7" />
                                 <line x1={21} y1={12} x2={9} y2={12} />
                               </svg>
-                              <span className="ms-2 text-danger"  onClick={logoutuser}>Logout </span>
+                              <span className="ms-2 text-danger" onClick={logoutuser}>Logout </span>
                             </Link>
                           </div>
                         </div>

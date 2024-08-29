@@ -23,7 +23,7 @@ import Broadcast from '../Layouts/Admin/Broadcast';
 import Updateuser from '../Layouts/Admin/Users/Updateuser';
 import UpdateEmploye from '../Layouts/Admin/Employee/UpdateEmploye';
 import Profile from '../Layouts/Admin/Profile';
-import Setting from '../Layouts/Admin/Setting';
+import Changedpassword from '../Layouts/Admin/Changedpassword';
 import Holdoff from '../Layouts/Admin/Holdoff';
 import Currency from "../Layouts/Admin/Currency"
 import Signup from '../Layouts/Admin/Signup';
@@ -67,7 +67,7 @@ const AdminRoutes = () => {
                     <Route path="/addemployees" element={<AddEmployee />} />
                     <Route path="/broadcast" element={<Broadcast />} />
                     <Route path="/profile" element={<Profile />} />
-                    <Route path="/setting" element={<Setting />} />
+                    <Route path="/changedpassword" element={<Changedpassword />} />
                     <Route path="/users/updateuser/:id" element={<Updateuser/>} />
                     <Route path="/employee/updateemploye/:id" element={<UpdateEmploye/>} />
                     <Route path="/signup" element={<Signup/>} />

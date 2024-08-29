@@ -23,6 +23,10 @@ const broadcastmessage = new Schema({
     type: String,
     default: null
   },
+  UserName:{
+    type: String,
+    default: null
+  },
   createdAt: {
     type: Date,
     default: Date.now

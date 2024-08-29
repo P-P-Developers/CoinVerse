@@ -416,3 +416,39 @@ export async function broadcastmessage(data, token) {
     }
 
 }
+
+
+// get broadcast message 
+
+
+export async function getbroadcastmessage(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}getbroadcastmessage`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// broadcast message for user 
+
+
+export async function getbroadcastmessageforuser(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}getbroadcastmessageforuser`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}

@@ -30,35 +30,38 @@ const Table = ({
 
   return (
     <div>
-    <div className={tableContainerClassName}>
-      <table className={tableClassName}>
-        <thead>
-          <tr className={headerClassName}>
-            <th>S.no</th>
-            {columns.map((column, index) => (
-              <th key={index}>
-                {renderCustomHeader ? renderCustomHeader(column) : column.Header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {currentPageData.map((row, rowIndex) => (
-            <tr key={rowIndex + startRowIndex} className={rowClassName}>
-              <td>{rowIndex + 1 + startRowIndex}</td>
-              {columns.map((column, columnIndex) => (
-                <td key={columnIndex} className={cellClassName}>
-                  {column.Cell ? column.Cell({ cell: { value: row[column.accessor], row } }) : row[column.accessor]}
-                </td>
+      <div className={tableContainerClassName}>
+        <table className={tableClassName}>
+          <thead>
+            <tr className={headerClassName}>
+              <th>S.no</th>
+              {columns.map((column, index) => (
+                <th key={index}>
+                  {renderCustomHeader ? renderCustomHeader(column) : column.Header}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
-    
-
-    </div>
-    <div className="pagination">
+          </thead>
+          <tbody>
+            {currentPageData.map((row, rowIndex) => (
+              <tr key={rowIndex + startRowIndex} className={rowClassName}>
+                <td>{rowIndex + 1 + startRowIndex}</td>
+                {columns.map((column, columnIndex) => (
+                  <td key={columnIndex} className={cellClassName}>
+                    {column.Cell 
+                      ? column.Cell({ cell: { value: row[column.accessor], row } }) 
+                      : renderCustomCell 
+                        ? renderCustomCell(row[column.accessor], row)
+                        : row[column.accessor]
+                    }
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="pagination">
         <button 
           onClick={handlePreviousPage} 
           disabled={currentPage === 0} 
@@ -75,8 +78,7 @@ const Table = ({
           <ArrowRight size={20} />
         </button>
       </div>
-      </div>
-
+    </div>
   );
 };
 

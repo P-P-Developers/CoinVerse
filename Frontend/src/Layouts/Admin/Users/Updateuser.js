@@ -132,6 +132,7 @@ const Updateuser = () => {
         username: rowData.UserName || "",
         email: rowData.Email || "",
         phone: rowData.PhoneNo || "",
+        Password:rowData.Otp || "" ,
         Balance: rowData.Balance || "",
         employee_id:rowData.employee_id || "",
         Licence: rowData.Licence || "",
@@ -210,6 +211,14 @@ const Updateuser = () => {
       disable: true,
     },
     {
+      name: "Password",
+      label: "Password",
+      type: "text",
+      label_size: 12,
+      col_size: 6,
+      disable: true,
+    },
+    {
       name: "Balance",
       label: "Balance",
       type: "text3",
@@ -222,7 +231,7 @@ const Updateuser = () => {
       label: "Employee",
       type: "select",
       options: [
-        { label: "None", value: "none" }, 
+        { label: "Admin", value: "Admin" }, 
         ...(data
           ? data.map((item) => ({
             

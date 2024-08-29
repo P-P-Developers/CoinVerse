@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 import { gethistory } from "../../../Services/Superadmin/Superadmin";
+import { DollarSign } from 'lucide-react'
+
 
 const Transaction = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
@@ -12,7 +14,16 @@ const Transaction = () => {
 
   const columns = [
     { Header: "UserName", accessor: "UserName" },
-    { Header: "Balance", accessor: "Balance" },
+    {
+      Header: "Balance",
+      accessor: "Balance",
+      Cell: ({ cell }) => (
+        <>
+          <DollarSign style={{ marginRight: '5px' ,color:"green" }} />
+          {cell.value}
+        </>
+      ),
+    },
     {
       Header: "Create Date",
       accessor: "createdAt",
@@ -28,6 +39,10 @@ const Transaction = () => {
       ),
     },
   ];
+
+
+
+
 
   // getting data
   const getallhistory = async () => {
@@ -49,6 +64,9 @@ const Transaction = () => {
       console.log("error", error);
     }
   };
+
+
+
 
   useEffect(() => {
     getallhistory();

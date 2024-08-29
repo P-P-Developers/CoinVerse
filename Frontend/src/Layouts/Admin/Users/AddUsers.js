@@ -292,7 +292,7 @@ const AddUsers = () => {
       label: "Employee",
       type: "select",
       options: [
-        { label: "None", value: "none" }, 
+        { label: "Admin", value: "Admin" }, 
         ...(data
           ? data.map((item) => ({
             

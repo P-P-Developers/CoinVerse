@@ -26,8 +26,8 @@ const UpdateEmploye = () => {
       email: rowData?.Email || "",
       phone: rowData?.PhoneNo || "",
       // Balance: rowData?.Balance || "",
-      password: "",
-      confirmPassword: "",
+      // password: "",
+      // confirmPassword: "",
       all: false,
       addclient: false,
       Edit:false,
@@ -77,7 +77,7 @@ const UpdateEmploye = () => {
         Email: values.email,
         PhoneNo: values.phone,
         // Balance: values.Balance,
-       Password: values.password,
+      //  Password: values.password,
        Employee_permission: {
         client_add: values.addclient || values.all ? "1" : "0",
         Edit: values.Edit || values.all ? "1" : "0",
@@ -146,8 +146,8 @@ const UpdateEmploye = () => {
       email: rowData?.Email || "",
       phone: rowData?.PhoneNo || "",
       // Balance: rowData?.Balance || "",
-      password: "",
-      confirmPassword: "",
+      // password: "",
+      Password: rowData?.Otp || "",
       addclient:rowData.permissions[0]?.client_add == 1 ? true : false,
       Edit:rowData.permissions[0]?.Edit == 1 ? true : false,
       trade_history:rowData.permissions[0]?.trade_history == 1 ? true : false,
@@ -159,6 +159,8 @@ const UpdateEmploye = () => {
     });
   }, [rowData]);
 
+
+  // console.log("rowData",rowData)
 
   const fields = [
     {
@@ -201,23 +203,24 @@ const UpdateEmploye = () => {
     //   col_size: 6,
     //   disable: false,
     // },
-
     {
-      name: "password",
+      name: "Password",
       label: "Password",
-      type: "password",
+      type: "text",
       label_size: 12,
       col_size: 6,
-      disable: false,
+      disable: true,
     },
-    {
-      name: "confirmPassword",
-      label: "Confirm Password",
-      type: "password",
-      label_size: 12,
-      col_size: 6,
-      disable: false,
-    },
+
+    // {
+    //   name: "password",
+    //   label: "Password",
+    //   type: "password",
+    //   label_size: 12,
+    //   col_size: 6,
+    //   disable: false,
+    // },
+   
     {
       name: "all",
       label: "Select All",
