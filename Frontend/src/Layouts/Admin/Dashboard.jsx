@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Admindashboarddata } from "../../Services/Admin/Addmin";
+import LivePriceCard from "./Card";
 
 const Dashboard = () => {
   
@@ -1373,6 +1374,25 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
+
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="card transaction-table">
+                  <div class="card-header border-0 flex-wrap pb-0">
+                    <div class="mb-2">
+                      <h4 class="card-title">Live Price Updates</h4>
+                     
+
+            <LivePriceCard />
+                    </div>
+                 
+                  </div>
+                 
+                </div>
+              </div>
+            </div>
+
+
 
             <div class="row">
               <div class="col-lg-12">
