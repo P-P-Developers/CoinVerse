@@ -19,14 +19,24 @@ const AddEmployee = () => {
       username: "",
       email: "",
       phone: "",
-      Balance: "",
+      Licence: 0,
       password: "",
       confirmPassword: "",
       parent_id: "",
       parent_role: "",
       Role: "",
+      all: false,
+      addclient: false,
+      Edit:false,
+      trade_history:false,
+      open_position:false,
+      Licence_Edit:false,
+      limit_edit:false,
+      Balance_edit:false
+      
+
     },
-    
+
     validate: (values) => {
       let errors = {};
       if (!values.fullName) {
@@ -45,9 +55,9 @@ const AddEmployee = () => {
       } else if (!/^\d{10}$/.test(values.phone)) {
         errors.phone = "Please enter a valid 10-digit phone number.";
       }
-      if (!values.Balance) {
-        errors.Balance = "Please Enter Balance";
-      }
+      // if (!values.Licence) {
+      //   errors.Licence = "Please Enter Licence";
+      // }
       if (!values.password) {
         errors.password = "Please Enter Password";
       }
@@ -65,11 +75,20 @@ const AddEmployee = () => {
         UserName: values.username,
         Email: values.email,
         PhoneNo: values.phone,
-        Balance: values.Balance,
+        Licence: 0,
         password: values.password,
         parent_role: Role || "ADMIN",
         parent_id: user_id,
         Role: "EMPLOYE",
+        Employee_permission: {
+          client_add: values.addclient || values.all ? "1" : "0",
+          Edit: values.Edit || values.all ? "1" : "0",
+          trade_history: values.trade_history || values.all ? "1" : "0",
+          open_position: values.open_position || values.all ? "1" : "0",
+          Licence_Edit: values.Licence_Edit || values.all ? "1" : "0",
+          limit_edit: values.limit_edit || values.all ? "1" : "0",
+          Balance_edit: values.Balance_edit || values.all ? "1" : "0",
+        },
       };
 
       setSubmitting(false);
@@ -101,9 +120,27 @@ const AddEmployee = () => {
           console.log("Error:", error);
         });
     },
+    onChange: (e) => {
+      const { name, checked } = e.target;
+      formik.setFieldValue(name, checked);
+      if (name === "all") {
+        formik.setFieldValue("addclient", checked);
+        formik.setFieldValue("Edit", checked);
+        formik.setFieldValue("trade_history", checked);
+        formik.setFieldValue("open_position", checked);
+        formik.setFieldValue("Licence_Edit", checked);
+        formik.setFieldValue("limit_edit", checked);
+        formik.setFieldValue("Balance_edit", checked);
+      }
+    },
+  
   });
 
+
   
+
+
+
   const fields = [
     {
       name: "fullName",
@@ -137,14 +174,14 @@ const AddEmployee = () => {
       col_size: 6,
       disable: false,
     },
-    {
-      name: "Balance",
-      label: "Balance",
-      type: "text",
-      label_size: 12,
-      col_size: 6,
-      disable: false,
-    },
+    // {
+    //   name: "Licence",
+    //   label: "Licence",
+    //   type: "text3",
+    //   label_size: 12,
+    //   col_size: 6,
+    //   disable: false,
+    // },
     {
       name: "password",
       label: "Password",
@@ -160,6 +197,76 @@ const AddEmployee = () => {
       label_size: 12,
       col_size: 6,
       disable: false,
+    },
+    {
+      name: "all",
+      label: "Select All",
+      type: "checkbox",
+      label_size: 12,
+      col_size: 12,
+      check_box_true: formik.values.all,
+    },
+    {
+      name: "addclient",
+      label: "Add Client",
+      type: "checkbox",
+      label_size: 12,
+      col_size: 3,
+      check_box_true:
+        formik.values.all || formik.values.addclient ? true : false,
+    },
+    {
+      name: "Edit",
+      label: "Edit",
+      type: "checkbox",
+      label_size: 12,
+      col_size: 3,
+      check_box_true:
+        formik.values.all || formik.values.Edit ? true : false,
+    },
+    {
+      name: "trade_history",
+      label: "trade_history",
+      type: "checkbox",
+      label_size: 12,
+      col_size: 3,
+      check_box_true: formik.values.all || formik.values.trade_history ? true : false,
+    },
+    {
+      name: "open_position",
+      label: "open_position",
+      type: "checkbox",
+      label_size: 12,
+      col_size: 3,
+      check_box_true:
+        formik.values.all || formik.values.open_position ? true : false,
+    },
+    {
+      name: "Licence_Edit",
+      label: "Licence_Edit",
+      type: "checkbox",
+      label_size: 12,
+      col_size: 3,
+      check_box_true:
+        formik.values.all || formik.values.Licence_Edit ? true : false,
+    },
+    {
+      name: "limit_edit",
+      label: "limit_edit",
+      type: "checkbox",
+      label_size: 12,
+      col_size: 3,
+      check_box_true:
+        formik.values.all || formik.values.limit_edit ? true : false,
+    },
+    {
+      name: "Balance_edit",
+      label: "Balance_edit",
+      type: "checkbox",
+      label_size: 12,
+      col_size: 3,
+      check_box_true:
+        formik.values.all || formik.values.Balance_edit ? true : false,
     },
   ];
 

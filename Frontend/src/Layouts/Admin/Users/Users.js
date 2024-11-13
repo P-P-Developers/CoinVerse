@@ -9,8 +9,7 @@ import {
   updateuserLicence,
   DeleteUserdata,
   adminWalletBalance,
-  TotalcountLicence
-  
+  TotalcountLicence,
 } from "../../../Services/Admin/Addmin";
 
 import { Link, Navigate, useNavigate } from "react-router-dom";
@@ -20,6 +19,7 @@ import {
   Trash2,
   CircleDollarSign,
   CircleMinus,
+  Eye,
 } from "lucide-react";
 
 import Swal from "sweetalert2";
@@ -39,18 +39,22 @@ const Users = () => {
   const [modal, setModal] = useState(false);
   const [id, setID] = useState("");
   const [type, setType] = useState("");
+  const [refresh, setrefresh] = useState(false);
 
   const [license, setLicence] = useState(false);
   const [licenseid, setLicenceId] = useState("");
   const [licencevalue, setLicencevalue] = useState("");
   const [checkLicence, setCheckLicence] = useState([]);
 
-
   const [loading, setLoading] = useState(false);
 
   const [checkprice, setCheckprice] = useState("");
+   
+  const [employeename,setEmployeename] = useState([])
+ 
 
-
+  
+   
   const columns = [
     { Header: "FullName", accessor: "FullName" },
     { Header: "UserName", accessor: "UserName" },
@@ -119,6 +123,18 @@ const Users = () => {
         </div>
       ),
     },
+    {
+      Header: "Employee Allotment",
+      accessor: "employee_id",
+      Cell: ({ cell, row }) => {
+        const employee_id = cell.row.employee_id;
+        
+        const employee = employeename.find(emp => emp._id === employee_id);
+    
+        return employee ? employee.UserName : 'N/A';
+      }
+    },
+    // { Header: "Employee", accessor: "employee_id" },
     {
       Header: "ActiveStatus",
       accessor: "ActiveStatus",
@@ -218,27 +234,31 @@ const Users = () => {
       Cell: ({ cell }) => {
         return (
           <div>
-            <Pencil
+            <Eye
               style={{ cursor: "pointer", color: "#33B469" }}
-              // onClick={() => updateuserpage(cell.row._id, cell)}
+              onClick={() => Clienthistory(cell.row._id)}
             />
           </div>
         );
       },
     },
 
+    ,
   ];
 
+  const Clienthistory = (_id) => {
+    navigate(`tradehistory/${_id}`);
+  };
 
-  
 
 
   const updateuserpage = (_id, obj) => {
     navigate(`updateuser/${_id}`, { state: { rowData: obj.row } });
   };
 
-  //delete user
 
+
+  //delete user
   const DeleteUser = async (_id) => {
     try {
       const confirmResult = await Swal.fire({
@@ -260,7 +280,7 @@ const Users = () => {
           title: "User Deleted",
           text: "The user has been deleted successfully.",
         });
-
+        // setrefresh(!refresh)
         getAlluserdata();
       }
     } catch (error) {
@@ -273,7 +293,6 @@ const Users = () => {
   };
 
   // update Licence
-
   const updateLicence = async () => {
     try {
       if (parseInt(checkLicence.CountLicence) < parseInt(licencevalue)) {
@@ -292,12 +311,14 @@ const Users = () => {
         Licence: licencevalue,
         parent_Id: user_id,
       });
-      
+
       Swal.fire({
         icon: "success",
         title: "Licence Updated",
         text: "The Licence has been updated successfully.",
       });
+      // setrefresh(!refresh)
+
       getAlluserdata();
       getadminLicence();
       setLicence(false);
@@ -310,6 +331,9 @@ const Users = () => {
     }
   };
 
+
+
+
   // update  balance
   const updateBalance = async () => {
     try {
@@ -320,32 +344,29 @@ const Users = () => {
         parent_Id: user_id,
         Type: type,
       });
-  
+
       // Show success message
       Swal.fire({
         icon: "success",
         title: "Balance Updated",
         text: response.message || "The balance has been updated successfully.",
       });
-  
+
       // Refresh user data and close the modal
+
       getAlluserdata();
       setModal(false);
     } catch (error) {
-      // Handle errors and show error message
-      let errorMessage = "There was an error updating the balance. Please try again.";
-      if (error.response && error.response.data && error.response.data.message) {
-        errorMessage = error.response.data.message;
-      }
-  
       Swal.fire({
         icon: "error",
         title: "Update Failed",
-        text: errorMessage,
+        text: "error",
       });
     }
   };
-  
+
+
+
   // update acctive status
 
   const updateactivestatus = async (event, id) => {
@@ -381,14 +402,21 @@ const Users = () => {
         );
       }
     } else if (result.dismiss === Swal.DismissReason.cancel) {
+      // setrefresh(!refresh)
+
       getAlluserdata();
     }
   };
+
+
+
 
   // get all admin
   const getAlluserdata = async () => {
     setLoading(true);
     const data = { id: user_id };
+
+
     try {
       const response = await getUserdata(data);
       const result =
@@ -396,8 +424,27 @@ const Users = () => {
         response.data.filter((item) => {
           return item.Role === "USER";
         });
+     
+        const filterusername = response.data && response.data.filter((item)=>{
+           return  item._id
+        })
 
-      setData(result);
+      const searchfilter = result?.filter((item) => {
+        const searchInputMatch =
+          search == "" ||
+          (item.FullName &&
+            item.FullName.toLowerCase().includes(search.toLowerCase())) ||
+          (item.UserName &&
+            item.UserName.toLowerCase().includes(search.toLowerCase())) ||
+          (item.Email &&
+            item.Email.toLowerCase().includes(search.toLowerCase()));
+
+        return searchInputMatch;
+      });
+
+      // console.log("filterusername",filterusername[0].UserName)
+      setEmployeename(filterusername)
+      setData(search ? searchfilter : result);
       setFilteredData(result);
       setLoading(false);
     } catch (error) {
@@ -405,10 +452,7 @@ const Users = () => {
     }
   };
 
-
-
-  
-  // // admin blaance 
+  // // admin blaance
   // const getadminbalance = async () => {
   //   const data = {userid: user_id};
   //   try {
@@ -419,11 +463,12 @@ const Users = () => {
   //   }
   // };
 
-
   // check licence
 
+
+
   const getadminLicence = async () => {
-    const data = {userid: user_id};
+    const data = { userid: user_id };
     try {
       const response = await TotalcountLicence(data);
       setCheckLicence(response.data);
@@ -433,63 +478,71 @@ const Users = () => {
   };
 
 
+
+  useEffect(() => {
+    getAlluserdata();
+  }, [search, refresh]);
+
+
+
   useEffect(() => {
     getadminLicence();
-    getAlluserdata();
-    // getadminbalance();
   }, []);
 
 
-  
+
+
   return (
     <>
-      {loading ? (
-        <Loader />
-      ) : (
-        <div className="container-fluid">
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="card transaction-table">
-                <div className="card-header border-0 flex-wrap pb-0">
-                  <div className="mb-4">
-                    <h4 className="card-title">All Users</h4>
-                  </div>
-                  <Link
-                    to="/admin/adduser"
-                    className="float-end mb-4 btn btn-primary"
-                  >
-                    Add User
-                  </Link>
+      <div className="container-fluid">
+        <div className="row">
+          <div className="col-lg-12">
+            <div className="card transaction-table">
+              <div className="card-header border-0 flex-wrap pb-0">
+                <div className="mb-4">
+                  <h4 className="card-title">All Users</h4>
                 </div>
-                <div className="card-body p-0">
-                  <div className="tab-content" id="myTabContent1">
-                    <div
-                      className="tab-pane fade show active"
-                      id="Week"
-                      role="tabpanel"
-                      aria-labelledby="Week-tab"
-                    >
-                      <div className="mb-3 ms-4">
-                        Search :{" "}
-                        <input
-                          className="ml-2 input-search form-control"
-                          defaultValue=""
-                          style={{ width: "20%" }}
-                          type="text"
-                          placeholder="Search..."
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
-                        />
-                      </div>
-                      <Table columns={columns} data={data} />
+                <Link
+                  to="/admin/adduser"
+                  className="float-end mb-4 btn btn-primary"
+                >
+                  Add User
+                </Link>
+              </div>
+              <div className="card-body p-0">
+                <div className="tab-content" id="myTabContent1">
+                  <div
+                    className="tab-pane fade show active"
+                    id="Week"
+                    role="tabpanel"
+                    aria-labelledby="Week-tab"
+                  >
+                    <div className="mb-3 ms-4">
+                      Search :{" "}
+                      <input
+                        className="ml-2 input-search form-control"
+                        style={{ width: "20%" }}
+                        type="text"
+                        placeholder="Search..."
+                        value={search}
+                        autoFocus
+                        onChange={(e) => setSearch(e.target.value)}
+                      />
                     </div>
+                    {loading ? (
+                      <Loader />
+                    ) : (
+                      <Table columns={columns} data={data && data} />
+                    )}
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      )}
+      </div>
+
+
 
       {modal && (
         <div
@@ -515,7 +568,7 @@ const Users = () => {
                 <div className="modal-body">
                   <div className="row">
                     <div className="col-lg-12 col-sm-12">
-                      <div className="input-block mb-3">
+                    <div className="input-block mb-3">
                         <input
                           type="text"
                           className="form-control"
@@ -553,6 +606,8 @@ const Users = () => {
           </div>
         </div>
       )}
+
+
 
       {license && (
         <div

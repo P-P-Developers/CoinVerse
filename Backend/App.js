@@ -9,6 +9,7 @@ const https = require('https');
 const fs = require('fs');
 const cors = require('cors');
 const bodyparser = require('body-parser');
+const socketIo = require("socket.io");
 
 
 
@@ -35,7 +36,16 @@ app.use(bodyparser.json({ limit: '10mb', extended: true }));
 
 
 
+
 const server = http.createServer(app);
+const io = socketIo(server, {
+    cors: {
+        origin: "*",
+        credentials: true
+    }
+});
+
+require("./forexSocketData")(app,io);
 
 
 

@@ -25833,7 +25833,7 @@ svg.pulse-svg .third-circle {
 }
 
 [data-headerbg="color_13"][data-theme-version="dark"] .header-right .logout path,
-[data-headerbg="color_13"] .header-right .logout path {
+[data-headerbg="color_13"] .header-right . path {
   fill: #fd5353;
 }
 

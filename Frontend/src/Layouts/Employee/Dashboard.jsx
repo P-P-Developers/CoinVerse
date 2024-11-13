@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Admindashboarddata } from "../../Services/Admin/Addmin";
+import { getEmployeeUserdata } from "../../Services/Employee/Employee";
 
 const Dashboard = () => {
 
@@ -11,7 +12,7 @@ const Dashboard = () => {
     const getdashboard = async () => {
         try {
             const data = { parent_id: user_id };
-            const response = await Admindashboarddata(data);
+            const response = await getEmployeeUserdata(data);
 
             if (response.status) {
                 setCountdata(response.data);
@@ -42,7 +43,7 @@ const Dashboard = () => {
                                                 Total User
                                             </p>
                                             <h2 className="font-w600 mb-0">
-                                                {countdata.TotalUserCount && countdata.TotalUserCount}
+                                                {countdata.TotalEmployeUserCount && countdata.TotalEmployeUserCount}
                                             </h2>
                                         </div>
                                         <div className="dlab-swiper-circle">
@@ -264,8 +265,8 @@ const Dashboard = () => {
                                                 Total Active User
                                             </p>
                                             <h2 className="font-w600 mb-0">
-                                                {countdata.TotalActiveUserCount &&
-                                                    countdata.TotalActiveUserCount}
+                                                {countdata.TotalActiveEmployeUserCount &&
+                                                    countdata.TotalActiveEmployeUserCount}
                                             </h2>
                                         </div>
 
@@ -489,8 +490,8 @@ const Dashboard = () => {
                                                 Total InActive User
                                             </p>
                                             <h2 className="font-w600 mb-0">
-                                                {countdata.TotalInActiveUserCount &&
-                                                    countdata.TotalInActiveUserCount}
+                                                {countdata.TotalInActiveEmployeUserCount &&
+                                                    countdata.TotalInActiveEmployeUserCount}
                                             </h2>
                                         </div>
                                         <div className="dlab-swiper-circle">

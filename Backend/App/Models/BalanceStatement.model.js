@@ -31,6 +31,14 @@ const statementSchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  symbol: {
+    type: String,
+    default: null
+  },
+  brokerage: {
+    type: Number,
+    default: null,
+  },
   createdAt: {
         type: Date,
         default: Date.now

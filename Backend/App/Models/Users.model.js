@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 const Role = require("./Role.model")
 
 
+
 const userModel = Schema({
     FullName: {
         type: String,
@@ -46,6 +47,11 @@ const userModel = Schema({
         trim: true,
         default: null
     },
+    employee_id :{
+         type:String,
+         trim: true,
+         default: null
+    },
     Create_Date: {
         type: Date,
         default: Date.now
@@ -62,7 +68,7 @@ const userModel = Schema({
     ActiveStatus: {
         type: String,
         enum: ['1', '0'],
-        default: '1'
+        default: '0'
     },
     createdAt: {
         type: Date,

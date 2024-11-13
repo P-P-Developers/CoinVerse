@@ -314,9 +314,134 @@ export async function adminWalletBalance(data, token) {
 
 
 
+// total count licence
+
 export async function TotalcountLicence(data, token) {
     try {
         const res = await axios.post(`${Config.base_url}TotalcountLicence`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// manage logs of user logout 
+
+export async function LogoutUser(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}logoutUser`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// manage logspanel 
+
+export async function getlogoutuser(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}getlogsuser`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// getclienttradehistory 
+
+
+export async function Clienthistory(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}getclienttradehistory`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+// get license data 
+
+
+export async function getlicencedata(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}getlicensedata`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// add broadcast message 
+
+
+export async function broadcastmessage(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}broadcastmessage`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// get broadcast message 
+
+
+export async function getbroadcastmessage(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}getbroadcastmessage`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+// broadcast message for user 
+
+
+export async function getbroadcastmessageforuser(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}getbroadcastmessageforuser`, data, {
             data: {},
         })
         return await res?.data;

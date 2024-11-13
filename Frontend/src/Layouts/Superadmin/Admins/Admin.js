@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
 import { getUserdata, Addbalance , updateActivestatus , Delete_Admin} from "../../../Services/Superadmin/Superadmin";
 import { Link, useNavigate } from "react-router-dom";
-import { CirclePlus, Pencil,Trash2,CircleDollarSign,CircleMinus } from "lucide-react";
+import { CirclePlus, Pencil,Trash2,CircleDollarSign,CircleMinus,Eye } from "lucide-react";
 import Swal from 'sweetalert2';
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 import Loader from "../../../Utils/Loader/Loader";
@@ -161,10 +161,13 @@ const Admin = () => {
         return (
           <div>
            
-            <Pencil style={{ cursor: 'pointer' }} 
+            <Pencil style={{ cursor: 'pointer' ,color: "#33B469" }} 
                onClick={() => updateAdmin(cell.row._id,cell)}
             />
-             <Trash2 style={{ cursor: 'pointer', marginRight: '10px' }}
+             <Trash2 style={{ cursor: "pointer",
+                marginRight: "10px",
+                marginLeft: "3px",
+                color: "red", }}
                onClick={() => DeleteAdmin(cell.row._id)}
             />
           </div>
@@ -184,9 +187,56 @@ const Admin = () => {
        
        },
      },
+     {
+      Header: "User",
+      accessor: "Admin_User",
+      Cell: ({ cell }) => {
+        return (
+          <div>
+            <Eye
+              style={{ cursor: "pointer", color: "#33B469" }}
+              onClick={() => AdminUserdetail(cell.row._id)}
+            />
+          </div>
+        );
+      },
+    },
+    {
+      Header: "Employee",
+      accessor: "Employee",
+      Cell: ({ cell }) => {
+        return (
+          <div>
+            <Eye
+              style={{ cursor: "pointer", color: "#33B469" }}
+              onClick={() => AdminEmployeedetail(cell.row._id)}
+            />
+          </div>
+        );
+      },
+    },
   ];
 
+
+
+
+  // user 
+
+  const AdminUserdetail = (_id) => {
+    navigate(`adminuser/${_id}`);
+    
+  };
+
+
+ // admin employee
+ 
+ 
+ const AdminEmployeedetail = (_id) => {
+  navigate(`adminemployee/${_id}`);
   
+};
+
+
 
   // delete admin
 

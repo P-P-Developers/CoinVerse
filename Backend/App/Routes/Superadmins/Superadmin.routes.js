@@ -3,7 +3,8 @@
 const router = require("express").Router()
 
 const {AddAdmin,walletRecharge , getAdminDetail, UpdateActiveStatusAdmin ,getadminhistory,Update_Admin ,Delete_Admin 
-    , SuperadminGetDashboardData,getAllclent} = require("../../Controllers/Superadmin/Admins/admin")
+    , SuperadminGetDashboardData,getAllclent , getadminuserdetail ,getEmployeeuserdetail
+     ,getlicencedetail,getPosition_detail } = require("../../Controllers/Superadmin/Admins/admin")
 
 
 
@@ -17,6 +18,10 @@ router.post('/admin/Update_Admin', Update_Admin);
 router.post('/admin/Delete_Admin', Delete_Admin);
 router.post('/SuperadminGetDashboardData', SuperadminGetDashboardData);
 router.post('/getAllclent', getAllclent);
+router.post('/getadminuserdetail', getadminuserdetail);
+router.post('/getEmployeeuserdetail', getEmployeeuserdetail);
+router.post('/getlicencedetail', getlicencedetail);
+router.get('/getPosition_detail', getPosition_detail);
 
 
 

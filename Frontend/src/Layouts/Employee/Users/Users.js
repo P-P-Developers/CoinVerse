@@ -4,6 +4,7 @@ import {
   getUserdata,
   Addbalance,
   updateActivestatus,
+  getAllClient
 } from "../../../Services/Superadmin/Superadmin";
 import {
   updateuserLicence,
@@ -17,17 +18,22 @@ import {
   Trash2,
   CircleDollarSign,
   CircleMinus,
+  Eye,
 } from "lucide-react";
 
 import Swal from "sweetalert2";
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 import Loader from "../../../Utils/Loader/Loader";
+import { getEmployeedata } from "../../../Services/Employee/Employee";
+import { getEmployee_permissiondata } from "../../../Services/Employee/Employee";
 
 const Users = () => {
   const navigate = useNavigate();
 
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
+
+
 
   const [filteredData, setFilteredData] = useState([]);
   const [search, setSearch] = useState("");
@@ -42,13 +48,18 @@ const Users = () => {
   const [licencevalue, setLicencevalue] = useState("");
 
   const [loading, setLoading] = useState(false);
+  const [getaccess, setGetaccess] = useState({});
+
+  const [getid,setGetid] = useState([])
+
+
 
   const columns = [
     { Header: "FullName", accessor: "FullName" },
     { Header: "UserName", accessor: "UserName" },
     { Header: "Email", accessor: "Email" },
     { Header: "Phone No", accessor: "PhoneNo" },
-    {
+    getaccess.Balance_edit === 1 && {
       Header: "Balance",
       accessor: "Balance",
       Cell: ({ cell }) => (
@@ -112,26 +123,43 @@ const Users = () => {
       ),
     },
     {
-      Header: "ActiveStatus",
+      Header: "Status",
       accessor: "ActiveStatus",
       Cell: ({ cell }) => (
-        <label className="form-check form-switch">
-          <input
-            id={`rating_${cell.row.id}`}
-            className="form-check-input"
-            type="checkbox"
-            role="switch"
-            onChange={(event) => updateactivestatus(event, cell.row._id)}
-            defaultChecked={cell.value == 1}
-          />
-          <label
-            htmlFor={`rating_${cell.row.id}`}
-            className="checktoggle checkbox-bg"
-          ></label>
-        </label>
+        <span
+          style={{
+            color: cell.row.ActiveStatus == 1 ? 'green' : 'red',
+            fontWeight: 'bold',
+          }}
+        >
+          {cell.row.ActiveStatus == 1 ? 'Approved' : 'Pending'}
+        </span>
       ),
     },
-    {
+
+    // {
+    //   Header: "ActiveStatus",
+    //   accessor: "ActiveStatus",
+    //   Cell: ({ cell }) => (
+    //     <label className="form-check form-switch">
+    //       <input
+    //         id={`rating_${cell.row.id}`}
+    //         className="form-check-input"
+    //         type="checkbox"
+    //         role="switch"
+    //         onChange={(event) => updateactivestatus(event, cell.row._id)}
+    //         defaultChecked={cell.value == 1}
+    //       />
+    //       <label
+    //         htmlFor={`rating_${cell.row.id}`}
+    //         className="checktoggle checkbox-bg"
+    //       ></label>
+    //     </label>
+    //   ),
+    // },
+
+
+    getaccess.Licence_Edit === 1 && {
       Header: "Licence",
       accessor: "Licence",
       Cell: ({ cell }) => (
@@ -167,6 +195,7 @@ const Users = () => {
         </div>
       ),
     },
+
     {
       Header: "Create Date",
       accessor: "Create_Date",
@@ -174,7 +203,8 @@ const Users = () => {
         return fDateTime(cell.value);
       },
     },
-    {
+
+    getaccess.Edit === 1 && {
       Header: "Action",
       accessor: "Action",
       Cell: ({ cell }) => {
@@ -197,11 +227,33 @@ const Users = () => {
         );
       },
     },
+    
+    getaccess.trade_history === 1 && {
+      Header: "Trade History",
+      accessor: "Trade History",
+      Cell: ({ cell }) => {
+        return (
+          <div>
+            <Eye
+              style={{ cursor: "pointer", color: "#33B469" }}
+              onClick={() => Clienthistory(cell.row._id)}
+            />
+          </div>
+        );
+      },
+    },
   ];
 
   const updateuserpage = (_id, obj) => {
     navigate(`updateuser/${_id}`, { state: { rowData: obj.row } });
   };
+
+
+  const Clienthistory = (_id) => {
+    navigate(`tradehistory/${_id}`);
+  };
+
+
 
   //delete user
 
@@ -238,6 +290,10 @@ const Users = () => {
     }
   };
 
+
+
+
+
   // update Licence
 
   const updateLicence = async () => {
@@ -264,13 +320,17 @@ const Users = () => {
     }
   };
 
+
+
+
+
   // update  balance
   const updateBalance = async () => {
     try {
       const response = await Addbalance({
         id: id,
         Balance: balance,
-        parent_Id: user_id,
+        parent_Id: getid,
         Type: type,
       });
 
@@ -301,58 +361,93 @@ const Users = () => {
     }
   };
 
+
+
+
+
   // update acctive status
 
-  const updateactivestatus = async (event, id) => {
-    const user_active_status = event.target.checked ? 1 : 0;
+  // const updateactivestatus = async (event, id) => {
+  //   const user_active_status = event.target.checked ? 1 : 0;
 
-    const result = await Swal.fire({
-      title: "Do you want to save the changes?",
-      showCancelButton: true,
-      confirmButtonText: "Save",
-      cancelButtonText: "Cancel",
-      allowOutsideClick: false,
-    });
+  //   const result = await Swal.fire({
+  //     title: "Do you want to save the changes?",
+  //     showCancelButton: true,
+  //     confirmButtonText: "Save",
+  //     cancelButtonText: "Cancel",
+  //     allowOutsideClick: false,
+  //   });
 
-    if (result.isConfirmed) {
-      try {
-        const response = await updateActivestatus({ id, user_active_status });
-        if (response.status) {
-          Swal.fire({
-            title: "Saved!",
-            icon: "success",
-            timer: 1000,
-            timerProgressBar: true,
-          });
-          setTimeout(() => {
-            Swal.close(); // Close the modal
-          }, 1000);
-        }
-      } catch (error) {
-        Swal.fire(
-          "Error",
-          "There was an error processing your request.",
-          "error"
-        );
+  //   if (result.isConfirmed) {
+  //     try {
+  //       const response = await updateActivestatus({ id, user_active_status });
+  //       if (response.status) {
+  //         Swal.fire({
+  //           title: "Saved!",
+  //           icon: "success",
+  //           timer: 1000,
+  //           timerProgressBar: true,
+  //         });
+  //         setTimeout(() => {
+  //           Swal.close(); // Close the modal
+  //         }, 1000);
+  //       }
+  //     } catch (error) {
+  //       Swal.fire(
+  //         "Error",
+  //         "There was an error processing your request.",
+  //         "error"
+  //       );
+  //     }
+  //   } else if (result.dismiss === Swal.DismissReason.cancel) {
+  //     getAlluserdata();
+  //   }
+  // };
+
+
+
+
+  const getpermission = async () => {
+    try {
+      const data = { id: user_id };
+      const response = await getEmployee_permissiondata(data);
+      if (response.status) {
+
+        setGetaccess(response.data[0]);
       }
-    } else if (result.dismiss === Swal.DismissReason.cancel) {
-      getAlluserdata();
+    } catch (error) {
+      console.error("Error fetching permissions:", error);
     }
   };
+
+  
+  // console.log("getaccess",getaccess)
 
   // get all admin
   const getAlluserdata = async () => {
     setLoading(true);
     const data = { id: user_id };
     try {
-      const response = await getUserdata(data);
+      const response = await getEmployeedata(data);
       const result =
         response.data &&
         response.data.filter((item) => {
           return item.Role === "USER";
         });
+      const searchfilter = result?.filter((item) => {
+        const searchInputMatch =
+          search == "" ||
+          (item.FullName &&
+            item.FullName.toLowerCase().includes(search.toLowerCase())) ||
+          (item.UserName &&
+            item.UserName.toLowerCase().includes(search.toLowerCase())) ||
+          (item.Email &&
+            item.Email.toLowerCase().includes(search.toLowerCase()));
 
-      setData(result);
+        return searchInputMatch;
+      });
+
+      setData(search ? searchfilter : result);
       setFilteredData(result);
       setLoading(false);
     } catch (error) {
@@ -360,59 +455,82 @@ const Users = () => {
     }
   };
 
+  
+  const getallclient=async()=>{
+    try {
+      const data = {userid:user_id}
+      const response = await getAllClient(data)
+      if(response.status){
+        // console.log("response",response.data.parent_id)
+        setGetid(response.data.parent_id)
+      }
+
+    } catch (error) {
+      console.log("error")
+    }
+ }
+
+ 
+
+
+
   useEffect(() => {
     getAlluserdata();
-  }, []);
+    getpermission()
+    getallclient()
+  }, [search]);
+
+
 
   return (
     <>
-      {loading ? (
-        <Loader />
-      ) : (
-        <div className="container-fluid">
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="card transaction-table">
-                <div className="card-header border-0 flex-wrap pb-0">
-                  <div className="mb-4">
-                    <h4 className="card-title">All Users</h4>
-                  </div>
-                  <Link
-                    to="/admin/adduser"
-                    className="float-end mb-4 btn btn-primary"
-                  >
-                    Add User
-                  </Link>
+      <div className="container-fluid">
+        <div className="row">
+          <div className="col-lg-12">
+            <div className="card transaction-table">
+              <div className="card-header border-0 flex-wrap pb-0">
+                <div className="mb-4">
+                  <h4 className="card-title">All Users</h4>
                 </div>
-                <div className="card-body p-0">
-                  <div className="tab-content" id="myTabContent1">
-                    <div
-                      className="tab-pane fade show active"
-                      id="Week"
-                      role="tabpanel"
-                      aria-labelledby="Week-tab"
-                    >
-                      <div className="mb-3 ms-4">
-                        Search :{" "}
-                        <input
-                          className="ml-2 input-search form-control"
-                          defaultValue=""
-                          style={{ width: "20%" }}
-                          type="text"
-                          placeholder="Search..."
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
-                        />
-                      </div>
-                      <Table columns={columns} data={data} />
+                <Link
+                  to="/employee/adduser"
+                  className="float-end mb-4 btn btn-primary"
+                >
+                  Add User
+                </Link>
+              </div>
+              <div className="card-body p-0">
+                <div className="tab-content" id="myTabContent1">
+                  <div
+                    className="tab-pane fade show active"
+                    id="Week"
+                    role="tabpanel"
+                    aria-labelledby="Week-tab"
+                  >
+                    <div className="mb-3 ms-4">
+                      Search :{" "}
+                      <input
+                        className="ml-2 input-search form-control"
+                        style={{ width: "20%" }}
+                        type="text"
+                        placeholder="Search..."
+                        value={search}
+                        autoFocus
+                        onChange={(e) => setSearch(e.target.value)}
+                      />
                     </div>
+                    {loading ? (
+                      <Loader />
+                    ) : (
+                      <Table columns={columns} data={data && data} />
+                    )}
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      )}
+      </div>
 
       {modal && (
         <div

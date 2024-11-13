@@ -33,3 +33,21 @@ export async function SignIn(data, token) {
     }
 
 }
+
+
+// changed password 
+
+
+export async function PasswordChanged(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}PasswordChanged`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}

@@ -54,8 +54,8 @@ const Profile = () => {
                                     <div className="p-5">
                                         <div className="author-profile">
                                             <div className="author-media">
-                                                <img src="/assets/images/jd.jpg" alt="" />
-                                                <div
+                                                <img src="/assets/images/man.png" alt="" />
+                                                {/* <div
                                                     className="upload-link"
                                                     title=""
                                                     data-toggle="tooltip"
@@ -64,7 +64,7 @@ const Profile = () => {
                                                 >
                                                     <input type="file" className="update-flie" />
                                                     <i className="fa fa-camera" />
-                                                </div>
+                                                </div> */}
                                             </div>
                                             <div className="author-info">
                                                 <h6 className="title">{client.UserName && client.UserName}</h6>

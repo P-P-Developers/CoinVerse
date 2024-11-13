@@ -36,12 +36,12 @@ export const superadmin_header = [
         icon: "fe fe-dollar-sign",
         route: "/superadmin/holdoff",
     },
-    {
-        id: 7,
-        name: 'Currency Setup',
-        icon: "fe fe-dollar-sign",
-        route: "/superadmin/currency",
-    },
+    // {
+    //     id: 7,
+    //     name: 'Currency Setup',
+    //     icon: "fe fe-dollar-sign",
+    //     route: "/superadmin/currency",
+    // },
     
 ];
 
@@ -79,12 +79,12 @@ export const admin_header = [
         icon: "fe fe-file-text",
         route: "/admin/report",
     },
-    {
-        id: 6,
-        name: 'Trade History',
-        icon: "fe fe-activity",
-        route: "/admin/tradehistory",
-    },
+    // {
+    //     id: 6,
+    //     name: 'Trade History',
+    //     icon: "fe fe-activity",
+    //     route: "/admin/tradehistory",
+    // },
     {
         id: 7,
         name: 'Login Status',
@@ -150,53 +150,53 @@ export const employee_header = [
         icon: "fe fe-users",
         route: "/employee/users",
     },
-    {
-        id: 3,
-        name: 'Transaction',
-        icon: "fe fe-dollar-sign",
-        route: "/employee/transaction",
-    },
-    {
-        id: 4,
-        name: 'Reports',
-        icon: "fe fe-file-text",
-        route: "/employee/report",
-    },
-    {
-        id: 5,
-        name: 'Trade History',
-        icon: "fe fe-activity",
-        route: "/employee/tradehistory",
-    },
-    {
-        id: 6,
-        name: 'Login Status',
-        icon: "fe fe-check-square",
-        route: "/employee/loginstatus",
-    },
+    // {
+    //     id: 3,
+    //     name: 'Transaction',
+    //     icon: "fe fe-dollar-sign",
+    //     route: "/employee/transaction",
+    // },
+    // {
+    //     id: 4,
+    //     name: 'Reports',
+    //     icon: "fe fe-file-text",
+    //     route: "/employee/report",
+    // },
+    // {
+    //     id: 5,
+    //     name: 'Trade History',
+    //     icon: "fe fe-activity",
+    //     route: "/employee/tradehistory",
+    // },
+    // {
+    //     id: 6,
+    //     name: 'Login Status',
+    //     icon: "fe fe-check-square",
+    //     route: "/employee/loginstatus",
+    // },
     {
         id: 7,
         name: 'Available Positions',
         icon: "fe fe-target",
         route: "/employee/position",
     },
-    {
-        id: 8,
-        name: 'Withdrawal',
-        icon: "fe fe-arrow-down-circle",
-        route: "/employee/withdrawal",
-    },
-    {
-        id: 9,
-        name: 'Deposit',
-        icon: "fe fe-arrow-up-circle",
-        route: "/employee/deposit",
-    },
-    {
-        id: 10,
-        name: 'Broadcast',
-        icon: "fe fe-arrow-up-circle",
-        route: "/employee/broadcast",
-    },
+    // {
+    //     id: 8,
+    //     name: 'Withdrawal',
+    //     icon: "fe fe-arrow-down-circle",
+    //     route: "/employee/withdrawal",
+    // },
+    // {
+    //     id: 9,
+    //     name: 'Deposit',
+    //     icon: "fe fe-arrow-up-circle",
+    //     route: "/employee/deposit",
+    // },
+    // {
+    //     id: 10,
+    //     name: 'Broadcast',
+    //     icon: "fe fe-arrow-up-circle",
+    //     route: "/employee/broadcast",
+    // },
    
 ];

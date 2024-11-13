@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import Form from "../../../Utils/Form/Formik"; // Assuming this is your custom Form component
 import { updateuserdata } from "../../../Services/Admin/Addmin";
+
 
 const Updateuser = () => {
   const navigate = useNavigate();
@@ -15,13 +16,18 @@ const Updateuser = () => {
   const Role = userDetails?.Role;
   const user_id = userDetails?.user_id;
 
+
+
+
+
   const formik = useFormik({
     initialValues: {
       fullName: "",
       username: "",
       email: "",
       phone: "",
-      Balance: "",
+      // Balance: "",
+      employee_id: "",
       Licence: "",
       limit: "",
       selectedOption: "",
@@ -46,11 +52,11 @@ const Updateuser = () => {
       } else if (!/^\d{10}$/.test(values.phone)) {
         errors.phone = "Please enter a valid 10-digit phone number.";
       }
-      if (!values.Balance) {
-        errors.Balance = "Please Enter Balance";
-      } else if (isNaN(values.Balance)) {
-        errors.Balance = "Balance must be a number";
-      }
+      // if (!values.Balance) {
+      //   errors.Balance = "Please Enter Balance";
+      // } else if (isNaN(values.Balance)) {
+      //   errors.Balance = "Balance must be a number";
+      // }
       if (!values.Licence) {
         errors.Licence = "Please Enter Licence";
       }
@@ -113,7 +119,7 @@ const Updateuser = () => {
       const determineSelectedOption = () => {
         if (rowData.pertrade !== undefined) return "pertrade";
         if (rowData.perlot !== undefined) return "perlot";
-        return "pertrade"; 
+        return "pertrade";
       };
 
       formik.setValues({
@@ -121,7 +127,7 @@ const Updateuser = () => {
         username: rowData.UserName || "",
         email: rowData.Email || "",
         phone: rowData.PhoneNo || "",
-        Balance: rowData.Balance || "",
+        // Balance: rowData.Balance || "",
         Licence: rowData.Licence || "",
         selectedOption: rowData.selectedOption || determineSelectedOption(),
         inputValue:
@@ -138,6 +144,9 @@ const Updateuser = () => {
     if (selectedOption === "perlot") return "Enter Value for Per Lot";
     return "Enter Value";
   };
+
+
+
 
   // Form fields configuration
   const fields = [
@@ -173,14 +182,14 @@ const Updateuser = () => {
       col_size: 6,
       disable: true,
     },
-    {
-      name: "Balance",
-      label: "Balance",
-      type: "text3",
-      label_size: 12,
-      col_size: 6,
-      disable: false,
-    },
+    // {
+    //   name: "Balance",
+    //   label: "Balance",
+    //   type: "text3",
+    //   label_size: 12,
+    //   col_size: 6,
+    //   disable: false,
+    // },
     {
       name: "Licence",
       label: "Licence",
@@ -227,7 +236,7 @@ const Updateuser = () => {
       btn_name="Update User"
       btn_name1="Cancel"
       formik={formik}
-      btn_name1_route={"/admin/users"} 
+      btn_name1_route={"/employee/users"}
     />
   );
 };
