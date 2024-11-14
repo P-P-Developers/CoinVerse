@@ -3,19 +3,14 @@ import { Admindashboarddata } from "../../Services/Admin/Addmin";
 import Table from "../../Utils/Table/Table";
 import { fDateTime } from "../../Utils/Date_format/datefromat";
 import { gethistory } from "../../Services/Superadmin/Superadmin";
-
+import LivePriceCard from "./Card";
 
 const Dashboard = () => {
-  
   const [countdata, setCountdata] = useState([0]);
   const [data, setData] = useState([]);
 
-
-
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
-
-
 
   const getdashboard = async () => {
     try {
@@ -36,8 +31,6 @@ const Dashboard = () => {
     getdashboard();
   }, []);
 
-
-
   const columns = [
     { Header: "UserName", accessor: "UserName" },
 
@@ -46,8 +39,7 @@ const Dashboard = () => {
       Header: "Create Date",
       accessor: "createdAt",
       Cell: ({ cell }) => {
-        return fDateTime(cell.value)
-
+        return fDateTime(cell.value);
       },
     },
     {
@@ -61,34 +53,42 @@ const Dashboard = () => {
     },
   ];
 
-
-
   // getting data
   const getallhistory = async () => {
     try {
       const response = await gethistory({});
-      const result = response.data && response.data.filter((item) => {
-        return item.parent_Id == user_id
-      })
+      const result =
+        response.data &&
+        response.data.filter((item) => {
+          return item.parent_Id == user_id;
+        });
       setData(result);
     } catch (error) {
       console.log("error", error);
     }
   };
 
-
-
   useEffect(() => {
     getallhistory();
   }, []);
 
-
-
-
-
   return (
     <div>
       <div class="container-fluid">
+        <div class="row" style={{height:"180px"}}>
+          <div class="col-lg-12">
+            <div class="card transaction-table">
+              <div class="card-header border-0 flex-wrap pb-0">
+                <div class="mb-2">
+                  <h4 class="card-title">Live Price Updates</h4>
+
+                  <LivePriceCard />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+<br/>
         <div class="row">
           <div class="col-xl-12">
             <div className="row main-card">
@@ -1432,10 +1432,11 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
 
-            <div>
-        <div className="container-fluid">
-          <div className="row">
+
+        <div className="row">
             <div className="col-lg-12">
               <div className="card transaction-table">
                 <div className="card-header border-0 flex-wrap pb-0">
@@ -1459,12 +1460,6 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-
-          </div>
-        </div>
       </div>
     </div>
   );

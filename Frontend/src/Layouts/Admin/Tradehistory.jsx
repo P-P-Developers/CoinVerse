@@ -7,7 +7,7 @@ import { DollarSign } from 'lucide-react'
 import { Link, Navigate, useNavigate } from "react-router-dom";
 
 
-const Tradehistory = () => {
+const   Tradehistory = () => {
   const { id } = useParams();
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;

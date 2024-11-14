@@ -945,8 +945,16 @@ class Admin {
   async getclienttradehistory(req, res) {
     try {
       const { userid } = req.body;
+      console.log("userid", userid);
+      let result
 
-      const result = await mainorder_model.find({ userid: userid }).sort({createdAt: -1 });
+      if(!userid || userid === "all"){
+        result = await mainorder_model.find().sort({createdAt: -1 });
+
+      }else{
+
+         result = await mainorder_model.find({ userid: userid }).sort({createdAt: -1 });
+      }
 
       if (!result) {
         return res.json({ status: false, message: "user not found", data: [] });
@@ -1048,6 +1056,19 @@ class Admin {
     }
   }
   
+
+  async getUsersName(req,res){
+    try {
+      const result = await User_model.find({}).select("FullName UserName")
+      if(!result){
+        return res.json({status:false, message:"User not found", data:[]})
+      }
+      return res.json({status:true, message:"User found", data:result})
+    }catch(error){
+      return res.json({status:false, message:"internal error", data:[]})
+    }
+
+  }
 
 
 }

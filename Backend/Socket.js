@@ -9,6 +9,8 @@ const apiKey = "887b21c85e464ee4844b6a3853db80b6";
 const route = "quotes/price";
 const url = `wss://ws.twelvedata.com/v1/${route}?apikey=${apiKey}`;
 
+
+
 // Cache for storing the latest prices
 let priceCache = {};
 
@@ -25,7 +27,7 @@ ws.onopen = () => {
   ws.send(JSON.stringify({
     "action": "subscribe",
     "params": {
-      "symbols": "DAI/USD,XRP/USD,BNB/BTC,SOL/BTC,SOL/USD,USDC/USD,BTC/XRP,USDT/USD,DOGE/USD,JPY/USD,GBP/USD,AUD/USD,USD/CAD,USD/CHF,NZD/USD,EUR/JPY,GBP/JPY,EUR/GBP,AUD/JPY,EUR/AUD,EUR/CHF,AUD/NZD,NZD/JPY,GBP/AUD,GBP/CAD,EUR/NZD,AUD/CAD,GBP/CHF"
+      "symbols": "INFY,ETH/USD,USD/EUR,USD/JPY,BTC/USD,EUR/USD,ETH/BTC,ETH/XRP,ETH/USD,XAU/USD"
     }
   }));
 };

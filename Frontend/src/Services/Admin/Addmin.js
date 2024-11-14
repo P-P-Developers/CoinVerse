@@ -452,3 +452,17 @@ export async function getbroadcastmessageforuser(data, token) {
     }
 
 }
+
+export async function GetUsersName(data, token) {
+    try {
+        const res = await axios.get(`${Config.base_url}admin/getUsersName`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
