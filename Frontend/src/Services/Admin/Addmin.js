@@ -364,7 +364,6 @@ export async function getlogoutuser(data, token) {
 
 }
 
-
 // getclienttradehistory 
 
 
