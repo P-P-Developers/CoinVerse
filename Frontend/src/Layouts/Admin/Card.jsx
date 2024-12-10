@@ -44,7 +44,7 @@ const LivePriceCard = () => {
 
     let ws = new WebSocket(url);
 
-var symbols = "ETH/USD,USD/EUR,ETH/XRP,ETH/USD,XAU/USD"
+var symbols = "ETH/USD,USD/EUR,USD/JPY,BTC/USD,EUR/USD,ETH/BTC,ETH/XRP,ETH/USD,XAU/USD";
     
 
     const subscribeToSymbols = () => {
@@ -59,7 +59,7 @@ var symbols = "ETH/USD,USD/EUR,ETH/XRP,ETH/USD,XAU/USD"
     };
 
     const reconnectWebSocket = () => {
-      console.log("Reconnecting WebSocket...");
+      // console.log("Reconnecting WebSocket...");
       ws = new WebSocket(url);
       ws.onopen = () => {
         subscribeToSymbols();
@@ -93,7 +93,7 @@ var symbols = "ETH/USD,USD/EUR,ETH/XRP,ETH/USD,XAU/USD"
       };
 
       ws.onclose = () => {
-        console.log("WebSocket connection closed");
+        // console.log("WebSocket connection closed");
         // Reconnect after 3 seconds
         setTimeout(reconnectWebSocket, 3000);
       };

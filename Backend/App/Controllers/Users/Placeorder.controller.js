@@ -506,7 +506,7 @@ class Placeorder {
       // Create a new balance statement
       const newstatement = new BalanceStatement({
         userid: userid,
-        orderid: tradehistory._id,
+        orderid: orderdata._id,
         Amount: Totalupdateuserbalance,
         type: "CREDIT",
         message: "Balanced used to sell",
@@ -621,6 +621,74 @@ class Placeorder {
       });
     }
   }
+
+
+
+
+  // Switch between buy and sell orders based on the type of order placed by the user 
+  async switchOrderType(req, res) {
+    try {
+      const { id } = req.body;
+  
+      const order = await mainorder_model.findOne({ _id: id });
+  
+      if (!order) {
+        return res.json({ status: false, message: "Order not found" });
+      }
+  
+      // Toggle the signal_type
+      order.signal_type = order.signal_type === "buy_sell" ? "sell_buy" : "buy_sell";
+
+      const temp = order.buy_price;
+      order.buy_price = order.sell_price;
+      order.sell_price = temp;
+  
+      await order.save();
+      
+      console.log("Order type switched", order.orderid);
+      const firstHalf = order.orderid.slice(0, Math.ceil(order.orderid.length / 2));
+      const secondHalf = order.orderid.slice(Math.ceil(order.orderid.length / 2));
+
+      console.log("First Half:", firstHalf);
+      console.log("Second Half:", secondHalf);
+
+      // Fetch BalanceStatement documents matching each orderid
+      const balanceStatementData = await BalanceStatement.find({
+        orderid: { $in: firstHalf[0] }
+      });
+  
+      const balanceStatementData1 = await BalanceStatement.find({
+        orderid: { $in: secondHalf[0] }
+      });
+  
+      var PriceUpdate = balanceStatementData[0].Amount
+      var PriceUpdate1 = balanceStatementData1[0].Amount
+
+
+
+      console.log("BalanceStatementData:", balanceStatementData[0].Amount);
+      console.log("BalanceStatementData1:", balanceStatementData1[0].Amount);
+
+      balanceStatementData[0].Amount = PriceUpdate1
+      balanceStatementData1[0].Amount = PriceUpdate
+
+      await balanceStatementData[0].save();
+      await balanceStatementData1[0].save();
+  
+      // Return success response with the updated order and matched BalanceStatement data
+      return res.json({ 
+        status: true, 
+        message: "Order type switched", 
+        order, 
+        balanceStatements: "" 
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      return res.status(500).json({ status: false, message: "An error occurred", error });
+    }
+  }
+  
+  
   
 }
 

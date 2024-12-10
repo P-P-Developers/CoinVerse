@@ -945,7 +945,6 @@ class Admin {
   async getclienttradehistory(req, res) {
     try {
       const { userid } = req.body;
-      console.log("userid", userid);
       let result
 
       if(!userid || userid === "all"){

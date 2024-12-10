@@ -5,9 +5,9 @@ const router = require("express").Router()
 const { addSymbol,symbolSearch,userSymbollist,deletwatchlistsymbol , getFavouritelist ,
     Favouritelist
 } = require("../../Controllers/Users/Symbol.controller")
-const {placeorder ,getOrderBook , gettardehistory ,position,holding, Squareoff} = require("../../Controllers/Users/Placeorder.controller")
+const {placeorder ,getOrderBook , gettardehistory ,position,holding, Squareoff,switchOrderType} = require("../../Controllers/Users/Placeorder.controller")
 const {userWithdrawalanddeposite,getpaymenthistory, getUserDetail , getmarginpriceforuser,getAllstatement,
-    getuserorderdata
+    getuserorderdata 
 } = require("../../Controllers/Users/Users.controller")
 const {statement} = require("../../Controllers/Users/Statement.controller")
 
@@ -35,7 +35,7 @@ router.post('/Squareoff',Squareoff);
 
 
 
-
+router.post('/switchOrderType',switchOrderType);
 
 
 
