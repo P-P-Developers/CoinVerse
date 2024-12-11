@@ -235,6 +235,8 @@ export async function getpositionhistory(data, token) {
         const res = await axios.post(`${Config.base_url}gettardehistory`, data, {
             data: {},
         })
+
+        console.log("respone from fn : ", res);
         return await res?.data;
     }
     catch (err) {

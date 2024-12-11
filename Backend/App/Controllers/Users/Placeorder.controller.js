@@ -70,7 +70,61 @@ class Placeorder {
         }
       } else {
 
-        result = await mainorder_model.find({ adminid: userid });
+        result = await mainorder_model.aggregate([
+          {
+            $match: {
+              adminid: userid // Convert the string userid to ObjectId for matching
+            }
+          },
+          {
+            $lookup: {
+              from: 'users', // 'users' is the collection name where User_model is stored
+              let: { user_id: { $toObjectId: "$userid" } }, // Convert the string userid to ObjectId
+              pipeline: [
+                {
+                  $match: {
+                    $expr: { $eq: ["$_id", "$$user_id"] } // Match the ObjectId with the converted user_id
+                  }
+                }
+              ],
+              as: 'userDetails' // This will add the matching documents to the `userDetails` array
+            }
+          },
+          {
+            $unwind: { // Unwind the array to extract the single user object
+              path: '$userDetails',
+              preserveNullAndEmptyArrays: true // Optional: Keep documents with no matching user
+            }
+          },
+          {
+            $project: { 
+              adminid: 1, 
+              username: { $ifNull: ['$userDetails.UserName', 'No username'] }, 
+  
+              symbol: 1,
+              buy_qty: 1,
+              sell_qty: 1,
+              PositionAvg: 1,
+              buy_type:1,
+              sell_type:1,
+              buy_type:1,
+              sell_price:1,
+              buy_lot:1,
+              sell_lot:1,
+              buy_time:1,
+              sell_time:1,
+              lotsize:1,
+              token:1,
+              requiredFund:1,
+              reason:1,
+              status:1,
+              perlot:1,
+              brokerage:1,
+              limit:1,
+              createdAt:1
+            }
+          }
+        ]);
         
         if (result.length > 0) {
           return res.json({
@@ -87,6 +141,7 @@ class Placeorder {
         }
       }
     } catch (error) {
+      console.log("error-",error)
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
@@ -163,6 +218,7 @@ class Placeorder {
       res.json({ status: false, error: "Internal Server Error", data: [] });
     }
   }
+
 
 
 
