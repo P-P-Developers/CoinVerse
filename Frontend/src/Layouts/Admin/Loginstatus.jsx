@@ -4,7 +4,8 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../Utils/Table/Table";
 import { fDateTime } from "../../Utils/Date_format/datefromat";
-import { getlogoutuser, getAllUsers } from "../../Services/Admin/Addmin";
+import { getlogoutuser, getAllUsers, getAllUser, GetUsersName } from "../../Services/Admin/Addmin";
+// import { getlogsuser } from "../../../../Backend/App/Controllers/Auth/Auth.controller";
 
 const Loginstatus = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
@@ -20,7 +21,8 @@ const Loginstatus = () => {
   const fetchUsers = async () => {
     try {
       // Fetch users data from API
-      const response = await getAllUsers();
+      const response = await GetUsersName();
+      console.log("Response is ",response)
       
       // Ensure users data is available
       if (response && response.data && response.data.length > 0) {

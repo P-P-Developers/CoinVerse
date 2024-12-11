@@ -465,3 +465,17 @@ export async function GetUsersName(data, token) {
     }
 
 }
+
+
+export async function getAllUser() {
+    try {
+        const res = await axios.post(`${Config.base_url}getlogsuser`);
+        console.log("Response is ", res)
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
