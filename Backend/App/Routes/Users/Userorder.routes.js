@@ -7,7 +7,9 @@ const { addSymbol,symbolSearch,userSymbollist,deletwatchlistsymbol , getFavourit
 } = require("../../Controllers/Users/Symbol.controller")
 const {placeorder ,getOrderBook , gettardehistory ,position,holding, Squareoff,switchOrderType} = require("../../Controllers/Users/Placeorder.controller")
 const {userWithdrawalanddeposite,getpaymenthistory, getUserDetail , getmarginpriceforuser,getAllstatement,
-    getuserorderdata 
+    
+    getuserorderdata,
+    getAllUsers
 } = require("../../Controllers/Users/Users.controller")
 const {statement} = require("../../Controllers/Users/Statement.controller")
 
@@ -20,6 +22,9 @@ router.post('/users/deletwatchlistsymbol', deletwatchlistsymbol);
 router.post('/users/placeorder',placeorder);
 router.post('/userWithdrawalanddeposite',userWithdrawalanddeposite);
 router.post('/getpaymenthistory',getpaymenthistory);
+// adding for testing- get all usersdata
+router.get('/getAllUsers',getAllUsers);
+
 router.post('/getUserDetail',getUserDetail);
 router.post('/getOrderBook',getOrderBook);
 router.post('/gettardehistory',gettardehistory);

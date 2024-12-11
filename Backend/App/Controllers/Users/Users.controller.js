@@ -85,7 +85,29 @@ class Users {
     }
   }
 
+  // testing for get all users
 
+   async  getAllUsers(req, res) {
+    try {
+      // Fetch all users with the role "USER"
+      const users = await User_model.find({ Role: "USER" })
+        .select("FullName Balance limit pertrade perlot turn_over_percentage brokerage UserName createdAt")
+        .sort({ createdAt: -1 }); // Optionally, you can sort by createdAt or remove it if not needed
+  
+      if (!users || users.length === 0) {
+        return res.json({ status: false, message: "No users found", data: [] });
+      }
+  
+      return res.json({
+        status: true,
+        message: "Users fetched successfully",
+        data: users,
+      });
+    } catch (error) {
+      return res.json({ status: false, message: "Internal error", data: [] });
+    }
+  }
+  
   
   // get user
 

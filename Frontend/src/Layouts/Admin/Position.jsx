@@ -8,7 +8,6 @@ import { fDateTime ,fDateTimesec} from "../../Utils/Date_format/datefromat";
 
 const Position = () => {
 
-
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
   const Role = userDetails?.Role;
@@ -20,6 +19,16 @@ const Position = () => {
 
   const columns = [
     { Header: "symbol", accessor: "symbol" },
+    {
+      Header: "UserName", // Add UserName column here
+      accessor: "username", // The field in your data that contains the username
+     
+      Cell: ({ cell }) => {
+        const username = cell.row.username; 
+        return username ? username : "-"; 
+      }
+    },
+  
     {
       Header: "Buy qty",
       accessor: "buy_qty",
@@ -57,9 +66,14 @@ const Position = () => {
     try {
        const data = {userid:user_id,Role:Role}
       const response = await getpositionhistory(data);
+      console.log("response clientside : ", response.data);
+      
       const filterdata = response.data && response.data.filter((item)=>{
           return item.buy_qty !== item.sell_qty;
       })
+
+      console.log("Filterdata is ", filterdata);
+      
       const searchfilter = filterdata?.filter((item) => {
         const searchInputMatch =
           search === "" ||
@@ -68,11 +82,18 @@ const Position = () => {
 
         return searchInputMatch;
       });
+
+
       setData(search  ?searchfilter : filterdata);
+     
     } catch (error) {
       console.log("error", error);
     }
   };
+
+  useEffect(() => {
+    console.log("Updated data from state:", data);
+  }, [data]);
 
   useEffect(() => {
     getuserallhistory();
@@ -125,3 +146,4 @@ const Position = () => {
 };
 
 export default Position;
+
