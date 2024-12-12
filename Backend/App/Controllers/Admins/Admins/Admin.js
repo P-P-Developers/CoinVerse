@@ -39,8 +39,8 @@ class Admin {
         limit,
         employee_id,
       } = req.body;
-      
-    
+
+
       if (!FullName || !UserName || !Email || !PhoneNo || !password || !Role) {
         return res.json({ status: false, message: "Missing required fields" });
       }
@@ -57,8 +57,8 @@ class Admin {
           existingUser.UserName === UserName
             ? "Username"
             : existingUser.Email === Email
-            ? "Email"
-            : "Phone Number";
+              ? "Email"
+              : "Phone Number";
 
         return res.json({
           status: false,
@@ -67,7 +67,7 @@ class Admin {
         });
       }
 
-      
+
       // Set end date based on license duration
       const startDate = new Date();
       const endDate = new Date(startDate);
@@ -80,26 +80,26 @@ class Admin {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password.toString(), salt);
 
-  
+
       let dollarPriceData, dollarcount;
 
       // if (parent_role === "EMPLOYE") {
       //   const empoyeedata = await User_model.findOne({ _id: parent_id });
-  
+
       //   dollarPriceData = await MarginRequired.findOne({
       //     adminid: empoyeedata.parent_id,
       //   }).select("dollarprice");
-  
+
       //   dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
       // } else {
-        // Fetch dollar price
-        dollarPriceData = await MarginRequired.findOne({
-          adminid: parent_id,
-        }).select("dollarprice");
-  
-        dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
+      // Fetch dollar price
+      dollarPriceData = await MarginRequired.findOne({
+        adminid: parent_id,
+      }).select("dollarprice");
+
+      dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
       // }
-      
+
       let brokeragepertrade = (
         parseFloat(pertrade) / dollarPriceData.dollarprice
       ).toFixed(3);
@@ -107,15 +107,15 @@ class Admin {
         parseFloat(perlot) / dollarPriceData.dollarprice
       ).toFixed(3);
 
-    
+
       brokeragepertrade = isNaN(brokeragepertrade) ? null : brokeragepertrade;
       brokerageperlot = isNaN(brokerageperlot) ? null : brokerageperlot;
-     
 
-     // Set ActiveStatus based on parent_role
-     const activeStatus = parent_role === "EMPLOYE" ? 0 : 1;
 
-     
+      // Set ActiveStatus based on parent_role
+      const activeStatus = parent_role === "EMPLOYE" ? 0 : 1;
+
+
       // Create new user
       const newUser = new User_model({
         FullName,
@@ -151,9 +151,9 @@ class Admin {
         Type: "CREDIT",
       });
       await userWallet.save();
-  
 
-      
+
+
       const newStatement = new BalanceStatement({
         userid: newUser._id,
         Amount: dollarcount,
@@ -182,7 +182,7 @@ class Admin {
       });
 
     } catch (error) {
-      console.error("Error adding user:", error); 
+      console.error("Error adding user:", error);
       return res.json({
         status: false,
         message: "Failed to add User",
@@ -193,7 +193,7 @@ class Admin {
 
 
 
-  
+
   async updateLicence(req, res) {
     try {
       const { id, Licence, parent_Id } = req.body;
@@ -317,7 +317,7 @@ class Admin {
     try {
       const { id, perlot, pertrade, ...rest } = req.body;
 
-      const userdetail = await User_model.findOne({_id:id})
+      const userdetail = await User_model.findOne({ _id: id })
       const dollarPriceData = await MarginRequired.findOne({
         adminid: userdetail.parent_id,
       }).select("dollarprice");
@@ -433,10 +433,10 @@ class Admin {
 
   // async Update_Employe(req, res) {
   //   try {
-       
+
   //     const data = req.body;
   //     const id = req.body.id;
-    
+
 
   //     const filter = { _id: id };
   //     const updateOperation = { $set: data };
@@ -466,13 +466,13 @@ class Admin {
 
       const data = req.body;
       const id = req.body.id;
-      const employeePermissionData = req.body.Employee_permission; 
-  
+      const employeePermissionData = req.body.Employee_permission;
+
 
       const filter = { _id: id };
       const updateOperation = { $set: data };
       const result = await User_model.updateOne(filter, updateOperation);
-  
+
       if (result.nModified === 0) {
         return res.json({
           status: false,
@@ -480,11 +480,11 @@ class Admin {
           data: [],
         });
       }
-  
-      const permissionFilter = {employee_id: id }; 
+
+      const permissionFilter = { employee_id: id };
       const permissionUpdateOperation = { $set: employeePermissionData };
       await employee_permission.updateOne(permissionFilter, permissionUpdateOperation, { upsert: true });
-  
+
       return res.json({ status: true, message: "Data updated", data: result });
     } catch (error) {
       return res.json({
@@ -494,7 +494,7 @@ class Admin {
       });
     }
   }
-  
+
 
 
   // delete Employee User
@@ -645,7 +645,7 @@ class Admin {
             Balance: paymentHistoryFind.Balance,
             parent_Id: paymentHistoryFind.adminid,
             Type: "DEBIT",
-    
+
           });
 
           await walletUpdateResult.save();
@@ -722,6 +722,89 @@ class Admin {
 
 
 
+  // ---------------- getBrockerage data api for brockerage page
+
+  // 66adf2e5c1718a8affb23545 // admin_id 
+
+  async brokerageData(req, res) {
+    try {
+      const { admin_id } = req.body;
+  
+      if (!admin_id) {
+        return res.json({
+          status: false,
+          message: "Admin ID is required",
+          data: [],
+        });
+      }
+  
+      const aggregatedData = await User_model.aggregate([
+        {
+          $match: {
+            Role: "USER",
+            parent_id: admin_id,
+          },
+        },
+        {
+          $lookup: {
+            from: "balancestatements",
+            let: { userId: "$_id" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $eq: [{ $toObjectId: "$userid" }, "$$userId"],
+                  },
+                },
+              },
+            ],
+            as: "balance_data",
+          },
+        },
+        {
+          $unwind: "$balance_data",
+        },
+        {
+          $project: {
+            _id: 0,
+            user_id: 1,
+            UserName: 1,
+            "balance_data": 1,
+          },
+        },
+      ]);
+  
+      // Format the `brokerage` value to 5 decimal places
+      const formattedData = aggregatedData.map((item) => {
+        if (item.balance_data?.brokerage) {
+          item.balance_data.brokerage = Number(item.balance_data.brokerage).toFixed(5);
+        }
+        return item;
+      });
+  
+      if (!formattedData || formattedData.length === 0) {
+        return res.json({
+          status: true,
+          message: "No data found",
+          data: [],
+        });
+      }
+  
+      return res.json({
+        status: true,
+        message: "Data fetched successfully",
+        data: formattedData,
+      });
+    } catch (error) {
+      console.error("Error at brokerageData", error);
+      return res.json({
+        status: false,
+        message: "Internal error",
+        data: [],
+      });
+    }
+  }
+  
 
 
   async updatesymbolholoff(req, res) {
@@ -859,7 +942,7 @@ class Admin {
 
       const dollarPriceDoc = await MarginRequired.findOne({ adminid: userid });
 
-      
+
       if (!dollarPriceDoc || !dollarPriceDoc.dollarprice) {
         return res.json({
           status: false,
@@ -947,12 +1030,12 @@ class Admin {
       const { userid } = req.body;
       let result
 
-      if(!userid || userid === "all"){
-        result = await mainorder_model.find().sort({createdAt: -1 });
+      if (!userid || userid === "all") {
+        result = await mainorder_model.find().sort({ createdAt: -1 });
 
-      }else{
+      } else {
 
-         result = await mainorder_model.find({ userid: userid }).sort({createdAt: -1 });
+        result = await mainorder_model.find({ userid: userid }).sort({ createdAt: -1 });
       }
 
       if (!result) {
@@ -990,7 +1073,7 @@ class Admin {
       const { userid } = req.body;
       const result = await User_model.find({ parent_id: userid }).select(
         "UserName Start_Date End_Date"
-      ).sort({createdAt: -1 });
+      ).sort({ createdAt: -1 });
 
       if (!result || result.length === 0) {
         return res.json({ status: false, message: "User not found", data: [] });
@@ -1019,7 +1102,7 @@ class Admin {
   }
 
 
-   
+
   async employee_permission(req, res) {
     try {
       const {
@@ -1032,13 +1115,13 @@ class Admin {
         perlot_edit,
         limit_edit
       } = req.body;
-  
+
       const employee = await employee_permission.findById(employee_id);
-  
+
       if (!employee) {
-        return res.json({status:false, message: "Employee not found",data:[] });
+        return res.json({ status: false, message: "Employee not found", data: [] });
       }
-  
+
       employee.Edit = Edit;
       employee.trade_history = trade_history;
       employee.open_position = open_position;
@@ -1046,25 +1129,25 @@ class Admin {
       employee.pertrade_edit = pertrade_edit;
       employee.perlot_edit = perlot_edit;
       employee.limit_edit = limit_edit;
-  
+
       await employee.save();
-  
-      return res.status.json({status:true, message: "Employee permissions updated successfully" });
+
+      return res.status.json({ status: true, message: "Employee permissions updated successfully" });
     } catch (error) {
-      return res.status.json({status:false, message: "Server error",data:[] });
+      return res.status.json({ status: false, message: "Server error", data: [] });
     }
   }
-  
 
-  async getUsersName(req,res){
+
+  async getUsersName(req, res) {
     try {
       const result = await User_model.find({}).select("FullName UserName")
-      if(!result){
-        return res.json({status:false, message:"User not found", data:[]})
+      if (!result) {
+        return res.json({ status: false, message: "User not found", data: [] })
       }
-      return res.json({status:true, message:"User found", data:result})
-    }catch(error){
-      return res.json({status:false, message:"internal error", data:[]})
+      return res.json({ status: true, message: "User found", data: result })
+    } catch (error) {
+      return res.json({ status: false, message: "internal error", data: [] })
     }
 
   }

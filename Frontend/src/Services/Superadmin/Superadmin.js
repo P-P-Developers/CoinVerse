@@ -222,5 +222,20 @@ export async function getavailableposition(data, token) {
         return await err;
 
     }
+}
+
+    // getAllBrokerageData
+
+    export async function getAllBrokerageData() {
+        try {
+            console.log("under the getAllBrokerageData")
+            const res = await axios.get(`${Config.base_url}getBrokerageDataForSuperAdmin`)
+            console.log("res from getAllBrokerageData is ",res)
+            return await res?.data;
+        }
+        catch (err) {
+            return await err;
+    
+        }
 
 }

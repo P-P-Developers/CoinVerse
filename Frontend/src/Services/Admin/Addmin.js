@@ -208,7 +208,27 @@ export async function symbolholdoff(data, token) {
     }
 
 }
+// getbrokerageData
+//  ----------Testing --------
+export async function getbrokerageData(data) {
+    try {
+        const res = await axios.post(`${Config.base_url}admin/brokerageData`, data, {
+            data: {},
+        })
 
+        console.log("Response from API is : ",res.data)
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+
+// --------------------
 // update holdoff
 
 
