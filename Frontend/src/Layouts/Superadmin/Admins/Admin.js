@@ -274,7 +274,6 @@ const Admin = () => {
     }
   };
 
-  // update admin data 
 
 
   const updateAdmin = (_id,obj) => {

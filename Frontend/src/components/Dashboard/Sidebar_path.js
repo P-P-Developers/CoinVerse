@@ -91,6 +91,7 @@ export const admin_header = [
         icon: "fe fe-check-square",
         route: "/admin/loginstatus",
     },
+    
     {
         id: 8,
         name: 'Available Positions',
@@ -129,10 +130,17 @@ export const admin_header = [
     },
     {
         id: 12,
+        name: 'Brokerage', 
+        icon: "fe fe-arrow-up-circle",
+        route: "/admin/brokerage",
+    },
+    {
+        id: 13,
         name: 'Sign Up Request',
         icon: "fa fa-dollar-sign",
         route: "/admin/signup",
     },
+
 ];
 
 
