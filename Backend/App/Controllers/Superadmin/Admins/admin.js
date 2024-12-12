@@ -405,7 +405,6 @@ class Superadmin {
   }
 
 
-// update admin 
   async Update_Admin(req, res) {
     try {
       const data = req.body;

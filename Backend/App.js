@@ -27,9 +27,6 @@ const corsOpts = {
 
 app.use(cors(corsOpts));
 
-
-
-
 // Body-parser middleware setup
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(bodyparser.json({ limit: '10mb', extended: true }));
@@ -47,15 +44,8 @@ const io = socketIo(server, {
 
 require("./forexSocketData")(app,io);
 
-
-
-
-
-
 // Importing routes
 require("./App/Routes")(app);
-
-
 
 
 

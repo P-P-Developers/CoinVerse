@@ -468,11 +468,11 @@ export async function GetUsersName(data, token) {
 
 }
 
-
-export async function getAllUser() {
+export async function switchOrderType(data, token) {
     try {
-        const res = await axios.post(`${Config.base_url}getlogsuser`);
-        console.log("Response is ", res)
+        const res = await axios.post(`${Config.base_url}switchOrderType`, data, {
+            data: {},
+        })
         return await res?.data;
     }
     catch (err) {

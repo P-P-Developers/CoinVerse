@@ -89,7 +89,6 @@ export async function gethistory(data, token) {
 
 }
 
-// update admin 
 
 
  

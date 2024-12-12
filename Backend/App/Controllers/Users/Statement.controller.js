@@ -37,7 +37,7 @@ class statement{
                 return res.json({ status: false, message: "not found", data: [] });
             }
     
-            res.json({ status: true, message: "success", data: result });
+           return res.json({ status: true, message: "success", data: result });
     
         } catch (err) {
             res.json({ status: false, message: "internal error", data: [] });
