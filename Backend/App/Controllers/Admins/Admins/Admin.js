@@ -738,43 +738,7 @@ class Admin {
         });
       }
   
-      // const aggregatedData = await User_model.aggregate([
-      //   {
-      //     $match: {
-      //       Role: "USER",
-      //       parent_id: admin_id,
-      //     },
-      //   },
-      //   {
-      //     $lookup: {
-      //       from: "balancestatements",
-      //       let: { userId: "$_id" },
-      //       pipeline: [
-      //         {
-      //           $match: {
-      //             $expr: {
-      //               $eq: [{ $toObjectId: "$userid" }, "$$userId"],
-      //             },
-      //           },
-      //         },
-      //       ],
-      //       as: "balance_data",
-      //     },
-      //   },
-      //   {
-      //     $unwind: "$balance_data",
-      //   },
-      //   {
-      //     $project: {
-      //       _id: 0,
-      //       user_id: 1,
-      //       UserName: 1,
-      //       "balance_data": 1,
-      //     },
-      //   },
-      // ]);
-
-
+    
       const aggregatedData = await User_model.aggregate([
         {
           $match: {
@@ -792,7 +756,7 @@ class Admin {
                   $expr: {
                     $and: [
                       { $eq: [{ $toObjectId: "$userid" }, "$$userId"] },
-                      { $ne: ["$symbol", null] } // Exclude documents where symbol is null
+                      { $ne: ["$symbol", null] } 
                     ],
                   },
                 },

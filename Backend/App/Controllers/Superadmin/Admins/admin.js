@@ -607,7 +607,10 @@ class Superadmin {
               {
                 $match: {
                   $expr: {
-                    $eq: [{ $toObjectId: "$userid" }, "$$userId"],
+                    $and: [
+                      { $eq: [{ $toObjectId: "$userid" }, "$$userId"] },
+                      { $ne: ["$symbol", null] } // Exclude documents where symbol is null
+                    ],
                   },
                 },
               },
@@ -623,21 +626,19 @@ class Superadmin {
             _id: 0,
             user_id: 1,
             UserName: 1,
-            balance_data: 1,
+            "balance_data": 1,
           },
         },
       ]);
-
+  
       // Format the `brokerage` value to 5 decimal places
       const formattedData = aggregatedData.map((item) => {
         if (item.balance_data?.brokerage) {
-          item.balance_data.brokerage = Number(
-            item.balance_data.brokerage
-          ).toFixed(5);
+          item.balance_data.brokerage = Number(item.balance_data.brokerage).toFixed(5);
         }
         return item;
       });
-
+  
       if (!formattedData || formattedData.length === 0) {
         return res.json({
           status: true,
@@ -645,7 +646,7 @@ class Superadmin {
           data: [],
         });
       }
-
+  
       return res.json({
         status: true,
         message: "Data fetched successfully",
