@@ -102,7 +102,7 @@ const Admin = () => {
     //   ),
     // },
     {
-      Header: "ActiveStatus",
+      Header: "Status",
       accessor: "ActiveStatus",
       Cell: ({ cell }) => (
         <label className="form-check form-switch">

@@ -121,10 +121,10 @@ const Header = () => {
                             type="text"
                             className="form-control"
                             placeholder="Search Dashboard"
-                            autofocus=""
+                            autoFocus=""
                           />
                           <span className="input-group-text">
-                            <a href="javascript:void(0)">
+                            <a >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -338,7 +338,7 @@ const Header = () => {
                             </li>
                           </ul>
                         </div>
-                        <a className="all-notification" href="javascript:void(0);">
+                        <a className="all-notification">
                           See all notifications <i className="ti-arrow-end" />
                         </a>
                       </div>
@@ -347,7 +347,7 @@ const Header = () => {
                     <li className="nav-item dropdown notification_dropdown">
                       <a
                         className="nav-link bell dz-theme-mode"
-                        href="javascript:void(0);"
+                       
                       >
                         <svg
                           id="icon-light"
@@ -408,7 +408,7 @@ const Header = () => {
                     <li className="nav-item dropdown notification_dropdown">
                       <a
                         className="nav-link "
-                        href="javascript:void(0);"
+                       
                         role="button"
                         data-bs-toggle="dropdown"
                       >
@@ -546,7 +546,7 @@ const Header = () => {
                             </li>
                           </ul>
                         </div>
-                        <a className="all-notification" href="javascript:void(0);">
+                        <a className="all-notification">
                           See all notifications <i className="ti-arrow-end" />
                         </a>
                       </div>
@@ -556,7 +556,7 @@ const Header = () => {
                     {/* <li className="nav-item dropdown notification_dropdown">
                       <a
                         className="nav-link me-0 "
-                        href="javascript:void(0);"
+                       
                         data-bs-toggle="dropdown"
                       >
                         <svg
@@ -599,7 +599,7 @@ const Header = () => {
                               <div className="timeline-badge danger"></div>
                               <a
                                 className="timeline-panel text-muted"
-                                href="javascript:void(0);"
+                               
                               >
                                 <span>30 minutes ago</span>
                                 <h6 className="mb-0">
@@ -614,7 +614,7 @@ const Header = () => {
                               <div className="timeline-badge success"></div>
                               <a
                                 className="timeline-panel text-muted"
-                                href="javascript:void(0);"
+                               
                               >
                                 <span>15 minutes ago</span>
                                 <h6 className="mb-0">
@@ -626,7 +626,7 @@ const Header = () => {
                               <div className="timeline-badge warning"></div>
                               <a
                                 className="timeline-panel text-muted"
-                                href="javascript:void(0);"
+                               
                               >
                                 <span>20 minutes ago</span>
                                 <h6 className="mb-0">
@@ -638,7 +638,7 @@ const Header = () => {
                               <div className="timeline-badge dark"></div>
                               <a
                                 className="timeline-panel text-muted"
-                                href="javascript:void(0);"
+                               
                               >
                                 <span>20 minutes ago</span>
                                 <h6 className="mb-0">
@@ -655,7 +655,7 @@ const Header = () => {
                       <div className="dropdown header-profile2">
                         <a
                           className="nav-link"
-                          href="javascript:void(0);"
+                         
                           role="button"
                           data-bs-toggle="dropdown"
                           aria-expanded="false"
@@ -754,10 +754,10 @@ const Header = () => {
                               type="text"
                               className="form-control"
                               placeholder="Search Dashboard"
-                              autofocus=""
+                              autoFocus=""
                             />
                             <span className="input-group-text">
-                              <a href="javascript:void(0)">
+                              <a >
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -971,7 +971,7 @@ const Header = () => {
                               </li>
                             </ul>
                           </div>
-                          <a className="all-notification" href="javascript:void(0);">
+                          <a className="all-notification">
                             See all notifications <i className="ti-arrow-end" />
                           </a>
                         </div>
@@ -980,7 +980,7 @@ const Header = () => {
                       <li className="nav-item dropdown notification_dropdown">
                         <a
                           className="nav-link bell dz-theme-mode"
-                          href="javascript:void(0);"
+                         
                         >
                           <svg
                             id="icon-light"
@@ -1041,7 +1041,7 @@ const Header = () => {
                       <li className="nav-item dropdown notification_dropdown">
                         <a
                           className="nav-link "
-                          href="javascript:void(0);"
+                         
                           role="button"
                           data-bs-toggle="dropdown"
                         >
@@ -1111,7 +1111,7 @@ const Header = () => {
                               ))}
                             </ul>
                           </div>
-                          <a className="all-notification" href="javascript:void(0);">
+                          <a className="all-notification">
                             See all notifications <i className="ti-arrow-end" />
                           </a>
                         </div>
@@ -1122,7 +1122,7 @@ const Header = () => {
                       {/* <li className="nav-item dropdown notification_dropdown">
                         <a
                           className="nav-link me-0 "
-                          href="javascript:void(0);"
+                         
                           data-bs-toggle="dropdown"
                         >
                           <svg
@@ -1165,7 +1165,7 @@ const Header = () => {
                                 <div className="timeline-badge danger"></div>
                                 <a
                                   className="timeline-panel text-muted"
-                                  href="javascript:void(0);"
+                                 
                                 >
                                   <span>30 minutes ago</span>
                                   <h6 className="mb-0">
@@ -1180,7 +1180,7 @@ const Header = () => {
                                 <div className="timeline-badge success"></div>
                                 <a
                                   className="timeline-panel text-muted"
-                                  href="javascript:void(0);"
+                                 
                                 >
                                   <span>15 minutes ago</span>
                                   <h6 className="mb-0">
@@ -1192,7 +1192,7 @@ const Header = () => {
                                 <div className="timeline-badge warning"></div>
                                 <a
                                   className="timeline-panel text-muted"
-                                  href="javascript:void(0);"
+                                 
                                 >
                                   <span>20 minutes ago</span>
                                   <h6 className="mb-0">
@@ -1204,7 +1204,7 @@ const Header = () => {
                                 <div className="timeline-badge dark"></div>
                                 <a
                                   className="timeline-panel text-muted"
-                                  href="javascript:void(0);"
+                                 
                                 >
                                   <span>20 minutes ago</span>
                                   <h6 className="mb-0">
@@ -1221,7 +1221,7 @@ const Header = () => {
                         <div className="dropdown header-profile2">
                           <a
                             className="nav-link"
-                            href="javascript:void(0);"
+                           
                             role="button"
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
@@ -1388,10 +1388,10 @@ const Header = () => {
                               type="text"
                               className="form-control"
                               placeholder="Search Dashboard"
-                              autofocus=""
+                              autoFocus=""
                             />
                             <span className="input-group-text">
-                              <a href="javascript:void(0)">
+                              <a >
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -1605,7 +1605,7 @@ const Header = () => {
                               </li>
                             </ul>
                           </div>
-                          <a className="all-notification" href="javascript:void(0);">
+                          <a className="all-notification">
                             See all notifications <i className="ti-arrow-end" />
                           </a>
                         </div>
@@ -1614,7 +1614,7 @@ const Header = () => {
                       <li className="nav-item dropdown notification_dropdown">
                         <a
                           className="nav-link bell dz-theme-mode"
-                          href="javascript:void(0);"
+                         
                         >
                           <svg
                             id="icon-light"
@@ -1675,7 +1675,7 @@ const Header = () => {
                       <li className="nav-item dropdown notification_dropdown">
                         <a
                           className="nav-link "
-                          href="javascript:void(0);"
+                         
                           role="button"
                           data-bs-toggle="dropdown"
                         >
@@ -1814,7 +1814,7 @@ const Header = () => {
                               </li>
                             </ul>
                           </div>
-                          <a className="all-notification" href="javascript:void(0);">
+                          <a className="all-notification">
                             See all notifications <i className="ti-arrow-end" />
                           </a>
                         </div>
@@ -1824,7 +1824,7 @@ const Header = () => {
                       {/* <li className="nav-item dropdown notification_dropdown">
                         <a
                           className="nav-link me-0 "
-                          href="javascript:void(0);"
+                         
                           data-bs-toggle="dropdown"
                         >
                           <svg
@@ -1867,7 +1867,7 @@ const Header = () => {
                                 <div className="timeline-badge danger"></div>
                                 <a
                                   className="timeline-panel text-muted"
-                                  href="javascript:void(0);"
+                                 
                                 >
                                   <span>30 minutes ago</span>
                                   <h6 className="mb-0">
@@ -1882,7 +1882,7 @@ const Header = () => {
                                 <div className="timeline-badge success"></div>
                                 <a
                                   className="timeline-panel text-muted"
-                                  href="javascript:void(0);"
+                                 
                                 >
                                   <span>15 minutes ago</span>
                                   <h6 className="mb-0">
@@ -1894,7 +1894,7 @@ const Header = () => {
                                 <div className="timeline-badge warning"></div>
                                 <a
                                   className="timeline-panel text-muted"
-                                  href="javascript:void(0);"
+                                 
                                 >
                                   <span>20 minutes ago</span>
                                   <h6 className="mb-0">
@@ -1906,7 +1906,7 @@ const Header = () => {
                                 <div className="timeline-badge dark"></div>
                                 <a
                                   className="timeline-panel text-muted"
-                                  href="javascript:void(0);"
+                                 
                                 >
                                   <span>20 minutes ago</span>
                                   <h6 className="mb-0">
@@ -1923,7 +1923,7 @@ const Header = () => {
                         <div className="dropdown header-profile2">
                           <a
                             className="nav-link"
-                            href="javascript:void(0);"
+                           
                             role="button"
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
