@@ -7,17 +7,13 @@ const { findOne } = require("../../../Models/Role.model");
 const User_model = db.user;
 const Role = db.role;
 const Wallet_model = db.WalletRecharge;
-const totalLicense = db.totalLicense
-const MarginRequired = db.MarginRequired
+const totalLicense = db.totalLicense;
+const MarginRequired = db.MarginRequired;
 const BalanceStatement = db.BalanceStatement;
 const employee_permission = db.employee_permission;
 const mainorder_model = db.mainorder_model;
 
-
-
 class Superadmin {
-
-
   async AddAdmin(req, res) {
     try {
       const {
@@ -37,34 +33,40 @@ class Superadmin {
         brokerage,
         limit,
         Employee_permission,
+        ProfitMargin
       } = req.body;
-  
+
       if (!FullName || !UserName || !Email || !PhoneNo || !password || !Role) {
-        return res.status(400).json({ status: false, message: "Missing required fields" });
+        return res
+          .status(400)
+          .json({ status: false, message: "Missing required fields" });
       }
-  
-    
+
       const existingUser = await User_model.findOne({
         $or: [{ UserName }, { Email }, { PhoneNo }],
       });
-  
 
       if (existingUser) {
         if (existingUser.UserName === UserName) {
-          return res.json({ status: false, message: "Username already exists" });
+          return res.json({
+            status: false,
+            message: "Username already exists",
+          });
         }
-  
+
         if (existingUser.Email === Email) {
           return res.json({ status: false, message: "Email already exists" });
         }
-  
+
         if (existingUser.PhoneNo === PhoneNo) {
-          return res.json({ status: false, message: "Phone Number already exists" });
+          return res.json({
+            status: false,
+            message: "Phone Number already exists",
+          });
         }
       }
-  
 
-         // Current date as start date
+      // Current date as start date
       const startDate = new Date();
       let endDate = new Date(startDate);
       endDate.setMonth(endDate.getMonth() + Number(Licence));
@@ -72,22 +74,21 @@ class Superadmin {
       if (endDate.getDate() < startDate.getDate()) {
         endDate.setDate(0);
       }
-       
+
       // // Fetch dollar price data
       // const dollarPriceData = await MarginRequired.findOne({adminid:parent_id }).select("dollarprice");
       // if (!dollarPriceData) {
       //   return res.json({ status: false, message: "Dollar price data not found" });
       // }
-  
+
       // // Calculate dollar count
       // const dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
-   
 
       // Hash password
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password.toString(), salt);
-  
-     const activeStatus = parent_role === "EMPLOYE" ? 0 : 1;
+
+      const activeStatus = parent_role === "EMPLOYE" ? 0 : 1;
 
       // Create new user
       const newUser = new User_model({
@@ -97,7 +98,7 @@ class Superadmin {
         PhoneNo,
         parent_id,
         parent_role,
-        Otp:password,
+        Otp: password,
         Role,
         pertrade,
         perlot,
@@ -109,10 +110,11 @@ class Superadmin {
         Start_Date: startDate,
         End_Date: endDate,
         ActiveStatus: activeStatus,
+        ProfitMargin: ProfitMargin
       });
-  
+
       await newUser.save();
-  
+
       // // Create user wallet
       // const userWallet = new Wallet_model({
       //   user_Id: newUser._id,
@@ -120,7 +122,7 @@ class Superadmin {
       //   parent_Id: parent_id
       // });
       // await userWallet.save();
-  
+
       let licence = new totalLicense({
         user_Id: newUser._id,
         Licence: Licence,
@@ -131,34 +133,32 @@ class Superadmin {
 
       await licence.save();
 
-  if (Employee_permission) {
-    const {
-      Edit,
-      trade_history,
-      open_position,
-      Licence_Edit,
-      pertrade_edit,
-      perlot_edit,
-      limit_edit,
-      Balance_edit
-    } = Employee_permission;
+      if (Employee_permission) {
+        const {
+          Edit,
+          trade_history,
+          open_position,
+          Licence_Edit,
+          pertrade_edit,
+          perlot_edit,
+          limit_edit,
+          Balance_edit,
+        } = Employee_permission;
 
-    const newPermission = new employee_permission({
-      employee_id: newUser._id,
-      Edit,
-      trade_history,
-      open_position,
-      Licence_Edit,
-      pertrade_edit,
-      perlot_edit,
-      limit_edit,
-      Balance_edit
-    });
+        const newPermission = new employee_permission({
+          employee_id: newUser._id,
+          Edit,
+          trade_history,
+          open_position,
+          Licence_Edit,
+          pertrade_edit,
+          perlot_edit,
+          limit_edit,
+          Balance_edit,
+        });
 
-   
-    await newPermission.save();
-  }
-
+        await newPermission.save();
+      }
 
       return res.json({
         status: true,
@@ -167,17 +167,21 @@ class Superadmin {
       });
     } catch (error) {
       console.error(error);
-      return res.json({ status: false, message: "Failed to add user", data: [] });
+      return res.json({
+        status: false,
+        message: "Failed to add user",
+        data: [],
+      });
     }
   }
 
-
-  
   async walletRecharge(req, res) {
     try {
       const { id, Balance, parent_Id, Type } = req.body;
-  
-      const dollarPriceData = await MarginRequired.findOne({adminid:parent_Id}).select("dollarprice");
+
+      const dollarPriceData = await MarginRequired.findOne({
+        adminid: parent_Id,
+      }).select("dollarprice");
       if (!dollarPriceData) {
         return res.json({
           status: false,
@@ -185,11 +189,9 @@ class Superadmin {
           data: [],
         });
       }
-      
 
-      const dollarcount = (Balance/dollarPriceData.dollarprice).toFixed(3);
-  
-  
+      const dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
+
       const userdata = await User_model.findOne({ _id: id });
       if (!userdata) {
         return res.json({
@@ -198,7 +200,7 @@ class Superadmin {
           data: [],
         });
       }
-  
+
       let newBalance;
       if (Type === "CREDIT") {
         newBalance = Number(userdata.Balance || 0) + Number(dollarcount);
@@ -218,34 +220,29 @@ class Superadmin {
           data: [],
         });
       }
-  
-    
+
       await User_model.updateOne(
         { _id: userdata._id },
         { $set: { Balance: newBalance } }
       );
-   
-  
- 
+
       const result = new Wallet_model({
         user_Id: userdata._id,
-        Balance: dollarcount,  
+        Balance: dollarcount,
         parent_Id: parent_Id,
         Type: Type,
       });
-  
+
       await result.save();
-    
 
       let newstatement = new BalanceStatement({
         userid: userdata._id,
-        Amount :dollarcount,
+        Amount: dollarcount,
         parent_Id: parent_Id,
-        type:"CREDIT",
-        message:"Balance Credit"
+        type: "CREDIT",
+        message: "Balance Credit",
       });
       await newstatement.save();
-  
 
       return res.json({
         status: true,
@@ -256,71 +253,45 @@ class Superadmin {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
-  
-
-
-  // get all admin detail
-
-  // async getAdminDetail(req, res) {
-  //   try {
-  //     const { id } = req.body;
-    
-  //     const result = await User_model.find({ parent_id:id});
-       
-  //     const adminIds = result.map(result => result._id);
-
-  //     const permissions = await employee_permission.find({ employee_id: { $in: adminIds } });
-    
-  //     if (!result || result.length === 0) {
-  //       return res.json({ status: false, message: "Data not found", data: [] });
-  //     }
-
-  //     return res.json({
-  //       status: true,
-  //       message: "getting data",
-  //       data: result,permissions,
-  //     });
-  //   } catch (error) {
-  //     return res.json({ status: false, message: "Internal error", data: [] });
-  //   }
-  // }
 
   async getAdminDetail(req, res) {
     try {
-        const { id } = req.body;
-        const result = await User_model.find({ parent_id: id }).sort({createdAt: -1});
-        
-        const adminIds = result.map(user => user._id);
-        const permissions = await employee_permission.find({ employee_id: { $in: adminIds } });
+      const { id } = req.body;
+      const result = await User_model.find({ parent_id: id }).sort({
+        createdAt: -1,
+      });
 
-        if (!result || result.length === 0) {
-            return res.json({ status: false, message: "Data not found", data: [] });
-        }
+      const adminIds = result.map((user) => user._id);
+      const permissions = await employee_permission.find({
+        employee_id: { $in: adminIds },
+      });
 
-        const combinedData = result.map(user => {
-            const userPermissions = permissions.filter(permission => permission.employee_id.equals(user._id))
+      if (!result || result.length === 0) {
+        return res.json({ status: false, message: "Data not found", data: [] });
+      }
 
-            return {
-                ...user.toObject(),
-                permissions: userPermissions
-            };
-        });
+      const combinedData = result.map((user) => {
+        const userPermissions = permissions.filter((permission) =>
+          permission.employee_id.equals(user._id)
+        );
 
-        return res.json({
-            status: true,
-            message: "Getting data",
-            data: combinedData
-        });
+        return {
+          ...user.toObject(),
+          permissions: userPermissions,
+        };
+      });
+
+      return res.json({
+        status: true,
+        message: "Getting data",
+        data: combinedData,
+      });
     } catch (error) {
-        return res.json({ status: false, message: "Internal error", data: [] });
+      return res.json({ status: false, message: "Internal error", data: [] });
     }
-}
+  }
 
-  
-
-  
   // update status
-  
   async UpdateActiveStatusAdmin(req, res) {
     try {
       const { id, user_active_status } = req.body;
@@ -352,12 +323,7 @@ class Superadmin {
     }
   }
 
-
-
-
-
   // admin history
-
   async getadminhistory(req, res) {
     try {
       const walletData = await Wallet_model.aggregate([
@@ -377,15 +343,15 @@ class Superadmin {
             UserName: "$userData.UserName",
             Balance: 1,
             createdAt: 1,
-            parent_Id:1,
-            Type:1
+            parent_Id: 1,
+            Type: 1,
           },
         },
         {
-          $sort:{
-            createdAt : -1 
-          }
-        }
+          $sort: {
+            createdAt: -1,
+          },
+        },
       ]);
 
       if (!walletData || walletData.length === 0) {
@@ -404,13 +370,12 @@ class Superadmin {
     }
   }
 
-
   async Update_Admin(req, res) {
     try {
       const data = req.body;
       const id = req.body.id;
 
-      const filter = { _id: id ,Role:"ADMIN"};
+      const filter = { _id: id, Role: "ADMIN" };
       const updateOperation = { $set: data };
 
       const result = await User_model.updateOne(filter, updateOperation);
@@ -431,17 +396,14 @@ class Superadmin {
       });
     }
   }
-   
 
-
-  // deleted admin 
-
+  // deleted admin
   async Delete_Admin(req, res) {
     try {
       const { id } = req.body;
       const result = await User_model.findOneAndDelete({
         _id: id,
-        Role:"ADMIN",
+        Role: "ADMIN",
       });
 
       if (!result) {
@@ -466,10 +428,9 @@ class Superadmin {
     }
   }
 
-   
   async SuperadminGetDashboardData(req, res) {
     try {
-      const { parent_id } = req.body; 
+      const { parent_id } = req.body;
       const counts = await User_model.aggregate([
         {
           $facet: {
@@ -492,23 +453,27 @@ class Superadmin {
         },
         {
           $project: {
-            TotalAdminCount: { $ifNull: [{ $arrayElemAt: ["$TotalAdminCount.count", 0] }, 0] },
-            TotalActiveAdminCount: { $ifNull: [{ $arrayElemAt: ["$TotalActiveAdminCount.count", 0] }, 0] },
+            TotalAdminCount: {
+              $ifNull: [{ $arrayElemAt: ["$TotalAdminCount.count", 0] }, 0],
+            },
+            TotalActiveAdminCount: {
+              $ifNull: [
+                { $arrayElemAt: ["$TotalActiveAdminCount.count", 0] },
+                0,
+              ],
+            },
           },
         },
       ]);
-  
-      const {
-        TotalAdminCount,
-        TotalActiveAdminCount,
-      } = counts[0];
-  
+
+      const { TotalAdminCount, TotalActiveAdminCount } = counts[0];
+
       var Count = {
         TotalAdminCount: TotalAdminCount,
         TotalActiveAdminCount: TotalActiveAdminCount,
         TotalInActiveAdminCount: TotalAdminCount - TotalActiveAdminCount,
       };
-  
+
       // DATA GET SUCCESSFULLY
       res.send({
         status: true,
@@ -524,193 +489,176 @@ class Superadmin {
     }
   }
 
-
-  async getAllclent(req,res){
+  async getAllclent(req, res) {
     try {
-      const {userid} = req.body 
-      const result = await User_model.findOne({ _id: userid})
-       
-      if(!result){
-        return res.json({status:false,message:"not found",data:[]})
-      }
-
-      return res.json({status:true,message:"user found",data:result})
-
-      
-    } catch (error) {
-      return res.json({status:false,message:"internal error",data:[]})
-      
-    }
-  }
- 
- 
-  //get admin user detail
-
-
-  async getadminuserdetail(req,res){
-    try {
-         const {userid} = req.body
-         const result = await User_model.find({parent_id:userid})
-
-         if(!result){
-          return res.json({status:false,message:"not found",data:[]})
-        }
-     
-        return res.json({status:true,message:"user found",data:result})
-
-    } catch (error) {
-
-      return res.json({status:false,message:"internal error",data:[]})
-      
-    }
-  }
-
- // get employee user 
-
- async getEmployeeuserdetail(req,res){
-  try {
-       const {userid} = req.body
-       const result = await User_model.find({employee_id:userid})
-
-       if(!result){
-        return res.json({status:false,message:"not found",data:[]})
-      }
-   
-      return res.json({status:true,message:"user found",data:result})
-
-  } catch (error) {
-
-    return res.json({status:false,message:"internal error",data:[]})
-    
-  }
-}
-
-
-// get licence detail 
-async getlicencedetail(req, res) {
-  try {
       const { userid } = req.body;
-      const licenses = await totalLicense.find({ parent_Id: userid }).sort({ createdAt: -1 }) ;
-      const userIds = licenses.map(license => license.user_Id);
+      const result = await User_model.findOne({ _id: userid });
+
+      if (!result) {
+        return res.json({ status: false, message: "not found", data: [] });
+      }
+
+      return res.json({ status: true, message: "user found", data: result });
+    } catch (error) {
+      return res.json({ status: false, message: "internal error", data: [] });
+    }
+  }
+
+  //get admin user detail
+  async getadminuserdetail(req, res) {
+    try {
+      const { userid } = req.body;
+      const result = await User_model.find({ parent_id: userid });
+
+      if (!result) {
+        return res.json({ status: false, message: "not found", data: [] });
+      }
+
+      return res.json({ status: true, message: "user found", data: result });
+    } catch (error) {
+      return res.json({ status: false, message: "internal error", data: [] });
+    }
+  }
+
+  // get employee user
+  async getEmployeeuserdetail(req, res) {
+    try {
+      const { userid } = req.body;
+      const result = await User_model.find({ employee_id: userid });
+
+      if (!result) {
+        return res.json({ status: false, message: "not found", data: [] });
+      }
+
+      return res.json({ status: true, message: "user found", data: result });
+    } catch (error) {
+      return res.json({ status: false, message: "internal error", data: [] });
+    }
+  }
+
+  // get licence detail
+  async getlicencedetail(req, res) {
+    try {
+      const { userid } = req.body;
+      const licenses = await totalLicense
+        .find({ parent_Id: userid })
+        .sort({ createdAt: -1 });
+      const userIds = licenses.map((license) => license.user_Id);
       const users = await User_model.find({ _id: { $in: userIds } });
 
-    
       const userMap = users.reduce((map, user) => {
-          map[user._id] = user.UserName;
-          return map;
+        map[user._id] = user.UserName;
+        return map;
       }, {});
 
-
-
-      const resultWithUsernames = licenses.map(license => ({
-          ...license.toObject(),
-          username: userMap[license.user_Id] || null 
+      const resultWithUsernames = licenses.map((license) => ({
+        ...license.toObject(),
+        username: userMap[license.user_Id] || null,
       }));
 
-     return  res.json({status:true,message:"data find ",data:resultWithUsernames});
-
-  } catch (error) {
-    
-     return  res.json({staus:false, message: "Error fetching license details" ,data:[]});
-  }
-}
-
-
-
-
-
-// get all available position 
-
-async getPosition_detail(req, res) {
-  try {
-   
-    let result = await mainorder_model.find({
-      $expr: { $ne: ["$buy_lot", "$sell_lot"] }
-    }).sort({ createdAt: -1 });
-
-    if (!result || result.length === 0) {
-      return res.json({ status: false, message: "Data not found" });
-    }
-
-    return res.json({ status: true, message: "Data found", data: result });
-
-  } catch (error) {
-    return res.json({ status: false, message: "Internal error", data: [] });
-  }
-}
-
-
-// get all brokerage data 
-async brokerageDataForSuperAdmin(req, res) {
-  try {
-    const aggregatedData = await User_model.aggregate([
-      {
-        $match: {
-          Role: "USER", // Fetch all users with Role as "USER"
-        },
-      },
-      {
-        $lookup: {
-          from: "balancestatements",
-          let: { userId: "$_id" },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $eq: [{ $toObjectId: "$userid" }, "$$userId"],
-                },
-              },
-            },
-          ],
-          as: "balance_data",
-        },
-      },
-      {
-        $unwind: "$balance_data",
-      },
-      {
-        $project: {
-          _id: 0,
-          user_id: 1,
-          UserName: 1,
-          "balance_data": 1,
-        },
-      },
-    ]);
-
-    // Format the `brokerage` value to 5 decimal places
-    const formattedData = aggregatedData.map((item) => {
-      if (item.balance_data?.brokerage) {
-        item.balance_data.brokerage = Number(item.balance_data.brokerage).toFixed(5);
-      }
-      return item;
-    });
-
-    if (!formattedData || formattedData.length === 0) {
       return res.json({
         status: true,
-        message: "No data found",
+        message: "data find ",
+        data: resultWithUsernames,
+      });
+    } catch (error) {
+      return res.json({
+        staus: false,
+        message: "Error fetching license details",
         data: [],
       });
     }
-
-    return res.json({
-      status: true,
-      message: "Data fetched successfully",
-      data: formattedData,
-    });
-  } catch (error) {
-    console.error("Error at brokerageDataForSuperAdmin", error);
-    return res.json({
-      status: false,
-      message: "Internal error",
-      data: [],
-    });
   }
-}
 
+  // get all available position
+  async getPosition_detail(req, res) {
+    try {
+      let result = await mainorder_model
+        .find({
+          $expr: { $ne: ["$buy_lot", "$sell_lot"] },
+        })
+        .sort({ createdAt: -1 });
 
+      if (!result || result.length === 0) {
+        return res.json({ status: false, message: "Data not found" });
+      }
 
+      return res.json({ status: true, message: "Data found", data: result });
+    } catch (error) {
+      return res.json({ status: false, message: "Internal error", data: [] });
+    }
+  }
+
+  // get all brokerage data
+  async brokerageDataForSuperAdmin(req, res) {
+    try {
+      const aggregatedData = await User_model.aggregate([
+        {
+          $match: {
+            Role: "USER", // Fetch all users with Role as "USER"
+          },
+        },
+        {
+          $lookup: {
+            from: "balancestatements",
+            let: { userId: "$_id" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $eq: [{ $toObjectId: "$userid" }, "$$userId"],
+                  },
+                },
+              },
+            ],
+            as: "balance_data",
+          },
+        },
+        {
+          $unwind: "$balance_data",
+        },
+        {
+          $project: {
+            _id: 0,
+            user_id: 1,
+            UserName: 1,
+            balance_data: 1,
+          },
+        },
+      ]);
+
+      // Format the `brokerage` value to 5 decimal places
+      const formattedData = aggregatedData.map((item) => {
+        if (item.balance_data?.brokerage) {
+          item.balance_data.brokerage = Number(
+            item.balance_data.brokerage
+          ).toFixed(5);
+        }
+        return item;
+      });
+
+      if (!formattedData || formattedData.length === 0) {
+        return res.json({
+          status: true,
+          message: "No data found",
+          data: [],
+        });
+      }
+
+      return res.json({
+        status: true,
+        message: "Data fetched successfully",
+        data: formattedData,
+      });
+    } catch (error) {
+      console.error("Error at brokerageDataForSuperAdmin", error);
+      return res.json({
+        status: false,
+        message: "Internal error",
+        data: [],
+      });
+    }
+  }
 }
 
 module.exports = new Superadmin();

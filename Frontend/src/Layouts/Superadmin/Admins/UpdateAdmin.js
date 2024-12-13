@@ -115,6 +115,7 @@ const UpdateAdmin = () => {
       email: rowData?.Email || "",
       phone: rowData?.PhoneNo || "",
       Licence: rowData?.Licence || "",
+      ProfitMargin: rowData?.ProfitMargin || "",
       password: "",
       confirmPassword: ""
     });
@@ -160,6 +161,14 @@ const UpdateAdmin = () => {
       label_size: 12,
       col_size: 6,
       disable: false,
+    },
+    {
+      name: "ProfitMargin",
+      label: "Profit Margin",
+      type: "text4",
+      label_size: 12,
+      col_size: 6,
+      disable: true,
     },
 
     // {

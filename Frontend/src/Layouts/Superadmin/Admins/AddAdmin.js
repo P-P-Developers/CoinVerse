@@ -27,7 +27,8 @@ const AddAdmin = () => {
       parent_id: "",
       parent_role: "",
       Role: "",
-      Licence:""
+      Licence:"",
+      ProfitMargin:""
     },
 
     validate: (values) => {
@@ -51,6 +52,10 @@ const AddAdmin = () => {
       if (!values.password) {
         errors.password = "Please Enter Password";
       }
+      if (!values.ProfitMargin) {
+        errors.ProfitMargin = "Please Enter Profit Margin";
+      }
+
       if (!values.confirmPassword) {
         errors.confirmPassword = "Please Confirm Password";
       } else if (values.password !== values.confirmPassword) {
@@ -70,6 +75,7 @@ const AddAdmin = () => {
         parent_role: Role || "SUPERADMIN",
         parent_id: user_id,
         Role: "ADMIN",
+        ProfitMargin:values.ProfitMargin
         
       };
 
@@ -149,6 +155,14 @@ const AddAdmin = () => {
       name: "Licence",
       label: "Licence",
       type: "text3",
+      label_size: 12,
+      col_size: 6,
+      disable: false,
+    },
+    {
+      name: "ProfitMargin",
+      label: "Profit Margin",
+      type: "text4",
       label_size: 12,
       col_size: 6,
       disable: false,

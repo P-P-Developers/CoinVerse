@@ -60,12 +60,22 @@ const Login = () => {
           }
         });
       } else {
+        if(response.message === "Password Not Match"){
+
+          Swal.fire({
+            icon: "error",
+            title: "Login failed",
+            text: response.message,
+          });
+
+        }else{
         Swal.fire({
           icon: "error",
           title: "Login failed",
-          text: response.msg,
+          text: response.message,
         });
       }
+    }
     } catch (error) {
       Swal.fire({
         icon: "error",
