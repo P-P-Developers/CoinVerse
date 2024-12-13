@@ -21,6 +21,7 @@ import Updateuser from '../Layouts/Employee/Users/Updateuser';
 
 import Profile from '../Layouts/Employee/Profile';
 import Setting from '../Layouts/Employee/Setting';
+import Brokerage from '../Layouts/Employee/Brokerage';
 
 
 
@@ -66,6 +67,7 @@ const EmployeeRoutes = () => {
                     <Route path="/broadcast" element={<Broadcast />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/setting" element={<Setting />} />
+                    <Route path='/brokerage' element={<Brokerage/>} />
                     <Route path="/users/updateuser/:id" element={<Updateuser />} />
                    
 

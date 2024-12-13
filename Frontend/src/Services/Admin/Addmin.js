@@ -357,6 +357,7 @@ export async function TotalcountLicence(data, token) {
 
 export async function LogoutUser(data, token) {
     try {
+        localStorage.clear();
         const res = await axios.post(`${Config.base_url}logoutUser`, data, {
             data: {},
         })

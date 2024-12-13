@@ -660,6 +660,8 @@ class Superadmin {
       });
     }
   }
+
+  
   async AddProfitMargin(req, res) {
     try {
       const { adminid, balance } = req.body;

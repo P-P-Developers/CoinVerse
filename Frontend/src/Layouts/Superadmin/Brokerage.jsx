@@ -1,15 +1,12 @@
 
-
-import React, { useEffect, useState, } from "react";
-import Table from "../../../Utils/Table/Table";
-import { getbrokerageData } from "../../../Services/Admin/Addmin"; // Removed unused imports
+import React, { useEffect, useState } from "react";
+import Table from "../../Utils/Table/Table";
 import Swal from "sweetalert2";
-import { useParams } from "react-router-dom";
+import { getAllBrokerageData } from "../../Services/Superadmin/Superadmin";
 
-const Holdoff = () => {
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
-  let { id } = useParams();
+const Brokerage = () => {
+  // const userDetails = JSON.parse(localStorage.getItem("user_details"));
+  // const user_id = userDetails?.user_id;
 
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
@@ -21,10 +18,12 @@ const Holdoff = () => {
     { Header: "Brokerage", accessor: "brokerage" },
   ];
 
-  const Symbolholdoff = async () => {
+  const getBrokerageDataForSuperAdmin = async () => {
     try {
-      const requestData = { admin_id: id }; // Renamed for clarity
-      const apiResponse = await getbrokerageData(requestData);
+      // const requestData = { admin_id: user_id }; // Renamed for clarity
+      const apiResponse = await getAllBrokerageData();
+
+      // console.log("apiResponse is ", apiResponse)
 
       const CreateDaynamicData =
         apiResponse.data?.map((data) => ({
@@ -44,7 +43,6 @@ const Holdoff = () => {
         search === "" ||
         item.symbol?.toLowerCase().includes(search.toLowerCase())
       );
-      console.log("LoggedIn AdminId is : ", user_id)
 
       setData(search ? searchfilter : CreateDaynamicData);
     } catch (error) {
@@ -54,8 +52,7 @@ const Holdoff = () => {
   };
 
   useEffect(() => {
-    Symbolholdoff();
-
+    getBrokerageDataForSuperAdmin();
   }, []);
 
   return (
@@ -90,8 +87,6 @@ const Holdoff = () => {
                         />
                       </div>
 
-
-
                       <div className="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-3 ms-4">
                         {/* Total Brokerage */}
                         <div>
@@ -119,12 +114,13 @@ const Holdoff = () => {
 
                         {/* Clear All Button */}
                         <div>
-                          {/* <button className="btn btn-primary me-3">Clear All</button> */}
+                          <button className="btn btn-primary me-3">Clear All</button>
                         </div>
                       </div>
 
 
                       {data && <Table columns={columns} data={data} />}
+
                     </div>
                   </div>
                 </div>
@@ -137,4 +133,4 @@ const Holdoff = () => {
   );
 };
 
-export default Holdoff;
+export default Brokerage;

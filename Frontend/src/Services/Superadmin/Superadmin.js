@@ -236,6 +236,6 @@ export async function getavailableposition(data, token) {
         catch (err) {
             return await err;
     
-        }
+        }}
 
-}
+
