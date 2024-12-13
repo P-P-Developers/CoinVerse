@@ -12,6 +12,7 @@ const MarginRequired = db.MarginRequired;
 const BalanceStatement = db.BalanceStatement;
 const employee_permission = db.employee_permission;
 const mainorder_model = db.mainorder_model;
+const ProfitmarginData = db.Profitmargin;
 
 class Superadmin {
   async AddAdmin(req, res) {
@@ -652,6 +653,28 @@ class Superadmin {
       });
     } catch (error) {
       console.error("Error at brokerageDataForSuperAdmin", error);
+      return res.json({
+        status: false,
+        message: "Internal error",
+        data: [],
+      });
+    }
+  }
+  async AddProfitMargin(req, res) {
+    try {
+      const { adminid, balance } = req.body;
+      const profitmargin = new ProfitmarginData({
+        adminid,
+        balance,
+      });
+      await profitmargin.save();
+      return res.json({
+        status: true,
+        message: "Profit Margin Added Successfully",
+        data: profitmargin,
+      });
+    } catch (error) {
+      console.error("Error at AddProfitMargin", error);
       return res.json({
         status: false,
         message: "Internal error",
