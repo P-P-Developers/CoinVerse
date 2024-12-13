@@ -111,6 +111,10 @@ const userModel = Schema({
     limit :{
         type: Number,
         default : null
+    },
+    ProfitMargin:{
+        type: Number,
+        default : null
     }
     
 },
