@@ -23,7 +23,7 @@ const Brokerage = () => {
       // const requestData = { admin_id: user_id }; // Renamed for clarity
       const apiResponse = await getAllBrokerageData();
 
-      console.log("apiResponse is ", apiResponse)
+      // console.log("apiResponse is ", apiResponse)
 
       const CreateDaynamicData =
         apiResponse.data?.map((data) => ({
@@ -43,7 +43,7 @@ const Brokerage = () => {
         search === "" ||
         item.symbol?.toLowerCase().includes(search.toLowerCase())
       );
-
+      
       setData(search ? searchfilter : CreateDaynamicData);
     } catch (error) {
       console.error("Error fetching brokerage data:", error);

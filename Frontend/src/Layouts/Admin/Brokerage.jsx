@@ -127,6 +127,7 @@ const Holdoff = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
 
+
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
 
@@ -160,6 +161,7 @@ const Holdoff = () => {
         search === "" ||
         item.symbol?.toLowerCase().includes(search.toLowerCase())
       );
+      console.log("LoggedIn AdminId is : ", user_id)
 
       setData(search ? searchfilter : CreateDaynamicData);
     } catch (error) {
@@ -170,6 +172,7 @@ const Holdoff = () => {
 
   useEffect(() => {
     Symbolholdoff();
+
   }, []);
 
   return (

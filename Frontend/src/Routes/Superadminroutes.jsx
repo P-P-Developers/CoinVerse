@@ -36,7 +36,7 @@ const SuperadminRoutes = () => {
                     {/* <Route path="/currency" element={<Currency />} /> */}
                     <Route path="/admin/adminuser/:id" element={<AdminUser />} />
                     <Route path="/admin/adminemployee/:id" element={<Adminemployee/>} />
-                <Route path='/brokerage' element={Brokerage} />
+                    <Route path='/brokerage' element={<Brokerage/>} />
                     
                 </Routes>
             </div>
