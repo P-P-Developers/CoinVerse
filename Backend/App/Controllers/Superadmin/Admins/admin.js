@@ -657,7 +657,10 @@ async brokerageDataForSuperAdmin(req, res) {
             {
               $match: {
                 $expr: {
-                  $eq: [{ $toObjectId: "$userid" }, "$$userId"],
+                  $and: [
+                    { $eq: [{ $toObjectId: "$userid" }, "$$userId"] },
+                    { $ne: ["$symbol", null] } // Exclude documents where symbol is null
+                  ],
                 },
               },
             },

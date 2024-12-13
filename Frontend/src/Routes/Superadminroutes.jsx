@@ -15,7 +15,9 @@ import Currency from "../Layouts/Superadmin/Admins/Currency"
 import AdminUser from '../Layouts/Superadmin/Admins/AdminUser';
 import Adminemployee from '../Layouts/Superadmin/Admins/Adminemployee';
 import Employee_user from '../Layouts/Superadmin/Admins/Employee_user';
-import Brokerage from "../Layouts/Superadmin/Admins/Brokerage"
+import Brokerage from "../Layouts/Superadmin/Brokerage"
+import AdminBrokerage from "../Layouts/Superadmin/Admins/Brokerage"
+
 
 const SuperadminRoutes = () => {
     return (
@@ -37,6 +39,7 @@ const SuperadminRoutes = () => {
                     <Route path="/admin/adminuser/:id" element={<AdminUser />} />
                     <Route path="/admin/adminemployee/:id" element={<Adminemployee/>} />
                     <Route path='/brokerage' element={<Brokerage/>} />
+                    <Route path="/brokerage/:id" element={<AdminBrokerage/>} />
                     
                 </Routes>
             </div>

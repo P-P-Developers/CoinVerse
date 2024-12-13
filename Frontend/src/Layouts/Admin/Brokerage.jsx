@@ -31,7 +31,7 @@
 //       })
 
 
-       
+
 //       const searchfilter = CreateDaynamicData?.map((item) => ({
 //         UserName: item.UserName,
 //         symbol: item.symbol,
@@ -43,25 +43,25 @@
 //         // brokerage: Number(item.brokerage).toFixed(5),
 //         ActiveStatus: item.Amount > 0 ? 1 : 0, 
 //       })).filter((item) => {
-    
+
 //         return search === "" || item.symbol?.toLowerCase().includes(search.toLowerCase());
 //       });
-  
-     
+
+
 //       setData(search ? searchfilter : CreateDaynamicData);
-  
+
 //     } catch (error) {
 //       console.log("error", error);
 //     }
 //   };
-  
+
 
 //   useEffect(() => {
 //     Symbolholdoff();
 
 
 //   }, []);
-  
+
 //   return (
 //     <>
 //       <div>
@@ -207,13 +207,38 @@ const Holdoff = () => {
                         />
                       </div>
 
-                      <div className="mb-3 ms-4">
-                        Total Brokerage:{" "}
-                        {data.reduce(
-                          (acc, item) => acc + Number(item.brokerage || 0),
-                          0
-                        ).toFixed(5)}
+                      <div className="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-3 ms-4">
+                        {/* Total Brokerage */}
+                        <div>
+                          <span className="fw-bold">
+                            Total Brokerage:{" "}
+                            {data
+                              .reduce((acc, item) => acc + Number(item.brokerage || 0), 0)
+                              .toFixed(5)}
+                          </span>
+                        </div>
+
+                        {/* Remaining */}
+                        <div>
+                          <span className="fw-bold">
+                            Remaining: <input className="form-control d-inline w-auto ms-2" disabled />
+                          </span>
+                        </div>
+
+                        {/* Completed */}
+                        <div>
+                          <span className="fw-bold">
+                            Completed: <input className="form-control d-inline w-auto ms-2" disabled />
+                          </span>
+                        </div>
+
+                        {/* Clear All Button */}
+                        <div>
+                          <button className="btn btn-primary me-3">Clear All</button>
+                        </div>
                       </div>
+
+
 
                       {data && <Table columns={columns} data={data} />}
                     </div>

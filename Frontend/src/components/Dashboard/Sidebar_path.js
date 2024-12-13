@@ -188,6 +188,7 @@ export const employee_header = [
     //     icon: "fe fe-check-square",
     //     route: "/employee/loginstatus",
     // },
+
     {
         id: 7,
         name: 'Available Positions',
@@ -212,5 +213,12 @@ export const employee_header = [
     //     icon: "fe fe-arrow-up-circle",
     //     route: "/employee/broadcast",
     // },
+
+    {
+        id: 11,
+        name: 'Brokerage',
+        icon: "fe fe-target",
+        route: "/employee/brokerage",
+    },
    
 ];

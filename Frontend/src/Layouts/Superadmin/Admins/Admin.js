@@ -215,6 +215,20 @@ const Admin = () => {
         );
       },
     },
+    {
+      Header: "Brokerage",
+      accessor: "Employee",
+      Cell: ({ cell }) => {
+        return (
+          <div>
+            <Eye
+              style={{ cursor: "pointer", color: "#33B469" }}
+              onClick={() => AdminBrokerageDetail(cell.row._id)}
+            />
+          </div>
+        );
+      },
+    },
   ];
 
 
@@ -236,6 +250,10 @@ const Admin = () => {
   
 };
 
+const AdminBrokerageDetail = (_id) => {
+  navigate(`/superadmin/brokerage/${_id}`);
+  
+};
 
 
   // delete admin
