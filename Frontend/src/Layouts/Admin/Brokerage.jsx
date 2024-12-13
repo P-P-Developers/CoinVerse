@@ -1,107 +1,179 @@
+// import React, { useEffect, useState } from "react";
+// import Table from "../../Utils/Table/Table";
+// import { getbrokerageData, symbolholdoff, updatesymbolstatus } from "../../Services/Admin/Addmin";
+// import Swal from "sweetalert2";
+
+// const Holdoff = () => {
+//   const userDetails = JSON.parse(localStorage.getItem("user_details"));
+//   const user_id = userDetails?.user_id;
+
+//   const [data, setData] = useState([]);
+//   const [search, setSearch] = useState("");
+
+//   const columns = [
+//     { Header: "UserName", accessor: "UserName" },
+//     { Header: "symbol", accessor: "symbol" },
+//     { Header: "Amount", accessor: "Amount" },
+//     { Header: "Brokerage", accessor: "brokerage" },
+//   ];
+
+
+//   const Symbolholdoff = async () => {
+//     try {
+//       const data = { admin_id: user_id };
+//       const apiResponce = await getbrokerageData(data);  
+
+//       let CreateDaynamicData = apiResponce.data && apiResponce.data.map((data)=>{
+//         return {
+//           UserName:data.UserName,
+//           ...data.balance_data
+//         }
+//       })
+
+
+       
+//       const searchfilter = CreateDaynamicData?.map((item) => ({
+//         UserName: item.UserName,
+//         symbol: item.symbol,
+//         exch_seg: item.symbol_id ? item.symbol_id : 'N/A',  
+//         lotsize: item.parent_Id ? item.parent_Id : 'N/A', 
+//         Amount: item.Amount,
+//         brokerage: item.brokerage,
+//         // brokerage: item.brokerage ? Number(item.brokerage).toFixed(5) : '0.00000', // Format brokerage to 5 decimal places
+//         // brokerage: Number(item.brokerage).toFixed(5),
+//         ActiveStatus: item.Amount > 0 ? 1 : 0, 
+//       })).filter((item) => {
+    
+//         return search === "" || item.symbol?.toLowerCase().includes(search.toLowerCase());
+//       });
+  
+     
+//       setData(search ? searchfilter : CreateDaynamicData);
+  
+//     } catch (error) {
+//       console.log("error", error);
+//     }
+//   };
+  
+
+//   useEffect(() => {
+//     Symbolholdoff();
+
+
+//   }, []);
+  
+//   return (
+//     <>
+//       <div>
+//         <div className="container-fluid">
+//           <div className="row">
+//             <div className="col-lg-12">
+//               <div className="card transaction-table">
+//                 <div className="card-header border-0 flex-wrap pb-0">
+//                   <div className="mb-4">
+//                     <h4 className="card-title">Brokerage</h4>
+//                   </div>
+//                 </div>
+//                 <div className="card-body p-0">
+//                   <div className="tab-content" id="myTabContent1">
+//                     <div
+//                       className="tab-pane fade show active"
+//                       id="Week"
+//                       role="tabpanel"
+//                       aria-labelledby="Week-tab"
+//                     >
+//                       <div className="mb-3 ms-4">
+//                         Search :{" "}
+//                         <input
+//                           className="ml-2 input-search form-control"
+//                           style={{ width: "20%" }}
+//                           type="text"
+//                           placeholder="Search..."
+//                           value={search}
+//                           onChange={(e) => setSearch(e.target.value)}
+//                         />
+//                       </div>
+
+//                       {/* show total brokerage here  */}
+
+//                       <div className="">Total Brokerage</div>
+//                      {data && <Table columns={columns} data={data} />}
+//                     </div>
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </>
+//   );
+// };
+
+// export default Holdoff;
+
+
+
+
+
+// ____________safe code above  and below for work ____________
+
 import React, { useEffect, useState } from "react";
 import Table from "../../Utils/Table/Table";
-import { symbolholdoff, updatesymbolstatus } from "../../Services/Admin/Addmin";
+import { getbrokerageData } from "../../Services/Admin/Addmin"; // Removed unused imports
 import Swal from "sweetalert2";
 
 const Holdoff = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
 
-  const [refresh, setRefresh] = useState(false);
+
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
- 
-
 
   const columns = [
-    { Header: "Symbol name", accessor: "symbol" },
-    { Header: "exch_seg", accessor: "exch_seg" },
-    { Header: "lotsize", accessor: "lotsize" },
-    {
-      Header: "ActiveStatus",
-      accessor: "ActiveStatus",
-      Cell: ({ cell }) => (
-        <label className="form-check form-switch">
-          <input
-            id={`rating_${cell.row.status}`}
-            className="form-check-input"
-            type="checkbox"
-            role="switch"
-            onChange={(event) => updatestatus(event, cell.row.symbol)}
-            defaultChecked={cell.row.status == 1}
-          />
-          <label
-            htmlFor={`rating_${cell.row.status}`}
-            className="checktoggle checkbox-bg"
-          ></label>
-        </label>
-      ),
-    },
+    { Header: "UserName", accessor: "UserName" },
+    { Header: "Symbol", accessor: "symbol" },
+    { Header: "Amount", accessor: "Amount" },
+    { Header: "Brokerage", accessor: "brokerage" },
   ];
 
-
-
-  // Update symbol status
-  const updatestatus = async (event, symbol) => {
-    
-    const user_active_status = event.target.checked ? 1 : 0;
-    const result = await Swal.fire({
-      title: "Do you want to save the changes?",
-      showCancelButton: true,
-      confirmButtonText: "Save",
-      cancelButtonText: "Cancel",
-      allowOutsideClick: false,
-    });
-
-    if (result.isConfirmed) {
-      try {
-        const response = await updatesymbolstatus({ symbol, user_active_status });
-        if (response.status) {
-          Swal.fire({
-            title: "Saved!",
-            icon: "success",
-            timer: 1000,
-            timerProgressBar: true,
-          });
-          setTimeout(() => {
-            Swal.close();
-            setRefresh(!refresh); 
-          }, 1000);
-        }
-      } catch (error) {
-        Swal.fire("Error", "There was an error processing your request.", "error");
-      }
-    } else {
-      event.target.checked = !event.target.checked; 
-    }
-  };
-
-
-
-  // Fetching data
   const Symbolholdoff = async () => {
     try {
-      const response = await symbolholdoff({});
+      const requestData = { admin_id: user_id }; // Renamed for clarity
+      const apiResponse = await getbrokerageData(requestData);
 
-      const searchfilter = response.data?.filter((item) => {
-        const searchInputMatch =
-          search === "" ||
-          (item.symbol && item.symbol.toLowerCase().includes(search.toLowerCase())) 
-          
+      const CreateDaynamicData =
+        apiResponse.data?.map((data) => ({
+          UserName: data.UserName,
+          ...data.balance_data,
+        })) || []; // Ensure default value if no data is returned
 
-        return searchInputMatch;
-      });
-      setData(search ? searchfilter : response.data);
+      const searchfilter = CreateDaynamicData.map((item) => ({
+        UserName: item.UserName,
+        symbol: item.symbol,
+        exch_seg: item.symbol_id || "N/A", // Simplified ternary operator
+        lotsize: item.parent_Id || "N/A",
+        Amount: item.Amount,
+        brokerage: item.brokerage,
+        ActiveStatus: item.Amount > 0 ? 1 : 0,
+      })).filter((item) =>
+        search === "" ||
+        item.symbol?.toLowerCase().includes(search.toLowerCase())
+      );
+      console.log("LoggedIn AdminId is : ", user_id)
+
+      setData(search ? searchfilter : CreateDaynamicData);
     } catch (error) {
-      console.log("error", error);
+      console.error("Error fetching brokerage data:", error);
+      Swal.fire("Error", "Failed to fetch data. Please try again.", "error"); // Display error message
     }
   };
 
   useEffect(() => {
     Symbolholdoff();
-  }, [refresh,search]);
 
-
+  }, []);
 
   return (
     <>
@@ -112,7 +184,7 @@ const Holdoff = () => {
               <div className="card transaction-table">
                 <div className="card-header border-0 flex-wrap pb-0">
                   <div className="mb-4">
-                    <h4 className="card-title">Brokrage</h4>
+                    <h4 className="card-title">Brokerage</h4>
                   </div>
                 </div>
                 <div className="card-body p-0">
@@ -124,7 +196,7 @@ const Holdoff = () => {
                       aria-labelledby="Week-tab"
                     >
                       <div className="mb-3 ms-4">
-                        Search :{" "}
+                        Search:{" "}
                         <input
                           className="ml-2 input-search form-control"
                           style={{ width: "20%" }}
@@ -134,7 +206,16 @@ const Holdoff = () => {
                           onChange={(e) => setSearch(e.target.value)}
                         />
                       </div>
-                      <Table columns={columns} data={data} />
+
+                      <div className="mb-3 ms-4">
+                        Total Brokerage:{" "}
+                        {data.reduce(
+                          (acc, item) => acc + Number(item.brokerage || 0),
+                          0
+                        ).toFixed(5)}
+                      </div>
+
+                      {data && <Table columns={columns} data={data} />}
                     </div>
                   </div>
                 </div>

@@ -1,10 +1,7 @@
-
-
-
 import React, { useEffect, useState } from "react";
 import Table from "../../Utils/Table/Table";
 import { fDateTime } from "../../Utils/Date_format/datefromat";
-import { getlogoutuser, getAllUsers, getAllUser, GetUsersName } from "../../Services/Admin/Addmin";
+import { getlogoutuser, GetUsersName } from "../../Services/Admin/Addmin";
 
 const Loginstatus = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
@@ -14,32 +11,30 @@ const Loginstatus = () => {
   const [search, setSearch] = useState("");
   const [selectedUserId, setSelectedUserId] = useState(null); // For selected user
   const [users, setUsers] = useState([]); // For dropdown user list
-  const [selectedUserDetails, setSelectedUserDetails] = useState();
 
   // Fetch users for dropdown
   const fetchUsers = async () => {
     try {
-      // Fetch users data from API
       const response = await GetUsersName();
-      // console.log("Response is ",response)
-      
-      // Ensure users data is available
       if (response && response.data && response.data.length > 0) {
         setUsers(response.data);
       } else {
-        setUsers([]); // Fallback if no data
+        setUsers([]);
       }
     } catch (error) {
       setUsers([]); // Fallback in case of error
     }
   };
 
-  // Fetch logs when selected user changes
+  // Fetch logs when selected user changes or no user is selected (show all data)
   const getLogsForSelectedUser = async () => {
     try {
       const data = { userid: user_id, selectedUserId };
+
+      // Fetch all data if no user is selected
       const response = await getlogoutuser(data);
 
+      // Check if selectedUserId is empty or null and show data of all users
       const filteredData = response.data?.filter((item) => {
         // Search filter logic
         const searchInputMatch =
@@ -47,10 +42,13 @@ const Loginstatus = () => {
           (item.UserName && item.UserName.toLowerCase().includes(search.toLowerCase())) ||
           (item.login_status && item.login_status.toLowerCase().includes(search.toLowerCase()));
 
-        // Filter by selectedUserId
-        const userMatch = item.UserName === selectedUserId;
+        // If selectedUserId is null or empty, show data for all users
+        if (!selectedUserId) {
+          return searchInputMatch;
+        }
 
-        return searchInputMatch && userMatch; // Filter by both search and user match
+        // If a user is selected, filter by selectedUserId
+        return searchInputMatch && item.UserName === selectedUserId;
       });
 
       setData(filteredData || response.data);
@@ -59,16 +57,15 @@ const Loginstatus = () => {
     }
   };
 
-  // Fetch users and logs data when component mounts or when selected user changes
+  // Fetch users when component mounts
   useEffect(() => {
     fetchUsers();
-  }, []); // Fetch users on component mount
+  }, []);
 
+  // Fetch logs whenever selectedUserId or search changes
   useEffect(() => {
-    if (selectedUserId) {
-      getLogsForSelectedUser(); // Fetch logs for selected user
-    }
-  }, [selectedUserId, search]); // Trigger when selectedUserId or search changes
+    getLogsForSelectedUser();
+  }, [selectedUserId, search]);
 
   const columns = [
     { Header: "UserName", accessor: "UserName" },

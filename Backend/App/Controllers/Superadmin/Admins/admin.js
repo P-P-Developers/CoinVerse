@@ -640,6 +640,75 @@ async getPosition_detail(req, res) {
 }
 
 
+// get all brokerage data 
+async brokerageDataForSuperAdmin(req, res) {
+  try {
+    const aggregatedData = await User_model.aggregate([
+      {
+        $match: {
+          Role: "USER", // Fetch all users with Role as "USER"
+        },
+      },
+      {
+        $lookup: {
+          from: "balancestatements",
+          let: { userId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: [{ $toObjectId: "$userid" }, "$$userId"],
+                },
+              },
+            },
+          ],
+          as: "balance_data",
+        },
+      },
+      {
+        $unwind: "$balance_data",
+      },
+      {
+        $project: {
+          _id: 0,
+          user_id: 1,
+          UserName: 1,
+          "balance_data": 1,
+        },
+      },
+    ]);
+
+    // Format the `brokerage` value to 5 decimal places
+    const formattedData = aggregatedData.map((item) => {
+      if (item.balance_data?.brokerage) {
+        item.balance_data.brokerage = Number(item.balance_data.brokerage).toFixed(5);
+      }
+      return item;
+    });
+
+    if (!formattedData || formattedData.length === 0) {
+      return res.json({
+        status: true,
+        message: "No data found",
+        data: [],
+      });
+    }
+
+    return res.json({
+      status: true,
+      message: "Data fetched successfully",
+      data: formattedData,
+    });
+  } catch (error) {
+    console.error("Error at brokerageDataForSuperAdmin", error);
+    return res.json({
+      status: false,
+      message: "Internal error",
+      data: [],
+    });
+  }
+}
+
 
 
 }

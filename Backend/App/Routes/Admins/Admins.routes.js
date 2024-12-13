@@ -9,7 +9,8 @@ const {AddUser , updateLicence , updateUser , DeleteUser,Update_Employe ,Delete_
     getclienttradehistory,
     getlicensedata,
     employee_permission,
-    getUsersName
+    getUsersName,
+    brokerageData
 } = require("../../Controllers/Admins/Admins/Admin")
 const {marginupdate , getmarginprice} = require("../../Controllers/Admins/Admins/MarginReq")
 
@@ -31,6 +32,8 @@ router.get('/admin/getUsersName', getUsersName);
 router.post('/admin/marginupdate', marginupdate);
 router.post('/admin/getmarginprice', getmarginprice);
 router.get('/admin/getsymbolholdoff', getsymbolholdoff);
+
+router.post('/admin/brokerageData', brokerageData);
 router.post('/admin/updatesymbolholoff', updatesymbolholoff);
 router.post('/getbalancandLicence', getbalancandLicence);
 router.post('/admin/countuserBalance', countuserBalance);
