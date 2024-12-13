@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
-import { getbrokerageData } from "../../../Services/Admin/Addmin"; // Removed unused imports
+import { getbrokerageData } from "../../../Services/Admin/Addmin";
 import Swal from "sweetalert2";
 import { useParams } from "react-router-dom";
 import {
   AddProfitMarginApi,
   getAllClient,
+  getProfitMarginApi,
 } from "../../../Services/Superadmin/Superadmin";
 
-const Holdoff = () => {
+const Brokerage = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
   let { id } = useParams();
@@ -17,29 +18,17 @@ const Holdoff = () => {
   const [search, setSearch] = useState("");
   const [adminData, setAdminData] = useState({});
   const [refresh, setRefresh] = useState(false);
+  const [MarginLogs, setMarginLogs] = useState([]);
+  const [OpenModal, setOpenModal] = useState(false);
 
-  let Profit_Margin = adminData?.ProfitMargin;
-  let ProfitBalance = adminData?.ProfitBalance;
+  const Profit_Margin = adminData?.ProfitMargin || 1; // Avoid division by zero
+  const ProfitBalance = adminData?.ProfitBalance || 0;
 
   useEffect(() => {
     Symbolholdoff();
     GetAdminDetails();
+    GetAllMarginData();
   }, [refresh]);
-
-  let GetAdminDetails = async () => {
-    let data = {
-      userid: id,
-    };
-    await getAllClient(data)
-      .then((res) => {
-        if (res.status) {
-          setAdminData(res.data);
-        }
-      })
-      .catch((err) => {
-        console.log("Error in getting admin details", err);
-      });
-  };
 
   const columns = [
     { Header: "UserName", accessor: "UserName" },
@@ -48,21 +37,44 @@ const Holdoff = () => {
     { Header: "Brokerage", accessor: "brokerage" },
   ];
 
+  const GetAdminDetails = async () => {
+    try {
+      const data = { userid: id };
+      const res = await getAllClient(data);
+      if (res.status) {
+        setAdminData(res.data);
+      }
+    } catch (err) {
+      console.error("Error in getting admin details", err);
+    }
+  };
+
+  const GetAllMarginData = async () => {
+    try {
+      const res = await getProfitMarginApi({ admin_id: id });
+      if (res.status) {
+        setMarginLogs(res.data);
+      }
+    } catch (err) {
+      console.error("Error in getting margin data", err);
+    }
+  };
+
   const Symbolholdoff = async () => {
     try {
-      const requestData = { admin_id: id }; // Renamed for clarity
+      const requestData = { admin_id: id };
       const apiResponse = await getbrokerageData(requestData);
 
       const CreateDaynamicData =
         apiResponse.data?.map((data) => ({
           UserName: data.UserName,
           ...data.balance_data,
-        })) || []; // Ensure default value if no data is returned
+        })) || [];
 
       const searchfilter = CreateDaynamicData.map((item) => ({
         UserName: item.UserName,
         symbol: item.symbol,
-        exch_seg: item.symbol_id || "N/A", // Simplified ternary operator
+        exch_seg: item.symbol_id || "N/A",
         lotsize: item.parent_Id || "N/A",
         Amount: item.Amount,
         brokerage: item.brokerage,
@@ -75,7 +87,7 @@ const Holdoff = () => {
 
       setData(search ? searchfilter : CreateDaynamicData);
     } catch (error) {
-      Swal.fire("Error", "Failed to fetch data. Please try again.", "error"); // Display error message
+      Swal.fire("Error", "Failed to fetch data. Please try again.", "error");
     }
   };
 
@@ -92,115 +104,109 @@ const Holdoff = () => {
       return;
     }
 
-    let data1 = {
-      adminid: id,
-      balance: result,
-    };
-    await AddProfitMarginApi(data1)
-      .then((res) => {
-        if (res.status) {
-          Swal.fire("Success", "Brokerage Cleared Successfully", "success");
-          setRefresh(!refresh);
-        }
-      })
-      .catch((err) => {
-        Swal.fire(
-          "Error",
-          "Failed to clear brokerage. Please try again.",
-          "error"
-        );
-      });
+    const data1 = { adminid: id, balance: result };
+    try {
+      const res = await AddProfitMarginApi(data1);
+      if (res.status) {
+        Swal.fire("Success", "Brokerage Cleared Successfully", "success");
+        setRefresh(!refresh);
+      }
+    } catch (err) {
+      Swal.fire(
+        "Error",
+        "Failed to clear brokerage. Please try again.",
+        "error"
+      );
+    }
   };
 
   return (
     <>
-      <div>
-        <div className="container-fluid">
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="card transaction-table">
-                <div className="card-header border-0 flex-wrap pb-0">
-                  <div className="mb-4">
-                    <h4 className="card-title">Brokerage</h4>
-                  </div>
+      <div className="container-fluid py-4">
+        <div className="card shadow-sm">
+          <div className="card-header d-flex justify-content-between align-items-center">
+            <h4 className="mb-0">Brokerage</h4>
+            <input
+              type="text"
+              placeholder="Search..."
+              className="form-control w-25"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <div className="card-body">
+            <div className="d-flex justify-content-between mb-3">
+              <span className="fw-bold">
+                Total Brokerage:{" "}
+                {data.reduce(
+                  (acc, item) => acc + Number(item.brokerage || 0),
+                  0
+                ).toFixed(5)}
+              </span>
+              <span className="fw-bold">
+                Total Our Brokerage:{" "}
+                {(
+                  data.reduce(
+                    (acc, item) => acc + Number(item.brokerage || 0),
+                    0
+                  ) /
+                    Profit_Margin -
+                  ProfitBalance
+                ).toFixed(5)}
+              </span>
+              <span className="fw-bold">Completed: {ProfitBalance}</span>
+              <button
+                className="btn btn-primary"
+                onClick={() => setOpenModal(!OpenModal)}
+              >
+                Logs
+              </button>
+              <button className="btn btn-success" onClick={ReedeemBrokerage}>
+                Clear All Brokerage
+              </button>
+            </div>
+            <Table columns={columns} data={data} />
+          </div>
+        </div>
+        {OpenModal && (
+          <div className="modal show" style={{ display: "block" }}>
+            <div className="modal-dialog modal-lg">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">Reedeem Logs</h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setOpenModal(false)}
+                  ></button>
                 </div>
-                <div className="card-body p-0">
-                  <div className="tab-content" id="myTabContent1">
-                    <div
-                      className="tab-pane fade show active"
-                      id="Week"
-                      role="tabpanel"
-                      aria-labelledby="Week-tab"
-                    >
-                      {/* <div className="mb-3 ms-4">
-                        Search:{" "}
-                        <input
-                          className="ml-2 input-search form-control"
-                          style={{ width: "20%" }}
-                          type="text"
-                          placeholder="Search..."
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
-                        />
-                      </div> */}
-
-                      <div className="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-3 ms-4">
-                        {/* Total Brokerage */}
-                        <div>
-                          <span className="fw-bold">
-                            Total Brokerage:{" "}
-                            {data
-                              .reduce(
-                                (acc, item) =>
-                                  acc + Number(item.brokerage || 0),
-                                0
-                              )
-                              .toFixed(5)}
-                          </span>
-                        </div>
-                        {/* Total  Our Brokerage */}
-                        <div>
-                          <span className="fw-bold">
-                            Total Our Brokerage:{" "}
-                            {(
-                              data.reduce(
-                                (acc, item) =>
-                                  acc + Number(item.brokerage || 0),
-                                0
-                              ) /
-                                Profit_Margin -
-                              ProfitBalance
-                            ).toFixed(5)}
-                          </span>
-                        </div>
-                        {/* Completed */}
-                        <div>
-                          <span className="fw-bold">
-                            Completed: {ProfitBalance}
-                          </span>
-                        </div>
-                        Clear All Brokerage
-                        <div>
-                          <button
-                            className="btn btn-primary me-3"
-                            onClick={(e) => ReedeemBrokerage()}
-                          >
-                            Clear All
-                          </button>
-                        </div>
-                      </div>
-
-                      {data && <Table columns={columns} data={data} />}
-                    </div>
-                  </div>
+                <div className="modal-body">
+                  <table className="table table-bordered table-striped">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {MarginLogs.map((log, index) => (
+                        <tr key={index}>
+                          <td>{index + 1}</td>
+                          <td>{log.balance}</td>
+                          <td>{log.createdAt}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </>
   );
 };
 
-export default Holdoff;
+export default Brokerage;

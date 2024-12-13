@@ -200,11 +200,9 @@ export async function getavailableposition(data, token) {
 
 export async function getAllBrokerageData() {
   try {
-    console.log("under the getAllBrokerageData");
     const res = await axios.get(
       `${Config.base_url}getBrokerageDataForSuperAdmin`
     );
-    console.log("res from getAllBrokerageData is ", res);
     return await res?.data;
   } catch (err) {
     return await err;
@@ -223,3 +221,12 @@ export async function AddProfitMarginApi(data1) {
     }
   }
   
+
+  export async function getProfitMarginApi(data) {
+    try {
+      let res = await axios.post(`${Config.base_url}getProfitMargin`, data);
+      return await res?.data;
+    } catch (err) {
+      return
+    }
+  }

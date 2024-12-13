@@ -5,7 +5,7 @@ const router = require("express").Router()
 const {AddAdmin,walletRecharge , getAdminDetail, UpdateActiveStatusAdmin ,getadminhistory,Update_Admin ,Delete_Admin 
     , SuperadminGetDashboardData,getAllclent , getadminuserdetail ,getEmployeeuserdetail
      ,getlicencedetail,getPosition_detail,
-     brokerageDataForSuperAdmin,AddProfitMargin} = require("../../Controllers/Superadmin/Admins/admin")
+     brokerageDataForSuperAdmin,AddProfitMargin,getProfitMargin} = require("../../Controllers/Superadmin/Admins/admin")
 
 
 
@@ -25,6 +25,7 @@ router.post('/getlicencedetail', getlicencedetail);
 router.get('/getPosition_detail', getPosition_detail);
 router.get("/getBrokerageDataForSuperAdmin", brokerageDataForSuperAdmin)
 router.post("/AddProfitMargin", AddProfitMargin)
+router.post("/getProfitMargin", getProfitMargin)
 
 
 

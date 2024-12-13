@@ -216,7 +216,6 @@ export async function getbrokerageData(data) {
             data: {},
         })
 
-        console.log("Response from API is : ",res.data)
         return await res?.data;
     }
     catch (err) {
@@ -256,7 +255,6 @@ export async function getpositionhistory(data, token) {
             data: {},
         })
 
-        console.log("respone from fn : ", res);
         return await res?.data;
     }
     catch (err) {

@@ -690,7 +690,6 @@ class Superadmin {
       let UpdateBalance =
         parseFloat(AdminData.ProfitBalance ? AdminData.ProfitBalance : 0) +
         parseFloat(balance ? balance : 0);
-      console.log("UpdateBalance", UpdateBalance);
 
       await User_model.updateOne(
         { _id: adminid },
@@ -716,6 +715,45 @@ class Superadmin {
       });
     }
   }
+
+    async getProfitMargin(req, res) {
+      try {
+        const { admin_id } = req.body;
+console.log("adminid",admin_id)
+
+        if (!admin_id) {
+          return res.json({
+            status: false,
+            message: "Missing required fields",
+            data: [],
+          });
+        }
+
+        const profitMarginData = await ProfitmarginData.find({ adminid:admin_id });
+        if (!profitMarginData || profitMarginData.length === 0) {
+          return res.json({
+            status: false,
+            message: "Profit margin data not found",
+            data: [],
+          });
+        }
+
+        return res.json({
+          status: true,
+          message: "Profit margin data found",
+          data: profitMarginData,
+        });
+      }
+      catch (error) {
+        console.error("Error at getProfitMargin", error);
+        return res.json({
+          status: false,
+          message: "Internal error",
+          data: [],
+        });
+      }
+    }
+
 }
 
 module.exports = new Superadmin();
