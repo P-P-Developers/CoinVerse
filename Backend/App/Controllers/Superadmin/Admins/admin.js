@@ -34,7 +34,7 @@ class Superadmin {
         brokerage,
         limit,
         Employee_permission,
-        ProfitMargin
+        ProfitMargin,
       } = req.body;
 
       if (!FullName || !UserName || !Email || !PhoneNo || !password || !Role) {
@@ -111,7 +111,7 @@ class Superadmin {
         Start_Date: startDate,
         End_Date: endDate,
         ActiveStatus: activeStatus,
-        ProfitMargin: ProfitMargin
+        ProfitMargin: ProfitMargin,
       });
 
       await newUser.save();
@@ -609,7 +609,7 @@ class Superadmin {
                   $expr: {
                     $and: [
                       { $eq: [{ $toObjectId: "$userid" }, "$$userId"] },
-                      { $ne: ["$symbol", null] } // Exclude documents where symbol is null
+                      { $ne: ["$symbol", null] }, // Exclude documents where symbol is null
                     ],
                   },
                 },
@@ -626,19 +626,21 @@ class Superadmin {
             _id: 0,
             user_id: 1,
             UserName: 1,
-            "balance_data": 1,
+            balance_data: 1,
           },
         },
       ]);
-  
+
       // Format the `brokerage` value to 5 decimal places
       const formattedData = aggregatedData.map((item) => {
         if (item.balance_data?.brokerage) {
-          item.balance_data.brokerage = Number(item.balance_data.brokerage).toFixed(5);
+          item.balance_data.brokerage = Number(
+            item.balance_data.brokerage
+          ).toFixed(5);
         }
         return item;
       });
-  
+
       if (!formattedData || formattedData.length === 0) {
         return res.json({
           status: true,
@@ -646,7 +648,7 @@ class Superadmin {
           data: [],
         });
       }
-  
+
       return res.json({
         status: true,
         message: "Data fetched successfully",
@@ -662,10 +664,39 @@ class Superadmin {
     }
   }
 
-  
   async AddProfitMargin(req, res) {
     try {
       const { adminid, balance } = req.body;
+
+      if (!adminid || !balance) {
+        return res.json({
+          status: false,
+          message: "Missing required fields",
+          data: [],
+        });
+      }
+
+      const AdminData = await User_model.findOne({ _id: adminid });
+      if (!AdminData) {
+        return res.json({
+          status: false,
+          message: "Admin not found",
+          data: [],
+        });
+      }
+
+      // Update Usermodal ProfitBalance field
+
+      let UpdateBalance =
+        parseFloat(AdminData.ProfitBalance ? AdminData.ProfitBalance : 0) +
+        parseFloat(balance ? balance : 0);
+      console.log("UpdateBalance", UpdateBalance);
+
+      await User_model.updateOne(
+        { _id: adminid },
+        { $set: { ProfitBalance: UpdateBalance } }
+      );
+
       const profitmargin = new ProfitmarginData({
         adminid,
         balance,

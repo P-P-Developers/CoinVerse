@@ -223,7 +223,7 @@ const Admin = () => {
           <div>
             <Eye
               style={{ cursor: "pointer", color: "#33B469" }}
-              onClick={() => AdminBrokerageDetail(cell.row._id)}
+              onClick={() => AdminBrokerageDetail(cell.row)}
             />
           </div>
         );
@@ -250,8 +250,8 @@ const Admin = () => {
   
 };
 
-const AdminBrokerageDetail = (_id) => {
-  navigate(`/superadmin/brokerage/${_id}`);
+const AdminBrokerageDetail = (row) => {
+  navigate(`/superadmin/brokerage/${row._id}`, { state: { rowData: row } });
   
 };
 
