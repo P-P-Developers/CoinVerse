@@ -22,7 +22,7 @@ class broadcastingmessage {
       });
 
       const { message, title, adminid, Role, UserName } = req.body;
-      let firebaseToken = [];
+      let firebaseToken = 'e4qiyvzBRhOaYk-GTdd81l:APA91bETqVBqkTuSblb9ZYcQsOjcrmOdfKORGsP9C8jweaf5r-gngUxhGI8yNndWSEe_ePXUVPjp4n3gBUxbTEQTEwSm53fQyLj1VFjY0KOaTNElYjDopuo'
 
       const newBroadcast = new broadcasting({
         message,

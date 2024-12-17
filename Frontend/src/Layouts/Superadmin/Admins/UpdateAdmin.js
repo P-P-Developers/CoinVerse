@@ -77,8 +77,8 @@ const UpdateAdmin = () => {
         const response = await Update_admin(data);
         if (response.status) {
           Swal.fire({
-            title: "Employee Updated!",
-            text: "Employee updated successfully",
+            title: "Admin Updated!",
+            text: "Admin updated successfully",
             icon: "success",
             timer: 1000,
             timerProgressBar: true,
@@ -154,14 +154,14 @@ const UpdateAdmin = () => {
       col_size: 6,
       disable: false,
     },
-    {
-      name: "Licence",
-      label: "Licence",
-      type: "text3",
-      label_size: 12,
-      col_size: 6,
-      disable: false,
-    },
+    // {
+    //   name: "Licence",
+    //   label: "Licence",
+    //   type: "text3",
+    //   label_size: 12,
+    //   col_size: 6,
+    //   disable: false,
+    // },
     {
       name: "ProfitMargin",
       label: "Profit Margin",

@@ -97,8 +97,20 @@ const Brokerage = () => {
       0
     );
 
-    const result = (totalBrokerage / Profit_Margin - ProfitBalance).toFixed(5);
+    // const result = (totalBrokerage / Profit_Margin - ProfitBalance).toFixed(5);
 
+    let result = (
+      data.reduce(
+        (acc, item) => acc + Number(item.brokerage || 0),
+        0
+      ) / (Profit_Margin / 100)  // Convert percentage to decimal
+    ).toFixed(5);
+    
+    result = result - ProfitBalance;
+    console.log(result);
+    
+
+    
     if (result < 0) {
       Swal.fire("Error", "Brokerage is less than the profit margin", "error");
       return;
@@ -119,6 +131,16 @@ const Brokerage = () => {
       );
     }
   };
+
+  const result = (
+    data.reduce(
+      (acc, item) => acc + Number(item.brokerage || 0),
+      0
+    ) / (Profit_Margin / 100)  // Convert percentage to decimal
+  ).toFixed(5);
+  
+  console.log(result);
+  
 
   return (
     <>
@@ -145,13 +167,7 @@ const Brokerage = () => {
               </span>
               <span className="fw-bold">
                 Total Our Brokerage:{" "}
-                {(
-                  data.reduce(
-                    (acc, item) => acc + Number(item.brokerage || 0),
-                    0
-                  ) /
-                    Profit_Margin -
-                  ProfitBalance
+                {(result - ProfitBalance
                 ).toFixed(5)}
               </span>
               <span className="fw-bold">Completed: {ProfitBalance}</span>

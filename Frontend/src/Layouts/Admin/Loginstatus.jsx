@@ -100,51 +100,55 @@ const Loginstatus = () => {
                 </div>
               </div>
               <div className="card-body p-0">
-                <div className="tab-content" id="myTabContent1">
-                  <div
-                    className="tab-pane fade show active flex"
-                    id="Week"
-                    role="tabpanel"
-                    aria-labelledby="Week-tab"
-                  >
-                    <div className="mb-3 ms-4">
-                      Search :{" "}
-                      <input
-                        className="ml-2 input-search form-control"
-                        style={{ width: "20%" }}
-                        type="text"
-                        placeholder="Search..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                      />
-                    </div>
+  <div className="tab-content" id="myTabContent1">
+    <div className="row mb-3 ms-3">
+      {/* Vertical Layout for Search and Select User */}
+      <div className="col-md-3">
+        <div className="">
+          <label className="me-2">Search:</label>
+          <input
+            className="form-control"
+            style={{ width: "75%" }}
+            type="text"
+            placeholder="Search..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+      </div>
 
-                    <div className="mb-3">
-                      {/* Dropdown for selecting user */}
-                      Select User:{" "}
-                      <select
-                        className="form-control"
-                        style={{ width: "200px", display: "inline-block" }}
-                        onChange={(e) => setSelectedUserId(e.target.value)}
-                        value={selectedUserId}
-                      >
-                        <option value="">Select a user</option>
-                        {users.length > 0 ? (
-                          users.map((user) => (
-                            <option key={user.id} value={user.id}>
-                              {user?.UserName}
-                            </option>
-                          ))
-                        ) : (
-                          <option>No users available</option>
-                        )}
-                      </select>
-                    </div>
+      {/* User Dropdown */}
+      <div className="col-md-3">
+        <div className="">
+          <label className="me-2">Select User:</label>
+          <select
+            className="form-control"
+            style={{ width: "50%%" }}
+            onChange={(e) => setSelectedUserId(e.target.value)}
+            value={selectedUserId}
+          >
+            <option value="">Select a user</option>
+            {users.length > 0 ? (
+              users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user?.UserName}
+                </option>
+              ))
+            ) : (
+              <option>No users available</option>
+            )}
+          </select>
+        </div>
+      </div>
+    </div>
 
-                    <Table columns={columns} data={data} />
-                  </div>
-                </div>
-              </div>
+    {/* Table Section */}
+    <div className="tab-pane fade show active" id="Week" role="tabpanel" aria-labelledby="Week-tab">
+      <Table columns={columns} data={data} />
+    </div>
+  </div>
+</div>
+
             </div>
           </div>
         </div>

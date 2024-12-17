@@ -303,7 +303,7 @@ export async function getbalancandLicence(data, token) {
 
 export async function getSignIn(data, token) {
     try {
-        const res = await axios.get(`${Config.base_url}getSignIn`, data, {
+        const res = await axios.post(`${Config.base_url}getSignIn`, data, {
             data: {},
         })
         return await res?.data;
