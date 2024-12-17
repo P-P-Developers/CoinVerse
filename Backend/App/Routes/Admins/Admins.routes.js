@@ -24,7 +24,7 @@ router.post('/admin/Update_Employe', Update_Employe);
 router.post('/admin/Delete_Employee', Delete_Employee);
 router.post('/admin/getuserpaymentstatus', getuserpaymentstatus);
 router.post('/admin/Updatestatus', UpdateStatus);
-router.get('/admin/getUsersName', getUsersName);
+router.post('/admin/getUsersName', getUsersName);
 
 
 // margin required

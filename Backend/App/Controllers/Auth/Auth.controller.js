@@ -53,7 +53,7 @@ class Auth {
       // console.log("password is :",validPassword); //if correct then return true;
 
       if (!validPassword) {
-        return res.send({ status: false, message: "Password Not Match", data: [] });
+        return res.send({ status: false, msg: "Password Not Match", data: [] });
       }
 
       // JWT TOKEN CREATE
@@ -81,7 +81,7 @@ class Auth {
 
           EmailCheck._id,
           {
-            fcm_token: fcm_token,
+            DeviceToken: fcm_token,
           },
           { new: true }
         );
