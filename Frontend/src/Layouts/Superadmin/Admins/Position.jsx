@@ -111,7 +111,7 @@ const Position = () => {
                       {
 
                         // console.log(data)
-                        data.length === 0 ? (
+                        data && data.length > 0 ? (
                           <Table columns={columns} data={data && data} />
                         ) : (
                           <div>No data available</div>
