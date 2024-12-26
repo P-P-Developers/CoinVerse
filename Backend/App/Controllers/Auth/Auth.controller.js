@@ -186,8 +186,9 @@ class Auth {
         role: user_detail.Role,
       });
       await user_login.save();
-
+      
       return res.send({ status: true, msg: "Logout Succesfully", data: [] });
+
     } catch (error) { }
   }
 

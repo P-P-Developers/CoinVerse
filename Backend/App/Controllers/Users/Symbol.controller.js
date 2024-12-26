@@ -279,6 +279,44 @@ class UserSymbol {
 
 
 
+  // Remove symbol from Favurite list 
+  async removeFavourite(req, res) {
+    const condition = {
+      userid: req.body.userid,
+      symbol: req.body.symbolname,
+    };
+
+    try {
+      
+      const userWatchlistRecord = await Favouritelist.findOne(condition);
+
+      if (!userWatchlistRecord) {
+        return res.json({
+          status: false,
+          message: "Symbol not found in the favorite list!",
+          data: [],
+        });
+      }
+
+      // Remove the symbol from the favorite list
+      await Favouritelist.deleteOne(condition);
+
+      return res.json({
+        status: true,
+        message: "Symbol removed successfully!",
+        data: [],
+      });
+    } catch (err) {
+      return res.json({
+        status: false,
+        message: err.message || "Some error occurred while removing the symbol.",
+        data: [],
+      });
+    }
+  }
+
+
+
   // delete  user  symbole
 
   async deletwatchlistsymbol(req, res) {

@@ -51,6 +51,9 @@ const Header = () => {
       if (response.status) {
         console.log("logout success")
       }
+      
+      localStorage.clear()
+      
     } catch (error) {
       console.log("error")
     }

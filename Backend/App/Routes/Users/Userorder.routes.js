@@ -3,7 +3,8 @@
 const router = require("express").Router()
 
 const { addSymbol,symbolSearch,userSymbollist,deletwatchlistsymbol , getFavouritelist ,
-    Favouritelist
+    Favouritelist,
+    removeFavourite
 } = require("../../Controllers/Users/Symbol.controller")
 const {placeorder ,getOrderBook , gettardehistory ,position,holding, Squareoff,switchOrderType} = require("../../Controllers/Users/Placeorder.controller")
 const {userWithdrawalanddeposite,getpaymenthistory, getUserDetail , getmarginpriceforuser,getAllstatement,
@@ -34,6 +35,7 @@ router.post('/statement',statement);
 router.post('/getmarginvalue',getmarginpriceforuser);
 router.post('/getFavouritelist',getFavouritelist);
 router.post('/Favouritelist',Favouritelist);
+router.post('/removeFavourite', removeFavourite)
 router.post('/getAllstatement',getAllstatement);
 router.post('/getuserorderdata',getuserorderdata);
 router.post('/Squareoff',Squareoff);

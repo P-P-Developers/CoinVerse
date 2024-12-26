@@ -16,34 +16,106 @@ const mainorder_model = db.mainorder_model;
 
 
 class Users {
-  
 
 
-  //userWithdrawalanddeposite
-  
+
+  // userWithdrawalanddeposite
+
+
+  // async userWithdrawalanddeposite(req, res) {
+  //   try {
+  //     const { userid, Balance, type } = req.body;
+
+  //     const userdata = await User_model.findById({ _id: userid }).sort({ createdAt: -1 });;
+
+  //     if (!userdata) {
+  //       return res.json({ status: false, message: "User not found", data: [] });
+  //     }
+
+
+  //     const dollarPriceData = await MarginRequired.findOne({ adminid: userdata.parent_id }).select("dollarprice");
+  //     if (!dollarPriceData) {
+  //       return res.json({ status: false, message: "Dollar price data not found", data: [] });
+  //     }
+
+  //     // Ensure Balance is a number and calculate dollar count correctly
+  //     if (isNaN(Balance)) {
+  //       return res.json({
+  //         status: false,
+  //         message: "Invalid balance provided",
+  //         data: [],
+  //       });
+  //     }
+
+  //     const dollarcount = parseFloat(Balance).toFixed(6);
+
+  //     console.log("dollar count is on w ;", dollarcount);
+
+  //     const paymentHistory = new PaymenetHistorySchema({
+  //       userid: userid,
+  //       adminid: userdata.parent_id,
+  //       Balance: dollarcount,
+  //       type: type,
+  //       status: 0,
+  //     });
+
+  //     await paymentHistory.save();
+
+  //     return res.json({
+  //       status: true,
+  //       message: "Request send",
+  //       data: paymentHistory,
+  //     });
+  //   } catch (error) {
+  //     return res.json({
+  //       status: false,
+  //       message: "Error to Request send",
+  //       data: [],
+  //     });
+  //   }
+  // }
+
+
+
+  // get payment history 
+
+
+  // withdrawl deposit to dollar 
   async userWithdrawalanddeposite(req, res) {
     try {
       const { userid, Balance, type } = req.body;
 
-      const userdata = await User_model.findById({ _id: userid}).sort({ createdAt: -1 });;
-
+      // Fetch user data
+      const userdata = await User_model.findById({ _id: userid }).sort({ createdAt: -1 });
       if (!userdata) {
         return res.json({ status: false, message: "User not found", data: [] });
       }
-       
 
+      // Fetch dollar price data
       const dollarPriceData = await MarginRequired.findOne({ adminid: userdata.parent_id }).select("dollarprice");
       if (!dollarPriceData) {
         return res.json({ status: false, message: "Dollar price data not found", data: [] });
       }
-  
 
-      const dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
-      
+      // Validate and convert Balance to dollars
+      if (isNaN(Balance) || Balance <= 0) {
+        return res.json({
+          status: false,
+          message: "Invalid or negative balance provided",
+          data: [],
+        });
+      }
+
+      // const dollarPrice = parseFloat(dollarPriceData.dollarprice);
+      const dollarcount = parseFloat(Balance).toFixed(6);
+
+      // console.log("Dollar count is on w:", dollarcount);
+
+      // Create payment history entry
       const paymentHistory = new PaymenetHistorySchema({
         userid: userid,
         adminid: userdata.parent_id,
-        Balance: dollarcount,
+        Balance: dollarcount, // Store the converted dollar amount
         type: type,
         status: 0,
       });
@@ -52,21 +124,21 @@ class Users {
 
       return res.json({
         status: true,
-        message: "Request send",
+        message: "Request sent",
         data: paymentHistory,
       });
     } catch (error) {
+      console.error("Error in userWithdrawalanddeposite:", error);
       return res.json({
         status: false,
-        message: "Error to Request send",
+        message: "Error to request send",
         data: [],
       });
     }
   }
 
-  
 
-  // get payment history 
+
   async getpaymenthistory(req, res) {
     try {
       const { userid } = req.body;
@@ -78,7 +150,7 @@ class Users {
       return res.json({
         status: true,
         message: "Find Successfully",
-        data:result,
+        data: result,
       });
     } catch (error) {
       return res.json({ status: false, message: "Server error", data: [] });
@@ -87,17 +159,17 @@ class Users {
 
   // testing for get all users
 
-   async  getAllUsers(req, res) {
+  async getAllUsers(req, res) {
     try {
       // Fetch all users with the role "USER"
       const users = await User_model.find({ Role: "USER" })
         .select("FullName Balance limit pertrade perlot turn_over_percentage brokerage UserName createdAt")
         .sort({ createdAt: -1 }); // Optionally, you can sort by createdAt or remove it if not needed
-  
+
       if (!users || users.length === 0) {
         return res.json({ status: false, message: "No users found", data: [] });
       }
-  
+
       return res.json({
         status: true,
         message: "Users fetched successfully",
@@ -107,15 +179,13 @@ class Users {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
-  
-  
-  // get user
 
+  // get user
   async getUserDetail(req, res) {
     try {
       const { userid } = req.body;
 
-      const result = await User_model.find({_id:userid, Role:"USER" }).select(
+      const result = await User_model.find({ _id: userid, Role: "USER" }).select(
         "FullName Balance limit pertrade perlot turn_over_percentage brokerage UserName createdAt"
       ).sort({ createdAt: -1 });;
 
@@ -133,93 +203,80 @@ class Users {
     }
   }
 
-  
-
-
   //margin value for user
-
-  async getmarginpriceforuser(req,res){
+  async getmarginpriceforuser(req, res) {
     try {
-        const {userid} = req.body
-        const result1 = await User_model.find({_id:userid}).select("parent_id").sort({ createdAt: -1 });
-         
-  
-        const result = await MarginRequired.findOne({adminid:result1[0].parent_id}).select("crypto forex")
-        
+      const { userid } = req.body
+      const result1 = await User_model.find({ _id: userid }).select("parent_id").sort({ createdAt: -1 });
 
 
-        if(!result){
-            return res.json({status:false,message:"not found",data:[]})
-        }
-        return res.json({status:true,message:"getting successfully",data:result})
+      const result = await MarginRequired.findOne({ adminid: result1[0].parent_id }).select("crypto forex")
+
+
+
+      if (!result) {
+        return res.json({ status: false, message: "not found", data: [] })
+      }
+      return res.json({ status: true, message: "getting successfully", data: result })
 
     } catch (error) {
-        return res.json({status:false,message:"inernal error",data:[]})
+      return res.json({ status: false, message: "inernal error", data: [] })
     }
-}
-
-
-
-// get all statement 
-
-//  async getAllstatement(req,res){
-//   try {
-      
-//       const {userid} = req.body
-//       const result = await BalanceStatement.find({userid:userid}).sort({ createdAt: -1 });
-       
-      
-       
-//       if(!result){
-//         return res.json({status:false,message : "user not found",data:[]})
-//       }
-
-//       return res.json({status:true,message : "user found",data:result})
-
-    
-//   } catch (error) {
-//     return res.json({status:false, message : "internal error",data:[]})
-//   }
-
-//  }
-
-
-async getAllstatement(req, res) {
-  try {
-    const { userid } = req.body;
-    const result = await BalanceStatement.aggregate([
-      { $match: { userid: userid } },
-      { 
-        $lookup: {
-          from: 'orders', 
-          localField: 'orderid',
-          foreignField: '_id', 
-          as: 'orderDetails'
-        }
-      },
-      { $sort: { createdAt: -1 } } 
-    ]);
-
-    if (!result.length) {
-      return res.json({ status: false, message: "User not found", data: [] });
-    }
-
-    return res.json({ status: true, message: "User found", data: result });
-  } catch (error) {
-    return res.json({ status: false, message: "Internal error", data: [] });
   }
-}
+
+  // get all statement 
+
+  //  async getAllstatement(req,res){
+  //   try {
+
+  //       const {userid} = req.body
+  //       const result = await BalanceStatement.find({userid:userid}).sort({ createdAt: -1 });
 
 
 
+  //       if(!result){
+  //         return res.json({status:false,message : "user not found",data:[]})
+  //       }
 
- // get all orderposition of today 
- 
+  //       return res.json({status:true,message : "user found",data:result})
 
 
+  //   } catch (error) {
+  //     return res.json({status:false, message : "internal error",data:[]})
+  //   }
 
- async getuserorderdata(req, res) {
-  try {
+  //  }
+
+
+  async getAllstatement(req, res) {
+    try {
+      const { userid } = req.body;
+      const result = await BalanceStatement.aggregate([
+        { $match: { userid: userid } },
+        {
+          $lookup: {
+            from: 'orders',
+            localField: 'orderid',
+            foreignField: '_id',
+            as: 'orderDetails'
+          }
+        },
+        { $sort: { createdAt: -1 } }
+      ]);
+
+      if (!result.length) {
+        return res.json({ status: false, message: "User not found", data: [] });
+      }
+
+      return res.json({ status: true, message: "User found", data: result });
+    } catch (error) {
+      return res.json({ status: false, message: "Internal error", data: [] });
+    }
+  }
+
+  // get all orderposition of today 
+  async getuserorderdata(req, res) {
+    try {
       const { userid, symbol } = req.body;
 
       // Get current date at midnight
@@ -231,36 +288,36 @@ async getAllstatement(req, res) {
       endOfDay.setDate(endOfDay.getDate() + 1);
 
       const result = await mainorder_model.find({
-          userid: userid,
-          symbol: symbol,
-          createdAt: {
-              $gte: startOfDay,
-              $lt: endOfDay
-          }
+        userid: userid,
+        symbol: symbol,
+        createdAt: {
+          $gte: startOfDay,
+          $lt: endOfDay
+        }
       });
 
       if (!result || result.length === 0) {
-          return res.json({
-              status: false,
-              message: "Data not found",
-              data: []
-          });
+        return res.json({
+          status: false,
+          message: "Data not found",
+          data: []
+        });
       }
 
       return res.json({
-          status: true,
-          message: "Data found",
-          data: result
+        status: true,
+        message: "Data found",
+        data: result
       });
 
-  } catch (error) {
+    } catch (error) {
       return res.json({
-          status: false,
-          message: "Internal error",
-          data: []
+        status: false,
+        message: "Internal error",
+        data: []
       });
+    }
   }
-}
 
 
 
