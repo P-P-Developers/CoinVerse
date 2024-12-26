@@ -39868,7 +39868,10 @@ table.tb-transaction tbody td {
 .eye {
   position: absolute;
   right: 20px;
-  bottom: 0.625rem;
+  /* bottom: 0.625rem
+   */
+   top:40px;
+
 }
 
 .eye.style-1 {

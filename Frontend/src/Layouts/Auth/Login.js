@@ -40,7 +40,7 @@ const Login = () => {
         localStorage.setItem("user_role", JSON.stringify(response.data.Role));
         localStorage.setItem("UserName", JSON.stringify(response.data.UserName));
 
-        
+
         Swal.fire({
           icon: "success",
           title: "Login successful",
@@ -48,7 +48,7 @@ const Login = () => {
           timer: 1500,
           showConfirmButton: false,
         }).then(() => {
-          
+
 
           if (Role === "SUPERADMIN") {
             navigate("/superadmin/dashboard");
@@ -72,7 +72,7 @@ const Login = () => {
         title: "Login failed",
         text: error.msg || "An unexpected error occurred",
       });
-      
+
     }
   };
 
@@ -163,13 +163,14 @@ const Login = () => {
                         value={password}
                         onChange={handlePasswordChange}
                       />
-                      {errors.password && (
-                        <div className="text-danger">{errors.password}</div>
-                      )}
+
                       <span className="show-pass eye">
                         <i className="fa fa-eye-slash" />
                         <i className="fa fa-eye" />
                       </span>
+                      {errors.password && (
+                        <div className="text-danger">{errors.password}</div>
+                      )}
                     </div>
 
                     <button className="btn btn-block btn-primary">
