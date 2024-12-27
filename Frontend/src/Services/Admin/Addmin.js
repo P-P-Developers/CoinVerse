@@ -303,7 +303,7 @@ export async function getbalancandLicence(data, token) {
 
 export async function getSignIn(data, token) {
     try {
-        const res = await axios.get(`${Config.base_url}getSignIn`, data, {
+        const res = await axios.post(`${Config.base_url}getSignIn`, data, {
             data: {},
         })
         return await res?.data;
@@ -473,9 +473,9 @@ export async function getbroadcastmessageforuser(data, token) {
 
 }
 
-export async function GetUsersName(data, token) {
+export async function GetUsersName(admin_id) {
     try {
-        const res = await axios.get(`${Config.base_url}admin/getUsersName`, data, {
+        const res = await axios.post(`${Config.base_url}admin/getUsersName`, {admin_id}, {
             data: {},
         })
         return await res?.data;

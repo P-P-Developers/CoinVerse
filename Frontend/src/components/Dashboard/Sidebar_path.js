@@ -24,24 +24,24 @@ export const superadmin_header = [
         icon: "fa fa-home",
         route: "/superadmin/position",
     },
-    {
-        id: 5,
-        name: 'Broadcast',
-        icon: "fe fe-dollar-sign",
-        route: "/superadmin/broadcast",
-    },
+    // {
+    //     id: 5,
+    //     name: 'Broadcast',
+    //     icon: "fe fe-dollar-sign",
+    //     route: "/superadmin/broadcast",
+    // },
     {
         id: 6,
         name: 'Hold off',
         icon: "fe fe-dollar-sign",
         route: "/superadmin/holdoff",
     },
-    {
-        id: 7,
-        name: 'brokerage',
-        icon: "fe fe-dollar-sign",
-        route: "/superadmin/brokerage",
-    },
+    // {
+    //     id: 7,
+    //     name: 'Brokerage',
+    //     icon: "fe fe-dollar-sign",
+    //     route: "/superadmin/brokerage",
+    // },
     // {
     //     id: 7,
     //     name: 'Currency Setup',

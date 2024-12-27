@@ -137,7 +137,9 @@ class employee {
 
       if (!users.length) {
         return res.json({
+          status: false,
           message: "No users found for the given employee_id",
+          data: [],
         });
       }
 

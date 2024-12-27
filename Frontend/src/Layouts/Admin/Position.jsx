@@ -99,44 +99,46 @@ const Position = () => {
                 </div>
                 <div className="card-body p-0">
                   <div className="tab-content" id="myTabContent1">
-                    <div
-                      className="tab-pane fade show active"
-                      id="Week"
-                      role="tabpanel"
-                      aria-labelledby="Week-tab"
-                    >
+                    <div className="tab-pane fade show active" id="Week" role="tabpanel" aria-labelledby="Week-tab">
                       <div className="mb-3 ms-4">
-                        Search :{" "}
-                        <input
-                          className="ml-2 input-search form-control"
-                          style={{ width: "20%" }}
-                          type="text"
-                          placeholder="Search..."
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
-                        />
+                        {/* Horizontal Layout for Search and Select User */}
+                        <div className="d-flex align-items-center mb-3">
+                          {/* Search Input */}
+                          <div className="me-3">
+                            <label className="form-label">Search:</label>
+                            <input
+                              className="form-control"
+                              type="text"
+                              placeholder="Search..."
+                              value={search}
+                              onChange={(e) => setSearch(e.target.value)}
+                            />
+                          </div>
+
+                          {/* User Dropdown */}
+                          <div>
+                            <label className="form-label">Select User:</label>
+                            <select
+                              className="form-control"
+                              onChange={(e) => setSelectedUserName(e.target.value)}
+                              value={selectedUserName}
+                            >
+                              <option value="">Select a user</option>
+                              {originalData.length > 0 ? (
+                                originalData.map((user) => (
+                                  <option key={user._id} value={user.username}>
+                                    {user.username}
+                                  </option>
+                                ))
+                              ) : (
+                                <option>No users available</option>
+                              )}
+                            </select>
+                          </div>
+                        </div>
                       </div>
-                      <div className="mb-3">
-                        {/* Dropdown for selecting user */}
-                        Select User:{" "}
-                        <select
-                          className="form-control"
-                          style={{ width: "200px", display: "inline-block" }}
-                          onChange={(e) => setSelectedUserName(e.target.value)}
-                          value={selectedUserName}
-                        >
-                          <option value="">Select a user</option>
-                          {originalData.length > 0 ? (
-                            originalData.map((user) => (
-                              <option key={user._id} value={user.username}>
-                                {user.username}
-                              </option>
-                            ))
-                          ) : (
-                            <option>No users available</option>
-                          )}
-                        </select>
-                      </div>
+
+                      {/* Table */}
                       <Table columns={columns} data={data && data} />
                     </div>
                   </div>

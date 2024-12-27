@@ -13,168 +13,330 @@ const BalanceStatement = db.BalanceStatement;
 const employee_permission = db.employee_permission;
 const mainorder_model = db.mainorder_model;
 const ProfitmarginData = db.Profitmargin;
+const crypto = require("crypto");
+
 
 class Superadmin {
-  async AddAdmin(req, res) {
-    try {
-      const {
-        FullName,
-        UserName,
-        Email,
-        PhoneNo,
-        parent_id,
-        parent_role,
-        password,
-        Otp,
-        Role,
-        Licence,
-        pertrade,
-        perlot,
-        turn_over_percentage,
-        brokerage,
-        limit,
-        Employee_permission,
-        ProfitMargin,
-      } = req.body;
+//   async AddAdmin(req, res) {
+//     try {
+//       const {
+//         FullName,
+//         UserName,
+//         Email,
+//         PhoneNo,
+//         parent_id,
+//         parent_role,
+//         password,
+//         Otp,
+//         Role,
+//         Licence,
+//         pertrade,
+//         perlot,
+//         turn_over_percentage,
+//         brokerage,
+//         limit,
+//         Employee_permission,
+//         ProfitMargin,
+//       } = req.body;
 
-      if (!FullName || !UserName || !Email || !PhoneNo || !password || !Role) {
-        return res
-          .status(400)
-          .json({ status: false, message: "Missing required fields" });
-      }
+//       if (!FullName || !UserName || !Email || !PhoneNo || !password || !Role) {
+//         return res
+//           .status(400)
+//           .json({ status: false, message: "Missing required fields" });
+//       }
 
-      const existingUser = await User_model.findOne({
-        $or: [{ UserName }, { Email }, { PhoneNo }],
-      });
+//       const existingUser = await User_model.findOne({
+//         $or: [{ UserName }, { Email }, { PhoneNo }],
+//       });
 
-      if (existingUser) {
-        if (existingUser.UserName === UserName) {
-          return res.json({
-            status: false,
-            message: "Username already exists",
-          });
-        }
+//       if (existingUser) {
+//         if (existingUser.UserName === UserName) {
+//           return res.json({
+//             status: false,
+//             message: "Username already exists",
+//           });
+//         }
 
-        if (existingUser.Email === Email) {
-          return res.json({ status: false, message: "Email already exists" });
-        }
+//         if (existingUser.Email === Email) {
+//           return res.json({ status: false, message: "Email already exists" });
+//         }
 
-        if (existingUser.PhoneNo === PhoneNo) {
-          return res.json({
-            status: false,
-            message: "Phone Number already exists",
-          });
-        }
-      }
+//         if (existingUser.PhoneNo === PhoneNo) {
+//           return res.json({
+//             status: false,
+//             message: "Phone Number already exists",
+//           });
+//         }
+//       }
 
-      // Current date as start date
-      const startDate = new Date();
-      let endDate = new Date(startDate);
-      endDate.setMonth(endDate.getMonth() + Number(Licence));
+//       // Current date as start date
+//       const startDate = new Date();
+//       let endDate = new Date(startDate);
+//       endDate.setMonth(endDate.getMonth() + Number(Licence));
 
-      if (endDate.getDate() < startDate.getDate()) {
-        endDate.setDate(0);
-      }
+//       if (endDate.getDate() < startDate.getDate()) {
+//         endDate.setDate(0);
+//       }
 
-      // // Fetch dollar price data
-      // const dollarPriceData = await MarginRequired.findOne({adminid:parent_id }).select("dollarprice");
-      // if (!dollarPriceData) {
-      //   return res.json({ status: false, message: "Dollar price data not found" });
-      // }
+//       // // Fetch dollar price data
+//       // const dollarPriceData = await MarginRequired.findOne({adminid:parent_id }).select("dollarprice");
+//       // if (!dollarPriceData) {
+//       //   return res.json({ status: false, message: "Dollar price data not found" });
+//       // }
 
-      // // Calculate dollar count
-      // const dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
+//       // // Calculate dollar count
+//       // const dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
 
-      // Hash password
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(password.toString(), salt);
+//       // Hash password
+//       const salt = await bcrypt.genSalt(10);
+//       const hashedPassword = await bcrypt.hash(password.toString(), salt);
 
-      const activeStatus = parent_role === "EMPLOYE" ? 0 : 1;
+//       const activeStatus = parent_role === "EMPLOYE" ? 0 : 1;
 
-      // Create new user
-      const newUser = new User_model({
-        FullName,
-        UserName,
-        Email,
-        PhoneNo,
-        parent_id,
-        parent_role,
-        Otp: password,
-        Role,
-        pertrade,
-        perlot,
-        turn_over_percentage,
-        brokerage,
-        limit,
-        Licence,
-        password: hashedPassword,
-        Start_Date: startDate,
-        End_Date: endDate,
-        ActiveStatus: activeStatus,
-        ProfitMargin: ProfitMargin,
-      });
+//       // Create new user
+//       const newUser = new User_model({
+//         FullName,
+//         UserName,
+//         Email,
+//         PhoneNo,
+//         parent_id,
+//         parent_role,
+//         Otp: password,
+//         Role,
+//         pertrade,
+//         perlot,
+//         turn_over_percentage,
+//         brokerage,
+//         limit,
+//         Licence,
+//         password: hashedPassword,
+//         Start_Date: startDate,
+//         End_Date: endDate,
+//         ActiveStatus: activeStatus,
+//         ProfitMargin: ProfitMargin,
+//       });
 
-      await newUser.save();
+//       await newUser.save();
 
-      // // Create user wallet
-      // const userWallet = new Wallet_model({
-      //   user_Id: newUser._id,
-      //   Balance: dollarcount,
-      //   parent_Id: parent_id
-      // });
-      // await userWallet.save();
+//       // // Create user wallet
+//       // const userWallet = new Wallet_model({
+//       //   user_Id: newUser._id,
+//       //   Balance: dollarcount,
+//       //   parent_Id: parent_id
+//       // });
+//       // await userWallet.save();
 
-      let licence = new totalLicense({
-        user_Id: newUser._id,
-        Licence: Licence,
-        parent_Id: parent_id,
-        Start_Date: startDate,
-        End_Date: endDate,
-      });
+//       let licence = new totalLicense({
+//         user_Id: newUser._id,
+//         Licence: Licence,
+//         parent_Id: parent_id,
+//         Start_Date: startDate,
+//         End_Date: endDate,
+//       });
 
-      await licence.save();
+//       await licence.save();
 
-      if (Employee_permission) {
-        const {
-          Edit,
-          trade_history,
-          open_position,
-          Licence_Edit,
-          pertrade_edit,
-          perlot_edit,
-          limit_edit,
-          Balance_edit,
-        } = Employee_permission;
+//       if (Employee_permission) {
+//         const {
+//           Edit,
+//           trade_history,
+//           open_position,
+//           Licence_Edit,
+//           pertrade_edit,
+//           perlot_edit,
+//           limit_edit,
+//           Balance_edit,
+//         } = Employee_permission;
 
-        const newPermission = new employee_permission({
-          employee_id: newUser._id,
-          Edit,
-          trade_history,
-          open_position,
-          Licence_Edit,
-          pertrade_edit,
-          perlot_edit,
-          limit_edit,
-          Balance_edit,
-        });
+//         const newPermission = new employee_permission({
+//           employee_id: newUser._id,
+//           Edit,
+//           trade_history,
+//           open_position,
+//           Licence_Edit,
+//           pertrade_edit,
+//           perlot_edit,
+//           limit_edit,
+//           Balance_edit,
+//         });
 
-        await newPermission.save();
-      }
+//         await newPermission.save();
+//       }
 
-      return res.json({
-        status: true,
-        message: "User added successfully",
-        data: newUser,
-      });
-    } catch (error) {
-      console.error(error);
-      return res.json({
-        status: false,
-        message: "Failed to add user",
-        data: [],
-      });
+//       return res.json({
+//         status: true,
+//         message: "User added successfully",
+//         data: newUser,
+//       });
+//     } catch (error) {
+//       console.error(error);
+//       return res.json({
+//         status: false,
+//         message: "Failed to add user",
+//         data: [],
+//       });
+//     }
+//   }
+
+// -----------------Testing------------
+
+async AddAdmin(req, res) {
+  try {
+    const {
+      FullName,
+      UserName,
+      Email,
+      PhoneNo,
+      parent_id,
+      parent_role,
+      password,
+      Otp,
+      Role,
+      Licence,
+      pertrade,
+      perlot,
+      turn_over_percentage,
+      brokerage,
+      limit,
+      Employee_permission,
+      ProfitMargin,
+    } = req.body;
+
+    if (!FullName || !UserName || !Email || !PhoneNo || !password || !Role) {
+      return res
+        .status(400)
+        .json({ status: false, message: "Missing required fields" });
     }
+
+    const existingUser = await User_model.findOne({
+      $or: [{ UserName }, { Email }, { PhoneNo }],
+    });
+
+    if (existingUser) {
+      if (existingUser.UserName === UserName) {
+        return res.json({
+          status: false,
+          message: "Username already exists",
+        });
+      }
+
+      if (existingUser.Email === Email) {
+        return res.json({ status: false, message: "Email already exists" });
+      }
+
+      if (existingUser.PhoneNo === PhoneNo) {
+        return res.json({
+          status: false,
+          message: "Phone Number already exists",
+        });
+      }
+    }
+
+    // adding referal code //new added
+    const referralCode = crypto.randomBytes(3).toString('hex').toUpperCase(); // Generates a 6-character referral code
+
+    // Current date as start date
+    const startDate = new Date();
+    let endDate = new Date(startDate);
+    // endDate.setMonth(endDate.getMonth() + Number(Licence));
+    endDate.setMonth(endDate.getMonth() + Number(12));
+
+
+    if (endDate.getDate() < startDate.getDate()) {
+      endDate.setDate(0);
+    }
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password.toString(), salt);
+
+    const activeStatus = parent_role === "EMPLOYE" ? 0 : 1;
+
+    // Create new user
+    const newUser = new User_model({
+      FullName,
+      UserName,
+      Email,
+      PhoneNo,
+      parent_id,
+      parent_role,
+      Otp: password,
+      Role,
+      pertrade,
+      perlot,
+      turn_over_percentage,
+      brokerage,
+      limit,
+      Licence,
+      password: hashedPassword,
+      Start_Date: startDate,
+      End_Date: endDate,
+      ActiveStatus: activeStatus,
+      ProfitMargin: ProfitMargin,
+      ReferralCode: referralCode,  // Add referral code to the user
+    });
+
+    await newUser.save();
+
+    // Create user wallet (if needed)
+    // const userWallet = new Wallet_model({
+    //   user_Id: newUser._id,
+    //   Balance: dollarcount,
+    //   parent_Id: parent_id
+    // });
+    // await userWallet.save();
+
+    let licence = new totalLicense({
+      user_Id: newUser._id,
+      Licence: Licence,
+      parent_Id: parent_id,
+      Start_Date: startDate,
+      End_Date: endDate,
+    });
+
+    await licence.save();
+
+    if (Employee_permission) {
+      const {
+        Edit,
+        trade_history,
+        open_position,
+        Licence_Edit,
+        pertrade_edit,
+        perlot_edit,
+        limit_edit,
+        Balance_edit,
+      } = Employee_permission;
+
+      const newPermission = new employee_permission({
+        employee_id: newUser._id,
+        Edit,
+        trade_history,
+        open_position,
+        Licence_Edit,
+        pertrade_edit,
+        perlot_edit,
+        limit_edit,
+        Balance_edit,
+      });
+
+      await newPermission.save();
+    }
+
+    return res.json({
+      status: true,
+      message: "User added successfully",
+      data: newUser,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.json({
+      status: false,
+      message: "Failed to add user",
+      data: [],
+    });
   }
+}
 
   async walletRecharge(req, res) {
     try {
@@ -581,7 +743,7 @@ class Superadmin {
         .sort({ createdAt: -1 });
 
       if (!result || result.length === 0) {
-        return res.json({ status: false, message: "Data not found" });
+        return res.json({ status: false, message: "Data not found", data: [] });
       }
 
       return res.json({ status: true, message: "Data found", data: result });
@@ -716,43 +878,43 @@ class Superadmin {
     }
   }
 
-    async getProfitMargin(req, res) {
-      try {
-        const { admin_id } = req.body;
-console.log("adminid",admin_id)
+  async getProfitMargin(req, res) {
+    try {
+      const { admin_id } = req.body;
+      console.log("adminid", admin_id)
 
-        if (!admin_id) {
-          return res.json({
-            status: false,
-            message: "Missing required fields",
-            data: [],
-          });
-        }
-
-        const profitMarginData = await ProfitmarginData.find({ adminid:admin_id });
-        if (!profitMarginData || profitMarginData.length === 0) {
-          return res.json({
-            status: false,
-            message: "Profit margin data not found",
-            data: [],
-          });
-        }
-
-        return res.json({
-          status: true,
-          message: "Profit margin data found",
-          data: profitMarginData,
-        });
-      }
-      catch (error) {
-        console.error("Error at getProfitMargin", error);
+      if (!admin_id) {
         return res.json({
           status: false,
-          message: "Internal error",
+          message: "Missing required fields",
           data: [],
         });
       }
+
+      const profitMarginData = await ProfitmarginData.find({ adminid: admin_id });
+      if (!profitMarginData || profitMarginData.length === 0) {
+        return res.json({
+          status: false,
+          message: "Profit margin data not found",
+          data: [],
+        });
+      }
+
+      return res.json({
+        status: true,
+        message: "Profit margin data found",
+        data: profitMarginData,
+      });
     }
+    catch (error) {
+      console.error("Error at getProfitMargin", error);
+      return res.json({
+        status: false,
+        message: "Internal error",
+        data: [],
+      });
+    }
+  }
 
 }
 

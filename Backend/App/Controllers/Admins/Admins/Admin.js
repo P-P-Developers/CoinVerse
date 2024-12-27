@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 const db = require("../../../Models");
+const { sendPushNotification } = require("../../common/firebase");
 const User_model = db.user;
 const Role = db.role;
 const Wallet_model = db.WalletRecharge;
@@ -600,105 +601,402 @@ class Admin {
 
   // update by status
 
-  async UpdateStatus(req, res) {
-    try {
-      const { id, status } = req.body;
+  // async UpdateStatus(req, res) {
+  //   try {
+  //     const { admin_id, id, status } = req.body;
+      
+  //     const filter = { _id: new ObjectId(id) };
+  //     const paymentHistoryFind = await PaymenetHistorySchema.findOne(filter);
 
-      const filter = { _id: new ObjectId(id) };
-      const paymentHistoryFind = await PaymenetHistorySchema.findOne(filter);
+  //     if (!paymentHistoryFind) {
+  //       return res.json({
+  //         status: false,
+  //         message: "Payment history not found",
+  //       });
+  //     }
 
-      if (!paymentHistoryFind) {
-        return res.json({
-          status: false,
-          message: "Payment history not found",
-        });
-      }
+  //     const findUser = await User_model.findOne({
+  //       _id: new ObjectId(paymentHistoryFind.userid),
+  //     }).select("Balance");
 
-      const findUser = await User_model.findOne({
-        _id: new ObjectId(paymentHistoryFind.userid),
-      }).select("Balance");
+  //     if (!findUser) {
+  //       return res.json({
+  //         status: false,
+  //         message: "User not found",
+  //       });
+  //     }
 
-      if (!findUser) {
-        return res.json({
-          status: false,
-          message: "User not found",
-        });
-      }
+  //     // PaymenetHistorySchema
+  //     if (status == 1) {
+  //       if (paymentHistoryFind.type == 0) {
+  //         if (paymentHistoryFind.Balance > findUser.Balance) {
+  //           return res.json({
+  //             status: false,
+  //             message: "Insufficient balance",
+  //           });
+  //         }
 
-      if (status == 1) {
-        if (paymentHistoryFind.type == 0) {
-          if (paymentHistoryFind.Balance > findUser.Balance) {
-            return res.json({
-              status: false,
-              message: "Insufficient balance",
-            });
-          }
+  //         findUser.Balance -= paymentHistoryFind.Balance;
+  //         await findUser.save();
 
-          findUser.Balance -= paymentHistoryFind.Balance;
-          await findUser.save();
+  //         paymentHistoryFind.status = status;
+  //         await paymentHistoryFind.save();
 
-          paymentHistoryFind.status = status;
-          await paymentHistoryFind.save();
+  //         const walletUpdateResult = new Wallet_model({
+  //           user_Id: findUser._id,
+  //           Balance: paymentHistoryFind.Balance,
+  //           parent_Id: paymentHistoryFind.adminid,
+  //           Type: "DEBIT",
 
-          const walletUpdateResult = new Wallet_model({
-            user_Id: findUser._id,
-            Balance: paymentHistoryFind.Balance,
-            parent_Id: paymentHistoryFind.adminid,
-            Type: "DEBIT",
+  //         });
 
-          });
+  //         await walletUpdateResult.save();
 
-          await walletUpdateResult.save();
-          return res.json({
-            status: true,
-            message: "Withdrawal request Accepted successfully",
-          });
-        } else if (paymentHistoryFind.type == 1) {
-          findUser.Balance += paymentHistoryFind.Balance;
-          await findUser.save();
+  //         return res.json({
+  //           status: true,
+  //           message: "Withdrawal request Accepted successfully",
+  //         });
+  //       } else if (paymentHistoryFind.type == 1) {
+  //         findUser.Balance += paymentHistoryFind.Balance;
+  //         await findUser.save();
 
-          paymentHistoryFind.status = status;
-          await paymentHistoryFind.save();
+  //         paymentHistoryFind.status = status;
+  //         await paymentHistoryFind.save();
 
-          const walletUpdateResult = new Wallet_model({
-            user_Id: findUser._id,
-            Balance: paymentHistoryFind.Balance,
-            parent_Id: paymentHistoryFind.adminid,
-            Type: "CREDIT",
-          });
+  //         const walletUpdateResult = new Wallet_model({
+  //           user_Id: findUser._id,
+  //           Balance: paymentHistoryFind.Balance,
+  //           parent_Id: paymentHistoryFind.adminid,
+  //           Type: "CREDIT",
+  //         });
 
-          await walletUpdateResult.save();
-          return res.json({
-            status: true,
-            message: "Deposit request Accepted successfully",
-          });
-        } else {
-          return res.json({
-            status: false,
-            message: "Invalid type provided",
-          });
+  //         await walletUpdateResult.save();
+  //         return res.json({
+  //           status: true,
+  //           message: "Deposit request Accepted successfully",
+  //         });
+  //       } else {
+  //         return res.json({
+  //           status: false,
+  //           message: "Invalid type provided",
+  //         });
+  //       }
+  //     } else if (status == 2) {
+  //       paymentHistoryFind.status = status;
+  //       await paymentHistoryFind.save();
+  //       return res.json({
+  //         status: true,
+  //         message: "Order is rejected",
+  //       });
+  //     } else {
+  //       return res.json({
+  //         status: false,
+  //         message: "Invalid status provided",
+  //       });
+  //     }
+  //   } catch (error) {
+  //     return res.json({
+  //       status: false,
+  //       message: "Internal server error",
+  //       error: error.message,
+  //     });
+  //   }
+  // }
+
+
+
+  // ----------------------- Working code ----------------------------
+  // Function to update statusasync
+  
+//   async UpdateStatus(req, res) {
+//   try {
+//     const { admin_id, id, status } = req.body;
+
+//     // Validate and find the payment history
+//     const paymentHistoryFind = await PaymenetHistorySchema.findOne({ _id: new ObjectId(id) });
+//     if (!paymentHistoryFind) {
+//       return res.json({ status: false, message: "Payment history not found" });
+//     }
+    
+//     // Find the user balance and DeviceToken
+//     const findUser = await User_model.findOne({ _id: new ObjectId(paymentHistoryFind.userid) }).select("Balance DeviceToken");
+//     if (!findUser) {
+//       return res.json({ status: false, message: "User not found" });
+//     }
+    
+//     // Handle Status = 1 (Accepted)
+//     if (status == 1) {
+//       if (paymentHistoryFind.type === 0) { // Withdrawal Request
+//         if (paymentHistoryFind.Balance > findUser.Balance) {
+//           return res.json({ status: false, message: "Insufficient balance" });
+//         }
+    
+//         // Deduct balance
+//         findUser.Balance -= paymentHistoryFind.Balance;
+//         await findUser.save();
+    
+//         // Update payment history
+//         paymentHistoryFind.status = status;
+//         await paymentHistoryFind.save();
+    
+//         // Update wallet
+//         const walletUpdateResult = new Wallet_model({
+//           user_Id: findUser._id,
+//           Balance: paymentHistoryFind.Balance,
+//           parent_Id: admin_id,
+//           Type: "DEBIT",
+//         });
+//         await walletUpdateResult.save();
+    
+//         const { DeviceToken } = findUser;
+//         if (DeviceToken) {
+//           await sendPushNotification(
+//             DeviceToken,
+//             "Withdrawal Accepted",
+//             "Your withdrawal request has been accepted successfully."
+//           );
+//         } else {
+//           console.warn("DeviceToken not found for user:", findUser._id);
+//         }
+    
+//         return res.json({ status: true, message: "Withdrawal request accepted successfully" });
+    
+//       }
+    
+//       // Handle Status = 2 (Rejected)
+//     } else if (status == 2) {
+//       // Update payment history to rejected
+//       paymentHistoryFind.status = status;
+//       await paymentHistoryFind.save();
+    
+//       // Check if it's a withdrawal request (type === 0)
+//       if (paymentHistoryFind.type === 0) { // Withdrawal Request
+//         const { DeviceToken } = findUser;
+//         if (DeviceToken) {
+//           await sendPushNotification(
+//             DeviceToken,
+//             "Withdrawal Rejected",
+//             "Your withdrawal request has been rejected."
+//           );
+//         } else {
+//           console.warn("DeviceToken not found for user:", findUser._id);
+//         }
+//       }
+    
+//       return res.json({ status: true, message: "Withdrawal request rejected successfully" });
+    
+//     } else {
+//       return res.json({ status: false, message: "Invalid status provided" });
+//     } else if (paymentHistoryFind.type === 1) { // Deposit Request
+//         // Add balance
+//         findUser.Balance += paymentHistoryFind.Balance;
+//         await findUser.save();
+
+//         // Update payment history
+//         paymentHistoryFind.status = status;
+//         await paymentHistoryFind.save();
+
+//         // Update wallet
+//         const walletUpdateResult = new Wallet_model({
+//           user_Id: findUser._id,
+//           Balance: paymentHistoryFind.Balance,
+//           parent_Id: admin_id,
+//           Type: "CREDIT",
+//         });
+//         await walletUpdateResult.save();
+         
+//         // Send push notification for Accepted Status
+//         const { DeviceToken } = findUser;
+//         if (DeviceToken) {
+//           await sendPushNotification(
+//             DeviceToken,
+//             "Deposit Accepted",
+//             "Your deposit request has been accepted successfully."
+//           );
+//         } else {
+//           console.warn("DeviceToken not found for user:", findUser._id);
+//         }
+
+//         return res.json({ status: true, message: "Deposit request accepted successfully" });
+
+//       } else {
+//         return res.json({ status: false, message: "Invalid type provided" });
+//       }
+
+//     // Handle Status = 2 (Rejected)
+//     } else if (status == 2) {
+//       // Update the payment history to rejected
+//       paymentHistoryFind.status = status;
+//       await paymentHistoryFind.save();
+
+//       // Send push notification for Rejected Status
+//       const { DeviceToken } = findUser;  // Ensure we retrieve DeviceToken here
+//       if (DeviceToken) {
+//         await sendPushNotification(
+//           DeviceToken,
+//           "Deposit Rejected",
+//           "Your deposit request has been rejected."
+//         );
+//       } else {
+//         console.warn("DeviceToken not found for user:", findUser._id);
+//       }
+
+//       return res.json({ status: true, message: "Order is rejected" });
+
+//     // Invalid Status
+//     } else {
+//       return res.json({ status: false, message: "Invalid status provided" });
+//     }
+
+//   } catch (error) {
+//     console.error("Error in UpdateStatus:", error);
+//     return res.json({
+//       status: false,
+//       message: "Internal server error",
+//       error: error.message,
+//     });
+//   }
+// }
+
+
+async UpdateStatus(req, res) {
+  try {
+    const { admin_id, id, status } = req.body;
+
+    // Validate and find the payment history
+    const paymentHistoryFind = await PaymenetHistorySchema.findOne({ _id: new ObjectId(id) });
+    if (!paymentHistoryFind) {
+      return res.json({ status: false, message: "Payment history not found" });
+    }
+
+    // Find the user balance and DeviceToken
+    const findUser = await User_model.findOne({ _id: new ObjectId(paymentHistoryFind.userid) }).select("Balance DeviceToken");
+    if (!findUser) {
+      return res.json({ status: false, message: "User not found" });
+    }
+
+    // Handle Status = 1 (Accepted)
+    if (status == 1) {
+      if (paymentHistoryFind.type === 0) { // Withdrawal Request
+        if (paymentHistoryFind.Balance > findUser.Balance) {
+          return res.json({ status: false, message: "Insufficient balance" });
         }
-      } else if (status == 2) {
+
+        // Deduct balance
+        findUser.Balance -= paymentHistoryFind.Balance;
+        await findUser.save();
+
+        // Update payment history
         paymentHistoryFind.status = status;
         await paymentHistoryFind.save();
-        return res.json({
-          status: true,
-          message: "Order is rejected",
+
+        // Update wallet
+        const walletUpdateResult = new Wallet_model({
+          user_Id: findUser._id,
+          Balance: paymentHistoryFind.Balance,
+          parent_Id: admin_id,
+          Type: "DEBIT",
         });
+        await walletUpdateResult.save();
+
+        const { DeviceToken } = findUser;
+        if (DeviceToken) {
+          await sendPushNotification(
+            DeviceToken,
+            "Withdrawal Accepted",
+            "Your withdrawal request has been accepted successfully."
+          );
+        } else {
+          console.warn("DeviceToken not found for user:", findUser._id);
+        }
+
+        return res.json({ status: true, message: "Withdrawal request accepted successfully" });
+
+      } else if (paymentHistoryFind.type === 1) { // Deposit Request
+        // Add balance
+        findUser.Balance += paymentHistoryFind.Balance;
+        await findUser.save();
+
+        // Update payment history
+        paymentHistoryFind.status = status;
+        await paymentHistoryFind.save();
+
+        // Update wallet
+        const walletUpdateResult = new Wallet_model({
+          user_Id: findUser._id,
+          Balance: paymentHistoryFind.Balance,
+          parent_Id: admin_id,
+          Type: "CREDIT",
+        });
+        await walletUpdateResult.save();
+
+        // Send push notification for Accepted Status
+        const { DeviceToken } = findUser;
+        if (DeviceToken) {
+          await sendPushNotification(
+            DeviceToken,
+            "Deposit Accepted",
+            "Your deposit request has been accepted successfully."
+          );
+        } else {
+          console.warn("DeviceToken not found for user:", findUser._id);
+        }
+
+        return res.json({ status: true, message: "Deposit request accepted successfully" });
+
       } else {
-        return res.json({
-          status: false,
-          message: "Invalid status provided",
-        });
+        return res.json({ status: false, message: "Invalid type provided" });
       }
-    } catch (error) {
-      return res.json({
-        status: false,
-        message: "Internal server error",
-        error: error.message,
-      });
+
+    // Handle Status = 2 (Rejected)
+    } else if (status == 2) {
+      // Update the payment history to rejected
+      paymentHistoryFind.status = status;
+      await paymentHistoryFind.save();
+
+      // Check if it's a withdrawal request (type === 0)
+      if (paymentHistoryFind.type === 0) { // Withdrawal Request
+        const { DeviceToken } = findUser;
+        if (DeviceToken) {
+          await sendPushNotification(
+            DeviceToken,
+            "Withdrawal Rejected",
+            "Your withdrawal request has been rejected."
+          );
+        } else {
+          console.warn("DeviceToken not found for user:", findUser._id);
+        }
+      } else if (paymentHistoryFind.type === 1) { // Deposit Request
+        const { DeviceToken } = findUser;
+        if (DeviceToken) {
+          await sendPushNotification(
+            DeviceToken,
+            "Deposit Rejected",
+            "Your deposit request has been rejected."
+          );
+        } else {
+          console.warn("DeviceToken not found for user:", findUser._id);
+        }
+      }
+
+      return res.json({ status: true, message: "Request rejected successfully" });
+
+    } else {
+      return res.json({ status: false, message: "Invalid status provided" });
     }
+
+  } catch (error) {
+    console.error("Error in UpdateStatus:", error);
+    return res.json({
+      status: false,
+      message: "Internal server error",
+      error: error.message,
+    });
   }
+}
+
+
+  // ----------------------- Working code ----------------------------
 
 
 
@@ -1146,7 +1444,8 @@ class Admin {
 
   async getUsersName(req, res) {
     try {
-      const result = await User_model.find({}).select("FullName UserName")
+      const { admin_id } = req.body;
+      const result = await User_model.find({Role:"USER", parent_id: admin_id}).select("FullName UserName")
       if (!result) {
         return res.json({ status: false, message: "User not found", data: [] })
       }

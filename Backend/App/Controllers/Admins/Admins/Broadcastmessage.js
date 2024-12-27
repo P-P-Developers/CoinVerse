@@ -1,28 +1,15 @@
 "use strict";
-const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
-const ObjectId = mongoose.Types.ObjectId;
 const db = require("../../../Models");
 const User_model = db.user;
-const Role = db.role;
-const Wallet_model = db.WalletRecharge;
 const broadcasting = db.broadcasting;
-const admin = require("firebase-admin");
-
+const { sendPushNotification ,sendMultiplePushNotification} = require("../../common/firebase");
 
 class broadcastingmessage {
-    
-    async broadcastmessage(req, res) {
-      const serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS);
+
+  async broadcastmessage(req, res) {
     try {
-
-
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount),
-      });
-
       const { message, title, adminid, Role, UserName } = req.body;
-      let firebaseToken = [];
 
       const newBroadcast = new broadcasting({
         message,
@@ -33,14 +20,16 @@ class broadcastingmessage {
         createdAt: new Date(),
       });
 
-      const notificationResult = await sendPushNotification(
-        firebaseToken,
-        title,
-        message
-      );
-      console.log("notificationResult:", notificationResult);
-
       const result = await newBroadcast.save();
+
+      const firebaseToken = await User_model.find({ parent_id: adminid ,DeviceToken:{$ne:"",$ne: null} }).select("DeviceToken");
+
+      const firebaseTokenArray = firebaseToken.map((item) => item.DeviceToken);
+
+
+
+      const SendNotification = await sendMultiplePushNotification(firebaseTokenArray, title, message);
+
 
       return res.json({ status: true, message: "Mesaage send", data: result });
     } catch (error) {
@@ -100,23 +89,5 @@ class broadcastingmessage {
 }
 
 
-const sendPushNotification = async (firebaseToken, title, message) => {
-    try {
-      const payload = {
-        notification: {
-          title: title,
-          body: message,
-        },
-        token: firebaseToken,
-      };
-  
-      const response = await admin.messaging().send(payload);
-      console.log("Push notification sent:", response);
-      return { success: true, response };
-    } catch (error) {
-      console.error("Error sending push notification:", error);
-      return { success: false, error };
-    }
-  };
 
 module.exports = new broadcastingmessage();

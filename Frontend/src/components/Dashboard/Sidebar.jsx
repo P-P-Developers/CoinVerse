@@ -78,7 +78,7 @@ const Sidebar = () => {
       case "sign up request":
         return "fa-solid fa-right-to-bracket";
       case "brokerage":
-        return "fa-solid fa-power-off";
+        return "fa fa-hand-holding-usd";
 
       default:
         return "";

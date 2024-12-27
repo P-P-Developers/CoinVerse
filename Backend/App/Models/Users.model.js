@@ -119,7 +119,25 @@ const userModel = Schema({
     ProfitBalance:{
         type: Number,
         default : null
-    }
+    },
+
+    ReferralCode: {
+        type: String,
+        trim: true,
+        unique: true, // Ensure the referral code is unique
+        default: null,
+      },
+      
+      ReferredBy: {
+        type: String, // Stores the referral code of the referrer
+        trim: true,
+        default: null,
+      },
+      DeviceToken: {
+        type: String,
+        trim: true,
+        default: null
+      },
     
 },
     {

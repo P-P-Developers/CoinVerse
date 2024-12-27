@@ -36,6 +36,14 @@ const Login = () => {
       const { Role } = response.data;
 
       if (response.status) {
+        if(response.data.Role === "USER"){
+          Swal.fire({
+            icon: "error",
+            title: "Login failed",
+            text: "User Can't Login On WebPage!",
+          });
+          return;
+        }
         localStorage.setItem("user_details", JSON.stringify(response.data));
         localStorage.setItem("user_role", JSON.stringify(response.data.Role));
         localStorage.setItem("UserName", JSON.stringify(response.data.UserName));

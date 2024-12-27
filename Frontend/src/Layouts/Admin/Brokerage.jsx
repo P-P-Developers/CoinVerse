@@ -116,7 +116,7 @@
 
 
 
-// ____________safe code above  and below for work ____________
+// ____________Prev/safe code above  and below for work ____________
 
 import React, { useEffect, useState } from "react";
 import Table from "../../Utils/Table/Table";
@@ -226,16 +226,16 @@ const Holdoff = () => {
                         </div>
 
                         {/* Completed */}
-                        <div>
+                        <div className="me-4">
                           <span className="fw-bold">
                             Completed: <input className="form-control d-inline w-auto ms-2" disabled />
                           </span>
                         </div>
 
                         {/* Clear All Button */}
-                        <div>
+                        {/* <div>
                           <button className="btn btn-primary me-3">Clear All</button>
-                        </div>
+                        </div> */}
                       </div>
 
 

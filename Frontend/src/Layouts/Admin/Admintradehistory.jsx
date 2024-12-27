@@ -154,7 +154,9 @@ const Tradehistory = () => {
 
   const GetUserName = async () => {
     try {
-      const response = await GetUsersName();
+      // Trade History 1
+      const admin_id = user_id;
+      const response = await GetUsersName(admin_id);
       if (response.status) {
         setUserName(response.data);
       }
