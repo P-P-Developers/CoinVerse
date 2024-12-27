@@ -8,7 +8,7 @@ const { login,SignIn,getSignIn,logoutUser,getlogsuser , PasswordChanged} = requi
 
 router.post('/login', login)
 router.post('/SignIn', SignIn)
-router.get('/getSignIn', getSignIn)
+router.post('/getSignIn', getSignIn)
 router.post('/logoutUser', logoutUser)
 router.post('/getlogsuser', getlogsuser)
 router.post('/PasswordChanged', PasswordChanged)

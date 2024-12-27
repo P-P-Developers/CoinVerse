@@ -119,8 +119,7 @@ export default Setting;
             <div className="input-group">
               <a
                 className="form-control text-primary rounded text-center"
-                href="https://www.dexignlab.com/"
-                target="_blank"
+            
               >
                 https://www.dexignlab.com/
               </a>

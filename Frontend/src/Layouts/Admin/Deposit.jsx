@@ -65,7 +65,7 @@ const Deposit = () => {
   
     const Updatestatus = async (id, status) => {
         try {
-            const data = { id, status };
+            const data = { admin_id : user_id, id , status };
             const response = await UpdatestatusForpaymenthistory(data);
             
             if (response.status) {

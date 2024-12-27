@@ -102,7 +102,7 @@ const Admin = () => {
     //   ),
     // },
     {
-      Header: "ActiveStatus",
+      Header: "Status",
       accessor: "ActiveStatus",
       Cell: ({ cell }) => (
         <label className="form-check form-switch">
@@ -215,6 +215,20 @@ const Admin = () => {
         );
       },
     },
+    {
+      Header: "Brokerage",
+      accessor: "Employee",
+      Cell: ({ cell }) => {
+        return (
+          <div>
+            <Eye
+              style={{ cursor: "pointer", color: "#33B469" }}
+              onClick={() => AdminBrokerageDetail(cell.row)}
+            />
+          </div>
+        );
+      },
+    },
   ];
 
 
@@ -236,6 +250,10 @@ const Admin = () => {
   
 };
 
+const AdminBrokerageDetail = (row) => {
+  navigate(`/superadmin/brokerage/${row._id}`, { state: { rowData: row } });
+  
+};
 
 
   // delete admin
@@ -274,7 +292,6 @@ const Admin = () => {
     }
   };
 
-  // update admin data 
 
 
   const updateAdmin = (_id,obj) => {

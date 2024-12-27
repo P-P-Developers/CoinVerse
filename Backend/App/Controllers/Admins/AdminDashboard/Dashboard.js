@@ -1,19 +1,11 @@
 "use strict";
-const bcrypt = require("bcrypt");
-const mongoose = require("mongoose");
-const ObjectId = mongoose.Types.ObjectId;
 const db = require("../../../Models");
-const { findOne } = require("../../../Models/Role.model");
 const User_model = db.user;
-const Role = db.role;
-const Wallet_model = db.WalletRecharge;
 
-
-class Dashboard{
-
+class Dashboard {
   async GetDashboardData(req, res) {
     try {
-      const { parent_id } = req.body; 
+      const { parent_id } = req.body;
       const counts = await User_model.aggregate([
         {
           $facet: {
@@ -51,21 +43,35 @@ class Dashboard{
         },
         {
           $project: {
-            TotalEmployeCount: { $ifNull: [{ $arrayElemAt: ["$TotalEmployeCount.count", 0] }, 0] },
-            TotalActiveEmployeCount: { $ifNull: [{ $arrayElemAt: ["$TotalActiveEmployeCount.count", 0] }, 0] },
-            TotalUserCount: { $ifNull: [{ $arrayElemAt: ["$TotalUserCount.count", 0] }, 0] },
-            TotalActiveUserCount: { $ifNull: [{ $arrayElemAt: ["$TotalActiveUserCount.count", 0] }, 0] },
+            TotalEmployeCount: {
+              $ifNull: [{ $arrayElemAt: ["$TotalEmployeCount.count", 0] }, 0],
+            },
+            TotalActiveEmployeCount: {
+              $ifNull: [
+                { $arrayElemAt: ["$TotalActiveEmployeCount.count", 0] },
+                0,
+              ],
+            },
+            TotalUserCount: {
+              $ifNull: [{ $arrayElemAt: ["$TotalUserCount.count", 0] }, 0],
+            },
+            TotalActiveUserCount: {
+              $ifNull: [
+                { $arrayElemAt: ["$TotalActiveUserCount.count", 0] },
+                0,
+              ],
+            },
           },
         },
       ]);
-  
+
       const {
         TotalEmployeCount,
         TotalActiveEmployeCount,
         TotalUserCount,
         TotalActiveUserCount,
       } = counts[0];
-  
+
       var Count = {
         TotalEmployeCount: TotalEmployeCount,
         TotalActiveEmployeCount: TotalActiveEmployeCount,
@@ -74,7 +80,7 @@ class Dashboard{
         TotalActiveUserCount: TotalActiveUserCount,
         TotalInActiveUserCount: TotalUserCount - TotalActiveUserCount,
       };
-  
+
       // DATA GET SUCCESSFULLY
       res.send({
         status: true,
@@ -89,8 +95,6 @@ class Dashboard{
       });
     }
   }
-  
-    
 }
 
 module.exports = new Dashboard();

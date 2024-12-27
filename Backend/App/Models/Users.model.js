@@ -111,7 +111,33 @@ const userModel = Schema({
     limit :{
         type: Number,
         default : null
-    }
+    },
+    ProfitMargin:{
+        type: Number,
+        default : null
+    },
+    ProfitBalance:{
+        type: Number,
+        default : null
+    },
+
+    ReferralCode: {
+        type: String,
+        trim: true,
+        unique: true, // Ensure the referral code is unique
+        default: null,
+      },
+      
+      ReferredBy: {
+        type: String, // Stores the referral code of the referrer
+        trim: true,
+        default: null,
+      },
+      DeviceToken: {
+        type: String,
+        trim: true,
+        default: null
+      },
     
 },
     {

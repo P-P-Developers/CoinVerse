@@ -208,7 +208,26 @@ export async function symbolholdoff(data, token) {
     }
 
 }
+// getbrokerageData
+//  ----------Testing --------
+export async function getbrokerageData(data) {
+    try {
+        const res = await axios.post(`${Config.base_url}admin/brokerageData`, data, {
+            data: {},
+        })
 
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
+
+// --------------------
 // update holdoff
 
 
@@ -236,7 +255,6 @@ export async function getpositionhistory(data, token) {
             data: {},
         })
 
-        console.log("respone from fn : ", res);
         return await res?.data;
     }
     catch (err) {
@@ -285,7 +303,7 @@ export async function getbalancandLicence(data, token) {
 
 export async function getSignIn(data, token) {
     try {
-        const res = await axios.get(`${Config.base_url}getSignIn`, data, {
+        const res = await axios.post(`${Config.base_url}getSignIn`, data, {
             data: {},
         })
         return await res?.data;
@@ -337,6 +355,7 @@ export async function TotalcountLicence(data, token) {
 
 export async function LogoutUser(data, token) {
     try {
+        localStorage.clear();
         const res = await axios.post(`${Config.base_url}logoutUser`, data, {
             data: {},
         })
@@ -454,9 +473,9 @@ export async function getbroadcastmessageforuser(data, token) {
 
 }
 
-export async function GetUsersName(data, token) {
+export async function GetUsersName(admin_id) {
     try {
-        const res = await axios.get(`${Config.base_url}admin/getUsersName`, data, {
+        const res = await axios.post(`${Config.base_url}admin/getUsersName`, {admin_id}, {
             data: {},
         })
         return await res?.data;

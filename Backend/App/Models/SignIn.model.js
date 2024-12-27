@@ -28,10 +28,15 @@ const SignInUser = Schema({
         required: true,
         default: null
     },
+    referred_by: { // Store the referral code as ObjectId
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "USER"
+      },
     createdAt: {
         type: Date,
         default: Date.now
     },
+
     
 },
     {

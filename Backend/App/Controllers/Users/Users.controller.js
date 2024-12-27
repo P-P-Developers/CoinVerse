@@ -8,12 +8,10 @@ const Userwatchlist = db.Userwatchlist;
 const PaymenetHistorySchema = db.PaymenetHistorySchema;
 const User_model = db.user;
 const Wallet_model = db.WalletRecharge;
-const MarginRequired = db.MarginRequired
-const BalanceStatement = db.BalanceStatement
+const MarginRequired = db.MarginRequired;
+const BalanceStatement = db.BalanceStatement;
 const mainorder_model = db.mainorder_model;
-
-
-
+const broadcasting = db.broadcasting;
 
 class Users {
 
@@ -125,6 +123,7 @@ class Users {
       return res.json({
         status: true,
         message: "Request sent",
+        message: "Request sent",
         data: paymentHistory,
       });
     } catch (error) {
@@ -142,7 +141,7 @@ class Users {
   async getpaymenthistory(req, res) {
     try {
       const { userid } = req.body;
-      const result = await PaymenetHistorySchema.find({ userid: userid }).sort({ createdAt: -1 });;
+      const result = await PaymenetHistorySchema.find({ userid: userid }).sort({ createdAt: -1 });
 
       if (!result) {
         return res.json({ status: false, message: "User not found", data: [] });
@@ -150,6 +149,7 @@ class Users {
       return res.json({
         status: true,
         message: "Find Successfully",
+        data: result,
         data: result,
       });
     } catch (error) {
@@ -161,7 +161,6 @@ class Users {
 
   async getAllUsers(req, res) {
     try {
-      // Fetch all users with the role "USER"
       const users = await User_model.find({ Role: "USER" })
         .select("FullName Balance limit pertrade perlot turn_over_percentage brokerage UserName createdAt")
         .sort({ createdAt: -1 }); // Optionally, you can sort by createdAt or remove it if not needed
@@ -169,6 +168,7 @@ class Users {
       if (!users || users.length === 0) {
         return res.json({ status: false, message: "No users found", data: [] });
       }
+
 
       return res.json({
         status: true,
@@ -195,7 +195,7 @@ class Users {
 
       return res.json({
         status: true,
-        message: "getting data",
+        message: "Data retrieved",
         data: result,
       });
     } catch (error) {
@@ -267,6 +267,9 @@ class Users {
       if (!result.length) {
         return res.json({ status: false, message: "User not found", data: [] });
       }
+      if (!result.length) {
+        return res.json({ status: false, message: "User not found", data: [] });
+      }
 
       return res.json({ status: true, message: "User found", data: result });
     } catch (error) {
@@ -279,11 +282,9 @@ class Users {
     try {
       const { userid, symbol } = req.body;
 
-      // Get current date at midnight
       const startOfDay = new Date();
       startOfDay.setHours(0, 0, 0, 0);
 
-      // Get next day at midnight
       const endOfDay = new Date(startOfDay);
       endOfDay.setDate(endOfDay.getDate() + 1);
 
@@ -318,12 +319,129 @@ class Users {
       });
     }
   }
+    }
+  }
 
+  // today's broadcast messages
+  async todaysBroadcastMessage(req, res) {
+    try {
+      const { userId } = req.body;
+  
+      if (!userId) {
+        return res.json({ status: false, message: "User ID is required", data: [] });
+      }
+  
+      const user = await User_model.findOne({ _id: new ObjectId(userId) }).select("parent_id");
+  
+      if (!user || !user.parent_id) {
+        return res.json({ status: false, message: "Admin ID not found for the user", data: [] });
+      }
+  
+      const adminId = user.parent_id;
+  
+      // Define start and end of today
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+  
+      const endOfDay = new Date();
+      endOfDay.setHours(23, 59, 59, 999);
+  
+      // Query for broadcasts created today
+      const data = await broadcasting.find({
+        adminid: new ObjectId(adminId),
+        createdAt: { $gte: startOfDay, $lte: endOfDay }, // Filter for today's date
+      });
+  
+      return res.json({ status: true, message: "Data found", data: data });
+    } catch (error) {
+      console.log("Error in todaysBroadcastMessage:", error);
+      return res.json({ status: false, message: "Internal server error", data: [] });
+    }
+  }
 
+  async balanceStatementForUser(req, res) {
+    try {
+      const { userid } = req.body;
 
+      // const userid = "67601364dbc56d9bed6650b9"
+  
+      // Verify userid
+      if (!userid) {
+        return res.json({ status: false, message: "User ID is required", data: [] });
+      }
+  
+      console.log("Query Parameters:", { userid: userid, symbol: { $eq: null } });
+  
+      const result = await BalanceStatement.find({
+        userid: userid,
+        symbol: { $eq: null },
+      }).sort({ createdAt: -1 });
+  
+      console.log("Result:", result);
+  
+      if (!result || result.length === 0) {
+        return res.json({ status: false, message: "Data not found", data: [] });
+      }
+  
+      return res.json({
+        status: true,
+        message: "Data retrieved successfully",
+        data: result,
+      });
+    } catch (error) {
+      console.error("Error in balanceStatementForUser:", error);
+  
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        data: [],
+      });
+    }
+  }
+  
 
+  
+  async tradeStatementForUser(req, res) {
+    try {
+      const { userid } = req.body;
 
-
+      // const userid = "67601364dbc56d9bed6650b9"
+  
+      // Verify userid
+      if (!userid) {
+        return res.json({ status: false, message: "User ID is required", data: [] });
+      }
+  
+      console.log("Query Parameters:", { userid: userid, symbol: { $eq: null } });
+  
+      const result = await BalanceStatement.find({
+        userid: userid,
+        symbol: { $ne: null },
+      }).sort({ createdAt: -1 });
+  
+      console.log("Result:", result);
+  
+      if (!result || result.length === 0) {
+        return res.json({ status: false, message: "Data not found", data: [] });
+      }
+  
+      return res.json({
+        status: true,
+        message: "Data retrieved successfully",
+        data: result,
+      });
+    } catch (error) {
+      console.error("Error in balanceStatementForUser:", error);
+  
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        data: [],
+      });
+    }
+  }
+  
+  
 }
 
 module.exports = new Users();

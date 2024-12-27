@@ -1,22 +1,19 @@
 import { Link, useLocation } from "react-router-dom";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { LogoutUser } from "../../Services/Admin/Addmin";
 import { getbroadcastmessageforuser } from "../../Services/Admin/Addmin";
 import { fDateTime } from "../../Utils/Date_format/datefromat";
+import {jwtDecode} from "jwt-decode";
+
 const Header = () => {
-
-
   const location = useLocation();
   const user_role = JSON.parse(localStorage.getItem("user_role"));
   const user_details = JSON.parse(localStorage.getItem("user_details"));
 
-  const user_id = user_details?.user_id
+  const user_id = user_details?.user_id;
 
   const [isActive, setIsActive] = useState(false);
   const [notification, setNotification] = useState([]);
-
-
-
 
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
@@ -38,47 +35,72 @@ const Header = () => {
   const lastPathSegment = getLastPathSegment(location.pathname);
   const formattedSegment = capitalizeFirstLetter(lastPathSegment);
 
-
   const toggleHamburger = () => {
     setIsActive(!isActive);
   };
 
-
   const logoutuser = () => {
     try {
-      const data = { userid: user_id }
-      const response = LogoutUser(data)
+      const data = { userid: user_id };
+      const response = LogoutUser(data);
       if (response.status) {
-        console.log("logout success")
+        console.log("logout success");
       }
       
       localStorage.clear()
       
     } catch (error) {
-      console.log("error")
+      console.log("error");
     }
-  }
-
-
+  };
 
   const getnotificaton = async () => {
     try {
-      const data = { userid: user_id }
-      const response = await getbroadcastmessageforuser(data)
+      const data = { userid: user_id };
+      const response = await getbroadcastmessageforuser(data);
       if (response.status) {
-        // console.log("response", response.data)
-        setNotification(response.data)
+        setNotification(response.data);
+      }
+    } catch (error) {
+      console.log("Error fetching notifications", error);
+    }
+  };
+
+  const isTokenExpired = () => {
+    try {
+      const token = user_details?.token; // Get the token from user details
+      if (!token) {
+        localStorage.clear(); // Clear storage if token is not found
+        return true; // Token is considered expired
       }
 
+      const decoded = jwtDecode(token); // Decode token without verification
+      const exp = decoded?.exp * 1000; // Convert expiration time to milliseconds
+      if (exp < Date.now()) {
+        localStorage.clear(); // Clear storage if token is expired
+        return true; // Token is expired
+      }
+
+      return false; // Token is valid
     } catch (error) {
-
+      localStorage.clear(); // Clear storage in case of any error
+      return true; // Consider token expired if error occurs
     }
-  }
-
+  };
 
   useEffect(() => {
-    getnotificaton()
-  }, [])
+    const interval = setInterval(() => {
+      if (isTokenExpired()) {
+        console.log("Token expired, logging out...");
+        logoutuser();
+        clearInterval(interval); // Clear the interval once token is expired
+      }
+    }, 300000); // Check every 1 minute (60,000 ms)
+
+    getnotificaton();
+
+    return () => clearInterval(interval); // Cleanup interval on component unmount
+  }, []);
 
 
 
@@ -124,10 +146,10 @@ const Header = () => {
                             type="text"
                             className="form-control"
                             placeholder="Search Dashboard"
-                            autofocus=""
+                            autoFocus=""
                           />
                           <span className="input-group-text">
-                            <a href="javascript:void(0)">
+                            <a >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -341,7 +363,7 @@ const Header = () => {
                             </li>
                           </ul>
                         </div>
-                        <a className="all-notification" href="javascript:void(0);">
+                        <a className="all-notification">
                           See all notifications <i className="ti-arrow-end" />
                         </a>
                       </div>
@@ -350,7 +372,7 @@ const Header = () => {
                     <li className="nav-item dropdown notification_dropdown">
                       <a
                         className="nav-link bell dz-theme-mode"
-                        href="javascript:void(0);"
+                       
                       >
                         <svg
                           id="icon-light"
@@ -411,7 +433,7 @@ const Header = () => {
                     <li className="nav-item dropdown notification_dropdown">
                       <a
                         className="nav-link "
-                        href="javascript:void(0);"
+                       
                         role="button"
                         data-bs-toggle="dropdown"
                       >
@@ -549,7 +571,7 @@ const Header = () => {
                             </li>
                           </ul>
                         </div>
-                        <a className="all-notification" href="javascript:void(0);">
+                        <a className="all-notification">
                           See all notifications <i className="ti-arrow-end" />
                         </a>
                       </div>
@@ -559,7 +581,7 @@ const Header = () => {
                     {/* <li className="nav-item dropdown notification_dropdown">
                       <a
                         className="nav-link me-0 "
-                        href="javascript:void(0);"
+                       
                         data-bs-toggle="dropdown"
                       >
                         <svg
@@ -602,7 +624,7 @@ const Header = () => {
                               <div className="timeline-badge danger"></div>
                               <a
                                 className="timeline-panel text-muted"
-                                href="javascript:void(0);"
+                               
                               >
                                 <span>30 minutes ago</span>
                                 <h6 className="mb-0">
@@ -617,7 +639,7 @@ const Header = () => {
                               <div className="timeline-badge success"></div>
                               <a
                                 className="timeline-panel text-muted"
-                                href="javascript:void(0);"
+                               
                               >
                                 <span>15 minutes ago</span>
                                 <h6 className="mb-0">
@@ -629,7 +651,7 @@ const Header = () => {
                               <div className="timeline-badge warning"></div>
                               <a
                                 className="timeline-panel text-muted"
-                                href="javascript:void(0);"
+                               
                               >
                                 <span>20 minutes ago</span>
                                 <h6 className="mb-0">
@@ -641,7 +663,7 @@ const Header = () => {
                               <div className="timeline-badge dark"></div>
                               <a
                                 className="timeline-panel text-muted"
-                                href="javascript:void(0);"
+                               
                               >
                                 <span>20 minutes ago</span>
                                 <h6 className="mb-0">
@@ -658,7 +680,7 @@ const Header = () => {
                       <div className="dropdown header-profile2">
                         <a
                           className="nav-link"
-                          href="javascript:void(0);"
+                         
                           role="button"
                           data-bs-toggle="dropdown"
                           aria-expanded="false"
@@ -757,10 +779,10 @@ const Header = () => {
                               type="text"
                               className="form-control"
                               placeholder="Search Dashboard"
-                              autofocus=""
+                              autoFocus=""
                             />
                             <span className="input-group-text">
-                              <a href="javascript:void(0)">
+                              <a >
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -974,7 +996,7 @@ const Header = () => {
                               </li>
                             </ul>
                           </div>
-                          <a className="all-notification" href="javascript:void(0);">
+                          <a className="all-notification">
                             See all notifications <i className="ti-arrow-end" />
                           </a>
                         </div>
@@ -983,7 +1005,7 @@ const Header = () => {
                       <li className="nav-item dropdown notification_dropdown">
                         <a
                           className="nav-link bell dz-theme-mode"
-                          href="javascript:void(0);"
+                         
                         >
                           <svg
                             id="icon-light"
@@ -1044,7 +1066,7 @@ const Header = () => {
                       <li className="nav-item dropdown notification_dropdown">
                         <a
                           className="nav-link "
-                          href="javascript:void(0);"
+                         
                           role="button"
                           data-bs-toggle="dropdown"
                         >
@@ -1114,7 +1136,7 @@ const Header = () => {
                               ))}
                             </ul>
                           </div>
-                          <a className="all-notification" href="javascript:void(0);">
+                          <a className="all-notification">
                             See all notifications <i className="ti-arrow-end" />
                           </a>
                         </div>
@@ -1125,7 +1147,7 @@ const Header = () => {
                       {/* <li className="nav-item dropdown notification_dropdown">
                         <a
                           className="nav-link me-0 "
-                          href="javascript:void(0);"
+                         
                           data-bs-toggle="dropdown"
                         >
                           <svg
@@ -1168,7 +1190,7 @@ const Header = () => {
                                 <div className="timeline-badge danger"></div>
                                 <a
                                   className="timeline-panel text-muted"
-                                  href="javascript:void(0);"
+                                 
                                 >
                                   <span>30 minutes ago</span>
                                   <h6 className="mb-0">
@@ -1183,7 +1205,7 @@ const Header = () => {
                                 <div className="timeline-badge success"></div>
                                 <a
                                   className="timeline-panel text-muted"
-                                  href="javascript:void(0);"
+                                 
                                 >
                                   <span>15 minutes ago</span>
                                   <h6 className="mb-0">
@@ -1195,7 +1217,7 @@ const Header = () => {
                                 <div className="timeline-badge warning"></div>
                                 <a
                                   className="timeline-panel text-muted"
-                                  href="javascript:void(0);"
+                                 
                                 >
                                   <span>20 minutes ago</span>
                                   <h6 className="mb-0">
@@ -1207,7 +1229,7 @@ const Header = () => {
                                 <div className="timeline-badge dark"></div>
                                 <a
                                   className="timeline-panel text-muted"
-                                  href="javascript:void(0);"
+                                 
                                 >
                                   <span>20 minutes ago</span>
                                   <h6 className="mb-0">
@@ -1224,7 +1246,7 @@ const Header = () => {
                         <div className="dropdown header-profile2">
                           <a
                             className="nav-link"
-                            href="javascript:void(0);"
+                           
                             role="button"
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
@@ -1391,10 +1413,10 @@ const Header = () => {
                               type="text"
                               className="form-control"
                               placeholder="Search Dashboard"
-                              autofocus=""
+                              autoFocus=""
                             />
                             <span className="input-group-text">
-                              <a href="javascript:void(0)">
+                              <a >
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -1608,7 +1630,7 @@ const Header = () => {
                               </li>
                             </ul>
                           </div>
-                          <a className="all-notification" href="javascript:void(0);">
+                          <a className="all-notification">
                             See all notifications <i className="ti-arrow-end" />
                           </a>
                         </div>
@@ -1617,7 +1639,7 @@ const Header = () => {
                       <li className="nav-item dropdown notification_dropdown">
                         <a
                           className="nav-link bell dz-theme-mode"
-                          href="javascript:void(0);"
+                         
                         >
                           <svg
                             id="icon-light"
@@ -1678,7 +1700,7 @@ const Header = () => {
                       <li className="nav-item dropdown notification_dropdown">
                         <a
                           className="nav-link "
-                          href="javascript:void(0);"
+                         
                           role="button"
                           data-bs-toggle="dropdown"
                         >
@@ -1817,7 +1839,7 @@ const Header = () => {
                               </li>
                             </ul>
                           </div>
-                          <a className="all-notification" href="javascript:void(0);">
+                          <a className="all-notification">
                             See all notifications <i className="ti-arrow-end" />
                           </a>
                         </div>
@@ -1827,7 +1849,7 @@ const Header = () => {
                       {/* <li className="nav-item dropdown notification_dropdown">
                         <a
                           className="nav-link me-0 "
-                          href="javascript:void(0);"
+                         
                           data-bs-toggle="dropdown"
                         >
                           <svg
@@ -1870,7 +1892,7 @@ const Header = () => {
                                 <div className="timeline-badge danger"></div>
                                 <a
                                   className="timeline-panel text-muted"
-                                  href="javascript:void(0);"
+                                 
                                 >
                                   <span>30 minutes ago</span>
                                   <h6 className="mb-0">
@@ -1885,7 +1907,7 @@ const Header = () => {
                                 <div className="timeline-badge success"></div>
                                 <a
                                   className="timeline-panel text-muted"
-                                  href="javascript:void(0);"
+                                 
                                 >
                                   <span>15 minutes ago</span>
                                   <h6 className="mb-0">
@@ -1897,7 +1919,7 @@ const Header = () => {
                                 <div className="timeline-badge warning"></div>
                                 <a
                                   className="timeline-panel text-muted"
-                                  href="javascript:void(0);"
+                                 
                                 >
                                   <span>20 minutes ago</span>
                                   <h6 className="mb-0">
@@ -1909,7 +1931,7 @@ const Header = () => {
                                 <div className="timeline-badge dark"></div>
                                 <a
                                   className="timeline-panel text-muted"
-                                  href="javascript:void(0);"
+                                 
                                 >
                                   <span>20 minutes ago</span>
                                   <h6 className="mb-0">
@@ -1926,7 +1948,7 @@ const Header = () => {
                         <div className="dropdown header-profile2">
                           <a
                             className="nav-link"
-                            href="javascript:void(0);"
+                           
                             role="button"
                             data-bs-toggle="dropdown"
                             aria-expanded="false"

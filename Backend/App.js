@@ -48,6 +48,7 @@ require("./forexSocketData")(app,io);
 require("./App/Routes")(app);
 
 
+
 // httpsserver.listen(1001)
 server.listen(process.env.PORT, () => {
   console.log(`Server is running on http://0.0.0.0:${process.env.PORT}`);

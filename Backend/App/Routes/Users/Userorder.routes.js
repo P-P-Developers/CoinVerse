@@ -10,7 +10,10 @@ const {placeorder ,getOrderBook , gettardehistory ,position,holding, Squareoff,s
 const {userWithdrawalanddeposite,getpaymenthistory, getUserDetail , getmarginpriceforuser,getAllstatement,
     
     getuserorderdata,
-    getAllUsers
+    getAllUsers,
+    todaysBroadcastMessage,
+    balanceStatementForUser,
+    tradeStatementForUser
 } = require("../../Controllers/Users/Users.controller")
 const {statement} = require("../../Controllers/Users/Statement.controller")
 
@@ -39,6 +42,11 @@ router.post('/removeFavourite', removeFavourite)
 router.post('/getAllstatement',getAllstatement);
 router.post('/getuserorderdata',getuserorderdata);
 router.post('/Squareoff',Squareoff);
+
+router.post('/balanceStatementForUser',balanceStatementForUser);
+router.post('/tradeStatementForUser',tradeStatementForUser);
+router.post('/todaysBroadcastMessage',todaysBroadcastMessage);
+
 
 
 

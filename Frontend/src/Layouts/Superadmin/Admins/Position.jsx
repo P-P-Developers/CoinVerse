@@ -24,23 +24,23 @@ const Position = () => {
       Header: "Buy qty",
       accessor: "buy_qty",
       Cell: ({ cell }) => {
-        const buy_qty = cell.row.buy_qty; 
-        return buy_qty ? buy_qty : "-"; 
+        const buy_qty = cell.row.buy_qty;
+        return buy_qty ? buy_qty : "-";
       }
     },
     {
       Header: "Sell qty",
       accessor: "sell_qty",
       Cell: ({ cell }) => {
-        const sell_qty = cell.row.sell_qty; 
-        return sell_qty ? sell_qty : "-"; 
+        const sell_qty = cell.row.sell_qty;
+        return sell_qty ? sell_qty : "-";
       }
     },
     {
       Header: "Position Avg",
       accessor: "Position Avg",
       Cell: ({ cell }) => {
-        const { sell_qty, buy_qty } = cell.row; 
+        const { sell_qty, buy_qty } = cell.row;
         const availablePosition = buy_qty - sell_qty;
         return (
           <span>{availablePosition}</span>
@@ -60,12 +60,12 @@ const Position = () => {
       const searchfilter = response.data?.filter((item) => {
         const searchInputMatch =
           search === "" ||
-          (item.symbol && item.symbol.toLowerCase().includes(search.toLowerCase())) 
-          
+          (item.symbol && item.symbol.toLowerCase().includes(search.toLowerCase()))
+
 
         return searchInputMatch;
       });
-      setData(search  ?searchfilter : response.data);
+      setData(search ? searchfilter : response.data);
     } catch (error) {
       console.log("error", error);
     }
@@ -97,7 +97,7 @@ const Position = () => {
                       role="tabpanel"
                       aria-labelledby="Week-tab"
                     >
-                     <div className="mb-3 ms-4">
+                      <div className="mb-3 ms-4">
                         Search :{" "}
                         <input
                           className="ml-2 input-search form-control"
@@ -108,7 +108,17 @@ const Position = () => {
                           onChange={(e) => setSearch(e.target.value)}
                         />
                       </div>
-                      <Table columns={columns} data={data && data} />
+                      {
+
+                        // console.log(data)
+                        data && data.length > 0 ? (
+                          <Table columns={columns} data={data && data} />
+                        ) : (
+                          <div>No data available</div>
+                        )
+                      }
+
+                      {/* <Table columns={columns} data={data && data} /> */}
                     </div>
                   </div>
                 </div>

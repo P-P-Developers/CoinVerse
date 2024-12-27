@@ -222,126 +222,6 @@ class Placeorder {
 
 
 
-  // holding
-
-  // async holding(req, res) {
-  //   try {
-  //     const { userid } = req.body;
-
-  //     const today = new Date();
-  //     const startOfToday = new Date(today.setHours(0, 0, 0, 0));
-
-  //     // Find user orders and sort them by createdAt in ascending order
-  //     const finduser = await mainorder_model
-  //       .find({
-  //         userid: userid,
-  //         createdAt: { $lt: startOfToday },
-  //       })
-  //       .sort({ createdAt: -1 });
-
-  //     if (!finduser || finduser.length === 0) {
-  //       return res.json({
-  //         status: false,
-  //         error: "No positions found",
-  //         data: [],
-  //       });
-  //     }
-
-  //     const symbols = [...new Set(finduser.map((trade) => trade.symbol))];
-
-  //     // Fetch token data for all unique symbols
-  //     const tokenDataMap = await Symbol.find({ symbol: { $in: symbols } }).then(
-  //       (symbolsData) =>
-  //         symbolsData.reduce((map, symbolData) => {
-  //           map[symbolData.symbol] = symbolData.token;
-  //           return map;
-  //         }, {})
-  //     );
-
-  //     const currentPosition = finduser.reduce(
-  //       (acc, trade) => {
-  //         const token = tokenDataMap[trade.symbol];
-  //         if (trade.buy_type === "buy") {
-  //           if (!acc.openPositions[trade.symbol]) {
-  //             acc.openPositions[trade.symbol] = {
-  //               _id:trade._id,
-  //               signal_type:trade.signal_type,
-  //               symbol: trade.symbol,
-  //               token: token,
-  //               lotsize:trade.lotsize,
-  //               total_buy_price: 0,
-  //               requiredFund: trade.requiredFund,
-  //               total_buy_qty: 0,
-  //               total_buy_lot: 0,
-  //               buy_time: trade.buy_time,
-  //               total_sell_price: 0,
-  //               total_sell_qty: 0,
-  //               total_sell_lot: 0,
-  //               sell_time: null,
-  //               createdAt: trade.createdAt,
-  //             };
-  //           }
-  //           acc.openPositions[trade.symbol].total_buy_price +=
-  //             trade.buy_price * trade.buy_qty;
-  //           acc.openPositions[trade.symbol].total_buy_qty += trade.buy_qty;
-  //           acc.openPositions[trade.symbol].total_buy_lot += trade.buy_lot;
-  //         }
-
-  //         if (trade.sell_type === "sell") {
-  //           if (acc.openPositions[trade.symbol]) {
-  //             acc.openPositions[trade.symbol].total_sell_price +=
-  //               trade.sell_price * trade.sell_qty;
-  //             acc.openPositions[trade.symbol].total_sell_qty += trade.sell_qty;
-  //             acc.openPositions[trade.symbol].total_sell_lot += trade.sell_lot;
-  //             acc.openPositions[trade.symbol].sell_time = trade.sell_time;
-  //           }
-  //         }
-  //         return acc;
-  //       },
-  //       { openPositions: {} }
-  //     );
-
-  //     // Calculate average holding and format the response
-  //     const formattedPositions = Object.values(
-  //       currentPosition.openPositions
-  //     ).map((pos) => {
-  //       const avg_buy_price = pos.total_buy_qty
-  //         ? pos.total_buy_price / pos.total_buy_qty
-  //         : 0;
-  //       const avg_sell_price = pos.total_sell_qty
-  //         ? pos.total_sell_price / pos.total_sell_qty
-  //         : 0;
-  //       return {
-  //         _id:pos._id,
-  //         signal_type:pos.signal_type,
-  //         symbol: pos.symbol,
-  //         token: pos.token,
-  //         lotsize: pos.lotsize,
-  //         requiredFund: pos.requiredFund,
-  //         avg_buy_price: avg_buy_price,
-  //         total_buy_qty: pos.total_buy_qty,
-  //         total_buy_lot: pos.total_buy_lot,
-  //         total_buy_price: pos.total_buy_price, // Total buy price
-  //         buy_time: pos.buy_time,
-  //         avg_sell_price: avg_sell_price,
-  //         total_sell_qty: pos.total_sell_qty,
-  //         total_sell_lot: pos.total_sell_lot,
-  //         total_sell_price: pos.total_sell_price, // Total sell price
-  //         sell_time: pos.sell_time,
-  //         createdAt: pos.createdAt,
-  //       };
-  //     });
-
-  //     // Sort open positions by createdAt
-  //     formattedPositions.sort(
-  //       (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
-  //     );
-
-  //     res.json({ status: true, data: formattedPositions });
-  //   } catch (error) {
-  //     res.json({ status: false, error: "Internal Server Error", data: [] });
-  //   }
-  // }
   async holding(req, res) {
     try {
       const { userid } = req.body;
@@ -606,6 +486,8 @@ class Placeorder {
         lotsize,
       } = req.body;
 
+      
+
       const checkadmin = await User_model.findOne({
         _id: userid,
         Role: "USER",
@@ -701,14 +583,10 @@ class Placeorder {
   
       await order.save();
       
-      console.log("Order type switched", order.orderid);
       const firstHalf = order.orderid.slice(0, Math.ceil(order.orderid.length / 2));
       const secondHalf = order.orderid.slice(Math.ceil(order.orderid.length / 2));
 
-      console.log("First Half:", firstHalf);
-      console.log("Second Half:", secondHalf);
 
-      // Fetch BalanceStatement documents matching each orderid
       const balanceStatementData = await BalanceStatement.find({
         orderid: { $in: firstHalf[0] }
       });
@@ -720,10 +598,6 @@ class Placeorder {
       var PriceUpdate = balanceStatementData[0].Amount
       var PriceUpdate1 = balanceStatementData1[0].Amount
 
-
-
-      console.log("BalanceStatementData:", balanceStatementData[0].Amount);
-      console.log("BalanceStatementData1:", balanceStatementData1[0].Amount);
 
       balanceStatementData[0].Amount = PriceUpdate1
       balanceStatementData1[0].Amount = PriceUpdate
