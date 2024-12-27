@@ -51,7 +51,7 @@ class Auth {
 
       const validPassword = await bcrypt.compare(password, EmailCheck.password);
       // console.log("password is :",validPassword); //if correct then return true;
-      
+
       if (!validPassword) {
         return res.send({ status: false, message: "Password Not Match", data: [] });
       }
@@ -71,7 +71,7 @@ class Auth {
         role: EmailCheck.Role,
       });
       // console.log("User is ", user_login);
-      
+
       await user_login.save();
 
 
@@ -186,7 +186,7 @@ class Auth {
         role: user_detail.Role,
       });
       await user_login.save();
-      
+
       return res.send({ status: true, msg: "Logout Succesfully", data: [] });
 
     } catch (error) { }
@@ -216,22 +216,22 @@ class Auth {
   async PasswordChanged(req, res) {
     try {
       const { userid, oldPassword, newPassword } = req.body;
-  
-      const user = await User_model.findOne({ _id: userid }); 
-  
+
+      const user = await User_model.findOne({ _id: userid });
+
       if (!user) {
         return res.json({ status: false, message: 'User not found', data: [] });
       }
-  
+
       const validPassword = await bcrypt.compare(oldPassword, user.password);
-  
+
       if (!validPassword) {
         return res.json({ status: false, message: 'Old password does not match', data: [] });
       }
-  
+
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(newPassword.toString(), salt);
-  
+
       await User_model.findByIdAndUpdate(
         user._id,
         {
@@ -240,14 +240,14 @@ class Auth {
         },
         { new: true }
       );
-  
-      return res.json({ status: true, message: "Password updated successfully"}); // Return the updated user
-  
+
+      return res.json({ status: true, message: "Password updated successfully" }); // Return the updated user
+
     } catch (error) {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
-  
+
 
 }
 
