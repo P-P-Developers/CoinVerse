@@ -36,7 +36,7 @@ const Login = () => {
       const { Role } = response.data;
 
       if (response.status) {
-        if(response.data.Role === "USER"){
+        if (response.data.Role === "USER") {
           Swal.fire({
             icon: "error",
             title: "Login failed",
@@ -47,6 +47,7 @@ const Login = () => {
         localStorage.setItem("user_details", JSON.stringify(response.data));
         localStorage.setItem("user_role", JSON.stringify(response.data.Role));
         localStorage.setItem("UserName", JSON.stringify(response.data.UserName));
+        localStorage.setItem("ReferralCode", JSON.stringify(response.data?.ReferralCode))
 
 
         Swal.fire({
@@ -68,7 +69,7 @@ const Login = () => {
           }
         });
       } else {
-        if(response.message === "Password Not Match"){
+        if (response.message === "Password Not Match") {
 
           Swal.fire({
             icon: "error",
@@ -76,14 +77,14 @@ const Login = () => {
             text: response.message,
           });
 
-        }else{
-        Swal.fire({
-          icon: "error",
-          title: "Login failed",
-          text: response.message,
-        });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Login failed",
+            text: response.message,
+          });
+        }
       }
-    }
     } catch (error) {
       Swal.fire({
         icon: "error",

@@ -19,7 +19,7 @@ class Auth {
 
 
       if (!EmailCheck) {
-        return res.send({ status: false, msg: "User Not exists", data: [] });
+        return res.send({ status: false, message: "User Not exists", data: [] });
       }
 
 
@@ -27,7 +27,7 @@ class Auth {
       if (EmailCheck.ActiveStatus !== "1") {
         return res.send({
           status: false,
-          msg: "Account is not active",
+          message: "Account is not active",
           data: [],
         });
       }
@@ -43,7 +43,7 @@ class Auth {
         ) {
           return res.send({
             status: false,
-            msg: "Account is expired",
+            message: "Account is expired",
             data: [],
           });
         }
@@ -53,7 +53,7 @@ class Auth {
       // console.log("password is :",validPassword); //if correct then return true;
 
       if (!validPassword) {
-        return res.send({ status: false, msg: "Password Not Match", data: [] });
+        return res.send({ status: false, message: "Password Not Match", data: [] });
       }
 
       // JWT TOKEN CREATE
@@ -89,7 +89,7 @@ class Auth {
 
       return res.send({
         status: true,
-        msg: "Login Successfully",
+        message: "Login Successfully",
         data: {
           token: token,
           Role: EmailCheck.Role,
@@ -100,13 +100,15 @@ class Auth {
         },
       });
     } catch (error) {
-      res.send({ status: false, msg: "Server Side error", data: error });
+      res.send({ status: false, message: "Server Side error", data: error });
     }
   }
 
 
 
   // ----Original code----
+
+
   // async SignIn(req, res) {
   //   try {
   //     const { FullName, UserName, PhoneNo, password } = req.body;
@@ -167,6 +169,7 @@ class Auth {
 
   // ------------------------------------------------------
   // // My testing with the code
+  
   async SignIn(req, res) {
     try {
       const { FullName, UserName, PhoneNo, password, ReferredBy } = req.body;
@@ -281,7 +284,7 @@ class Auth {
       });
       await user_login.save();
 
-      return res.send({ status: true, msg: "Logout Succesfully", data: [] });
+      return res.send({ status: true, message: "Logout Succesfully", data: [] });
 
     } catch (error) { }
   }

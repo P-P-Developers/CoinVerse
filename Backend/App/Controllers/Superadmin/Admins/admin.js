@@ -467,7 +467,7 @@ async AddAdmin(req, res) {
       if (get_user.length == 0) {
         return res.send({
           status: false,
-          msg: "Empty data",
+          message: "Empty data",
           data: [],
         });
       }
@@ -482,7 +482,7 @@ async AddAdmin(req, res) {
 
         res.send({
           status: true,
-          msg: "Update Successfully",
+          message: "Update Successfully",
           data: result,
         });
       }
@@ -645,14 +645,14 @@ async AddAdmin(req, res) {
       // DATA GET SUCCESSFULLY
       res.send({
         status: true,
-        msg: "Get Dashboard Data",
+        message: "Get Dashboard Data",
         data: Count,
       });
     } catch (error) {
       console.log("Error getting Dashboard Data:", error);
       res.status(500).send({
         status: false,
-        msg: "Internal Server Error",
+        message: "Internal Server Error",
       });
     }
   }

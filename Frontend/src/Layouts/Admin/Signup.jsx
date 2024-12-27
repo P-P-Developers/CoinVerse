@@ -9,7 +9,7 @@ const Signup = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
   const referralCode = userDetails?.ReferralCode;
-  const referralLink = `${window.location.origin}/signup#/register?ref=${referralCode}`;
+  const referralLink = `${window.location.origin}/#/register?ref=${referralCode}`;
   
   const navigate = useNavigate();
   const [data, setData] = useState([]);

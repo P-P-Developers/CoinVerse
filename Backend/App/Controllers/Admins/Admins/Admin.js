@@ -262,7 +262,7 @@ class Admin {
   //     if (nonZeroValues.length > 1) {
   //       return res.status(400).send({
   //         status: false,
-  //         msg: "Only one of perlot or pertrade can have a non-zero value",
+  //         message: "Only one of perlot or pertrade can have a non-zero value",
   //       });
   //     }
 
@@ -295,21 +295,21 @@ class Admin {
   //     if (!updatedUser) {
   //       return res.status(404).send({
   //         status: false,
-  //         msg: "Data not updated",
+  //         message: "Data not updated",
   //         data: [],
   //       });
   //     }
 
   //     return res.send({
   //       status: true,
-  //       msg: "Data updated successfully",
+  //       message: "Data updated successfully",
   //       data: updatedUser,
   //     });
   //   } catch (error) {
   //     console.error("Internal error:", error);
   //     return res.status(500).send({
   //       status: false,
-  //       msg: "Internal server error",
+  //       message: "Internal server error",
   //     });
   //   }
   // }
@@ -327,7 +327,7 @@ class Admin {
       if (!dollarPriceData) {
         return res.send({
           status: false,
-          msg: "Dollar price not found",
+          message: "Dollar price not found",
         });
       }
 
@@ -351,7 +351,7 @@ class Admin {
       if (nonZeroValues.length > 1) {
         return res.send({
           status: false,
-          msg: "Only one of perlot or pertrade can have a non-zero value",
+          message: "Only one of perlot or pertrade can have a non-zero value",
         });
       }
 
@@ -384,21 +384,21 @@ class Admin {
       if (!updatedUser) {
         return res.send({
           status: false,
-          msg: "Data not updated",
+          message: "Data not updated",
           data: [],
         });
       }
 
       return res.send({
         status: true,
-        msg: "Data updated successfully",
+        message: "Data updated successfully",
         data: updatedUser,
       });
     } catch (error) {
       console.error("Internal error:", error);
       return res.send({
         status: false,
-        msg: "Internal server error",
+        message: "Internal server error",
       });
     }
   }

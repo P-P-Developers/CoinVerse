@@ -314,8 +314,18 @@ const Register = () => {
           <div className="col-lg-5 col-md-6">
             <div className="card mb-0 h-auto">
               <div className="card-body">
-                <h4 className="text-center mb-4">Sign Up</h4>
+                <div className="text-center mb-3">
+                <img
+                  src="/assets/images/pnpp.png"
+                  alt="Logo"
+                  className="img-fluid mt-6"
+                  style={{ maxWidth: "150px" }} 
+                />
+              </div>
+
+                <h4 className="text-center mb-2">Sign Up</h4>
                 <form onSubmit={formik.handleSubmit}>
+
                   <div className="mb-3">
                     <label className="form-label" htmlFor="FullName">
                       Full Name

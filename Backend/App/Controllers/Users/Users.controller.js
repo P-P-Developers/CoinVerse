@@ -319,8 +319,6 @@ class Users {
       });
     }
   }
-    }
-  }
 
   // today's broadcast messages
   async todaysBroadcastMessage(req, res) {

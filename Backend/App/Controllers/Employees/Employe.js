@@ -59,13 +59,13 @@ class employee {
 
       res.send({
         status: true,
-        msg: "Get Dashboard Data",
+        message: "Get Dashboard Data",
         data: Count,
       });
     } catch (error) {
       res.status(500).send({
         status: false,
-        msg: "Internal Server Error",
+        message: "Internal Server Error",
       });
     }
   }
