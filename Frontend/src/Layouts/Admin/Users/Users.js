@@ -49,12 +49,12 @@ const Users = () => {
   const [loading, setLoading] = useState(false);
 
   const [checkprice, setCheckprice] = useState("");
-   
-  const [employeename,setEmployeename] = useState([])
- 
 
-  
-   
+  const [employeename, setEmployeename] = useState([])
+
+
+
+
   const columns = [
     { Header: "FullName", accessor: "FullName" },
     { Header: "UserName", accessor: "UserName" },
@@ -128,9 +128,9 @@ const Users = () => {
       accessor: "employee_id",
       Cell: ({ cell, row }) => {
         const employee_id = cell.row.employee_id;
-        
+
         const employee = employeename.find(emp => emp._id === employee_id);
-    
+
         return employee ? employee.UserName : 'N/A';
       }
     },
@@ -337,6 +337,17 @@ const Users = () => {
   // update  balance
   const updateBalance = async () => {
     try {
+      // Validate if balance is provided
+      if (!balance || isNaN(balance) || parseFloat(balance) <= 0) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Please enter a valid number greater than zero for the balance.",
+        });
+        return;
+      }
+
+
       // Make the API call to add balance
       const response = await Addbalance({
         id: id,
@@ -345,25 +356,35 @@ const Users = () => {
         Type: type,
       });
 
-      // Show success message
-      Swal.fire({
-        icon: "success",
-        title: "Balance Updated",
-        text: response.message || "The balance has been updated successfully.",
-      });
+      // Handle API response
+      if (response.status) {
+        Swal.fire({
+          icon: "success",
+          title: "Balance Updated",
+          text: response.message || "The balance has been updated successfully.",
+        });
 
-      // Refresh user data and close the modal
-
-      getAlluserdata();
-      setModal(false);
+        // Refresh data and reset states
+        getAlluserdata();
+        setModal(false);
+        setBalance("");
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: response.message || "An error occurred while updating the balance.",
+        });
+      }
     } catch (error) {
+      // Handle unexpected errors
       Swal.fire({
         icon: "error",
         title: "Update Failed",
-        text: "error",
+        text: error.message || "An unexpected error occurred.",
       });
     }
   };
+
 
 
 
@@ -424,10 +445,10 @@ const Users = () => {
         response.data.filter((item) => {
           return item.Role === "USER";
         });
-     
-        const filterusername = response.data && response.data.filter((item)=>{
-           return  item._id
-        })
+
+      const filterusername = response.data && response.data.filter((item) => {
+        return item._id
+      })
 
       const searchfilter = result?.filter((item) => {
         const searchInputMatch =
@@ -568,7 +589,7 @@ const Users = () => {
                 <div className="modal-body">
                   <div className="row">
                     <div className="col-lg-12 col-sm-12">
-                    <div className="input-block mb-3">
+                      <div className="input-block mb-3">
                         <input
                           type="text"
                           className="form-control"
