@@ -112,7 +112,6 @@ const Position = () => {
                           />
                         </div>
 
-<<<<<<< HEAD
                         {/* Dropdown */}
                         <div className="mt-3">
                           <select
@@ -131,8 +130,6 @@ const Position = () => {
                       </div>
 
                       {
-=======
->>>>>>> 02cc8c36e6353d84c1d3b45e475364735b7b30ab
                         data && data.length > 0 ? (
                           <Table columns={columns} data={data && data} />
                         ) : (
