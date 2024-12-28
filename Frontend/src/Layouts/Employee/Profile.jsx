@@ -24,23 +24,11 @@ const Profile = () => {
       }
    }
 
-//    const gettotallicence=async()=>{
-//     try {
-//       const data = {userid:user_id}
-//       const response = await TotalcountLicence(data)
-//       if(response.status){
-//           setCheckLicence(response.data)
-//       }
 
-//     } catch (error) {
-//       console.log("error")
-//     }
-//  }
 
 
    useEffect(()=>{
     getallclient()
-    // gettotallicence()
    },[])
 
     return (

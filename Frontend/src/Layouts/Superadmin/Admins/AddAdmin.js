@@ -317,7 +317,7 @@ const AddAdmin = () => {
           }
         })
         .catch((error) => {
-          console.log("Error:", error);
+          return error
         });
     },
   });

@@ -105,7 +105,7 @@ const Broadcast = () => {
                 setData([]);
             }
         } catch (error) {
-            console.log("error", error);
+          
         }
     };
 

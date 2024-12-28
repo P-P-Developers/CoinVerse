@@ -72,7 +72,7 @@ const AdminUser = () => {
       })
       setData(filteruser);
     } catch (error) {
-      console.log("error", error);
+     return error
     }
   };
 
