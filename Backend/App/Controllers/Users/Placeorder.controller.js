@@ -1,7 +1,5 @@
 "use strict";
-const bcrypt = require("bcrypt");
-const mongoose = require("mongoose");
-const ObjectId = mongoose.Types.ObjectId;
+
 const db = require("../../Models");
 const { findOne } = require("../../Models/Role.model");
 const Symbol = db.Symbol;
@@ -9,9 +7,9 @@ const Order = db.Order;
 const User_model = db.user;
 const mainorder_model = db.mainorder_model;
 const BalanceStatement = db.BalanceStatement;
-const MarginRequired = db.MarginRequired;
 
 class Placeorder {
+  // get order book
   async getOrderBook(req, res) {
     try {
       const { userid } = req.body;
@@ -362,8 +360,9 @@ class Placeorder {
       }
 
       let Calculatefund = priceNum * qtyNum;
+
       let totalcalculatefund = Calculatefund / Number(checkadmin.limit);
-      // let calculate_margin =
+
       let Totalupdateuserbalance = totalcalculatefund - parseFloat(brokerage);
 
       let totaladdbalance =
@@ -380,7 +379,6 @@ class Placeorder {
         tradehistory.buy_lot = totalQuantity;
         tradehistory.buy_qty = (tradehistory.buy_qty || 0) + qtyNum;
         tradehistory.buy_type = type;
-        // tradehistory.requiredFund = requiredFund;
         tradehistory.buy_time = new Date();
 
         await tradehistory.save();
@@ -410,7 +408,7 @@ class Placeorder {
       const newstatement = new BalanceStatement({
         userid: userid,
         orderid: orderdata._id,
-        Amount: Totalupdateuserbalance,
+        Amount: Calculatefund - parseFloat(brokerage),
         type: "CREDIT",
         message: "Balanced used to sell",
         symbol: symbol,
@@ -682,7 +680,7 @@ const EntryTrade = async (
     let newstatement = new BalanceStatement({
       userid: userid,
       orderid: orderdata._id,
-      Amount: -limitclaculation,
+      Amount: -(priceNum * qtyNum),
       type: "DEBIT",
       message: "Balanced used to buy",
       symbol: symbol,
@@ -712,7 +710,6 @@ const ExitTrade = async (
     req.body;
 
   const priceNum = parseFloat(price);
-  const lotNum = parseFloat(lot, 10);
   const qtyNum = parseFloat(qty, 10);
 
   const currentTime = new Date();
@@ -726,75 +723,6 @@ const ExitTrade = async (
         $lt: new Date().setHours(23, 59, 59, 999),
       },
     });
-
-    // if (tradehistory) {
-    //   const totalSellLot = (tradehistory.sell_qty || 0) + qtyNum;
-
-    //   if (tradehistory.buy_qty < totalSellLot) {
-    //    let sellQty = totalSellLot - tradehistory.buy_qty
-
-    // }
-    //     if (tradehistory.sell_lot == null && tradehistory.sell_price == null) {
-    //       tradehistory.sell_price = priceNum;
-    //       tradehistory.sell_lot = lotNum;
-    //       tradehistory.sell_qty = qtyNum;
-    //       tradehistory.sell_type = type;
-    //       tradehistory.sell_time = new Date();
-    //       if (Array.isArray(tradehistory.orderid)) {
-    //         tradehistory.orderid.push(orderdata._id);
-    //       } else {
-    //         tradehistory.orderid = [tradehistory.orderid, orderdata._id];
-    //       }
-    //     } else {
-    //       const totalQuantity = tradehistory.sell_lot + lotNum;
-    //       const totalCost =
-    //         tradehistory.sell_price * tradehistory.sell_lot + priceNum * lotNum;
-    //       const avgPrice = totalCost / totalQuantity;
-
-    //       tradehistory.sell_price = avgPrice;
-    //       tradehistory.sell_lot += lotNum;
-    //       tradehistory.sell_qty += qtyNum;
-    //       tradehistory.sell_type = type;
-    //       if (Array.isArray(tradehistory.orderid)) {
-    //         tradehistory.orderid.push(orderdata._id);
-    //       } else {
-    //         tradehistory.orderid = [tradehistory.orderid, orderdata._id];
-    //       }
-    //     }
-
-    //     await tradehistory.save();
-
-    // const limitclaculation =
-    //   parseFloat(tradehistory.sell_price) / Number(checkadmin.limit);
-    // const updateuserbalance =
-    //   parseFloat(checkadmin.Balance) + parseFloat(limitclaculation);
-
-    // const Totalupdateuserbalance =
-    //   parseFloat(updateuserbalance) - parseFloat(brokerage);
-
-    // await User_model.updateOne(
-    //   { _id: checkadmin._id },
-    //   { $set: { Balance: Totalupdateuserbalance } }
-    // );
-
-    // let newstatement = new BalanceStatement({
-    //   userid: userid,
-    //   orderid: orderdata._id,
-    //   Amount: limitclaculation,
-    //   type: "CREDIT",
-    //   message: "Balanced used to sell",
-    //   symbol:symbol,
-    //   brokerage:brokerage
-    // });
-
-    //     await newstatement.save();
-
-    //     return res.json({
-    //       status: true,
-    //       message: "Order placed",
-    //     });
-
-    // } else {
 
     const checkbalance = checkadmin.Balance * checkadmin.limit;
 
@@ -865,7 +793,7 @@ const ExitTrade = async (
     let newstatement = new BalanceStatement({
       userid: userid,
       orderid: orderdata._id,
-      Amount: -limitclaculation,
+      Amount: -(priceNum * qtyNum),
       type: "DEBIT",
       message: "Balanced used to buy",
       symbol: symbol,
