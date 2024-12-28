@@ -98,7 +98,7 @@ const Adminemployee = () => {
     // const Employee_user = (_id) => {
     //   try {
     //       // navigate(`employeeuser/${_id}`);
-    //       console.log("ids",_id)
+   
     //     //   const data = {userid:_id}
     //     //   const response = await getEmployeeuserdetail(data)
 

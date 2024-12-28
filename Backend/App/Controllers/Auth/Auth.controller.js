@@ -50,7 +50,6 @@ class Auth {
       }
 
       const validPassword = await bcrypt.compare(password, EmailCheck.password);
-      // console.log("password is :",validPassword); //if correct then return true;
 
       if (!validPassword) {
         return res.send({ status: false, message: "Password Not Match", data: [] });
@@ -61,7 +60,6 @@ class Auth {
         expiresIn: 28800,
       });
 
-      // console.log("Token is ", token);
 
       const user_login = new user_logs({
         user_Id: EmailCheck._id,
@@ -71,7 +69,6 @@ class Auth {
         role: EmailCheck.Role,
         DeviceToken: fcm_token,
       });
-      // console.log("User is ", user_login);
 
       await user_login.save();
 

@@ -51,7 +51,6 @@
 //       setData(search ? searchfilter : CreateDaynamicData);
 
 //     } catch (error) {
-//       console.log("error", error);
 //     }
 //   };
 
@@ -161,7 +160,6 @@ const Holdoff = () => {
         search === "" ||
         item.symbol?.toLowerCase().includes(search.toLowerCase())
       );
-      console.log("LoggedIn AdminId is : ", user_id)
 
       setData(search ? searchfilter : CreateDaynamicData);
     } catch (error) {

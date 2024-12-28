@@ -28,7 +28,6 @@ const Table = ({
   const startRowIndex = currentPage * rowsPerPage;
   const currentPageData = data.slice(startRowIndex, startRowIndex + rowsPerPage);
 
-console.log(currentPageData)
 
   return (
     <div>

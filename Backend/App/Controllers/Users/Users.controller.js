@@ -47,7 +47,6 @@ class Users {
 
   //     const dollarcount = parseFloat(Balance).toFixed(6);
 
-  //     console.log("dollar count is on w ;", dollarcount);
 
   //     const paymentHistory = new PaymenetHistorySchema({
   //       userid: userid,
@@ -107,7 +106,6 @@ class Users {
       // const dollarPrice = parseFloat(dollarPriceData.dollarprice);
       const dollarcount = parseFloat(Balance).toFixed(6);
 
-      // console.log("Dollar count is on w:", dollarcount);
 
       // Create payment history entry
       const paymentHistory = new PaymenetHistorySchema({

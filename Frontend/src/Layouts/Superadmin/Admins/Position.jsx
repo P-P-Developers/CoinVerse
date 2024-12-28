@@ -67,7 +67,6 @@ const Position = () => {
       });
       setData(search ? searchfilter : response.data);
     } catch (error) {
-      console.log("error", error);
     }
   };
 
@@ -110,7 +109,6 @@ const Position = () => {
                       </div>
                       {
 
-                        // console.log(data)
                         data && data.length > 0 ? (
                           <Table columns={columns} data={data && data} />
                         ) : (

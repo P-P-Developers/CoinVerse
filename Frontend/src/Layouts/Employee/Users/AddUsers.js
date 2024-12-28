@@ -197,7 +197,6 @@ const AddUsers = () => {
   };
 
 
-  // console.log("getid",getid)
 
   const getadminLicence = async () => {
     const data = { userid: getid };
@@ -218,7 +217,6 @@ const AddUsers = () => {
       const data = {userid:user_id}
       const response = await getAllClient(data)
       if(response.status){
-        // console.log("response",response.data.parent_id)
         setGetid(response.data.parent_id)
       }
 
@@ -227,7 +225,6 @@ const AddUsers = () => {
     }
  }
 
-  // console.log("getid",getid)
 
 
   useEffect(() => {

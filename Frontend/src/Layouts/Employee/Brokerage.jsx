@@ -26,7 +26,6 @@ const Brokerage = () => {
       const requestData = { employee_id: "675bf2dcc0ee33860285b74b" }; // Renamed for clarity
       const apiResponse = await getAllBrokerageDataForEmployee(requestData);
 
-      console.log("apiResponse is ", apiResponse)
 
       const CreateDaynamicData =
         apiResponse.data?.map((data) => ({
@@ -56,7 +55,6 @@ const Brokerage = () => {
 
   useEffect(() => {
     getBrokerageDataForEmployee();
-    // console.log("Employee id i s ", user_id)
   }, []);
 
   return (

@@ -9,14 +9,9 @@ const Order = db.Order;
 const User_model = db.user;
 const mainorder_model = db.mainorder_model;
 const BalanceStatement = db.BalanceStatement;
-const MarginRequired = db.MarginRequired
-
-
-
+const MarginRequired = db.MarginRequired;
 
 class Placeorder {
-
-
   async getOrderBook(req, res) {
     try {
       const { userid } = req.body;
@@ -40,9 +35,6 @@ class Placeorder {
       });
     }
   }
-
-
-
 
   // get trade history
   async gettardehistory(req, res) {
@@ -69,63 +61,62 @@ class Placeorder {
           });
         }
       } else {
-
         result = await mainorder_model.aggregate([
           {
             $match: {
-              adminid: userid // Convert the string userid to ObjectId for matching
-            }
+              adminid: userid,
+            },
           },
           {
             $lookup: {
-              from: 'users', // 'users' is the collection name where User_model is stored
-              let: { user_id: { $toObjectId: "$userid" } }, // Convert the string userid to ObjectId
+              from: "users",
+              let: { user_id: { $toObjectId: "$userid" } },
               pipeline: [
                 {
                   $match: {
-                    $expr: { $eq: ["$_id", "$$user_id"] } // Match the ObjectId with the converted user_id
-                  }
-                }
+                    $expr: { $eq: ["$_id", "$$user_id"] },
+                  },
+                },
               ],
-              as: 'userDetails' // This will add the matching documents to the `userDetails` array
-            }
+              as: "userDetails",
+            },
           },
           {
-            $unwind: { // Unwind the array to extract the single user object
-              path: '$userDetails',
-              preserveNullAndEmptyArrays: true // Optional: Keep documents with no matching user
-            }
+            $unwind: {
+              path: "$userDetails",
+              preserveNullAndEmptyArrays: true,
+            },
           },
           {
-            $project: { 
-              adminid: 1, 
-              username: { $ifNull: ['$userDetails.UserName', 'No username'] }, 
-  
+            $project: {
+              adminid: 1,
+              username: { $ifNull: ["$userDetails.UserName", "No username"] },
+
               symbol: 1,
               buy_qty: 1,
               sell_qty: 1,
               PositionAvg: 1,
-              buy_type:1,
-              sell_type:1,
-              buy_type:1,
-              sell_price:1,
-              buy_lot:1,
-              sell_lot:1,
-              buy_time:1,
-              sell_time:1,
-              lotsize:1,
-              token:1,
-              requiredFund:1,
-              reason:1,
-              status:1,
-              perlot:1,
-              brokerage:1,
-              limit:1,
-              createdAt:1
-            }
-          }
+              buy_type: 1,
+              sell_type: 1,
+              buy_type: 1,
+              sell_price: 1,
+              buy_lot: 1,
+              sell_lot: 1,
+              buy_time: 1,
+              sell_time: 1,
+              lotsize: 1,
+              token: 1,
+              requiredFund: 1,
+              reason: 1,
+              status: 1,
+              perlot: 1,
+              brokerage: 1,
+              limit: 1,
+              createdAt: 1,
+            },
+          },
         ]);
-        
+
         if (result.length > 0) {
           return res.json({
             status: true,
@@ -141,17 +132,11 @@ class Placeorder {
         }
       }
     } catch (error) {
-      console.log("error-",error)
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
 
-
-
-
-
-
-  // position 
+  // position
   async position(req, res) {
     try {
       const { userid } = req.body;
@@ -219,24 +204,22 @@ class Placeorder {
     }
   }
 
-
-
-
+  // holding
   async holding(req, res) {
     try {
       const { userid } = req.body;
-  
+
       const today = new Date();
       const startOfDay = new Date(today.setHours(0, 0, 0, 0));
-  
+
       // Fetch all records before today
       const finduser = await mainorder_model
         .find({
           userid: userid,
-          createdAt: { $lt: startOfDay }, 
+          createdAt: { $lt: startOfDay },
         })
         .sort({ createdAt: -1 });
-  
+
       if (!finduser || finduser.length === 0) {
         return res.json({
           status: false,
@@ -244,9 +227,9 @@ class Placeorder {
           data: [],
         });
       }
-  
+
       const symbols = [...new Set(finduser.map((trade) => trade.symbol))];
-  
+
       const tokenDataMap = await Symbol.find({ symbol: { $in: symbols } }).then(
         (symbolsData) =>
           symbolsData.reduce((map, symbolData) => {
@@ -254,16 +237,15 @@ class Placeorder {
             return map;
           }, {})
       );
-  
+
       const currentHoldings = finduser.reduce(
         (acc, trade) => {
-         
           if (trade.buy_lot === trade.sell_lot) {
             return acc;
           }
-  
+
           const token = tokenDataMap[trade.symbol];
-  
+
           acc.holdings.push({
             _id: trade._id,
             symbol: trade.symbol,
@@ -282,35 +264,30 @@ class Placeorder {
             sell_time: trade.sell_time,
             sell_price: trade.sell_price,
           });
-  
+
           return acc;
         },
         { holdings: [] }
       );
-  
+
       res.json({ status: true, data: currentHoldings.holdings });
     } catch (error) {
       res.json({ status: false, error: "Internal Server Error", data: [] });
     }
   }
-  
-  
-
 
   // squareoff
-
   async Squareoff(req, res) {
     try {
-      const { id, userid, symbol, type, lot, price, qty, requiredFund } = req.body;
-  
+      const { id, userid, symbol, type, lot, price, qty, requiredFund } =
+        req.body;
 
       const priceNum = parseFloat(price);
       const lotNum = parseFloat(lot, 10);
       const qtyNum = parseFloat(qty, 10);
-     
+
       const tradehistory = await mainorder_model.findOne({ _id: id });
       const checkadmin = await User_model.findOne({ _id: userid });
-  
 
       if (!tradehistory) {
         return res.json({
@@ -319,7 +296,6 @@ class Placeorder {
           data: [],
         });
       }
-  
 
       if (!checkadmin) {
         return res.json({
@@ -328,12 +304,7 @@ class Placeorder {
           data: [],
         });
       }
-  
-      // console.log(checkadmin) 
-      //   const marginvalued = await MarginRequired.findOne({adminid:checkadmin.parent_id})
 
-      //   console.log("marginvalued",marginvalued)
-        
       // Calculate brokerage
       let brokerage = 0;
       if (checkadmin.pertrade) {
@@ -341,25 +312,27 @@ class Placeorder {
       } else if (checkadmin.perlot) {
         brokerage = parseFloat(checkadmin.perlot) * parseFloat(lot);
       }
-  
-
 
       // Validate lot size based on the type
-      if (type === "buy" && (tradehistory.buy_lot || 0) + lotNum > tradehistory.sell_lot) {
+      if (
+        type === "buy" &&
+        (tradehistory.buy_lot || 0) + lotNum > tradehistory.sell_lot
+      ) {
         return res.json({
           status: false,
           message: "The lot size is greater than allowed",
           data: [],
         });
-      } else if (type === "sell" && (tradehistory.sell_lot || 0) + lotNum > tradehistory.buy_lot) {
+      } else if (
+        type === "sell" &&
+        (tradehistory.sell_lot || 0) + lotNum > tradehistory.buy_lot
+      ) {
         return res.json({
           status: false,
           message: "The lot size is greater than allowed",
           data: [],
         });
       }
-  
-     
 
       // Create a new order
       const newOrder = new Order({
@@ -378,10 +351,8 @@ class Placeorder {
         type,
         status: "Completed",
       });
-  
-      const orderdata = await newOrder.save();
-  
 
+      const orderdata = await newOrder.save();
 
       // Update trade history with new order ID
       if (Array.isArray(tradehistory.orderid)) {
@@ -389,56 +360,52 @@ class Placeorder {
       } else {
         tradehistory.orderid = [orderdata._id];
       }
-   
 
-      let Calculatefund = priceNum * qtyNum
-      let totalcalculatefund = Calculatefund/Number(checkadmin.limit);
-      // let calculate_margin = 
+      let Calculatefund = priceNum * qtyNum;
+      let totalcalculatefund = Calculatefund / Number(checkadmin.limit);
+      // let calculate_margin =
       let Totalupdateuserbalance = totalcalculatefund - parseFloat(brokerage);
-      
-      let totaladdbalance = parseFloat(checkadmin.Balance) + Totalupdateuserbalance
-     
 
+      let totaladdbalance =
+        parseFloat(checkadmin.Balance) + Totalupdateuserbalance;
 
       if (type === "buy") {
         const totalQuantity = (tradehistory.buy_lot || 0) + lotNum;
-        const totalCost = (tradehistory.buy_price * tradehistory.buy_lot || 0) + (priceNum * lotNum);
+        const totalCost =
+          (tradehistory.buy_price * tradehistory.buy_lot || 0) +
+          priceNum * lotNum;
         const avgPrice = totalCost / totalQuantity;
 
         tradehistory.buy_price = avgPrice;
         tradehistory.buy_lot = totalQuantity;
-        tradehistory.buy_qty =  (tradehistory.buy_qty || 0) + qtyNum;;
+        tradehistory.buy_qty = (tradehistory.buy_qty || 0) + qtyNum;
         tradehistory.buy_type = type;
         // tradehistory.requiredFund = requiredFund;
         tradehistory.buy_time = new Date();
-  
-  
 
         await tradehistory.save();
       } else if (type === "sell") {
         const totalQuantity = (tradehistory.sell_lot || 0) + lotNum;
-        const totalCost = (tradehistory.sell_price * tradehistory.sell_lot || 0) + (priceNum * lotNum);
+        const totalCost =
+          (tradehistory.sell_price * tradehistory.sell_lot || 0) +
+          priceNum * lotNum;
         const avgPrice = totalCost / totalQuantity;
-  
+
         tradehistory.sell_price = avgPrice;
         tradehistory.sell_lot = totalQuantity;
         tradehistory.sell_qty = (tradehistory.sell_qty || 0) + qtyNum;
         tradehistory.sell_type = type;
         tradehistory.sell_time = new Date();
-          
-  
-        await tradehistory.save();
 
+        await tradehistory.save();
       }
 
-
-  
       // Update user balance
       await User_model.updateOne(
         { _id: checkadmin._id },
         { $set: { Balance: totaladdbalance } }
       );
-  
+
       // Create a new balance statement
       const newstatement = new BalanceStatement({
         userid: userid,
@@ -449,17 +416,17 @@ class Placeorder {
         symbol: symbol,
         brokerage: brokerage,
       });
-  
+
       await newstatement.save();
-  
+
       return res.json({
         status: true,
-        message: `${type.charAt(0).toUpperCase() + type.slice(1)} order updated successfully`,
+        message: `${
+          type.charAt(0).toUpperCase() + type.slice(1)
+        } order updated successfully`,
         data: [],
       });
-  
     } catch (error) {
-      console.log("error", error);
       return res.json({
         status: false,
         message: "Internal server error",
@@ -467,9 +434,6 @@ class Placeorder {
       });
     }
   }
-  
-
-
 
   // placeorder
   async placeorder(req, res) {
@@ -485,8 +449,6 @@ class Placeorder {
         type,
         lotsize,
       } = req.body;
-
-      
 
       const checkadmin = await User_model.findOne({
         _id: userid,
@@ -560,74 +522,69 @@ class Placeorder {
     }
   }
 
-
-
-
-  // Switch between buy and sell orders based on the type of order placed by the user 
+  // Switch between buy and sell orders based on the type of order placed by the user
   async switchOrderType(req, res) {
     try {
       const { id } = req.body;
-  
+
       const order = await mainorder_model.findOne({ _id: id });
-  
+
       if (!order) {
         return res.json({ status: false, message: "Order not found" });
       }
-  
+
       // Toggle the signal_type
-      order.signal_type = order.signal_type === "buy_sell" ? "sell_buy" : "buy_sell";
+      order.signal_type =
+        order.signal_type === "buy_sell" ? "sell_buy" : "buy_sell";
 
       const temp = order.buy_price;
       order.buy_price = order.sell_price;
       order.sell_price = temp;
-  
-      await order.save();
-      
-      const firstHalf = order.orderid.slice(0, Math.ceil(order.orderid.length / 2));
-      const secondHalf = order.orderid.slice(Math.ceil(order.orderid.length / 2));
 
+      await order.save();
+
+      const firstHalf = order.orderid.slice(
+        0,
+        Math.ceil(order.orderid.length / 2)
+      );
+      const secondHalf = order.orderid.slice(
+        Math.ceil(order.orderid.length / 2)
+      );
 
       const balanceStatementData = await BalanceStatement.find({
-        orderid: { $in: firstHalf[0] }
+        orderid: { $in: firstHalf[0] },
       });
-  
+
       const balanceStatementData1 = await BalanceStatement.find({
-        orderid: { $in: secondHalf[0] }
+        orderid: { $in: secondHalf[0] },
       });
-  
-      var PriceUpdate = balanceStatementData[0].Amount
-      var PriceUpdate1 = balanceStatementData1[0].Amount
 
+      var PriceUpdate = balanceStatementData[0].Amount;
+      var PriceUpdate1 = balanceStatementData1[0].Amount;
 
-      balanceStatementData[0].Amount = PriceUpdate1
-      balanceStatementData1[0].Amount = PriceUpdate
+      balanceStatementData[0].Amount = PriceUpdate1;
+      balanceStatementData1[0].Amount = PriceUpdate;
 
       await balanceStatementData[0].save();
       await balanceStatementData1[0].save();
-  
+
       // Return success response with the updated order and matched BalanceStatement data
-      return res.json({ 
-        status: true, 
-        message: "Order type switched", 
-        order, 
-        balanceStatements: "" 
+      return res.json({
+        status: true,
+        message: "Order type switched",
+        order,
+        balanceStatements: "",
       });
     } catch (error) {
       console.error("Error:", error);
-      return res.status(500).json({ status: false, message: "An error occurred", error });
+      return res
+        .status(500)
+        .json({ status: false, message: "An error occurred", error });
     }
   }
-  
-  
-  
 }
 
-
-
-
-
 // place order entry trade
-
 const EntryTrade = async (
   req,
   res,
@@ -639,44 +596,42 @@ const EntryTrade = async (
   try {
     const { userid, symbol, price, lot, qty, requiredFund, lotsize, type } =
       req.body;
-  
-      
-      const priceNum = parseFloat(price);
-      const lotNum = parseFloat(lot, 10);
-      const qtyNum = parseFloat(qty, 10);
-      const requiredFundNum = parseFloat(requiredFund);
-      
-      const currentTime = new Date();
-      
-      let tradehistory = await mainorder_model.findOne({
+
+    const priceNum = parseFloat(price);
+    const lotNum = parseFloat(lot, 10);
+    const qtyNum = parseFloat(qty, 10);
+    const requiredFundNum = parseFloat(requiredFund);
+
+    const currentTime = new Date();
+
+    let tradehistory = await mainorder_model.findOne({
+      userid,
+      symbol,
+      createdAt: {
+        $gte: new Date().setHours(0, 0, 0, 0),
+        $lt: new Date().setHours(23, 59, 59, 999),
+      },
+    });
+
+    const checkbalance = checkadmin.Balance * checkadmin.limit;
+
+    if (checkbalance < requiredFund) {
+      const rejectedOrder = new Order({
         userid,
         symbol,
-        createdAt: {
-          $gte: new Date().setHours(0, 0, 0, 0),
-          $lt: new Date().setHours(23, 59, 59, 999),
-        },
+        price,
+        lot,
+        qty,
+        adminid: checkadmin.parent_id,
+        requiredFund,
+        token,
+        type,
+        lotsize,
+        status: "rejected",
+        reason: "Order rejected due to low Balance",
       });
-      
-         
-        const checkbalance = checkadmin.Balance * checkadmin.limit
 
-        if (checkbalance < requiredFund) {
-          const rejectedOrder = new Order({
-            userid,
-            symbol,
-            price,
-            lot,
-            qty,
-            adminid: checkadmin.parent_id,
-            requiredFund,
-            token,
-            type,
-            lotsize,
-            status: "rejected",
-            reason: "Order rejected due to low Balance",
-          });
-          
-          await rejectedOrder.save();
+      await rejectedOrder.save();
 
       return res.json({
         status: false,
@@ -711,25 +666,18 @@ const EntryTrade = async (
     await tradehistory.save();
     // }
 
-
-
     const limitclaculation =
       parseFloat(requiredFund) / Number(checkadmin.limit);
-     const updateuserbalance =
-     parseFloat(checkadmin.Balance) - parseFloat(limitclaculation);
-
+    const updateuserbalance =
+      parseFloat(checkadmin.Balance) - parseFloat(limitclaculation);
 
     const Totalupdateuserbalance =
       parseFloat(updateuserbalance) - parseFloat(brokerage);
-
-
 
     await User_model.updateOne(
       { _id: checkadmin._id },
       { $set: { Balance: Totalupdateuserbalance } }
     );
-
-
 
     let newstatement = new BalanceStatement({
       userid: userid,
@@ -747,14 +695,9 @@ const EntryTrade = async (
       message: "Order placed",
     });
   } catch (error) {
-    return res
-      .json({ status: false, message: "internal error", data: [] });
+    return res.json({ status: false, message: "internal error", data: [] });
   }
 };
-
-
-
-
 
 // Exit trade
 const ExitTrade = async (
@@ -853,7 +796,7 @@ const ExitTrade = async (
 
     // } else {
 
-    const checkbalance = checkadmin.Balance * checkadmin.limit
+    const checkbalance = checkadmin.Balance * checkadmin.limit;
 
     if (checkbalance < requiredFund) {
       const rejectedOrder = new Order({
@@ -906,8 +849,6 @@ const ExitTrade = async (
 
     await tradehistory.save();
 
-
-
     const limitclaculation =
       parseFloat(requiredFund) / Number(checkadmin.limit);
     const updateuserbalance =
@@ -915,8 +856,6 @@ const ExitTrade = async (
 
     const Totalupdateuserbalance =
       parseFloat(updateuserbalance) - parseFloat(brokerage);
-
-
 
     await User_model.updateOne(
       { _id: checkadmin._id },
@@ -947,7 +886,5 @@ const ExitTrade = async (
     });
   }
 };
-
-
 
 module.exports = new Placeorder();

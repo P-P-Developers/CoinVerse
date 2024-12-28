@@ -421,7 +421,6 @@ const Users = () => {
   };
 
   
-  // console.log("getaccess",getaccess)
 
   // get all admin
   const getAlluserdata = async () => {
@@ -461,7 +460,6 @@ const Users = () => {
       const data = {userid:user_id}
       const response = await getAllClient(data)
       if(response.status){
-        // console.log("response",response.data.parent_id)
         setGetid(response.data.parent_id)
       }
 
