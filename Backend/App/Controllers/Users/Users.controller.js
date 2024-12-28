@@ -352,7 +352,6 @@ class Users {
   
       return res.json({ status: true, message: "Data found", data: data });
     } catch (error) {
-      console.log("Error in todaysBroadcastMessage:", error);
       return res.json({ status: false, message: "Internal server error", data: [] });
     }
   }
@@ -368,14 +367,12 @@ class Users {
         return res.json({ status: false, message: "User ID is required", data: [] });
       }
   
-      console.log("Query Parameters:", { userid: userid, symbol: { $eq: null } });
   
       const result = await BalanceStatement.find({
         userid: userid,
         symbol: { $eq: null },
       }).sort({ createdAt: -1 });
   
-      console.log("Result:", result);
   
       if (!result || result.length === 0) {
         return res.json({ status: false, message: "Data not found", data: [] });
@@ -410,7 +407,6 @@ class Users {
         return res.json({ status: false, message: "User ID is required", data: [] });
       }
   
-      console.log("Query Parameters:", { userid: userid, symbol: { $eq: null } });
   
       const result = await BalanceStatement.find({
         userid: userid,

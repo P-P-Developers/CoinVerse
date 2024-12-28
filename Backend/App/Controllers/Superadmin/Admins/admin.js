@@ -745,6 +745,29 @@ class Superadmin {
   }
 
   // get all available position
+  // async getPosition_detail(req, res) {
+  //   try {
+  //     let result = await mainorder_model
+  //       .find({
+  //         $expr: { $ne: ["$buy_lot", "$sell_lot"] },
+  //       })
+  //       .sort({ createdAt: -1 });
+
+  //     if (!result || result.length === 0) {
+  //       return res.json({ status: false, message: "Data not found", data: [] });
+  //     }
+  //     // console.log("result is ", result)
+  //     return res.json({ status: true, message: "Data found", data: result });
+  //   } catch (error) {
+  //     return res.json({ status: false, message: "Internal error", data: [] });
+  //   }
+  // }
+
+  // get all brokerage data
+
+
+
+  //  working on getPositiondetail and above code is unchanged in case of issue you can use above code
   async getPosition_detail(req, res) {
     try {
       let result = await mainorder_model
@@ -757,13 +780,32 @@ class Superadmin {
         return res.json({ status: false, message: "Data not found", data: [] });
       }
 
+      // Assuming you have a users collection where you store the admin usernames
+      // Fetch the users corresponding to adminid
+      const adminIds = result.map((item) => item.adminid);
+      const adminUsers = await User_model.find({ _id: { $in: adminIds } });
+
+      // Create a mapping of adminid to username
+      const adminUsernameMap = adminUsers.reduce((acc, user) => {
+        acc[user._id] = user.UserName; // Assuming 'username' is the key for usernames
+        return acc;
+      }, {});
+
+      // Add the adminName to each result based on adminid
+      result = result.map((item) => {
+        return {
+          ...item.toObject(),
+          adminName: adminUsernameMap[item.adminid] || "Unknown", // Default to "Unknown" if not found
+        };
+      });
       return res.json({ status: true, message: "Data found", data: result });
     } catch (error) {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
 
-  // get all brokerage data
+
+  //  --------------
   async brokerageDataForSuperAdmin(req, res) {
     try {
       const aggregatedData = await User_model.aggregate([

@@ -12,10 +12,13 @@ const Transection = () => {
 
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
+  const [adminNames, setAdminNames] = useState([]);
+  const [selectedAdminName, setSelectedAdminName] = useState('');
+
 
 
   const columns = [
-    { Header:"UserName", accessor: "username" },
+    { Header: "UserName", accessor: "username" },
 
     { Header: "Licence", accessor: "Licence" },
     {
@@ -26,43 +29,59 @@ const Transection = () => {
 
       },
     },
-    { Header: "Start_Date", accessor: "Start_Date",
+    {
+      Header: "Start_Date", accessor: "Start_Date",
       Cell: ({ cell }) => {
         return fDateTime(cell.value)
 
       },
-     },
-    { Header: "End_Date", accessor: "End_Date",
+    },
+    {
+      Header: "End_Date", accessor: "End_Date",
       Cell: ({ cell }) => {
         return fDateTime(cell.value)
 
       },
-     },
+    },
   ];
 
-  // getting data
+
+  //get license details
   const getlicensedetail = async () => {
     try {
-      const data = {userid:user_id}
+      const data = { userid: user_id };
       const response = await getlicencedetailforsuperadmin(data);
+
+      // Assuming 'adminNames' is a state variable that stores usernames
+      const adminNames = response?.data?.map(item => item.username);
+
+      // Update the state with the list of usernames
+      setAdminNames(adminNames);
+
       const searchfilter = response.data?.filter((item) => {
         const searchInputMatch =
           search === "" ||
-          (item.username && item.username.toLowerCase().includes(search.toLowerCase())) 
-          
+          (item.username && item.username.toLowerCase().includes(search.toLowerCase()));
 
         return searchInputMatch;
       });
-      setData(search ? searchfilter : response.data);
+
+      const filteredData = response.data?.filter(item => {
+        // Check if selectedAdminName is empty or if it matches the username
+        return selectedAdminName === "" || item.username === selectedAdminName;
+      });
+
+      // Update data based on the search filter or the full response data
+      setData(search ? searchfilter : filteredData);;
+
     } catch (error) {
       console.log("error", error);
     }
   };
 
-
   useEffect(() => {
     getlicensedetail();
-  }, [search]);
+  }, [search, selectedAdminName]);
 
   return (
     <>
@@ -84,17 +103,46 @@ const Transection = () => {
                       role="tabpanel"
                       aria-labelledby="Week-tab"
                     >
-                      <div className="mb-3 ms-4">
-                        Search :{" "}
-                        <input
-                          className="ml-2 input-search form-control"
-                          style={{ width: "20%" }}
-                          type="text"
-                          placeholder="Search..."
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
-                        />
+                      <div className="row mb-3 ms-3 align-items-center">
+                        {/* Search Input */}
+                        <div className="col-md-6 col-lg-3">
+                          <label className="form-label">Search:</label>
+                          <input
+                            className="form-control"
+                            style={{ width: "100%" }}
+                            type="text"
+                            placeholder="Search..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                          />
+                        </div>
+
+                        {/* Dropdown */}
+                        <div className="col-md-6 col-lg-3 ">
+                          <select
+                            style={{ width: "100%" ,marginTop:"24px", height:"35px"}}
+
+                            className="form-select"
+                            value={selectedAdminName}
+                            onChange={(e) => setSelectedAdminName(e.target.value)}
+                          >
+                            <option value="">Select Admin</option>
+                            {adminNames.map((item, index) => {
+                              if (item) {
+                                return (
+                                  <option value={item} key={index}>
+                                    {item}
+                                  </option>
+                                );
+                              }
+                              return null;
+                            })}
+                          </select>
+                        </div>
                       </div>
+
+
+
                       <Table columns={columns} data={data && data} />
                     </div>
                   </div>

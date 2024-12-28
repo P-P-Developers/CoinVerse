@@ -311,17 +311,29 @@ const Users = () => {
         Licence: licencevalue,
         parent_Id: user_id,
       });
+      if (licencevalue) {
+        Swal.fire({
+          icon: "success",
+          title: "Licence Updated",
+          text: "The Licence has been updated successfully.",
+        });
+      }
 
-      Swal.fire({
-        icon: "success",
-        title: "Licence Updated",
-        text: "The Licence has been updated successfully.",
-      });
+      else {
+        Swal.fire({
+          icon: "error",
+          title: "Invalid Licence Value",
+          text: "Please enter a valid licence value and try again.",
+        });
+      }
+
       // setrefresh(!refresh)
 
       getAlluserdata();
       getadminLicence();
       setLicence(false);
+
+      setLicencevalue("");
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -658,13 +670,15 @@ const Users = () => {
                         <input
                           type="text"
                           className="form-control"
-                          placeholder="Enter Licence"
+                          placeholder="Enter Licence Here"
                           onChange={(e) => {
-                            const value = e.target.value.replace(/\D/g, "");
+                            let value = e.target.value.replace(/\D/g, "");
+                            value = Math.max(0, Math.min(12, value));
                             setLicencevalue(value);
                           }}
-                          value={licencevalue}
+                          value={licencevalue ? `${licencevalue}` : ""} // Display the value with no '%', since it's not applicable here
                         />
+
                       </div>
                     </div>
                   </div>

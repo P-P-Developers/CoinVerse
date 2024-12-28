@@ -94,7 +94,6 @@ export async function getAllBrokerageDataForEmployee(data) {
         const res = await axios.post(`${Config.base_url}getEmployeeBrokerageData`, data, {
             data:{}
         })
-        console.log("res from getAllBrokerageData is ",res)
         return await res?.data;
     }
     catch (err) {

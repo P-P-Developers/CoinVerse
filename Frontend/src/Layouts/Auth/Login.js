@@ -9,12 +9,16 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const navigate = useNavigate();
 
   const handleUsernameChange = (e) => setUsername(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
 
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible);
+  }
   const validate = () => {
     let inputErrors = {};
     if (!username) inputErrors.username = "Username is required";
@@ -176,16 +180,16 @@ const Login = () => {
                     <div className="mb-3 position-relative">
                       <label className="form-label required">Password</label>
                       <input
-                        type="password"
+
+                        type={isPasswordVisible ? "text" : "password"}
                         id="dlab-password"
                         className="form-control"
                         value={password}
                         onChange={handlePasswordChange}
                       />
 
-                      <span className="show-pass eye">
-                        <i className="fa fa-eye-slash" />
-                        <i className="fa fa-eye" />
+                      <span className="show-pass eye" onClick={togglePasswordVisibility}>
+                        <i className={isPasswordVisible ? "fa fa-eye" : "fa fa-eye-slash"} />
                       </span>
                       {errors.password && (
                         <div className="text-danger">{errors.password}</div>

@@ -108,7 +108,6 @@ const Brokerage = () => {
     ).toFixed(5);
 
     result = result - ProfitBalance;
-    console.log(result);
 
 
 
@@ -140,7 +139,6 @@ const Brokerage = () => {
     ) / (Profit_Margin / 100)  // Convert percentage to decimal
   ).toFixed(5);
 
-  console.log(result);
 
 
   return (

@@ -35,7 +35,7 @@ const AddUsers = () => {
       username: clientData.UserName || "",
       email: "",
       phone: clientData.PhoneNo || "",
-      employee_id:"",
+      employee_id: "",
       Balance: "",
       password: clientData.password || "",
       confirmPassword: "",
@@ -47,52 +47,81 @@ const AddUsers = () => {
 
     validate: (values) => {
       let errors = {};
+
+      // Full name validation
       if (!values.fullName) {
         errors.fullName = "Please Enter Full Name";
       }
+
+      // Username validation
       if (!values.username) {
         errors.username = "Please Enter Username";
       }
+
+      // Email validation
       if (!values.email) {
         errors.email = "Please Enter Email Address";
       } else if (!/^\S+@\S+\.\S+$/.test(values.email)) {
         errors.email = "Please enter a valid email address.";
       }
+
+      // Phone validation
       if (!values.phone) {
         errors.phone = "Please Enter Phone Number";
       } else if (!/^\d{10}$/.test(values.phone)) {
         errors.phone = "Please enter a valid 10-digit phone number.";
       }
+
+      // Balance validation
       if (!values.Balance) {
         errors.Balance = "Please Enter Balance";
       } else if (isNaN(values.Balance)) {
         errors.Balance = "Balance must be a number";
       }
+
+      // Password validation
       if (!values.password) {
         errors.password = "Please Enter Password";
       } else if (values.password.length < 6) {
         errors.password = "Password must be at least 6 characters";
       }
+
+      // Confirm password validation
       if (!values.confirmPassword) {
         errors.confirmPassword = "Please Confirm Password";
       } else if (values.password !== values.confirmPassword) {
         errors.confirmPassword = "Passwords do not match";
       }
+
+      // Licence validation (should be between 0 and 12)
       if (!values.Licence) {
         errors.Licence = "Please Enter Licence";
+      } else if (isNaN(values.Licence) || values.Licence < 0 || values.Licence > 12) {
+        errors.Licence = "Licence should be a number between 0 and 12";
       }
+
+      // Limit validation (should be between 0 and 100 and in percentage format)
+      if (!values.limit) {
+        errors.limit = "Please enter a value for Limit";
+      } else if (isNaN(values.limit) || values.limit < 0 || values.limit > 100) {
+        errors.limit = "Limit should be a number between 0 and 100";
+      } 
+
+      // Option validation
       if (!values.selectedOption) {
         errors.selectedOption = "Please select an option";
       }
+
+      // Input value validation based on selected option
       if (!values.inputValue) {
         errors.inputValue = "Please enter a value for the selected option";
       }
-      if (!values.limit) {
-        errors.limit = "Please enter a value for Limit";
-      }
+
+      // Employee validation
       if (!values.employee_id) {
-        errors.employee_id = "Please select a Employee";
+        errors.employee_id = "Please select an Employee";
       }
+
       return errors;
     },
 
@@ -104,7 +133,7 @@ const AddUsers = () => {
         UserName: values.username,
         Email: values.email,
         PhoneNo: values.phone,
-        employee_id:values.employee_id,
+        employee_id: values.employee_id,
         Balance: values.Balance,
         password: values.password,
         parent_role: Role || "ADMIN",
@@ -117,15 +146,10 @@ const AddUsers = () => {
 
       setSubmitting(false);
 
-      if (
-        dollarPrice == 0 ||
-        dollarPrice == null ||
-        dollarPrice === Infinity ||
-        isNaN(dollarPrice)
-      ) {
+      if (dollarPrice == 0 || dollarPrice == null || dollarPrice === Infinity || isNaN(dollarPrice)) {
         Swal.fire({
           title: "Alert",
-          text: "Please updated Dollarprice",
+          text: "Please update Dollar price",
           icon: "warning",
           timer: 1000,
           timerProgressBar: true,
@@ -133,12 +157,11 @@ const AddUsers = () => {
         setSubmitting(false);
         return;
       }
-      setSubmitting(false);
 
       if (parseInt(checkLicence.CountLicence) < parseInt(values.Licence)) {
         Swal.fire({
           title: "Alert",
-          text: "Licence is required",
+          text: "Please enter a Licence value between 1 and 12",
           icon: "warning",
           timer: 1000,
           timerProgressBar: true,
@@ -146,7 +169,6 @@ const AddUsers = () => {
         setSubmitting(false);
         return;
       }
-      setSubmitting(false);
 
       try {
         const response = await AddUser(data);
@@ -184,6 +206,7 @@ const AddUsers = () => {
 
 
 
+
   const getadminbalance = async () => {
     const data = { userid: user_id };
     try {
@@ -209,7 +232,7 @@ const AddUsers = () => {
 
 
 
-  
+
   const getAlluserdata = async () => {
     const data = { id: user_id };
     try {
@@ -292,13 +315,13 @@ const AddUsers = () => {
       label: "Employee",
       type: "select",
       options: [
-        { label: "Admin", value: "Admin" }, 
+        { label: "Admin", value: "Admin" },
         ...(data
           ? data.map((item) => ({
-            
-              label: item.UserName,
-              value: item._id,
-            }))
+
+            label: item.UserName,
+            value: item._id,
+          }))
           : []),
       ],
       label_size: 12,
@@ -324,7 +347,7 @@ const AddUsers = () => {
     },
     {
       name: "Licence",
-      label: "Licence",
+      label: "Licence(0-12)",
       type: "text3",
       label_size: 12,
       col_size: 6,
@@ -332,11 +355,13 @@ const AddUsers = () => {
     },
     {
       name: "limit",
-      label: "Limit",
+      label: "Margin(0-100%)",
       type: "text3",
       label_size: 12,
       col_size: 6,
       disable: false,
+      min: 0,
+      max: 12,
     },
     {
       name: "selectedOption",

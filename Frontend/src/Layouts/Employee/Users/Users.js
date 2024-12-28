@@ -50,8 +50,7 @@ const Users = () => {
   const [loading, setLoading] = useState(false);
   const [getaccess, setGetaccess] = useState({});
 
-  const [getid,setGetid] = useState([])
-
+  const [getid, setGetid] = useState([])
 
 
   const columns = [
@@ -227,7 +226,7 @@ const Users = () => {
         );
       },
     },
-    
+
     getaccess.trade_history === 1 && {
       Header: "Trade History",
       accessor: "Trade History",
@@ -420,8 +419,7 @@ const Users = () => {
     }
   };
 
-  
-  // console.log("getaccess",getaccess)
+
 
   // get all admin
   const getAlluserdata = async () => {
@@ -455,22 +453,21 @@ const Users = () => {
     }
   };
 
-  
-  const getallclient=async()=>{
+
+  const getallclient = async () => {
     try {
-      const data = {userid:user_id}
+      const data = { userid: user_id }
       const response = await getAllClient(data)
-      if(response.status){
-        // console.log("response",response.data.parent_id)
+      if (response.status) {
         setGetid(response.data.parent_id)
       }
 
     } catch (error) {
       console.log("error")
     }
- }
+  }
 
- 
+
 
 
 
@@ -492,12 +489,22 @@ const Users = () => {
                 <div className="mb-4">
                   <h4 className="card-title">All Users</h4>
                 </div>
-                <Link
+                {/* <Link
                   to="/employee/adduser"
                   className="float-end mb-4 btn btn-primary"
                 >
                   Add User
-                </Link>
+                </Link> */}
+
+                {
+                  getaccess && getaccess.client_add === 1 ? (<Link
+                    to="/employee/adduser"
+                    className="float-end mb-4 btn btn-primary"
+                  >
+                    Add User
+                  </Link>) :
+                  ""
+                }
               </div>
               <div className="card-body p-0">
                 <div className="tab-content" id="myTabContent1">

@@ -289,7 +289,6 @@ class UserSymbol {
     try {
       
       const userWatchlistRecord = await Favouritelist.findOne(condition);
-
       if (!userWatchlistRecord) {
         return res.json({
           status: false,

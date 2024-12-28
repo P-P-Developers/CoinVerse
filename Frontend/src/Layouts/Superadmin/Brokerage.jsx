@@ -23,7 +23,6 @@ const Brokerage = () => {
       // const requestData = { admin_id: user_id }; // Renamed for clarity
       const apiResponse = await getAllBrokerageData();
 
-      // console.log("apiResponse is ", apiResponse)
 
       const CreateDaynamicData =
         apiResponse.data?.map((data) => ({

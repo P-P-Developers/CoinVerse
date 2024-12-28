@@ -545,7 +545,7 @@ const AdminBrokerageDetail = (row) => {
                 <div className="modal-body">
                   <div className="row">
                     <div className="col-lg-12 col-sm-12">
-                      <div className="input-block mb-3">
+                      {/* <div className="input-block mb-3">
                         <input
                           type="text"
                           className="form-control"
@@ -556,6 +556,21 @@ const AdminBrokerageDetail = (row) => {
                           }}
                           value={licencevalue}
                         />
+                      </div> */}
+
+                      <div className="input-block mb-3">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Enter Licence Here"
+                          onChange={(e) => {
+                            let value = e.target.value.replace(/\D/g, "");
+                            value = Math.max(0, Math.min(12, value));
+                            setLicencevalue(value);
+                          }}
+                          value={licencevalue ? `${licencevalue}` : ""} // Display the value with no '%', since it's not applicable here
+                        />
+
                       </div>
                     </div>
                   </div>

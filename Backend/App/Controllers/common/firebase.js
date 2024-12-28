@@ -22,7 +22,6 @@ const sendPushNotification = async (firebaseToken, title, message) => {
     };
 
     const response = await admin.messaging().send(payload);
-    console.log("Push notification sent successfully:", response);
     return { success: true, response };
   } catch (error) {
     console.error("Error sending push notification:", error);
@@ -49,7 +48,6 @@ const sendMultiplePushNotification = async (firebaseTokens, title, message) => {
                 };
             
                 const response = await admin.messaging().send(payload);
-                console.log("Push notification sent successfully:", response);
                 return { success: true, response };
               } catch (error) {
                 console.error("Error sending push notification:", error);

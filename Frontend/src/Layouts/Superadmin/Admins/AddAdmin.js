@@ -262,14 +262,20 @@ const AddAdmin = () => {
       if (!values.password) {
         errors.password = "Please Enter Password";
       }
-      if (!values.ProfitMargin) {
-        errors.ProfitMargin = "Please Enter Profit Margin";
-      }
       if (!values.confirmPassword) {
         errors.confirmPassword = "Please Confirm Password";
       } else if (values.password !== values.confirmPassword) {
         errors.confirmPassword = "Passwords do not match";
       }
+      if(!values.Licence){
+        errors.Licence = "Please Enter Licence"
+      }else if(values.Licence < 0 || values.Licence > 12){
+        errors.Licence = "Licence Value should be in 0 to 12"
+      }
+      if (!values.ProfitMargin) {
+        errors.ProfitMargin = "Please Enter Profit Margin";
+      }
+      
 
       return errors;
     },
@@ -358,7 +364,7 @@ const AddAdmin = () => {
     },
     {
       name: "Licence",
-      label: "Licence",
+      label: "Licence (0-12)",
       type: "text3",
       label_size: 12,
       col_size: 6,
@@ -366,7 +372,7 @@ const AddAdmin = () => {
     },
     {
       name: "ProfitMargin",
-      label: "Profit Margin",
+      label: "Profit Margin (0-100%)",
       type: "text4",
       label_size: 12,
       col_size: 6,
