@@ -475,13 +475,11 @@ const Users = () => {
         return searchInputMatch;
       });
 
-      // console.log("filterusername",filterusername[0].UserName)
       setEmployeename(filterusername)
       setData(search ? searchfilter : result);
       setFilteredData(result);
       setLoading(false);
     } catch (error) {
-      console.log("error", error);
     }
   };
 
@@ -492,7 +490,6 @@ const Users = () => {
   //     const response = await adminWalletBalance(data);
   //     setCheckprice(response.Balance);
   //   } catch (error) {
-  //     console.log("error", error);
   //   }
   // };
 

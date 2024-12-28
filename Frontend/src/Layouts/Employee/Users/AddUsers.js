@@ -211,7 +211,6 @@ const AddUsers = () => {
   };
 
 
-  // console.log("getid",getid)
 
   const getadminLicence = async () => {
     const data = { userid: getid };
@@ -231,7 +230,11 @@ const AddUsers = () => {
     try {
       const data = { userid: user_id }
       const response = await getAllClient(data)
+<<<<<<< HEAD
       if (response.status) {
+=======
+      if(response.status){
+>>>>>>> 02cc8c36e6353d84c1d3b45e475364735b7b30ab
         setGetid(response.data.parent_id)
       }
 

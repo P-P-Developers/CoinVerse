@@ -59,7 +59,6 @@ var symbols = "ETH/USD,USD/EUR,USD/JPY,BTC/USD,EUR/USD,ETH/BTC,ETH/XRP,ETH/USD,X
     };
 
     const reconnectWebSocket = () => {
-      // console.log("Reconnecting WebSocket...");
       ws = new WebSocket(url);
       ws.onopen = () => {
         subscribeToSymbols();
@@ -93,7 +92,6 @@ var symbols = "ETH/USD,USD/EUR,USD/JPY,BTC/USD,EUR/USD,ETH/BTC,ETH/XRP,ETH/USD,X
       };
 
       ws.onclose = () => {
-        // console.log("WebSocket connection closed");
         // Reconnect after 3 seconds
         setTimeout(reconnectWebSocket, 3000);
       };

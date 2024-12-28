@@ -160,7 +160,6 @@ const UpdateEmploye = () => {
   }, [rowData]);
 
 
-  // console.log("rowData",rowData)
 
   const fields = [
     {

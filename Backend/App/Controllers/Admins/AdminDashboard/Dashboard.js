@@ -88,7 +88,7 @@ class Dashboard {
         data: Count,
       });
     } catch (error) {
-      console.log("Error getting Dashboard Data:", error);
+  
       res.status(500).send({
         status: false,
         message: "Internal Server Error",

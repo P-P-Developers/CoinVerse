@@ -5,8 +5,7 @@ import Swal from "sweetalert2";
 import { getAllBrokerageData } from "../../Services/Superadmin/Superadmin";
 
 const Brokerage = () => {
-  // const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  // const user_id = userDetails?.user_id;
+
 
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
@@ -20,7 +19,6 @@ const Brokerage = () => {
 
   const getBrokerageDataForSuperAdmin = async () => {
     try {
-      // const requestData = { admin_id: user_id }; // Renamed for clarity
       const apiResponse = await getAllBrokerageData();
 
 
@@ -28,12 +26,12 @@ const Brokerage = () => {
         apiResponse.data?.map((data) => ({
           UserName: data.UserName,
           ...data.balance_data,
-        })) || []; // Ensure default value if no data is returned
+        })) || []; 
 
       const searchfilter = CreateDaynamicData.map((item) => ({
         UserName: item.UserName,
         symbol: item.symbol,
-        exch_seg: item.symbol_id || "N/A", // Simplified ternary operator
+        exch_seg: item.symbol_id || "N/A", 
         lotsize: item.parent_Id || "N/A",
         Amount: item.Amount,
         brokerage: item.brokerage,

@@ -51,7 +51,6 @@
 //       setData(search ? searchfilter : CreateDaynamicData);
 
 //     } catch (error) {
-//       console.log("error", error);
 //     }
 //   };
 

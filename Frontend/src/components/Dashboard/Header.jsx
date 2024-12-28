@@ -91,7 +91,6 @@ const Header = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       if (isTokenExpired()) {
-        console.log("Token expired, logging out...");
         logoutuser();
         clearInterval(interval); // Clear the interval once token is expired
       }

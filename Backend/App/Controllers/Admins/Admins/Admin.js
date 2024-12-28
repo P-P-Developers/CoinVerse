@@ -98,15 +98,15 @@ class Admin {
         adminid: parent_id,
       }).select("dollarprice");
 
-      dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
+      dollarcount = Balance 
       // }
 
       let brokeragepertrade = (
-        parseFloat(pertrade) / dollarPriceData.dollarprice
-      ).toFixed(3);
+        parseFloat(pertrade)
+      )
       let brokerageperlot = (
-        parseFloat(perlot) / dollarPriceData.dollarprice
-      ).toFixed(3);
+        parseFloat(perlot) 
+      )
 
 
       brokeragepertrade = isNaN(brokeragepertrade) ? null : brokeragepertrade;

@@ -1,18 +1,12 @@
 "use strict";
-const bcrypt = require("bcrypt");
-const mongoose = require("mongoose");
-const ObjectId = mongoose.Types.ObjectId;
+
 const db = require("../../Models");
 const Symbol = db.Symbol;
 const Userwatchlist = db.Userwatchlist;
-const Favouritelist = db.Favouritelist
-
+const Favouritelist = db.Favouritelist;
 
 class UserSymbol {
-
-
   //user search symbol
-
   async symbolSearch(req, res) {
     try {
       const symboleName = req.body.symboleName;
@@ -24,16 +18,16 @@ class UserSymbol {
 
       const symbols = await Symbol.find(condition)
         .select("-symbol")
-        .sort({ trading_symbol: "asc" })
+        .sort({ trading_symbol: "asc" });
 
-      if(symbols[0].status == 0){
+      if (symbols[0].status == 0) {
         return res.json({
           status: false,
           message: "Symbol not found",
           data: [],
         });
       }
-      
+
       if (!symboleName || symbols.length === 0) {
         return res.json({
           status: false,
@@ -43,7 +37,6 @@ class UserSymbol {
       }
 
       return res.json({ status: true, message: "Find Success", data: symbols });
-
     } catch (err) {
       return res.json({
         status: false,
@@ -53,11 +46,7 @@ class UserSymbol {
     }
   }
 
-
-
-
   // add user symbol
-
   async addSymbol(req, res) {
     const condition = {
       userid: req.body.userid,
@@ -112,12 +101,9 @@ class UserSymbol {
     }
   }
 
-
-
-// user userwalist list
+  // user userwalist list
   async userSymbollist(req, res) {
     try {
-     
       const userWatchlistRecords = await Userwatchlist.find({
         userid: req.body.userid,
       })
@@ -165,12 +151,9 @@ class UserSymbol {
     }
   }
 
-
   // user userwalist2 list
-
   async getFavouritelist(req, res) {
     try {
-     
       const userWatchlistRecords = await Favouritelist.find({
         userid: req.body.userid,
       })
@@ -218,12 +201,8 @@ class UserSymbol {
     }
   }
 
-
-
-  
   // add favouritelist
-
- async Favouritelist(req, res) {
+  async Favouritelist(req, res) {
     const condition = {
       userid: req.body.userid,
       symbol: req.body.symbolname,
@@ -277,9 +256,7 @@ class UserSymbol {
     }
   }
 
-
-
-  // Remove symbol from Favurite list 
+  // Remove symbol from Favurite list
   async removeFavourite(req, res) {
     const condition = {
       userid: req.body.userid,
@@ -287,7 +264,6 @@ class UserSymbol {
     };
 
     try {
-      
       const userWatchlistRecord = await Favouritelist.findOne(condition);
       if (!userWatchlistRecord) {
         return res.json({
@@ -308,16 +284,14 @@ class UserSymbol {
     } catch (err) {
       return res.json({
         status: false,
-        message: err.message || "Some error occurred while removing the symbol.",
+        message:
+          err.message || "Some error occurred while removing the symbol.",
         data: [],
       });
     }
   }
 
-
-
   // delete  user  symbole
-
   async deletwatchlistsymbol(req, res) {
     const { symbolname, userid } = req.body;
     try {
@@ -348,7 +322,5 @@ class UserSymbol {
     }
   }
 }
-
-
 
 module.exports = new UserSymbol();

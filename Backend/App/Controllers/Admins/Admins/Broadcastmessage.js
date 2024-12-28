@@ -33,7 +33,7 @@ class broadcastingmessage {
 
       return res.json({ status: true, message: "Mesaage send", data: result });
     } catch (error) {
-      console.log("error:", error);
+      
 
       return res.json({
         status: false,

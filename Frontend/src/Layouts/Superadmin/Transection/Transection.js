@@ -75,7 +75,6 @@ const Transection = () => {
       setData(search ? searchfilter : filteredData);;
 
     } catch (error) {
-      console.log("error", error);
     }
   };
 

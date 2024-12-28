@@ -108,6 +108,10 @@ const Brokerage = () => {
     ).toFixed(5);
 
     result = result - ProfitBalance;
+<<<<<<< HEAD
+=======
+   
+>>>>>>> 02cc8c36e6353d84c1d3b45e475364735b7b30ab
 
 
 

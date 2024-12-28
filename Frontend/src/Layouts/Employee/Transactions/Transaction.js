@@ -39,7 +39,11 @@ const Transaction = () => {
       const data = {employee_id:user_id}
       const response = await getEmployeeUserHistory(data);
       const parentIds = response.data && response.data.map((item) => item.parent_id);
+<<<<<<< HEAD
   
+=======
+    
+>>>>>>> 02cc8c36e6353d84c1d3b45e475364735b7b30ab
       setGetparentid(parentIds)
     } catch (error) {
       console.log("error", error);
@@ -47,6 +51,11 @@ const Transaction = () => {
   };
 
   
+<<<<<<< HEAD
+=======
+
+  
+>>>>>>> 02cc8c36e6353d84c1d3b45e475364735b7b30ab
   // getting data
   const getallhistory = async () => {
     try {
@@ -54,7 +63,6 @@ const Transaction = () => {
       const result = response.data && response.data.filter((item) => {
         return item.parent_Id === getparentid
       })
-      // console.log("result123",result)
       setData(result);
     } catch (error) {
       console.log("error", error);

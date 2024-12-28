@@ -493,7 +493,6 @@ class Superadmin {
         });
       }
     } catch (error) {
-      console.log("Error trading status Error-", error);
     }
   }
 
@@ -655,7 +654,6 @@ class Superadmin {
         data: Count,
       });
     } catch (error) {
-      console.log("Error getting Dashboard Data:", error);
       res.status(500).send({
         status: false,
         message: "Internal Server Error",
@@ -934,7 +932,6 @@ class Superadmin {
   async getProfitMargin(req, res) {
     try {
       const { admin_id } = req.body;
-      console.log("adminid", admin_id)
 
       if (!admin_id) {
         return res.json({
