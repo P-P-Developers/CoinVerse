@@ -42,6 +42,7 @@ const Brokerage = () => {
     try {
       const data = { userid: id };
       const res = await getAllClient(data);
+      
       if (res.status) {
         setAdminData(res.data);
       }
@@ -98,13 +99,13 @@ const Brokerage = () => {
       0
     );
 
-    // const result = (totalBrokerage / Profit_Margin - ProfitBalance).toFixed(5);
+  
 
     let result = (
       data.reduce(
         (acc, item) => acc + Number(item.brokerage || 0),
         0
-      ) / (Profit_Margin / 100)  // Convert percentage to decimal
+      ) / (Profit_Margin / 100)
     ).toFixed(5);
 
     result = result - ProfitBalance;

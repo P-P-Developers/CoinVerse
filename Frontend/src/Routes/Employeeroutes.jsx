@@ -22,6 +22,7 @@ import Updateuser from '../Layouts/Employee/Users/Updateuser';
 import Profile from '../Layouts/Employee/Profile';
 import Setting from '../Layouts/Employee/Setting';
 import Brokerage from '../Layouts/Employee/Brokerage';
+import Changedpassword from '../Layouts/Admin/Changedpassword';
 
 
 
@@ -41,42 +42,40 @@ const EmployeeRoutes = () => {
 
 
     return (
-        <div id="main-wrapper" className={`wallet-open show ${isMenuToggled ? 'menu-toggle' : ''}`}>
-            <Header />
-            <Sidebar />
-            <div className='content-body'>
-                <Routes>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/header" element={<Header />} />
-                    <Route path="/sidebar" element={<Sidebar />} />
-                    <Route path="/footer" element={<Footer />} />
-                    <Route path="/report" element={<Report />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/users/tradehistory/:id" element={<Tradehistory />} />
-                    <Route path="/loginstatus" element={<Loginstatus />} />
-                    <Route path="/withdrawal" element={<Withdraw />} />
-                    <Route path="/deposit" element={<Deposit />} />
-                    <Route path="/position" element={<Position />} />
-                 
-            
-                    <Route path="/users" element={<Users />} />
-                    <Route path="/adduser" element={<AddUsers />} />
-                    <Route path="/transaction" element={<Transaction />} />
-                   
-                 
-                    <Route path="/broadcast" element={<Broadcast />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/setting" element={<Setting />} />
-                    <Route path='/brokerage' element={<Brokerage/>} />
-                    <Route path="/users/updateuser/:id" element={<Updateuser />} />
-                   
+      <div
+        id="main-wrapper"
+        className={`wallet-open show ${isMenuToggled ? "menu-toggle" : ""}`}>
+        <Header />
+        <Sidebar />
+        <div className="content-body">
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/header" element={<Header />} />
+            <Route path="/sidebar" element={<Sidebar />} />
+            <Route path="/footer" element={<Footer />} />
+            <Route path="/report" element={<Report />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/users/tradehistory/:id" element={<Tradehistory />} />
+            <Route path="/loginstatus" element={<Loginstatus />} />
+            <Route path="/withdrawal" element={<Withdraw />} />
+            <Route path="/deposit" element={<Deposit />} />
+            <Route path="/position" element={<Position />} />
 
+            <Route path="/users" element={<Users />} />
+            <Route path="/adduser" element={<AddUsers />} />
+            <Route path="/transaction" element={<Transaction />} />
 
+            <Route path="/changedpassword" element={<Changedpassword/>} />
 
-                </Routes>
-            </div>
-            <Footer />
+            <Route path="/broadcast" element={<Broadcast />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/setting" element={<Setting />} />
+            <Route path="/brokerage" element={<Brokerage />} />
+            <Route path="/users/updateuser/:id" element={<Updateuser />} />
+          </Routes>
         </div>
+        <Footer />
+      </div>
     );
 }
 

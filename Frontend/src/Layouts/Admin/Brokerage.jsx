@@ -17,11 +17,10 @@
 //     { Header: "Brokerage", accessor: "brokerage" },
 //   ];
 
-
 //   const Symbolholdoff = async () => {
 //     try {
 //       const data = { admin_id: user_id };
-//       const apiResponce = await getbrokerageData(data);  
+//       const apiResponce = await getbrokerageData(data);
 
 //       let CreateDaynamicData = apiResponce.data && apiResponce.data.map((data)=>{
 //         return {
@@ -30,23 +29,20 @@
 //         }
 //       })
 
-
-
 //       const searchfilter = CreateDaynamicData?.map((item) => ({
 //         UserName: item.UserName,
 //         symbol: item.symbol,
-//         exch_seg: item.symbol_id ? item.symbol_id : 'N/A',  
-//         lotsize: item.parent_Id ? item.parent_Id : 'N/A', 
+//         exch_seg: item.symbol_id ? item.symbol_id : 'N/A',
+//         lotsize: item.parent_Id ? item.parent_Id : 'N/A',
 //         Amount: item.Amount,
 //         brokerage: item.brokerage,
 //         // brokerage: item.brokerage ? Number(item.brokerage).toFixed(5) : '0.00000', // Format brokerage to 5 decimal places
 //         // brokerage: Number(item.brokerage).toFixed(5),
-//         ActiveStatus: item.Amount > 0 ? 1 : 0, 
+//         ActiveStatus: item.Amount > 0 ? 1 : 0,
 //       })).filter((item) => {
 
 //         return search === "" || item.symbol?.toLowerCase().includes(search.toLowerCase());
 //       });
-
 
 //       setData(search ? searchfilter : CreateDaynamicData);
 
@@ -54,10 +50,8 @@
 //     }
 //   };
 
-
 //   useEffect(() => {
 //     Symbolholdoff();
-
 
 //   }, []);
 
@@ -111,25 +105,27 @@
 
 // export default Holdoff;
 
-
-
-
-
 // ____________Prev/safe code above  and below for work ____________
 
 import React, { useEffect, useState } from "react";
 import Table from "../../Utils/Table/Table";
 import { getbrokerageData } from "../../Services/Admin/Addmin"; // Removed unused imports
 import Swal from "sweetalert2";
+import {
+  getAllClient,
+  getProfitMarginApi,
+} from "../../Services/Superadmin/Superadmin";
 
 const Holdoff = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
 
-
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
-
+  const [adminData, setAdminData] = useState("");
+  // console.log("adminData is ", adminData);
+  const [completed, setCompleted] = useState("");
+  const [profitBalance, setProfitBalance] = useState("");
   const columns = [
     { Header: "UserName", accessor: "UserName" },
     { Header: "Symbol", accessor: "symbol" },
@@ -143,7 +139,7 @@ const Holdoff = () => {
       const apiResponse = await getbrokerageData(requestData);
 
       const CreateDaynamicData =
-        apiResponse.data?.map((data) => ({
+        apiResponse?.data?.map((data) => ({
           UserName: data.UserName,
           ...data.balance_data,
         })) || []; // Ensure default value if no data is returned
@@ -156,9 +152,10 @@ const Holdoff = () => {
         Amount: item.Amount,
         brokerage: item.brokerage,
         ActiveStatus: item.Amount > 0 ? 1 : 0,
-      })).filter((item) =>
-        search === "" ||
-        item.symbol?.toLowerCase().includes(search.toLowerCase())
+      })).filter(
+        (item) =>
+          search === "" ||
+          item.symbol?.toLowerCase().includes(search.toLowerCase())
       );
 
       setData(search ? searchfilter : CreateDaynamicData);
@@ -167,10 +164,41 @@ const Holdoff = () => {
       Swal.fire("Error", "Failed to fetch data. Please try again.", "error"); // Display error message
     }
   };
+  const GetAdminDetails = async () => {
+    try {
+      // const data = { userid: id };
+      const res = await getAllClient({ userid: user_id });
+      if (res.status) {
+        setProfitBalance(res.data.ProfitBalance);
+        setAdminData(res.data);
+      }
+    } catch (err) {
+      console.error("Error in getting admin details", err);
+    }
+  };
 
+  const GetAllMarginData = async () => {
+    try {
+      const res = await getProfitMarginApi({ admin_id: user_id });
+
+      // if (res.status) {
+      //   setMarginLogs(res.data);
+      // }
+
+      const CompletedValue = res?.data.reduce(
+        (acc, item) => acc + Number(item.balance || 0),
+        0
+      );
+      setCompleted(CompletedValue);
+    } catch (err) {
+      console.error("Error in getting margin data", err);
+    }
+  };
+ 
   useEffect(() => {
     Symbolholdoff();
-
+    GetAdminDetails();
+    GetAllMarginData();
   }, []);
 
   return (
@@ -191,8 +219,7 @@ const Holdoff = () => {
                       className="tab-pane fade show active"
                       id="Week"
                       role="tabpanel"
-                      aria-labelledby="Week-tab"
-                    >
+                      aria-labelledby="Week-tab">
                       <div className="mb-3 ms-4">
                         Search:{" "}
                         <input
@@ -210,23 +237,41 @@ const Holdoff = () => {
                         <div>
                           <span className="fw-bold">
                             Total Brokerage:{" "}
-                            {data
-                              .reduce((acc, item) => acc + Number(item.brokerage || 0), 0)
-                              .toFixed(5)}
+                            <input
+                              className="form-control d-inline w-auto ms-2"
+                              value={data
+                                .reduce(
+                                  (acc, item) =>
+                                    acc + Number(item.brokerage || 0),
+                                  0
+                                )
+                                .toFixed(5)}
+                              disabled
+                            />
                           </span>
                         </div>
 
                         {/* Remaining */}
                         <div>
                           <span className="fw-bold">
-                            Remaining: <input className="form-control d-inline w-auto ms-2" disabled />
+                            Remaining:{" "}
+                            <input
+                              className="form-control d-inline w-auto ms-2"
+                              value={completed - profitBalance}
+                              disabled
+                            />
                           </span>
                         </div>
 
                         {/* Completed */}
                         <div className="me-4">
                           <span className="fw-bold">
-                            Completed: <input className="form-control d-inline w-auto ms-2" disabled />
+                            Completed:{" "}
+                            <input
+                              className="form-control d-inline w-auto ms-2"
+                              value={completed}
+                              disabled
+                            />
                           </span>
                         </div>
 
@@ -235,8 +280,6 @@ const Holdoff = () => {
                           <button className="btn btn-primary me-3">Clear All</button>
                         </div> */}
                       </div>
-
-
 
                       {data && <Table columns={columns} data={data} />}
                     </div>
