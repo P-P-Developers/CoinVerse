@@ -17,7 +17,30 @@ const Header = () => {
   const [notification, setNotification] = useState([]);
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
 
-  const toggleHamburger = () => setIsActive((prev) => !prev);
+  useEffect(() => {
+    const element = document.querySelector(".wallet-open.show");
+
+    if (element) {
+      if (isActive) {
+        element.classList.add("menu-toggle");
+      } else {
+        element.classList.remove("menu-toggle");
+      }
+    } else {
+      console.log("Element with classes .wallet-open.show.active not found");
+    }
+  }, [isActive]); // This effect will run every time `isActive` changes
+
+  const toggleHamburger = () => {
+    setIsActive((prev) => !prev);
+    const element = document.querySelector(".wallet-open.show.active");
+    console.log("Element", element);
+    if (element) {
+      element.classList.toggle("menu-toggle");
+    } else {
+      console.log("Element not found");
+    }
+  };
 
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
@@ -91,8 +114,7 @@ const Header = () => {
     // Apply the theme on page load
     document.body.setAttribute("data-theme-version", theme);
     document.body.className = theme === "dark" ? "dark-mode" : "light-mode";
-  }, [theme]); 
-
+  }, [theme]);
 
   return (
     <div>
