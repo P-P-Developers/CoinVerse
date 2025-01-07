@@ -18,6 +18,10 @@ const Header = () => {
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
 
   useEffect(() => {
+    document.title = window.location.hostname;
+  });
+
+  useEffect(() => {
     const element = document.querySelector(".wallet-open.show");
 
     if (element) {
@@ -120,8 +124,7 @@ const Header = () => {
     <div>
       <div
         className="header-banner"
-        style={{ backgroundImage: "url(/assets/images/bg-1.png)" }}
-      ></div>
+        style={{ backgroundImage: "url(/assets/images/bg-1.png)" }}></div>
 
       <div className="nav-header">
         <a href="index.html" className="brand-logo">
@@ -130,8 +133,7 @@ const Header = () => {
         <div className="nav-control">
           <div
             className={`hamburger ${isActive ? "is-active" : ""}`}
-            onClick={toggleHamburger}
-          >
+            onClick={toggleHamburger}>
             <span className="line" />
             <span className="line" />
             <span className="line" />
@@ -168,8 +170,7 @@ const Header = () => {
                     className="nav-link"
                     role="button"
                     data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
+                    aria-expanded="false">
                     <i
                       className="fa fa-bell"
                       style={{ fontSize: "32px", color: "white" }}
@@ -179,8 +180,7 @@ const Header = () => {
                     <div
                       id="DZ_W_Notification3"
                       className="widget-media dlab-scroll p-3"
-                      style={{ height: 380 }}
-                    >
+                      style={{ height: 380 }}>
                       {user_role === "ADMIN" && (
                         <ul className="timeline">
                           {notification.map((item) => (
@@ -218,8 +218,7 @@ const Header = () => {
                       className="nav-link"
                       role="button"
                       data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
+                      aria-expanded="false">
                       <div className="header-info2 d-flex align-items-center">
                         <img src="/assets/images/avatar/1.png" alt="" />
                       </div>
@@ -228,8 +227,7 @@ const Header = () => {
                       {user_role === "ADMIN" && (
                         <Link
                           to="/admin/profile"
-                          className="dropdown-item ai-icon"
-                        >
+                          className="dropdown-item ai-icon">
                           <i
                             className="fas fa-user"
                             style={{ fontSize: "24px", color: "#000" }}
@@ -240,8 +238,7 @@ const Header = () => {
                       {user_role === "SUPERADMIN" && (
                         <Link
                           to="/superadmin/system"
-                          className="dropdown-item ai-icon"
-                        >
+                          className="dropdown-item ai-icon">
                           <i
                             className="fa-solid fa-gear"
                             style={{ color: "#0c0808" }}
@@ -254,8 +251,7 @@ const Header = () => {
                           to={`/${
                             user_role === "ADMIN" ? "admin" : "employee"
                           }/changedpassword`}
-                          className="dropdown-item ai-icon"
-                        >
+                          className="dropdown-item ai-icon">
                           <i
                             className="fas fa-cogs"
                             style={{ fontSize: "24px", color: "#000" }}
@@ -266,8 +262,7 @@ const Header = () => {
                       <Link
                         to="/login"
                         className="dropdown-item ai-icon"
-                        onClick={logoutuser}
-                      >
+                        onClick={logoutuser}>
                         <i
                           className="fas fa-sign-out-alt"
                           style={{ fontSize: "18px", color: "#fd5353" }}
