@@ -15,7 +15,7 @@ const Loginstatus = () => {
   // Fetch users for dropdown
   const fetchUsers = async () => {
     try {
-      const response = await GetUsersName();
+      const response = await GetUsersName({ admin_id: user_id });
       if (response && response.data && response.data.length > 0) {
         setUsers(response.data);
       } else {
@@ -39,8 +39,10 @@ const Loginstatus = () => {
         // Search filter logic
         const searchInputMatch =
           search === "" ||
-          (item.UserName && item.UserName.toLowerCase().includes(search.toLowerCase())) ||
-          (item.login_status && item.login_status.toLowerCase().includes(search.toLowerCase()));
+          (item.UserName &&
+            item.UserName.toLowerCase().includes(search.toLowerCase())) ||
+          (item.login_status &&
+            item.login_status.toLowerCase().includes(search.toLowerCase()));
 
         // If selectedUserId is null or empty, show data for all users
         if (!selectedUserId) {
@@ -100,55 +102,57 @@ const Loginstatus = () => {
                 </div>
               </div>
               <div className="card-body p-0">
-  <div className="tab-content" id="myTabContent1">
-    <div className="row mb-3 ms-3">
-      {/* Vertical Layout for Search and Select User */}
-      <div className="col-md-3">
-        <div className="">
-          <label className="me-2">Search:</label>
-          <input
-            className="form-control"
-            style={{ width: "75%" }}
-            type="text"
-            placeholder="Search..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-      </div>
+                <div className="tab-content" id="myTabContent1">
+                  <div className="row mb-3 ms-3">
+                    {/* Vertical Layout for Search and Select User */}
+                    <div className="col-md-3">
+                      <div className="">
+                        <label className="me-2">Search:</label>
+                        <input
+                          className="form-control"
+                          style={{ width: "75%" }}
+                          type="text"
+                          placeholder="Search..."
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                        />
+                      </div>
+                    </div>
 
-      {/* User Dropdown */}
-      <div className="col-md-3">
-        <div className="">
-          <label className="me-2">Select User:</label>
-          <select
-            className="form-control"
-            style={{ width: "50%%" }}
-            onChange={(e) => setSelectedUserId(e.target.value)}
-            value={selectedUserId}
-          >
-            <option value="">Select a user</option>
-            {users.length > 0 ? (
-              users.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {user?.UserName}
-                </option>
-              ))
-            ) : (
-              <option>No users available</option>
-            )}
-          </select>
-        </div>
-      </div>
-    </div>
+                    {/* User Dropdown */}
+                    <div className="col-md-3">
+                      <div className="">
+                        <label className="me-2">Select User:</label>
+                        <select
+                          className="form-control"
+                          style={{ width: "50%%" }}
+                          onChange={(e) => setSelectedUserId(e.target.value)}
+                          value={selectedUserId}>
+                          <option value="">Select a user</option>
+                          {users.length > 0 ? (
+                            users.map((user) => (
+                              <option key={user.id} value={user.id}>
+                                {user?.UserName}
+                              </option>
+                            ))
+                          ) : (
+                            <option>No users available</option>
+                          )}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
 
-    {/* Table Section */}
-    <div className="tab-pane fade show active" id="Week" role="tabpanel" aria-labelledby="Week-tab">
-      <Table columns={columns} data={data} />
-    </div>
-  </div>
-</div>
-
+                  {/* Table Section */}
+                  <div
+                    className="tab-pane fade show active"
+                    id="Week"
+                    role="tabpanel"
+                    aria-labelledby="Week-tab">
+                    <Table columns={columns} data={data} />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

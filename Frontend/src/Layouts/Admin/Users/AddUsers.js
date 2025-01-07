@@ -6,13 +6,14 @@ import Form from "../../../Utils/Form/Formik";
 import {
   AddUser,
   adminWalletBalance,
+  marginUpdateOnUserCreate,
   TotalcountLicence,
+  updateuserLicence,
 } from "../../../Services/Admin/Addmin";
 import { getUserdata } from "../../../Services/Superadmin/Superadmin";
 
 
 const AddUsers = () => {
-
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -22,6 +23,7 @@ const AddUsers = () => {
   const [dollarPrice, setDollarPrice] = useState(0);
   const [checkdolarprice, setCheckdolarprice] = useState(0);
   const [checkLicence, setCheckLicence] = useState([]);
+  // console.log("checklicence ", checkLicence)
 
   const [data, setData] = useState([]);
 
@@ -96,6 +98,9 @@ const AddUsers = () => {
       // Licence validation (should be between 0 and 12)
       if (!values.Licence) {
         errors.Licence = "Please Enter Licence";
+      }
+      else if (values.Licence > checkLicence) {
+        errors.Licence = "You Don't have Enough Licence"
       } else if (isNaN(values.Licence) || values.Licence < 0 || values.Licence > 12) {
         errors.Licence = "Licence should be a number between 0 and 12";
       }
@@ -105,7 +110,7 @@ const AddUsers = () => {
         errors.limit = "Please enter a value for Limit";
       } else if (isNaN(values.limit) || values.limit < 0 || values.limit > 100) {
         errors.limit = "Limit should be a number between 0 and 100";
-      } 
+      }
 
       // Option validation
       if (!values.selectedOption) {
@@ -160,19 +165,24 @@ const AddUsers = () => {
 
       if (parseInt(checkLicence.CountLicence) < parseInt(values.Licence)) {
         Swal.fire({
-          title: "Alert",
-          text: "Please enter a Licence value between 1 and 12",
+          title: "Insufficient License",
+          text: "You don't have enough licenses to proceed.",
           icon: "warning",
-          timer: 1000,
+          timer: 2500,
           timerProgressBar: true,
         });
+
         setSubmitting(false);
         return;
       }
 
       try {
         const response = await AddUser(data);
+        // console.log("response on ading use is ", response)
+
+
         if (response.status) {
+         
           Swal.fire({
             title: "User Added!",
             text: "User added successfully",
@@ -204,9 +214,6 @@ const AddUsers = () => {
     },
   });
 
-
-
-
   const getadminbalance = async () => {
     const data = { userid: user_id };
     try {
@@ -218,8 +225,6 @@ const AddUsers = () => {
     }
   };
 
-
-
   const getadminLicence = async () => {
     const data = { userid: user_id };
     try {
@@ -230,13 +235,11 @@ const AddUsers = () => {
     }
   };
 
-
-
-
   const getAlluserdata = async () => {
     const data = { id: user_id };
     try {
       const response = await getUserdata(data);
+     
       const result =
         response.data &&
         response.data.filter((item) => {
@@ -247,8 +250,6 @@ const AddUsers = () => {
       console.log("error", error);
     }
   };
-
-
 
 
   useEffect(() => {
@@ -375,19 +376,19 @@ const AddUsers = () => {
       col_size: 6,
       disable: false,
     },
-    {
-      name: "inputValue",
-      label: formik.values.selectedOption
-        ? formik.values.selectedOption === "pertrade"
+    ...(formik.values.selectedOption ? [
+      {
+        name: "inputValue",
+        label: formik.values.selectedOption === "pertrade"
           ? "Per Trade"
-          : "Per Lot"
-        : "Input Value",
-      type: "text",
-      label_size: 12,
-      col_size: 6,
-      disable: false,
-      showWhen: (values) => !!values.selectedOption,
-    },
+          : "Per Lot",
+        type: "text",
+        label_size: 12,
+        col_size: 6,
+        disable: false,
+      },
+    ] : []),
+
   ];
 
   return (
@@ -411,3 +412,4 @@ const AddUsers = () => {
 };
 
 export default AddUsers;
+

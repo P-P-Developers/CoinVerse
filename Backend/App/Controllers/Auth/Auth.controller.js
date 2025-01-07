@@ -14,15 +14,13 @@ class Auth {
 
   async login(req, res) {
     try {
-      const { UserName, password, fcm_token } = req.body;
+      const { UserName, password,  fcm_token } = req.body;
+
       const EmailCheck = await User_model.findOne({ UserName: UserName });
 
-
       if (!EmailCheck) {
-        return res.send({ status: false, message: "User Not exists", data: [] });
+        return res.send({ status: false, message: "User not exists", data: [] });
       }
-
-
 
       if (EmailCheck.ActiveStatus !== "1") {
         return res.send({
@@ -50,17 +48,25 @@ class Auth {
       }
 
       const validPassword = await bcrypt.compare(password, EmailCheck.password);
-
       if (!validPassword) {
-        return res.send({ status: false, message: "Password Not Match", data: [] });
+        return res.send({ status: false, message: "Password not match", data: [] });
       }
 
-      // JWT TOKEN CREATE
+      // Check if pin_status is false
+      if (EmailCheck.Role === "USER" && !EmailCheck.pin_status) {
+        return res.send({
+          status: false,
+          message: "Generate your PIN first",
+          user_id: EmailCheck._id,
+        });
+      }
+
+      // JWT Token creation
       var token = jwt.sign({ id: EmailCheck._id }, process.env.SECRET, {
         expiresIn: 28800,
       });
 
-
+      // Create user login log
       const user_login = new user_logs({
         user_Id: EmailCheck._id,
         admin_Id: EmailCheck.parent_id || "",
@@ -72,10 +78,9 @@ class Auth {
 
       await user_login.save();
 
+      // Update FCM token if role is USER
       if (EmailCheck.Role === "USER") {
-
         const Update_fcm_token = await User_model.findByIdAndUpdate(
-
           EmailCheck._id,
           {
             DeviceToken: fcm_token,
@@ -84,22 +89,25 @@ class Auth {
         );
       }
 
+      // Send successful login response with JWT and user details
       return res.send({
         status: true,
-        message: "Login Successfully",
+        message: "Login successfully",
         data: {
           token: token,
           Role: EmailCheck.Role,
           user_id: EmailCheck._id,
           UserName: EmailCheck.UserName,
-          ReferralCode: EmailCheck.ReferralCode,  // Add ReferralCode here
+          ReferralCode: EmailCheck.ReferralCode,
           ReferredBy: EmailCheck.ReferredBy,
         },
       });
+
     } catch (error) {
-      res.send({ status: false, message: "Server Side error", data: error });
+      return res.send({ status: false, message: "Server side error", data: error });
     }
   }
+
 
 
 
@@ -166,7 +174,7 @@ class Auth {
 
   // ------------------------------------------------------
   // // My testing with the code
-  
+
   async SignIn(req, res) {
     try {
       const { FullName, UserName, PhoneNo, password, ReferredBy } = req.body;

@@ -67,18 +67,18 @@ const Tradehistory = () => {
               <DollarSign /> {formattedProfitLoss}
             </span>
           );
-        // }else{
-        //   const profitLoss = (buyPrice - sellPrice) * buyQty;
-        //   const formattedProfitLoss = profitLoss.toFixed(4);
+          // }else{
+          //   const profitLoss = (buyPrice - sellPrice) * buyQty;
+          //   const formattedProfitLoss = profitLoss.toFixed(4);
 
-        //   const color = profitLoss > 0 ? "green" : "red";
+          //   const color = profitLoss > 0 ? "green" : "red";
 
-        //   return (
-        //     <span style={{ color }}>
-        //       <DollarSign /> {formattedProfitLoss}
-        //     </span>
-        //   );
-        // }
+          //   return (
+          //     <span style={{ color }}>
+          //       <DollarSign /> {formattedProfitLoss}
+          //     </span>
+          //   );
+          // }
         }
 
         return "N/A";
@@ -144,7 +144,7 @@ const Tradehistory = () => {
   // Function to get user history
   const getuserallhistory = async () => {
     try {
-      const data = { userid: Userid };
+      const data = { userid: Userid, adminid: user_id };
       const response = await Clienthistory(data);
       setData(response.data);
     } catch (error) {
@@ -156,7 +156,7 @@ const Tradehistory = () => {
     try {
       // Trade History 1
       const admin_id = user_id;
-      const response = await GetUsersName(admin_id);
+      const response = await GetUsersName({admin_id});
       if (response.status) {
         setUserName(response.data);
       }
@@ -197,12 +197,10 @@ const Tradehistory = () => {
   const totalProfitLoss = calculateTotalProfitLoss();
 
   const ChangeTradeType = async (row) => {
-  
     const data = { id: row._id };
     const response = await switchOrderType(data);
-   
+
     if (response.status) {
-     
       getuserallhistory();
     } else {
       alert("Error");
@@ -222,8 +220,7 @@ const Tradehistory = () => {
                   </div>
                   <Link
                     to="/admin/users"
-                    className="float-end mb-4 btn btn-primary"
-                  >
+                    className="float-end mb-4 btn btn-primary">
                     Back
                   </Link>
                 </div>
@@ -233,16 +230,14 @@ const Tradehistory = () => {
                       className="tab-pane fade show active"
                       id="Week"
                       role="tabpanel"
-                      aria-labelledby="Week-tab"
-                    >
+                      aria-labelledby="Week-tab">
                       <div
                         style={{
                           display: "flex",
                           gap: "20px",
                           alignItems: "center",
                           padding: "1rem",
-                        }}
-                      >
+                        }}>
                         {/* Search Input */}
                         <div style={{ flex: 1 }}>
                           <label
@@ -250,8 +245,7 @@ const Tradehistory = () => {
                               fontWeight: "bold",
                               fontSize: "16px",
                               marginRight: "0.5rem",
-                            }}
-                          >
+                            }}>
                             Search:
                           </label>
                           <input
@@ -275,8 +269,7 @@ const Tradehistory = () => {
                               fontWeight: "bold",
                               fontSize: "16px",
                               marginRight: "0.5rem",
-                            }}
-                          >
+                            }}>
                             Users:
                           </label>
                           <select
@@ -290,8 +283,7 @@ const Tradehistory = () => {
                               color: "#333",
                             }}
                             onChange={(e) => setUserId(e.target.value)}
-                            defaultValue=""
-                          >
+                            defaultValue="">
                             <option value="all">Select a user</option>
                             {userName &&
                               userName.map((username) => (
@@ -308,8 +300,7 @@ const Tradehistory = () => {
                         <span
                           style={{
                             color: totalProfitLoss > 0 ? "green" : "red",
-                          }}
-                        >
+                          }}>
                           {" "}
                           <DollarSign />
                           {totalProfitLoss}

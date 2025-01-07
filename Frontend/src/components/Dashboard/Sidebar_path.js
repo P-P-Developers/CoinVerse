@@ -48,7 +48,7 @@ export const superadmin_header = [
     //     icon: "fe fe-dollar-sign",
     //     route: "/superadmin/currency",
     // },
-    
+
 ];
 
 
@@ -97,7 +97,7 @@ export const admin_header = [
         icon: "fe fe-check-square",
         route: "/admin/loginstatus",
     },
-    
+
     {
         id: 8,
         name: 'Available Positions',
@@ -128,15 +128,15 @@ export const admin_header = [
         icon: "fe fe-arrow-up-circle",
         route: "/admin/holdoff",
     },
-    {
-        id: 11,
-        name: 'Currency Setup',
-        icon: "fe fe-arrow-up-circle",
-        route: "/admin/currency",
-    },
+    // {
+    //     id: 11,
+    //     name: 'Currency Setup',
+    //     icon: "fe fe-arrow-up-circle",
+    //     route: "/admin/currency",
+    // },
     {
         id: 12,
-        name: 'Brokerage', 
+        name: 'Brokerage',
         icon: "fe fe-arrow-up-circle",
         route: "/admin/brokerage",
     },
@@ -157,7 +157,7 @@ export const employee_header = [
         icon: "fa-solid fa-house",
         route: "/employee/dashboard",
     },
-   
+
     {
         id: 2,
         name: 'Users',
@@ -220,5 +220,5 @@ export const employee_header = [
         icon: "fe fe-target",
         route: "/employee/brokerage",
     },
-   
+
 ];

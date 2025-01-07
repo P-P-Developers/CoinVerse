@@ -101,9 +101,11 @@ class UserSymbol {
     }
   }
 
-  // user userwalist list
+  // user userwalist list / backup code 
   async userSymbollist(req, res) {
     try {
+
+
       const userWatchlistRecords = await Userwatchlist.find({
         userid: req.body.userid,
       })
@@ -118,6 +120,9 @@ class UserSymbol {
             localField: "symbol",
             foreignField: "symbol",
             as: "symbolDetails",
+            pipeline: [
+              { $match: { status: 1 } }, // Includingg status = 1
+            ],
           },
         },
         { $unwind: "$symbolDetails" },
@@ -150,6 +155,10 @@ class UserSymbol {
       });
     }
   }
+
+
+
+
 
   // user userwalist2 list
   async getFavouritelist(req, res) {
@@ -168,6 +177,9 @@ class UserSymbol {
             localField: "symbol",
             foreignField: "symbol",
             as: "symbolDetails",
+            pipeline: [
+              { $match: { status: 1 } }, // Includingg status = 1
+            ],
           },
         },
         { $unwind: "$symbolDetails" },
@@ -200,6 +212,10 @@ class UserSymbol {
       });
     }
   }
+
+
+
+
 
   // add favouritelist
   async Favouritelist(req, res) {

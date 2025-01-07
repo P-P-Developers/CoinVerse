@@ -216,6 +216,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
 import Form from "../../../Utils/Form/Formik";
 import { AddnewUsers } from "../../../Services/Superadmin/Superadmin";
+import { marginUpdateOnUserCreate } from "../../../Services/Admin/Addmin";
 
 const AddAdmin = () => {
 
@@ -300,8 +301,18 @@ const AddAdmin = () => {
       setSubmitting(false);
 
       await AddnewUsers(data)
-        .then((response) => {
+        .then(async(response) => {
           if (response.status) {
+            const data = {
+              adminid: response.data._id,
+              crypto: "100",
+              dollarprice: "85",
+              forex: "100",
+            }
+            const res = await marginUpdateOnUserCreate(data)
+            console.log("Updated MarginValue", res)
+
+
             Swal.fire({
               title: "Admin Added!",
               text: "Admin added successfully",

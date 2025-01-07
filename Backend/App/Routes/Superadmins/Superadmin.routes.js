@@ -2,10 +2,14 @@
 
 const router = require("express").Router()
 
-const {AddAdmin,walletRecharge , getAdminDetail, UpdateActiveStatusAdmin ,getadminhistory,Update_Admin ,Delete_Admin 
-    , SuperadminGetDashboardData,getAllclent , getadminuserdetail ,getEmployeeuserdetail
-     ,getlicencedetail,getPosition_detail,
-     brokerageDataForSuperAdmin,AddProfitMargin,getProfitMargin} = require("../../Controllers/Superadmin/Admins/admin")
+const { AddAdmin, walletRecharge, getAdminDetail, UpdateActiveStatusAdmin, getadminhistory, Update_Admin, Delete_Admin
+    , SuperadminGetDashboardData, getAllclent, getadminuserdetail, getEmployeeuserdetail
+    , getlicencedetail, getPosition_detail,
+    brokerageDataForSuperAdmin, AddProfitMargin, getProfitMargin,
+    createOrUpdateCompany,
+    getCompany,
+    updateCompany,
+    deleteCompany } = require("../../Controllers/Superadmin/Admins/admin")
 
 
 
@@ -26,6 +30,12 @@ router.get('/getPosition_detail', getPosition_detail);
 router.get("/getBrokerageDataForSuperAdmin", brokerageDataForSuperAdmin)
 router.post("/AddProfitMargin", AddProfitMargin)
 router.post("/getProfitMargin", getProfitMargin)
+
+
+router.post('/createOrUpdateCompany', createOrUpdateCompany)
+router.get('/getCompany', getCompany)
+// router.put('/updateCompany', updateCompany)
+router.delete('/deleteCompany', deleteCompany)
 
 
 

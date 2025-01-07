@@ -228,20 +228,20 @@ const Admin = () => {
       },
     },
 
-    {
-      Header: "Start Date", accessor: "Start_Date",
-      Cell: ({ cell }) => {
-        return fDateTime(cell.value)
+    // {
+    //   Header: "Start Date", accessor: "Start_Date",
+    //   Cell: ({ cell }) => {
+    //     return fDateTime(cell.value)
 
-      },
-    },
-    {
-      Header: "End Date", accessor: "End_Date",
-      Cell: ({ cell }) => {
-        return fDateTime(cell.value)
+    //   },
+    // },
+    // {
+    //   Header: "End Date", accessor: "End_Date",
+    //   Cell: ({ cell }) => {
+    //     return fDateTime(cell.value)
 
-      },
-    },
+    //   },
+    // },
     {
       Header: "User",
       accessor: "Admin_User",
@@ -783,8 +783,7 @@ const Admin = () => {
                           className="form-control"
                           placeholder="Enter Licence Here"
                           onChange={(e) => {
-                            let value = e.target.value.replace(/\D/g, "");
-                            value = Math.max(0, Math.min(12, value));
+                            let value = e.target.value
                             setLicencevalue(value);
                           }}
                           value={licencevalue ? `${licencevalue}` : ""} // Display the value with no '%', since it's not applicable here

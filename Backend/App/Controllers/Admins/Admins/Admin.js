@@ -1330,11 +1330,11 @@ async UpdateStatus(req, res) {
 
   async getclienttradehistory(req, res) {
     try {
-      const { userid } = req.body;
+      const { userid, adminid } = req.body;
       let result
 
       if (!userid || userid === "all") {
-        result = await mainorder_model.find().sort({ createdAt: -1 });
+        result = await mainorder_model.find({ adminid }).sort({ createdAt: -1 });
 
       } else {
 

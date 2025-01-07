@@ -10,7 +10,7 @@ const mainorder_model = db.mainorder_model;
 const broadcasting = db.broadcasting;
 
 class Users {
-  
+
   async userWithdrawalanddeposite(req, res) {
     try {
       const { userid, Balance, type } = req.body;
@@ -297,14 +297,14 @@ class Users {
           data: [],
         });
       }
-  
-  
+
+
       const result = await BalanceStatement.find({
         userid: userid,
         symbol: { $eq: null },
       }).sort({ createdAt: -1 });
-  
-  
+
+
       if (!result || result.length === 0) {
         return res.json({ status: false, message: "Data not found", data: [] });
       }
@@ -337,8 +337,8 @@ class Users {
           data: [],
         });
       }
-  
-  
+
+
       const result = await BalanceStatement.find({
         userid: userid,
         symbol: { $ne: null },
@@ -363,6 +363,119 @@ class Users {
       });
     }
   }
+
+  async generatePin(req, res) {
+    try {
+      const { user_id, pin } = req.body;
+
+      // Validate that the pin is exactly 4 digits if it's provided
+      if (pin && !/^\d{4}$/.test(pin)) {
+        return res.send({ status: false, message: "Pin must be a 4-digit number", data: [] });
+      }
+
+      const user = await User_model.findById(user_id);
+
+      if (!user) {
+        return res.send({ status: false, message: "User not found", data: [] });
+      }
+
+      user.pin = pin;
+      user.pin_status = true;
+
+      await user.save();
+
+      return res.send({
+        status: true,
+        message: "Pin generated successfully",
+        data: { user_id: user._id },
+      });
+    } catch (error) {
+      return res.send({ status: false, message: "Server side error", data: error });
+    }
+  };
+
+  async matchPin(req, res) {
+    try {
+      const { user_id, pin } = req.body;
+
+      if (pin && !/^\d{4}$/.test(pin)) {
+        return res.send({ status: false, message: "Invalid PIN", data: [] });
+      }
+
+      const user = await User_model.findById(user_id);
+
+      if (!user) {
+        return res.send({ status: false, message: "User not found", data: [] });
+      }
+
+      // If pin_status is false, return a message to generate the pin first
+      if (!user.pin_status) {
+        return res.send({ status: false, message: "Please generate your PIN first", data: [] });
+      }
+
+      // Compare the entered pin with the stored pin
+      if (user.pin !== pin) {
+        return res.send({ status: false, message: "Incorrect pin", data: [] });
+      }
+
+      return res.send({
+        status: true,
+        message: "Pin matched successfully",
+        data: { user_id: user._id },
+      });
+    } catch (error) {
+      return res.send({ status: false, message: "Server side error", data: error });
+    }
+  };
+
+  async changePin(req, res) {
+    try {
+      const { user_id, pin, newPin, confirmNewPin } = req.body;
+
+      if (pin && !/^\d{4}$/.test(pin)) {
+        return res.send({ status: false, message: "Invalid Old PIN", data: [] });
+      }
+
+      // Validate the new PIN and confirm PIN to ensure they're 4 
+      if (!/^\d{4}$/.test(newPin)) {
+        return res.send({ status: false, message: "Invalid New PIN", data: [] });
+      }
+
+      if (newPin !== confirmNewPin) {
+        return res.send({ status: false, message: "New Pin and Confirm Pin don't match", data: [] });
+      }
+
+      const user = await User_model.findById(user_id);
+
+      if (!user) {
+        return res.send({ status: false, message: "User not found", data: [] });
+      }
+
+      if (!user.pin_status) {
+        return res.send({ status: false, message: "Please generate your PIN first", data: [] });
+      }
+
+      if (user.pin !== pin) {
+        return res.send({ status: false, message: "Incorrect Old PIN", data: [] });
+      }
+
+      if (newPin === pin) {
+        return res.send({ status: false, message: "New PIN cannot be the same as the old PIN", data: [] });
+      }
+
+      user.pin = newPin;
+      await user.save();
+
+      return res.send({ status: true, message: "PIN updated successfully", data: [] });
+    } catch (error) {
+      return res.send({ status: false, message: "Server side error", data: error });
+    }
+  }
+
+
+
+
+
 }
 
 module.exports = new Users();

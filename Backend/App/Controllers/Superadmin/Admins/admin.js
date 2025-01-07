@@ -14,6 +14,7 @@ const employee_permission = db.employee_permission;
 const mainorder_model = db.mainorder_model;
 const ProfitmarginData = db.Profitmargin;
 const crypto = require("crypto");
+const Company = require("../../../Models/Company.model");
 
 
 class Superadmin {
@@ -966,6 +967,170 @@ class Superadmin {
     }
   }
 
+
+  // ___________CompanyModel Controller________
+  async createOrUpdateCompany(req, res) {
+    try {
+      const { panelName, logo, favicon, loginImage } = req.body;
+
+      if (!panelName || !logo || !favicon || !loginImage) {
+        return res.json({
+          status: false,
+          message: "Missing required fields",
+          data: [],
+        });
+      }
+
+      // Check if company settings already exist
+      let company = await Company.findOne({ panelName });
+
+      if (company) {
+        // Update existing company settings
+        company = await Company.findByIdAndUpdate(
+          company._id,
+          { panelName, logo, favicon, loginImage },
+          { new: true }
+        );
+        return res.json({
+          status: true,
+          message: "Company settings updated successfully",
+          data: company,
+        });
+      } else {
+        // Create new company settings
+        company = new Company({ panelName, logo, favicon, loginImage });
+        await company.save();
+        return res.json({
+          status: true,
+          message: "Company settings created successfully",
+          data: company,
+        });
+      }
+    } catch (error) {
+      console.error("Error at createOrUpdateCompany", error);
+      return res.json({
+        status: false,
+        message: "Internal error",
+        data: [],
+      });
+    }
+  }
+
+  // READ: Get company settings
+  async getCompany(req, res) {
+    try {
+      const company = await Company.find({});
+
+      if (!company) {
+        return res.json({
+          status: false,
+          message: "Company settings not found",
+          data: [],
+        });
+      }
+
+      return res.json({
+        status: true,
+        message: "Company settings found",
+        data: company,
+      });
+    } catch (error) {
+      console.error("Error at getCompany", error);
+      return res.json({
+        status: false,
+        message: "Internal error",
+        data: [],
+      });
+    }
+  }
+
+  // UPDATE: Update company settings
+  // async updateCompany(req, res) {
+  //   try {
+  //     const { panelName, logo, favicon, loginImage } = req.body;
+
+  //     if (!panelName || !logo || !favicon || !loginImage) {
+  //       return res.json({
+  //         status: false,
+  //         message: "Missing required fields",
+  //         data: [],
+  //       });
+  //     }
+
+  //     const company = await Company.findOne({ panelName });
+
+  //     if (!company) {
+  //       return res.json({
+  //         status: false,
+  //         message: "Company settings not found",
+  //         data: [],
+  //       });
+  //     }
+
+  //     // Update existing company settings
+  //     company.panelName = panelName;
+  //     company.logo = logo;
+  //     company.favicon = favicon;
+  //     company.loginImage = loginImage;
+
+  //     await company.save();
+
+  //     return res.json({
+  //       status: true,
+  //       message: "Company settings updated successfully",
+  //       data: company,
+  //     });
+  //   } catch (error) {
+  //     console.error("Error at updateCompany", error);
+  //     return res.json({
+  //       status: false,
+  //       message: "Internal error",
+  //       data: [],
+  //     });
+  //   }
+  // }
+
+  // DELETE: Delete company settings
+  async deleteCompany(req, res) {
+    try {
+      const { companyId } = req.body;
+
+      if (!companyId) {
+        return res.json({
+          status: false,
+          message: "Missing companyId field",
+          data: [],
+        });
+      }
+
+      const company = await Company.findById(companyId);
+
+      if (!company) {
+        return res.json({
+          status: false,
+          message: "Company settings not found",
+          data: [],
+        });
+      }
+      await company.remove();
+
+      return res.json({
+        status: true,
+        message: "Company settings deleted successfully",
+        data: [],
+      });
+    } catch (error) {
+      console.error("Error at deleteCompany", error);
+      return res.json({
+        status: false,
+        message: "Internal error",
+        data: [],
+      });
+    }
+  }
+
 }
+
+
 
 module.exports = new Superadmin();

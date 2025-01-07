@@ -32,16 +32,16 @@
 //         .required("Confirm Password is required"),
 //     }),
 //     onSubmit: async (values) => {
-//       const { confirmPassword, ...dataToSubmit } = values; 
+//       const { confirmPassword, ...dataToSubmit } = values;
 
 //       try {
-//         const response = await SignIn(dataToSubmit); 
+//         const response = await SignIn(dataToSubmit);
 
 //         if (response.status ) {
 //           Swal.fire({
 //             icon: "success",
 //             title: "Registration successful",
-//             text: response.message, 
+//             text: response.message,
 //             showConfirmButton: false,
 //             timer: 1500,
 //           }).then(() => {
@@ -228,10 +228,6 @@
 
 // export default Register;
 
-
-
-
-
 // ______________testing on regiete page____________________
 
 import React, { useState, useEffect } from "react";
@@ -301,7 +297,9 @@ const Register = () => {
         Swal.fire({
           icon: "error",
           title: "Registration failed",
-          text: error.response?.data?.message || "An error occurred. Please try again.",
+          text:
+            error.response?.data?.message ||
+            "An error occurred. Please try again.",
         });
       }
     },
@@ -315,17 +313,16 @@ const Register = () => {
             <div className="card mb-0 h-auto">
               <div className="card-body">
                 <div className="text-center mb-3">
-                <img
+                  {/* <img
                   src="/assets/images/pnpp.png"
                   alt="Logo"
                   className="img-fluid mt-6"
                   style={{ maxWidth: "150px" }} 
-                />
-              </div>
+                /> */}
+                </div>
 
                 <h4 className="text-center mb-2">Sign Up</h4>
                 <form onSubmit={formik.handleSubmit}>
-
                   <div className="mb-3">
                     <label className="form-label" htmlFor="FullName">
                       Full Name
@@ -407,8 +404,7 @@ const Register = () => {
                       <button
                         type="button"
                         className="btn btn-outline-secondary"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
+                        onClick={() => setShowPassword(!showPassword)}>
                         {showPassword ? "Hide" : "Show"}
                       </button>
                     </div>
@@ -440,8 +436,7 @@ const Register = () => {
                         className="btn btn-outline-secondary"
                         onClick={() =>
                           setShowConfirmPassword(!showConfirmPassword)
-                        }
-                      >
+                        }>
                         {showConfirmPassword ? "Hide" : "Show"}
                       </button>
                     </div>
@@ -478,8 +473,7 @@ const Register = () => {
                     <button
                       className="btn btn-primary"
                       type="submit"
-                      disabled={!formik.isValid || formik.isSubmitting}
-                    >
+                      disabled={!formik.isValid || formik.isSubmitting}>
                       Register
                     </button>
                   </div>

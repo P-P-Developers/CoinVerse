@@ -211,22 +211,40 @@ export async function getAllBrokerageData() {
 
 
 export async function AddProfitMarginApi(data1) {
-    try {
+  try {
     let res = await axios.post(`${Config.base_url}AddProfitMargin`, data1);
-    
 
-      return await res?.data;
-    } catch (err) {
-      return await err;
-    }
-  }
-  
 
-  export async function getProfitMarginApi(data) {
-    try {
-      let res = await axios.post(`${Config.base_url}getProfitMargin`, data);
-      return await res?.data;
-    } catch (err) {
-      return
-    }
+    return await res?.data;
+  } catch (err) {
+    return await err;
   }
+}
+
+
+export async function getProfitMarginApi(data) {
+  try {
+    let res = await axios.post(`${Config.base_url}getProfitMargin`, data);
+    return await res?.data;
+  } catch (err) {
+    return
+  }
+}
+
+export async function createOrUpdateCompanyApi(data) {
+  try {
+    let res = await axios.post(`${Config.base_url}createOrUpdateCompany`, data);
+    return await res?.data;
+  } catch (error) {
+    return
+  }
+}
+
+export async function getCompanyApi() {
+  try {
+    let res = await axios.get(`${Config.base_url}getCompany`);
+    return await res?.data;
+  } catch (error) {
+    return
+  }
+}

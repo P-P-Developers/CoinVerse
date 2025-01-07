@@ -53,6 +53,21 @@ export async function updateuserLicence(data, token) {
     }
 
 }
+// admin / marginupdate
+
+export async function marginUpdateOnUserCreate(data) {
+    try {
+        const res = await axios.post(`${Config.base_url}admin/marginupdate`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
 
 // update user data
 
@@ -473,9 +488,9 @@ export async function getbroadcastmessageforuser(data, token) {
 
 }
 
-export async function GetUsersName(admin_id) {
+export async function GetUsersName({admin_id}) {
     try {
-        const res = await axios.post(`${Config.base_url}admin/getUsersName`, {admin_id}, {
+        const res = await axios.post(`${Config.base_url}admin/getUsersName`, { admin_id }, {
             data: {},
         })
         return await res?.data;
