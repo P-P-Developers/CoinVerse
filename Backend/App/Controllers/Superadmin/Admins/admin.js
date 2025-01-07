@@ -982,14 +982,12 @@ class Superadmin {
       }
 
       // Check if company settings already exist
-      let company = await Company.findOne({ panelName });
+      let company = await Company.findOne();
 
       if (company) {
         // Update existing company settings
-        company = await Company.findByIdAndUpdate(
-          company._id,
+        company = await Company.findOneAndUpdate(
           { panelName, logo, favicon, loginImage },
-          { new: true }
         );
         return res.json({
           status: true,
@@ -1019,7 +1017,7 @@ class Superadmin {
   // READ: Get company settings
   async getCompany(req, res) {
     try {
-      const company = await Company.find({});
+      const company = await Company.findOne();
 
       if (!company) {
         return res.json({
