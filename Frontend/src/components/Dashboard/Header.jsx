@@ -6,6 +6,7 @@ import {
 } from "../../Services/Admin/Addmin";
 import { fDateTime } from "../../Utils/Date_format/datefromat";
 import { jwtDecode } from "jwt-decode";
+import { getCompanyApi } from "../../Services/Superadmin/Superadmin";
 
 const Header = () => {
   const location = useLocation();
@@ -16,10 +17,17 @@ const Header = () => {
   const [isActive, setIsActive] = useState(false);
   const [notification, setNotification] = useState([]);
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+  const [logo, setLogo] = useState("");
 
   useEffect(() => {
     document.title = window.location.hostname;
+    fetchLogo();
   });
+
+  const fetchLogo = async () => {
+    const res = await getCompanyApi();
+    setLogo(res.data.logo);
+  };
 
   useEffect(() => {
     const element = document.querySelector(".wallet-open.show");
@@ -128,8 +136,11 @@ const Header = () => {
 
       <div className="nav-header">
         <a href="index.html" className="brand-logo">
+          <img src={logo} width={"150px"} alt="" />
+
           <div className="brand-title"></div>
         </a>
+
         <div className="nav-control">
           <div
             className={`hamburger ${isActive ? "is-active" : ""}`}

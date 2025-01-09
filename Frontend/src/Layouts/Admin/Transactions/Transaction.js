@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
-import { fDateTime } from "../../../Utils/Date_format/datefromat";
+import { fDateTime, fDateTimesec } from "../../../Utils/Date_format/datefromat";
 import { gethistory } from "../../../Services/Superadmin/Superadmin";
 import { DollarSign } from 'lucide-react'
 
@@ -27,7 +27,7 @@ const Transaction = () => {
     {
       Header: "Create Date",
       accessor: "createdAt",
-      Cell: ({ cell }) => fDateTime(cell.value),
+      Cell: ({ cell }) => fDateTimesec(cell.value),
     },
     {
       Header: "Status",

@@ -9,7 +9,6 @@ if (!admin.apps.length) {
     credential: admin.credential.cert(serviceAccount),
   });
 }
-
 // Function to send push notifications Single User
 const sendPushNotification = async (firebaseToken, title, message) => {
   try {
@@ -28,7 +27,6 @@ const sendPushNotification = async (firebaseToken, title, message) => {
     return { success: false, error };
   }
 };
-
 
 // Multyple User
 const sendMultiplePushNotification = async (firebaseTokens, title, message) => {
@@ -57,5 +55,4 @@ const sendMultiplePushNotification = async (firebaseTokens, title, message) => {
         }
   };
   
-
 module.exports = { sendPushNotification,sendMultiplePushNotification };

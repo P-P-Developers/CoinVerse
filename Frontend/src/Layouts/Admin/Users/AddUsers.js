@@ -101,8 +101,8 @@ const AddUsers = () => {
       }
       else if (values.Licence > checkLicence) {
         errors.Licence = "You Don't have Enough Licence"
-      } else if (isNaN(values.Licence) || values.Licence < 0 || values.Licence > 12) {
-        errors.Licence = "Licence should be a number between 0 and 12";
+      } else if (isNaN(values.Licence) || values.Licence < 1 || values.Licence > 12) {
+        errors.Licence = "Licence should be a number between 1 and 12";
       }
 
       // Limit validation (should be between 0 and 100 and in percentage format)
@@ -316,7 +316,7 @@ const AddUsers = () => {
       label: "Employee",
       type: "select",
       options: [
-        { label: "Admin", value: "Admin" },
+        
         ...(data
           ? data.map((item) => ({
 
@@ -348,7 +348,7 @@ const AddUsers = () => {
     },
     {
       name: "Licence",
-      label: "Licence(0-12)",
+      label: "Licence(1-12)",
       type: "text3",
       label_size: 12,
       col_size: 6,

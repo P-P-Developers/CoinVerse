@@ -238,6 +238,8 @@ import {
 } from "../../../Services/Superadmin/Superadmin"; // Assuming this is your API call
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
+import { InfinitySpin } from "react-loader-spinner";
+
 
 Modal.setAppElement("#root");
 
@@ -321,9 +323,7 @@ const System = () => {
     }
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>; // Show loading message until data is fetched
-  }
+ 
 
   return (
     <div className="container-fluid mt-4">
@@ -333,160 +333,177 @@ const System = () => {
             <div className="card-header bg-primary text-white">
               <h4 className="text-center text-white mb-0">System Settings</h4>
             </div>
-            <div className="card-body">
-              <Formik
-                initialValues={initialValues}
-                validationSchema={validationSchema}
-                onSubmit={handleSubmit}>
-                {({ setFieldValue, errors, touched }) => (
-                  <Form>
-                    <div className="row">
-                      <div className="col-md-6 mb-3">
-                        <label htmlFor="panelName" className="form-label">
-                          Panel Name
-                        </label>
-                        <Field
-                          type="text"
-                          name="panelName"
-                          id="panelName"
-                          className={`form-control ${
-                            errors.panelName && touched.panelName
-                              ? "is-invalid"
-                              : ""
-                          }`}
-                          placeholder="Enter Panel Name"
-                        />
-                        {errors.panelName && touched.panelName && (
-                          <div className="invalid-feedback">
-                            {errors.panelName}
-                          </div>
-                        )}
+            {isLoading ? (
+              <div
+                className="d-flex justify-content-center align-items-center"
+                style={{ height: "300px" }}>
+                <InfinitySpin
+                  visible={true}
+                  width="200"
+                  color="#4fa94d"
+                  ariaLabel="infinity-spin-loading"
+                />
+              </div>
+            ) : (
+              <div className="card-body">
+                <Formik
+                  initialValues={initialValues}
+                  validationSchema={validationSchema}
+                  onSubmit={handleSubmit}>
+                  {({ setFieldValue, errors, touched }) => (
+                    <Form>
+                      <div className="row">
+                        <div className="col-md-6 mb-3">
+                          <label htmlFor="panelName" className="form-label">
+                            Panel Name
+                          </label>
+                          <Field
+                            type="text"
+                            name="panelName"
+                            id="panelName"
+                            className={`form-control ${
+                              errors.panelName && touched.panelName
+                                ? "is-invalid"
+                                : ""
+                            }`}
+                            placeholder="Enter Panel Name"
+                          />
+                          {errors.panelName && touched.panelName && (
+                            <div className="invalid-feedback">
+                              {errors.panelName}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="col-md-6 mb-3">
+                          <label htmlFor="logo" className="form-label">
+                            Logo
+                          </label>
+                          <input
+                            type="file"
+                            id="logo"
+                            name="logo"
+                            className={`form-control ${
+                              errors.logo && touched.logo ? "is-invalid" : ""
+                            }`}
+                            onChange={async (e) => {
+                              const file = e.target.files[0];
+                              const base64 = await convertToBase64(file);
+                              setFieldValue("logo", base64);
+                            }}
+                          />
+                          {errors.logo && touched.logo && (
+                            <div className="invalid-feedback">
+                              {errors.logo}
+                            </div>
+                          )}
+                          <small className="text-muted">
+                            Choose a logo image from your gallery.
+                          </small>
+                          {initialValues?.logo && (
+                            <div className="mt-2">
+                              <img
+                                src={initialValues?.logo}
+                                alt="Current Logo"
+                                width="100"
+                              />
+                            </div>
+                          )}
+                        </div>
                       </div>
 
-                      <div className="col-md-6 mb-3">
-                        <label htmlFor="logo" className="form-label">
-                          Logo
-                        </label>
-                        <input
-                          type="file"
-                          id="logo"
-                          name="logo"
-                          className={`form-control ${
-                            errors.logo && touched.logo ? "is-invalid" : ""
-                          }`}
-                          onChange={async (e) => {
-                            const file = e.target.files[0];
-                            const base64 = await convertToBase64(file);
-                            setFieldValue("logo", base64);
-                          }}
-                        />
-                        {errors.logo && touched.logo && (
-                          <div className="invalid-feedback">{errors.logo}</div>
-                        )}
-                        <small className="text-muted">
-                          Choose a logo image from your gallery.
-                        </small>
-                        {initialValues.logo && (
-                          <div className="mt-2">
-                            <img
-                              src={initialValues.logo}
-                              alt="Current Logo"
-                              width="100"
-                            />
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                      <div className="row">
+                        <div className="col-md-6 mb-3">
+                          <label htmlFor="favicon" className="form-label">
+                            Favicon
+                          </label>
+                          <input
+                            type="file"
+                            id="favicon"
+                            name="favicon"
+                            className={`form-control ${
+                              errors.favicon && touched.favicon
+                                ? "is-invalid"
+                                : ""
+                            }`}
+                            onChange={async (e) => {
+                              const file = e.target.files[0];
+                              const base64 = await convertToBase64(file);
+                              setFieldValue("favicon", base64);
+                            }}
+                          />
+                          {errors.favicon && touched.favicon && (
+                            <div className="invalid-feedback">
+                              {errors.favicon}
+                            </div>
+                          )}
+                          <small className="text-muted">
+                            Upload a favicon file (16x16px).
+                          </small>
+                          {initialValues?.favicon && (
+                            <div className="mt-2">
+                              <img
+                                src={initialValues?.favicon}
+                                alt="Current Favicon"
+                                width="50"
+                              />
+                            </div>
+                          )}
+                        </div>
 
-                    <div className="row">
-                      <div className="col-md-6 mb-3">
-                        <label htmlFor="favicon" className="form-label">
-                          Favicon
-                        </label>
-                        <input
-                          type="file"
-                          id="favicon"
-                          name="favicon"
-                          className={`form-control ${
-                            errors.favicon && touched.favicon
-                              ? "is-invalid"
-                              : ""
-                          }`}
-                          onChange={async (e) => {
-                            const file = e.target.files[0];
-                            const base64 = await convertToBase64(file);
-                            setFieldValue("favicon", base64);
-                          }}
-                        />
-                        {errors.favicon && touched.favicon && (
-                          <div className="invalid-feedback">
-                            {errors.favicon}
-                          </div>
-                        )}
-                        <small className="text-muted">
-                          Upload a favicon file (16x16px).
-                        </small>
-                        {initialValues.favicon && (
-                          <div className="mt-2">
-                            <img
-                              src={initialValues.favicon}
-                              alt="Current Favicon"
-                              width="50"
-                            />
-                          </div>
-                        )}
+                        <div className="col-md-6 mb-3">
+                          <label htmlFor="loginImage" className="form-label">
+                            Login Image
+                          </label>
+                          <input
+                            type="file"
+                            id="loginImage"
+                            name="loginImage"
+                            className={`form-control ${
+                              errors.loginImage && touched.loginImage
+                                ? "is-invalid"
+                                : ""
+                            }`}
+                            onChange={async (e) => {
+                              const file = e.target.files[0];
+                              const base64 = await convertToBase64(file);
+                              setFieldValue("loginImage", base64);
+                            }}
+                          />
+                          {errors.loginImage && touched.loginImage && (
+                            <div className="invalid-feedback">
+                              {errors.loginImage}
+                            </div>
+                          )}
+                          <small className="text-muted">
+                            Upload a background image for the login page.
+                          </small>
+                          {initialValues.loginImage && (
+                            <div className="mt-2">
+                              <img
+                                src={initialValues.loginImage}
+                                alt="Current Login Image"
+                                width="100"
+                              />
+                            </div>
+                          )}
+                        </div>
                       </div>
 
-                      <div className="col-md-6 mb-3">
-                        <label htmlFor="loginImage" className="form-label">
-                          Login Image
-                        </label>
-                        <input
-                          type="file"
-                          id="loginImage"
-                          name="loginImage"
-                          className={`form-control ${
-                            errors.loginImage && touched.loginImage
-                              ? "is-invalid"
-                              : ""
-                          }`}
-                          onChange={async (e) => {
-                            const file = e.target.files[0];
-                            const base64 = await convertToBase64(file);
-                            setFieldValue("loginImage", base64);
-                          }}
-                        />
-                        {errors.loginImage && touched.loginImage && (
-                          <div className="invalid-feedback">
-                            {errors.loginImage}
-                          </div>
-                        )}
-                        <small className="text-muted">
-                          Upload a background image for the login page.
-                        </small>
-                        {initialValues.loginImage && (
-                          <div className="mt-2">
-                            <img
-                              src={initialValues.loginImage}
-                              alt="Current Login Image"
-                              width="100"
-                            />
-                          </div>
-                        )}
+                      <div className="row">
+                        <div className="col-12 text-center">
+                          <button
+                            type="submit"
+                            className="btn btn-primary w-100">
+                            Save
+                          </button>
+                        </div>
                       </div>
-                    </div>
-
-                    <div className="row">
-                      <div className="col-12 text-center">
-                        <button type="submit" className="btn btn-primary w-100">
-                          Save
-                        </button>
-                      </div>
-                    </div>
-                  </Form>
-                )}
-              </Formik>
-            </div>
+                    </Form>
+                  )}
+                </Formik>
+              </div>
+            )}
           </div>
         </div>
       </div>
