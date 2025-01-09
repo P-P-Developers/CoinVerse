@@ -283,11 +283,11 @@ const System = () => {
 
   // Initial form values based on companiesData
   const initialValues = {
-    panelName: companiesData?.panelName || "",
-    logo: companiesData?.Logo || "",
-    favicon: companiesData?.favicon || "",
-    loginImage: companiesData?.loginImage || "",
-  };
+      panelName: companiesData?.panelName || "",
+      logo: companiesData?.Logo || "",
+      favicon: companiesData?.favicon || "",
+      loginImage: companiesData?.loginImage || "",
+    }
 
   const convertToBase64 = (file) =>
     new Promise((resolve, reject) => {
@@ -452,7 +452,7 @@ const System = () => {
                         </div>
 
                         <div className="col-md-6 mb-3">
-                          <label htmlFor="loginImage" className="form-label">
+                          {/* <label htmlFor="loginImage" className="form-label">
                             Login Image
                           </label>
                           <input
@@ -477,7 +477,7 @@ const System = () => {
                           )}
                           <small className="text-muted">
                             Upload a background image for the login page.
-                          </small>
+                          </small> 
                           {initialValues.loginImage && (
                             <div className="mt-2">
                               <img
@@ -486,7 +486,7 @@ const System = () => {
                                 width="100"
                               />
                             </div>
-                          )}
+                          )}*/}
                         </div>
                       </div>
 
