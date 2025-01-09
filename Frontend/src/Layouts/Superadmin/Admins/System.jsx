@@ -238,7 +238,7 @@ import {
 } from "../../../Services/Superadmin/Superadmin"; // Assuming this is your API call
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
-import { InfinitySpin } from "react-loader-spinner";
+import { ThreeDots } from "react-loader-spinner";
 
 
 Modal.setAppElement("#root");
@@ -337,12 +337,18 @@ const System = () => {
               <div
                 className="d-flex justify-content-center align-items-center"
                 style={{ height: "300px" }}>
-                <InfinitySpin
+                
+                <ThreeDots
                   visible={true}
-                  width="200"
+                  height="80"
+                  width="80"
                   color="#4fa94d"
-                  ariaLabel="infinity-spin-loading"
+                  radius="9"
+                  ariaLabel="three-dots-loading"
+                  wrapperStyle={{}}
+                  wrapperClass=""
                 />
+                
               </div>
             ) : (
               <div className="card-body">
