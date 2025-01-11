@@ -30,7 +30,7 @@ const Login = () => {
   };
 
   const changeFavicon = (iconPath) => {
-    const link = document.querySelector("link[rel*='icon']") || document.createElement("link");
+    const link = document.querySelector("favicon") || document.createElement("link");
     link.type = "image/x-icon";
     link.rel = "icon";
     link.href = iconPath;
@@ -39,7 +39,6 @@ const Login = () => {
 
 
   useEffect(() => {
-    document.title = window.location.hostname;
     fetchLogo();
   }, [])
 
@@ -51,10 +50,10 @@ const Login = () => {
     link.href = res.data.favicon;
     document.getElementsByTagName("head")[0].appendChild(link);
 
+    document.title = res.data.panelName;
 
     setLogo(res.data.logo);
     changeFavicon(res.data.favicon);
-    console.log("resss", res.data.panelName)
   }
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -63,6 +62,7 @@ const Login = () => {
       setErrors(inputErrors);
       return;
     }
+    
 
     try {
       const response = await LOGIN_API({ UserName: username, password: password });

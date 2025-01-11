@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Admindashboarddata } from "../../Services/Admin/Addmin";
 import Table from "../../Utils/Table/Table";
-import { fDateTime } from "../../Utils/Date_format/datefromat";
+import { fDateTime, fDateTimesec } from "../../Utils/Date_format/datefromat";
 import { gethistory } from "../../Services/Superadmin/Superadmin";
 import LivePriceCard from "./Card";
 
@@ -31,7 +31,6 @@ const Dashboard = () => {
     getdashboard();
   }, []);
 
-
   const columns = [
     { Header: "UserName", accessor: "UserName" },
 
@@ -40,7 +39,7 @@ const Dashboard = () => {
       Header: "Create Date",
       accessor: "createdAt",
       Cell: ({ cell }) => {
-        return fDateTime(cell.value);
+        return fDateTimesec(cell.value);
       },
     },
     {
@@ -1825,7 +1824,7 @@ const Dashboard = () => {
                     <div className="chart-num">
                       <p>
                         <i className="fa-solid fa-sort-down me-2" />
-                        Remaining Licence 
+                        Remaining Licence
                       </p>
                       <h2 className="font-w600 mb-0">
                         {countdata.TotalLicence - countdata.UsedLicence}

@@ -20,13 +20,23 @@ const Header = () => {
   const [logo, setLogo] = useState("");
 
   useEffect(() => {
-    document.title = window.location.hostname;
     fetchLogo();
-  });
+  }, []);
+
+  const changeFavicon = (iconPath) => {
+    const link =
+      document.querySelector("favicon") || document.createElement("link");
+    link.type = "image/x-icon";
+    link.rel = "icon";
+    link.href = iconPath;
+    document.getElementsByTagName("head")[0].appendChild(link);
+  };
 
   const fetchLogo = async () => {
     const res = await getCompanyApi();
     setLogo(res.data.logo);
+    changeFavicon(res.data.favicon);
+    document.title = res.data.panelName;
   };
 
   useEffect(() => {

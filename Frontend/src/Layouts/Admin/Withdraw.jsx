@@ -40,7 +40,7 @@ const Withdraw = () => {
                     <select 
                         className='form-select'
                         onChange={(event) => handleSelectChange(cell.row.id, cell.row, event)}
-                        defaultValue={selectedValues[cell.row.id] || "0"}
+                        Value={selectedValues[cell.row.id] || "0"}
                     >
                         <option value="0">Pending</option>
                         <option value="2">Reject</option>

@@ -150,6 +150,13 @@ const Employee = () => {
         return fDateTime(cell.value);
       },
     },
+    {
+      Header : "End Date",
+      accessor: "End_Date",
+      Cell: ({ cell }) => {
+        return fDateTime(cell.value);
+      },
+    }
   ];
 
   const updateEmploye = (_id, obj) => {
