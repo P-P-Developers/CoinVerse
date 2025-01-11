@@ -25,3 +25,6 @@ FIREBASE_CREDENTIALS='{
 
 	185.209.75.198		k#!P4i!K3sL1@5Si
 			
+
+
+            data-feed	185.209.75.59			root	5l7KQ7rA5e*C_n$#
