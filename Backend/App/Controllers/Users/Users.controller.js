@@ -325,6 +325,46 @@ class Users {
     }
   }
 
+  // async tradeStatementForUser(req, res) {
+  //   try {
+  //     const { userid } = req.body;
+
+  //     // Verify userid
+      
+  //     if (!userid) {
+  //       return res.json({
+  //         status: false,
+  //         message: "User ID is required",
+  //         data: [],
+  //       });
+  //     }
+
+  //     const result = await BalanceStatement.find({
+  //       userid: userid,
+  //       symbol: { $ne: null },
+  //     }).sort({ createdAt: -1 });
+
+  //     if (!result || result.length === 0) {
+  //       return res.json({ status: false, message: "Data not found", data: [] });
+  //     }
+
+  //     return res.json({
+  //       status: true,
+  //       message: "Data retrieved successfully",
+  //       data: result,
+  //     });
+  //   } catch (error) {
+  //     console.error("Error in balanceStatementForUser:", error);
+
+  //     return res.json({
+  //       status: false,
+  //       message: "Internal server error",
+  //       data: [],
+  //     });
+  //   }
+  // }
+
+
   async tradeStatementForUser(req, res) {
     try {
       const { userid } = req.body;
@@ -338,23 +378,60 @@ class Users {
         });
       }
 
-
-      const result = await BalanceStatement.find({
+      // Fetch Balance Statements
+      const balanceStatements = await BalanceStatement.find({
         userid: userid,
         symbol: { $ne: null },
       }).sort({ createdAt: -1 });
 
-      if (!result || result.length === 0) {
-        return res.json({ status: false, message: "Data not found", data: [] });
+      if (!balanceStatements || balanceStatements.length === 0) {
+        return res.json({
+          status: false,
+          message: "Data not found",
+          data: [],
+        });
       }
+
+      const orderIds = balanceStatements
+        .flatMap(statement => statement.orderid || []) 
+        .map(id => new ObjectId(id)); 
+
+      console.log("orderIds", orderIds)
+      // Fetch matching documents from mainorder_model
+      const mainOrders = await mainorder_model.find(
+        { _id: { $in: orderIds } },
+        { totalAmount: 1, lot: 1, lotSize: 1 } 
+      );
+
+      // Create a map for quick lookup
+      const mainOrderMap = new Map(
+        mainOrders.map(order => [order._id.toString(), order])
+      );
+
+      const enrichedData = balanceStatements.map(statement => {
+        const enrichedOrders = (statement.orderid || []).map(orderId => {
+          const orderDetails = mainOrderMap.get(orderId) || {};
+          return {
+            orderid: orderId,
+            totalAmount: orderDetails.totalAmount || null,
+            lot: orderDetails.lot || null,
+            lotSize: orderDetails.lotSize || null,
+          };
+        });
+
+        return {
+          ...statement.toObject(),
+          orders: enrichedOrders,
+        };
+      });
 
       return res.json({
         status: true,
         message: "Data retrieved successfully",
-        data: result,
+        data: enrichedData,
       });
     } catch (error) {
-      console.error("Error in balanceStatementForUser:", error);
+      console.error("Error in tradeStatementForUser:", error);
 
       return res.json({
         status: false,
