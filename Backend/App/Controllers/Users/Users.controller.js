@@ -2,6 +2,7 @@
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 const db = require("../../Models");
+const { options } = require("../../Routes/Users/Userorder.routes");
 const PaymenetHistorySchema = db.PaymenetHistorySchema;
 const User_model = db.user;
 const MarginRequired = db.MarginRequired;
@@ -10,7 +11,6 @@ const mainorder_model = db.mainorder_model;
 const broadcasting = db.broadcasting;
 
 class Users {
-
   async userWithdrawalanddeposite(req, res) {
     try {
       const { userid, Balance, type } = req.body;
@@ -148,25 +148,42 @@ class Users {
     try {
       const { userid } = req.body;
       const result1 = await User_model.find({ _id: userid })
-        .select("parent_id")
+        .select("parent_id pertrade perlot")
         .sort({ createdAt: -1 });
-
+  
+      // Access the first element of result1 to avoid errors
+      const user = result1[0];
+      console.log("user pertrade:", user.pertrade, "user perlot:", user.perlot);
+  
       const result = await MarginRequired.findOne({
-        adminid: result1[0].parent_id,
+        adminid: user.parent_id,
       }).select("crypto forex");
-
+  
       if (!result) {
         return res.json({ status: false, message: "not found", data: [] });
       }
+  
+      let Obj = {
+        option:
+          user.pertrade && user.pertrade !== 0 ? "pertrade" : "perlot",
+        value1:
+          user.pertrade && user.pertrade !== 0
+            ? user.pertrade
+            : user.perlot,
+        crypto: result.crypto || 100,
+        forex: result.forex || 100,
+      };
+  
       return res.json({
         status: true,
         message: "getting successfully",
-        data: result,
+        data: Obj,
       });
     } catch (error) {
-      return res.json({ status: false, message: "inernal error", data: [] });
+      return res.json({ status: false, message: "internal error", data: [] });
     }
   }
+  
 
   async getAllstatement(req, res) {
     try {
@@ -281,7 +298,11 @@ class Users {
 
       return res.json({ status: true, message: "Data found", data: data });
     } catch (error) {
-      return res.json({ status: false, message: "Internal server error", data: [] });
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        data: [],
+      });
     }
   }
 
@@ -298,12 +319,10 @@ class Users {
         });
       }
 
-
       const result = await BalanceStatement.find({
         userid: userid,
         symbol: { $eq: null },
       }).sort({ createdAt: -1 });
-
 
       if (!result || result.length === 0) {
         return res.json({ status: false, message: "Data not found", data: [] });
@@ -330,7 +349,7 @@ class Users {
   //     const { userid } = req.body;
 
   //     // Verify userid
-      
+
   //     if (!userid) {
   //       return res.json({
   //         status: false,
@@ -364,7 +383,6 @@ class Users {
   //   }
   // }
 
-
   async tradeStatementForUser(req, res) {
     try {
       const { userid } = req.body;
@@ -393,23 +411,23 @@ class Users {
       }
 
       const orderIds = balanceStatements
-        .flatMap(statement => statement.orderid || []) 
-        .map(id => new ObjectId(id)); 
+        .flatMap((statement) => statement.orderid || [])
+        .map((id) => new ObjectId(id));
 
-      console.log("orderIds", orderIds)
+      console.log("orderIds", orderIds);
       // Fetch matching documents from mainorder_model
       const mainOrders = await mainorder_model.find(
         { _id: { $in: orderIds } },
-        { totalAmount: 1, lot: 1, lotSize: 1 } 
+        { totalAmount: 1, lot: 1, lotSize: 1 }
       );
 
       // Create a map for quick lookup
       const mainOrderMap = new Map(
-        mainOrders.map(order => [order._id.toString(), order])
+        mainOrders.map((order) => [order._id.toString(), order])
       );
 
-      const enrichedData = balanceStatements.map(statement => {
-        const enrichedOrders = (statement.orderid || []).map(orderId => {
+      const enrichedData = balanceStatements.map((statement) => {
+        const enrichedOrders = (statement.orderid || []).map((orderId) => {
           const orderDetails = mainOrderMap.get(orderId) || {};
           return {
             orderid: orderId,
@@ -447,7 +465,11 @@ class Users {
 
       // Validate that the pin is exactly 4 digits if it's provided
       if (pin && !/^\d{4}$/.test(pin)) {
-        return res.send({ status: false, message: "Pin must be a 4-digit number", data: [] });
+        return res.send({
+          status: false,
+          message: "Pin must be a 4-digit number",
+          data: [],
+        });
       }
 
       const user = await User_model.findById(user_id);
@@ -467,9 +489,13 @@ class Users {
         data: { user_id: user._id },
       });
     } catch (error) {
-      return res.send({ status: false, message: "Server side error", data: error });
+      return res.send({
+        status: false,
+        message: "Server side error",
+        data: error,
+      });
     }
-  };
+  }
 
   async matchPin(req, res) {
     try {
@@ -487,7 +513,11 @@ class Users {
 
       // If pin_status is false, return a message to generate the pin first
       if (!user.pin_status) {
-        return res.send({ status: false, message: "Please generate your PIN first", data: [] });
+        return res.send({
+          status: false,
+          message: "Please generate your PIN first",
+          data: [],
+        });
       }
 
       // Compare the entered pin with the stored pin
@@ -501,25 +531,41 @@ class Users {
         data: { user_id: user._id },
       });
     } catch (error) {
-      return res.send({ status: false, message: "Server side error", data: error });
+      return res.send({
+        status: false,
+        message: "Server side error",
+        data: error,
+      });
     }
-  };
+  }
 
   async changePin(req, res) {
     try {
       const { user_id, pin, newPin, confirmNewPin } = req.body;
 
       if (pin && !/^\d{4}$/.test(pin)) {
-        return res.send({ status: false, message: "Invalid Old PIN", data: [] });
+        return res.send({
+          status: false,
+          message: "Invalid Old PIN",
+          data: [],
+        });
       }
 
-      // Validate the new PIN and confirm PIN to ensure they're 4 
+      // Validate the new PIN and confirm PIN to ensure they're 4
       if (!/^\d{4}$/.test(newPin)) {
-        return res.send({ status: false, message: "Invalid New PIN", data: [] });
+        return res.send({
+          status: false,
+          message: "Invalid New PIN",
+          data: [],
+        });
       }
 
       if (newPin !== confirmNewPin) {
-        return res.send({ status: false, message: "New Pin and Confirm Pin don't match", data: [] });
+        return res.send({
+          status: false,
+          message: "New Pin and Confirm Pin don't match",
+          data: [],
+        });
       }
 
       const user = await User_model.findById(user_id);
@@ -529,30 +575,45 @@ class Users {
       }
 
       if (!user.pin_status) {
-        return res.send({ status: false, message: "Please generate your PIN first", data: [] });
+        return res.send({
+          status: false,
+          message: "Please generate your PIN first",
+          data: [],
+        });
       }
 
       if (user.pin !== pin) {
-        return res.send({ status: false, message: "Incorrect Old PIN", data: [] });
+        return res.send({
+          status: false,
+          message: "Incorrect Old PIN",
+          data: [],
+        });
       }
 
       if (newPin === pin) {
-        return res.send({ status: false, message: "New PIN cannot be the same as the old PIN", data: [] });
+        return res.send({
+          status: false,
+          message: "New PIN cannot be the same as the old PIN",
+          data: [],
+        });
       }
 
       user.pin = newPin;
       await user.save();
 
-      return res.send({ status: true, message: "PIN updated successfully", data: [] });
+      return res.send({
+        status: true,
+        message: "PIN updated successfully",
+        data: [],
+      });
     } catch (error) {
-      return res.send({ status: false, message: "Server side error", data: error });
+      return res.send({
+        status: false,
+        message: "Server side error",
+        data: error,
+      });
     }
   }
-
-
-
-
-
 }
 
 module.exports = new Users();
