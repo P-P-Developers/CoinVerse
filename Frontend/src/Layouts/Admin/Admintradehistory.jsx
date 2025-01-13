@@ -216,7 +216,7 @@ const Tradehistory = () => {
               <div className="card transaction-table">
                 <div className="card-header border-0 flex-wrap pb-0">
                   <div className="mb-4">
-                    <h4 className="card-title">Trade History 1</h4>
+                    <h4 className="card-title">Trade History </h4>
                   </div>
                   <Link
                     to="/admin/users"
