@@ -84,22 +84,14 @@ class Admin {
 
       let dollarPriceData, dollarcount;
 
-      // if (parent_role === "EMPLOYE") {
-      //   const empoyeedata = await User_model.findOne({ _id: parent_id });
 
-      //   dollarPriceData = await MarginRequired.findOne({
-      //     adminid: empoyeedata.parent_id,
-      //   }).select("dollarprice");
-
-      //   dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
-      // } else {
       // Fetch dollar price
       dollarPriceData = await MarginRequired.findOne({
         adminid: parent_id,
       }).select("dollarprice");
 
       dollarcount = Balance 
-      // }
+    
 
       let brokeragepertrade = (
         parseFloat(pertrade)
@@ -192,128 +184,6 @@ class Admin {
     }
   }
 
-
-
-
-  async updateLicence(req, res) {
-    try {
-      const { id, Licence, parent_Id } = req.body;
-
-      // Find the user by ID
-      const userdata = await User_model.findOne({ _id: id });
-      if (!userdata) {
-        return res.json({
-          status: false,
-          message: "User not found",
-          data: [],
-        });
-      }
-
-      // Current date as start date
-      const currentDate = new Date();
-      const startDate = new Date(
-        userdata.End_Date >= currentDate ? userdata.End_Date : currentDate
-      );
-
-      // Calculate the new end date
-      let newEndDate = new Date(startDate);
-      newEndDate.setMonth(newEndDate.getMonth() + Number(Licence));
-
-      if (newEndDate.getDate() < startDate.getDate()) {
-        newEndDate.setDate(0);
-      }
-
-      const newLicence = Number(userdata.Licence || 0) + Number(Licence);
-
-      await User_model.updateOne(
-        { _id: userdata._id },
-        { $set: { Licence: newLicence, End_Date: newEndDate } }
-      );
-
-      const result = new totalLicense({
-        user_Id: userdata._id,
-        Licence: Licence,
-        parent_Id: parent_Id,
-        Start_Date: startDate,
-        End_Date: newEndDate,
-      });
-      await result.save();
-
-      return res.json({
-        status: true,
-        message: "Licence is updated",
-        data: result,
-      });
-    } catch (error) {
-      return res.json({ status: false, message: "Internal error", data: [] });
-    }
-  }
-
-  // update user
-  // async updateUser(req, res) {
-  //   try {
-  //     const { id, perlot, pertrade, ...rest } = req.body;
-
-  //     const values = [perlot, pertrade];
-  //     const nonZeroValues = values.filter(
-  //       (value) => value !== undefined && value !== 0
-  //     );
-
-  //     if (nonZeroValues.length > 1) {
-  //       return res.status(400).send({
-  //         status: false,
-  //         message: "Only one of perlot or pertrade can have a non-zero value",
-  //       });
-  //     }
-
-  //     // Initialize dataToUpdate with default zero values
-  //     let dataToUpdate = {
-  //       perlot: 0,
-  //       pertrade: 0,
-  //       ...rest,
-  //     };
-
-  //     // Assign non-zero values accordingly
-  //     if (perlot !== undefined && perlot !== 0) {
-  //       dataToUpdate.perlot = perlot;
-  //     } else if (pertrade !== undefined && pertrade !== 0) {
-  //       dataToUpdate.pertrade = pertrade;
-  //     }
-
-  //     const filter = { _id: id };
-  //     const updateOperation = { $set: dataToUpdate };
-
-  //     const updatedUser = await User_model.findOneAndUpdate(
-  //       filter,
-  //       updateOperation,
-  //       {
-  //         new: true,
-  //         upsert: true,
-  //       }
-  //     );
-
-  //     if (!updatedUser) {
-  //       return res.status(404).send({
-  //         status: false,
-  //         message: "Data not updated",
-  //         data: [],
-  //       });
-  //     }
-
-  //     return res.send({
-  //       status: true,
-  //       message: "Data updated successfully",
-  //       data: updatedUser,
-  //     });
-  //   } catch (error) {
-  //     console.error("Internal error:", error);
-  //     return res.status(500).send({
-  //       status: false,
-  //       message: "Internal server error",
-  //     });
-  //   }
-  // }
-
   async updateUser(req, res) {
     try {
       const { id, perlot, pertrade, ...rest } = req.body;
@@ -333,11 +203,7 @@ class Admin {
 
       // Convert perlot and pertrade using the dollar price
       let brokeragepertrade = pertrade
-        ? (parseFloat(pertrade) / dollarPriceData.dollarprice).toFixed(3)
-        : 0;
       let brokerageperlot = perlot
-        ? (parseFloat(perlot) / dollarPriceData.dollarprice).toFixed(3)
-        : 0;
 
       // Handle NaN cases
       brokeragepertrade = isNaN(brokeragepertrade) ? null : brokeragepertrade;
@@ -404,9 +270,63 @@ class Admin {
   }
 
 
+  async updateLicence(req, res) {
+    try {
+      const { id, Licence, parent_Id } = req.body;
+
+      // Find the user by ID
+      const userdata = await User_model.findOne({ _id: id });
+      if (!userdata) {
+        return res.json({
+          status: false,
+          message: "User not found",
+          data: [],
+        });
+      }
+
+      // Current date as start date
+      const currentDate = new Date();
+      const startDate = new Date(
+        userdata.End_Date >= currentDate ? userdata.End_Date : currentDate
+      );
+
+      // Calculate the new end date
+      let newEndDate = new Date(startDate);
+      newEndDate.setMonth(newEndDate.getMonth() + Number(Licence));
+
+      if (newEndDate.getDate() < startDate.getDate()) {
+        newEndDate.setDate(0);
+      }
+
+      const newLicence = Number(userdata.Licence || 0) + Number(Licence);
+
+      await User_model.updateOne(
+        { _id: userdata._id },
+        { $set: { Licence: newLicence, End_Date: newEndDate } }
+      );
+
+      const result = new totalLicense({
+        user_Id: userdata._id,
+        Licence: Licence,
+        parent_Id: parent_Id,
+        Start_Date: startDate,
+        End_Date: newEndDate,
+      });
+      await result.save();
+
+      return res.json({
+        status: true,
+        message: "Licence is updated",
+        data: result,
+      });
+    } catch (error) {
+      return res.json({ status: false, message: "Internal error", data: [] });
+    }
+  }
+
+
 
   // user by id
-
   async DeleteUser(req, res) {
     try {
       const { id } = req.body;
@@ -430,37 +350,7 @@ class Admin {
     }
   }
 
-  // Employee updare
-
-  // async Update_Employe(req, res) {
-  //   try {
-
-  //     const data = req.body;
-  //     const id = req.body.id;
-
-
-  //     const filter = { _id: id };
-  //     const updateOperation = { $set: data };
-
-  //     const result = await User_model.updateOne(filter, updateOperation);
-
-  //     if (result.nModified === 0) {
-  //       return res.json({
-  //         status: false,
-  //         message: "Data not updated",
-  //         data: [],
-  //       });
-  //     }
-  //     return res.json({ status: true, message: "Data updated", data: result });
-  //   } catch (error) {
-  //     return res.json({
-  //       status: false,
-  //       message: "Internal server error",
-  //       error: error.message,
-  //     });
-  //   }
-  // }
-
+ 
 
   async Update_Employe(req, res) {
     try {
@@ -595,268 +485,6 @@ class Admin {
       });
     }
   }
-
-
-
-
-  // update by status
-
-  // async UpdateStatus(req, res) {
-  //   try {
-  //     const { admin_id, id, status } = req.body;
-      
-  //     const filter = { _id: new ObjectId(id) };
-  //     const paymentHistoryFind = await PaymenetHistorySchema.findOne(filter);
-
-  //     if (!paymentHistoryFind) {
-  //       return res.json({
-  //         status: false,
-  //         message: "Payment history not found",
-  //       });
-  //     }
-
-  //     const findUser = await User_model.findOne({
-  //       _id: new ObjectId(paymentHistoryFind.userid),
-  //     }).select("Balance");
-
-  //     if (!findUser) {
-  //       return res.json({
-  //         status: false,
-  //         message: "User not found",
-  //       });
-  //     }
-
-  //     // PaymenetHistorySchema
-  //     if (status == 1) {
-  //       if (paymentHistoryFind.type == 0) {
-  //         if (paymentHistoryFind.Balance > findUser.Balance) {
-  //           return res.json({
-  //             status: false,
-  //             message: "Insufficient balance",
-  //           });
-  //         }
-
-  //         findUser.Balance -= paymentHistoryFind.Balance;
-  //         await findUser.save();
-
-  //         paymentHistoryFind.status = status;
-  //         await paymentHistoryFind.save();
-
-  //         const walletUpdateResult = new Wallet_model({
-  //           user_Id: findUser._id,
-  //           Balance: paymentHistoryFind.Balance,
-  //           parent_Id: paymentHistoryFind.adminid,
-  //           Type: "DEBIT",
-
-  //         });
-
-  //         await walletUpdateResult.save();
-
-  //         return res.json({
-  //           status: true,
-  //           message: "Withdrawal request Accepted successfully",
-  //         });
-  //       } else if (paymentHistoryFind.type == 1) {
-  //         findUser.Balance += paymentHistoryFind.Balance;
-  //         await findUser.save();
-
-  //         paymentHistoryFind.status = status;
-  //         await paymentHistoryFind.save();
-
-  //         const walletUpdateResult = new Wallet_model({
-  //           user_Id: findUser._id,
-  //           Balance: paymentHistoryFind.Balance,
-  //           parent_Id: paymentHistoryFind.adminid,
-  //           Type: "CREDIT",
-  //         });
-
-  //         await walletUpdateResult.save();
-  //         return res.json({
-  //           status: true,
-  //           message: "Deposit request Accepted successfully",
-  //         });
-  //       } else {
-  //         return res.json({
-  //           status: false,
-  //           message: "Invalid type provided",
-  //         });
-  //       }
-  //     } else if (status == 2) {
-  //       paymentHistoryFind.status = status;
-  //       await paymentHistoryFind.save();
-  //       return res.json({
-  //         status: true,
-  //         message: "Order is rejected",
-  //       });
-  //     } else {
-  //       return res.json({
-  //         status: false,
-  //         message: "Invalid status provided",
-  //       });
-  //     }
-  //   } catch (error) {
-  //     return res.json({
-  //       status: false,
-  //       message: "Internal server error",
-  //       error: error.message,
-  //     });
-  //   }
-  // }
-
-
-
-  // ----------------------- Working code ----------------------------
-  // Function to update statusasync
-  
-//   async UpdateStatus(req, res) {
-//   try {
-//     const { admin_id, id, status } = req.body;
-
-//     // Validate and find the payment history
-//     const paymentHistoryFind = await PaymenetHistorySchema.findOne({ _id: new ObjectId(id) });
-//     if (!paymentHistoryFind) {
-//       return res.json({ status: false, message: "Payment history not found" });
-//     }
-    
-//     // Find the user balance and DeviceToken
-//     const findUser = await User_model.findOne({ _id: new ObjectId(paymentHistoryFind.userid) }).select("Balance DeviceToken");
-//     if (!findUser) {
-//       return res.json({ status: false, message: "User not found" });
-//     }
-    
-//     // Handle Status = 1 (Accepted)
-//     if (status == 1) {
-//       if (paymentHistoryFind.type === 0) { // Withdrawal Request
-//         if (paymentHistoryFind.Balance > findUser.Balance) {
-//           return res.json({ status: false, message: "Insufficient balance" });
-//         }
-    
-//         // Deduct balance
-//         findUser.Balance -= paymentHistoryFind.Balance;
-//         await findUser.save();
-    
-//         // Update payment history
-//         paymentHistoryFind.status = status;
-//         await paymentHistoryFind.save();
-    
-//         // Update wallet
-//         const walletUpdateResult = new Wallet_model({
-//           user_Id: findUser._id,
-//           Balance: paymentHistoryFind.Balance,
-//           parent_Id: admin_id,
-//           Type: "DEBIT",
-//         });
-//         await walletUpdateResult.save();
-    
-//         const { DeviceToken } = findUser;
-//         if (DeviceToken) {
-//           await sendPushNotification(
-//             DeviceToken,
-//             "Withdrawal Accepted",
-//             "Your withdrawal request has been accepted successfully."
-//           );
-//         } else {
-//           console.warn("DeviceToken not found for user:", findUser._id);
-//         }
-    
-//         return res.json({ status: true, message: "Withdrawal request accepted successfully" });
-    
-//       }
-    
-//       // Handle Status = 2 (Rejected)
-//     } else if (status == 2) {
-//       // Update payment history to rejected
-//       paymentHistoryFind.status = status;
-//       await paymentHistoryFind.save();
-    
-//       // Check if it's a withdrawal request (type === 0)
-//       if (paymentHistoryFind.type === 0) { // Withdrawal Request
-//         const { DeviceToken } = findUser;
-//         if (DeviceToken) {
-//           await sendPushNotification(
-//             DeviceToken,
-//             "Withdrawal Rejected",
-//             "Your withdrawal request has been rejected."
-//           );
-//         } else {
-//           console.warn("DeviceToken not found for user:", findUser._id);
-//         }
-//       }
-    
-//       return res.json({ status: true, message: "Withdrawal request rejected successfully" });
-    
-//     } else {
-//       return res.json({ status: false, message: "Invalid status provided" });
-//     } else if (paymentHistoryFind.type === 1) { // Deposit Request
-//         // Add balance
-//         findUser.Balance += paymentHistoryFind.Balance;
-//         await findUser.save();
-
-//         // Update payment history
-//         paymentHistoryFind.status = status;
-//         await paymentHistoryFind.save();
-
-//         // Update wallet
-//         const walletUpdateResult = new Wallet_model({
-//           user_Id: findUser._id,
-//           Balance: paymentHistoryFind.Balance,
-//           parent_Id: admin_id,
-//           Type: "CREDIT",
-//         });
-//         await walletUpdateResult.save();
-         
-//         // Send push notification for Accepted Status
-//         const { DeviceToken } = findUser;
-//         if (DeviceToken) {
-//           await sendPushNotification(
-//             DeviceToken,
-//             "Deposit Accepted",
-//             "Your deposit request has been accepted successfully."
-//           );
-//         } else {
-//           console.warn("DeviceToken not found for user:", findUser._id);
-//         }
-
-//         return res.json({ status: true, message: "Deposit request accepted successfully" });
-
-//       } else {
-//         return res.json({ status: false, message: "Invalid type provided" });
-//       }
-
-//     // Handle Status = 2 (Rejected)
-//     } else if (status == 2) {
-//       // Update the payment history to rejected
-//       paymentHistoryFind.status = status;
-//       await paymentHistoryFind.save();
-
-//       // Send push notification for Rejected Status
-//       const { DeviceToken } = findUser;  // Ensure we retrieve DeviceToken here
-//       if (DeviceToken) {
-//         await sendPushNotification(
-//           DeviceToken,
-//           "Deposit Rejected",
-//           "Your deposit request has been rejected."
-//         );
-//       } else {
-//         console.warn("DeviceToken not found for user:", findUser._id);
-//       }
-
-//       return res.json({ status: true, message: "Order is rejected" });
-
-//     // Invalid Status
-//     } else {
-//       return res.json({ status: false, message: "Invalid status provided" });
-//     }
-
-//   } catch (error) {
-//     console.error("Error in UpdateStatus:", error);
-//     return res.json({
-//       status: false,
-//       message: "Internal server error",
-//       error: error.message,
-//     });
-//   }
-// }
 
 
 async UpdateStatus(req, res) {

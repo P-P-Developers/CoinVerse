@@ -433,93 +433,6 @@ class Placeorder {
     }
   }
 
-  // placeorder
-  async placeorder(req, res) {
-    try {
-      const {
-        userid,
-        symbol,
-        price,
-        lot,
-        qty,
-        requiredFund,
-        token,
-        type,
-        lotsize,
-      } = req.body;
-
-      const checkadmin = await User_model.findOne({
-        _id: userid,
-        Role: "USER",
-      });
-
-      if (!checkadmin) {
-        return res.json({ status: false, message: "User not found", data: [] });
-      }
-
-      const SymbolToken = await Symbol.findOne({ symbol: symbol });
-
-      let brokerage = 0;
-      if (checkadmin.pertrade) {
-        brokerage = parseFloat(checkadmin.pertrade);
-      } else if (checkadmin.perlot) {
-        brokerage = parseFloat(checkadmin.perlot) * parseFloat(lot);
-      }
-
-      // Create a new order object
-      const newOrder = new Order({
-        userid,
-        symbol,
-        price,
-        lot,
-        qty,
-        adminid: checkadmin.parent_id,
-        pertrade: checkadmin.userdata,
-        perlot: checkadmin.perlot,
-        turn_over_percentage: checkadmin.turn_over_percentage,
-        brokerage: brokerage,
-        limit: checkadmin.limit,
-        requiredFund,
-        token: SymbolToken,
-        type,
-        lotsize: lotsize,
-        status: "Completed",
-      });
-
-      // Save the new order to the database
-      const orderdata = await newOrder.save();
-
-      // Call appropriate trade function based on order type
-      if (type === "buy") {
-        await EntryTrade(
-          req,
-          res,
-          orderdata,
-          checkadmin,
-          SymbolToken,
-          brokerage
-        );
-      } else if (type === "sell") {
-        await ExitTrade(
-          req,
-          res,
-          orderdata,
-          checkadmin,
-          SymbolToken,
-          brokerage
-        );
-      } else {
-        return res.json({ status: false, message: "Invalid request" });
-      }
-    } catch (error) {
-      res.json({
-        status: false,
-        message: "internal error",
-        error: error.message,
-      });
-    }
-  }
-
   // Switch between buy and sell orders based on the type of order placed by the user
   async switchOrderType(req, res) {
     try {
@@ -580,6 +493,97 @@ class Placeorder {
         .json({ status: false, message: "An error occurred", error });
     }
   }
+
+  // placeorder
+  async placeorder(req, res) {
+    try {
+      const {
+        userid,
+        symbol,
+        price,
+        lot,
+        qty,
+        requiredFund,
+        token,
+        type,
+        lotsize,
+      } = req.body;
+
+      console.log(req.body);
+      const checkadmin = await User_model.findOne({
+        _id: userid,
+        Role: "USER",
+      });
+
+      if (!checkadmin) {
+        return res.json({ status: false, message: "User not found", data: [] });
+      }
+
+      const SymbolToken = await Symbol.findOne({ symbol: symbol });
+
+      let brokerage = 0;
+      if (checkadmin.pertrade) {
+        brokerage = parseFloat(checkadmin.pertrade);
+      } else if (checkadmin.perlot) {
+        brokerage = parseFloat(checkadmin.perlot) * parseFloat(lot);
+      }
+
+      console.log("brokerage", brokerage);
+      // Create a new order object
+      const newOrder = new Order({
+        userid,
+        symbol,
+        price,
+        lot,
+        qty,
+        adminid: checkadmin.parent_id,
+        pertrade: checkadmin.userdata,
+        perlot: checkadmin.perlot,
+        turn_over_percentage: checkadmin.turn_over_percentage,
+        brokerage: brokerage,
+        limit: checkadmin.limit,
+        requiredFund,
+        token: SymbolToken,
+        type,
+        lotsize: lotsize,
+        status: "Completed",
+      });
+
+      // Save the new order to the database
+      const orderdata = await newOrder.save();
+
+      // Call appropriate trade function based on order type
+      if (type === "buy") {
+        await EntryTrade(
+          req,
+          res,
+          orderdata,
+          checkadmin,
+          SymbolToken,
+          brokerage
+        );
+      } else if (type === "sell") {
+        await ExitTrade(
+          req,
+          res,
+          orderdata,
+          checkadmin,
+          SymbolToken,
+          brokerage
+        );
+      } else {
+        return res.json({ status: false, message: "Invalid request" });
+      }
+    } catch (error) {
+      res.json({
+        status: false,
+        message: "internal error",
+        error: error.message,
+      });
+    }
+  }
+
+
 }
 
 // place order entry trade
@@ -663,19 +667,37 @@ const EntryTrade = async (
 
     await tradehistory.save();
     // }
+    console.log("requiredFund", parseFloat(requiredFund));
+    console.log("Number(checkadmin.limit)", Number(checkadmin.limit));
 
     const limitclaculation =
       parseFloat(requiredFund) / Number(checkadmin.limit);
+    console.log("limitclaculation", limitclaculation);
+    console.log(" parseFloat(limitclaculation)", parseFloat(limitclaculation));
+
+    console.log("checkadmin.Balance", parseFloat(checkadmin.Balance));
     const updateuserbalance =
       parseFloat(checkadmin.Balance) - parseFloat(limitclaculation);
+    console.log("updateuserbalance", updateuserbalance);
 
     const Totalupdateuserbalance =
       parseFloat(updateuserbalance) - parseFloat(brokerage);
-
+    console.log("brokerage", parseFloat(brokerage));
+    console.log("Totalupdateuserbalance", Totalupdateuserbalance);
     await User_model.updateOne(
       { _id: checkadmin._id },
       { $set: { Balance: Totalupdateuserbalance } }
     );
+
+    console.log({
+      userid: userid,
+      orderid: orderdata._id,
+      Amount: -(priceNum * qtyNum),
+      type: "DEBIT",
+      message: "Balanced used to buy",
+      symbol: symbol,
+      brokerage: brokerage,
+    });
 
     let newstatement = new BalanceStatement({
       userid: userid,
