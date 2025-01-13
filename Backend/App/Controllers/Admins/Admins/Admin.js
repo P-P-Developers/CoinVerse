@@ -54,8 +54,8 @@ class Admin {
           existingUser.UserName === UserName
             ? "Username"
             : existingUser.Email === Email
-            ? "Email"
-            : "Phone Number";
+              ? "Email"
+              : "Phone Number";
 
         return res.json({
           status: false,
@@ -441,6 +441,7 @@ class Admin {
   async UpdateStatus(req, res) {
     try {
       const { admin_id, id, status } = req.body;
+      console.log("adminid is ", admin_id);
 
       // Validate and find the payment history
       const paymentHistoryFind = await PaymenetHistorySchema.findOne({
@@ -484,6 +485,23 @@ class Admin {
             parent_Id: admin_id,
             Type: "DEBIT",
           });
+
+          // console.log("adminId is", admin_id)
+
+
+
+
+          const balanceStatement = new BalanceStatement({
+            userid: findUser._id,
+            Amount: -paymentHistoryFind.Balance,
+            type: "DEBIT",
+            message: "Balance used for withdrawal",
+            parent_Id: admin_id,
+            orderid: null,
+
+          });
+          await balanceStatement.save();
+          // console.log("DEBIT/withdrawl is", balanceStatement);
           await walletUpdateResult.save();
 
           const { DeviceToken } = findUser;
@@ -510,6 +528,7 @@ class Admin {
           // Update payment history
           paymentHistoryFind.status = status;
           await paymentHistoryFind.save();
+          // console.log("adminId is", admin_id)
 
           // Update wallet
           const walletUpdateResult = new Wallet_model({
@@ -519,6 +538,18 @@ class Admin {
             Type: "CREDIT",
           });
           await walletUpdateResult.save();
+
+          const balanceStatement = new BalanceStatement({
+            userid: findUser._id,
+            Amount: -paymentHistoryFind.Balance,
+            type: "CREDIT",
+            message: "Balance used for Deposit",
+            parent_Id: admin_id,
+            orderid: null,
+          });
+          await balanceStatement.save();
+
+
 
           // Send push notification for Accepted Status
           const { DeviceToken } = findUser;
