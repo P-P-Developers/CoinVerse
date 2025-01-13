@@ -126,7 +126,7 @@ class Users {
 
       const result = await User_model.find({ _id: userid, Role: "USER" })
         .select(
-          "FullName Balance limit pertrade perlot turn_over_percentage brokerage UserName createdAt"
+          "FullName Balance limit pertrade perlot turn_over_percentage brokerage UserName createdAt Start_Date End_Date"
         )
         .sort({ createdAt: -1 });
 

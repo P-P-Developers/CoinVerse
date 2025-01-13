@@ -19,4 +19,5 @@ module.exports = {
     employee_permission:require("./Employeepermission.model"),
     broadcasting:require("./Broadcastmessage.model"),
     Profitmargin:require("./Profitmargin.model"),
+    Company: require("./Company.model")
 };

@@ -46,6 +46,8 @@ require("./forexSocketData")(app,io);
 
 // Importing routes
 require("./App/Routes")(app);
+require("./App/Controllers/Cron/Cron")
+
 
 
 
