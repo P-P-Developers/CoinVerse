@@ -48,7 +48,7 @@ module.exports = function (app, io) {
   
         if (response.messageType === "A" && response.data?.length > 0) {
           const dataType = response.data[0];
-          console.log(response.data);
+   
           if (dataType === "Q") {
             io.emit("receive_data_forex", { data: response.data, type: "forex" });
           }
