@@ -408,7 +408,7 @@ class Placeorder {
       const newstatement = new BalanceStatement({
         userid: userid,
         orderid: orderdata._id,
-        Amount: Calculatefund - parseFloat(brokerage),
+        Amount: Calculatefund,
         type: "CREDIT",
         message: "Balanced used to sell",
         symbol: symbol,
@@ -528,7 +528,42 @@ class Placeorder {
         brokerage = parseFloat(checkadmin.perlot) * parseFloat(lot);
       }
 
+      const checkbalance = checkadmin.Balance * checkadmin.limit;
+
       console.log("brokerage", brokerage);
+
+      console.log("checkadmin.Balance", checkadmin.Balance);
+      console.log("checkadmin.limit", checkadmin.limit);
+      console.log("checkbalance", checkbalance);
+      console.log("requiredFund", requiredFund);
+
+      console.log("checkbalance < requiredFund + brokerage",  requiredFund + brokerage);
+
+      if (checkbalance < requiredFund + brokerage) {
+        const rejectedOrder = new Order({
+          userid,
+          symbol,
+          price,
+          lot,
+          qty,
+          adminid: checkadmin.parent_id,
+          requiredFund,
+          token,
+          type,
+          lotsize,
+          status: "rejected",
+          reason: "Order rejected due to low Balance",
+        });
+
+        await rejectedOrder.save();
+
+        return res.json({
+          status: false,
+          message: "Order rejected due to low Balance",
+          order: rejectedOrder,
+        });
+      }
+
       // Create a new order object
       const newOrder = new Order({
         userid,
@@ -582,8 +617,6 @@ class Placeorder {
       });
     }
   }
-
-
 }
 
 // place order entry trade

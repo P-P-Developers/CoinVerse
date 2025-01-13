@@ -223,14 +223,7 @@ const Updateuser = () => {
       col_size: 6,
       disable: true,
     },
-    {
-      name: "Balance",
-      label: "Balance",
-      type: "number",
-      label_size: 12,
-      col_size: 6,
-      disable: false,
-    },
+    
     {
       name: "employee_id",
       label: "Employee",
