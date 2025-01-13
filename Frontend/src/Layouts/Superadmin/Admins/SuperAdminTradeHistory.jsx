@@ -36,6 +36,9 @@ const SuperAdminTradeHistory = () => {
         );
       },
     },
+    
+    { Header: "UserName", accessor: "userName" },
+
     { Header: "Symbol", accessor: "symbol" },
     {
       Header: "Buy Price",
