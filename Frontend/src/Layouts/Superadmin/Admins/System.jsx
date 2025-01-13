@@ -1,11 +1,9 @@
-
-
 import Modal from "react-modal";
 import Swal from "sweetalert2";
 import {
   createOrUpdateCompanyApi,
   getCompanyApi,
-} from "../../../Services/Superadmin/Superadmin"; 
+} from "../../../Services/Superadmin/Superadmin";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { ThreeDots } from "react-loader-spinner";
@@ -190,7 +188,7 @@ const System = () => {
                         </div>
                       </div>
 
-                      <div className="row">
+                      <div className="row" style={{ marginTop: "-60px" }}>
                         <div className="col-md-6 mb-3">
                           <label htmlFor="favicon" className="form-label">
                             Favicon
@@ -219,7 +217,7 @@ const System = () => {
                           <small className="text-muted">
                             Upload a favicon file (16x16px).
                           </small>
-                          {values.favicon && (
+                          {/* {values.favicon && (
                             <div className="mt-2">
                               <img
                                 src={values.favicon}
@@ -227,7 +225,7 @@ const System = () => {
                                 width="50"
                               />
                             </div>
-                          )}
+                          )} */}
                         </div>
                       </div>
 

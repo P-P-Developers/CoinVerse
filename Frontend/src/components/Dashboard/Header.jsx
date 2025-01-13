@@ -300,7 +300,23 @@ const Header = () => {
         <div className="page-titles">
           <div className="sub-dz-head">
             <div className="d-flex align-items-center dz-head-title">
-              <h2 className="text-white m-0">{formattedSegment}</h2>
+              <h2 className="text-white m-0">
+                {formattedSegment === "Admin"
+                  ? "Add Admin"
+                  : formattedSegment === "Adminuser"
+                    ? "Admin Users"
+                    : formattedSegment === "Adminemployee"
+                      ? "Admin Employees"
+                      : formattedSegment === "Position"
+                        ? "Available Position"
+                        : formattedSegment === "Tradehistory"
+                          ? "Trade History"
+                          : formattedSegment === "Holdoff"
+                            ? "Hold Off"
+                            : formattedSegment === "Addemployees"
+                              ? "Add Employee"
+                              : formattedSegment}
+              </h2>
             </div>
           </div>
         </div>

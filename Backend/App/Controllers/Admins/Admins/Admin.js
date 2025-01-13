@@ -933,30 +933,84 @@ class Admin {
     }
   }
 
+  // async getclienttradehistory(req, res) {
+  //   try {
+  //     const { userid, adminid } = req.body;
+  //     let result;
+
+  //     if (!userid || userid === "all") {
+  //       result = await mainorder_model
+  //         .find({ adminid })
+  //         .sort({ createdAt: -1 });
+  //     } else {
+  //       result = await mainorder_model
+  //         .find({ userid: userid })
+  //         .sort({ createdAt: -1 });
+  //     }
+
+  //     if (!result) {
+  //       return res.json({ status: false, message: "user not found", data: [] });
+  //     }
+
+  //     return res.json({ status: true, message: "user found", data: result });
+  //   } catch (error) {
+  //     return res.json({ status: false, message: "internal error", data: [] });
+  //   }
+  // }
+
+
+
   async getclienttradehistory(req, res) {
     try {
       const { userid, adminid } = req.body;
-      let result;
 
-      if (!userid || userid === "all") {
-        result = await mainorder_model
-          .find({ adminid })
-          .sort({ createdAt: -1 });
-      } else {
-        result = await mainorder_model
-          .find({ userid: userid })
-          .sort({ createdAt: -1 });
+      let matchCondition = { adminid };
+
+      if (userid && userid !== "all") {
+        matchCondition.userid = mongoose.Types.ObjectId(userid);  
       }
 
-      if (!result) {
-        return res.json({ status: false, message: "user not found", data: [] });
+      // Perform aggregation
+      const result = await mainorder_model.aggregate([
+        { $match: matchCondition }, 
+        {
+          $lookup: {
+            from: "USER", 
+            localField: "userid", 
+            foreignField: "_id", 
+            as: "userDetails", 
+          },
+        },
+        {
+          $addFields: {
+            UserName: {
+              $arrayElemAt: ["$userDetails.UserName", 0], 
+            },
+          },
+        },
+        {
+          $project: {
+            userDetails: 0, // Exclude userDetails array
+          },
+        },
+        { $sort: { createdAt: -1 } }, // Sort by createdAt
+      ]);
+
+      // Check if result is empty
+      if (!result || result.length === 0) {
+        return res.json({ status: false, message: "No data found", data: [] });
       }
 
-      return res.json({ status: true, message: "user found", data: result });
+      // Return the aggregated result
+      return res.json({ status: true, message: "Data found", data: result });
     } catch (error) {
-      return res.json({ status: false, message: "internal error", data: [] });
+      console.error("Error in getclienttradehistory:", error);
+      return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
+
+
+
 
   //  async getlicensedata(req,res){
   //     try {

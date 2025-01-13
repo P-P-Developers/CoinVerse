@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
-import { symbolholdoff, updatesymbolstatus } from "../../../Services/Admin/Addmin";
+import {
+  symbolholdoff,
+  updatesymbolstatus,
+} from "../../../Services/Admin/Addmin";
 
 import Swal from "sweetalert2";
 
@@ -11,15 +14,13 @@ const Holdoff = () => {
   const [refresh, setRefresh] = useState(false);
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
- 
-
 
   const columns = [
     { Header: "Symbol name", accessor: "symbol" },
-    { Header: "exch_seg", accessor: "exch_seg" },
-    { Header: "lotsize", accessor: "lotsize" },
+    { Header: "Segtment", accessor: "exch_seg" },
+    { Header: "lot Size", accessor: "lotsize" },
     {
-      Header: "ActiveStatus",
+      Header: "Active Status",
       accessor: "ActiveStatus",
       Cell: ({ cell }) => (
         <label className="form-check form-switch">
@@ -33,18 +34,14 @@ const Holdoff = () => {
           />
           <label
             htmlFor={`rating_${cell.row.status}`}
-            className="checktoggle checkbox-bg"
-          ></label>
+            className="checktoggle checkbox-bg"></label>
         </label>
       ),
     },
   ];
 
-
-
   // Update symbol status
   const updatestatus = async (event, symbol) => {
-    
     const user_active_status = event.target.checked ? 1 : 0;
     const result = await Swal.fire({
       title: "Do you want to save the changes?",
@@ -56,7 +53,10 @@ const Holdoff = () => {
 
     if (result.isConfirmed) {
       try {
-        const response = await updatesymbolstatus({ symbol, user_active_status });
+        const response = await updatesymbolstatus({
+          symbol,
+          user_active_status,
+        });
         if (response.status) {
           Swal.fire({
             title: "Saved!",
@@ -66,18 +66,20 @@ const Holdoff = () => {
           });
           setTimeout(() => {
             Swal.close();
-            setRefresh(!refresh); 
+            setRefresh(!refresh);
           }, 1000);
         }
       } catch (error) {
-        Swal.fire("Error", "There was an error processing your request.", "error");
+        Swal.fire(
+          "Error",
+          "There was an error processing your request.",
+          "error"
+        );
       }
     } else {
-      event.target.checked = !event.target.checked; 
+      event.target.checked = !event.target.checked;
     }
   };
-
-
 
   // Fetching data
   const Symbolholdoff = async () => {
@@ -87,22 +89,18 @@ const Holdoff = () => {
       const searchfilter = response.data?.filter((item) => {
         const searchInputMatch =
           search === "" ||
-          (item.symbol && item.symbol.toLowerCase().includes(search.toLowerCase())) 
-          
+          (item.symbol &&
+            item.symbol.toLowerCase().includes(search.toLowerCase()));
 
         return searchInputMatch;
       });
       setData(search ? searchfilter : response.data);
-    } catch (error) {
-   
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
     Symbolholdoff();
-  }, [refresh,search]);
-
-
+  }, [refresh, search]);
 
   return (
     <>
@@ -122,8 +120,7 @@ const Holdoff = () => {
                       className="tab-pane fade show active"
                       id="Week"
                       role="tabpanel"
-                      aria-labelledby="Week-tab"
-                    >
+                      aria-labelledby="Week-tab">
                       <div className="mb-3 ms-4">
                         Search :{" "}
                         <input

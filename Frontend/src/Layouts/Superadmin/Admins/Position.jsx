@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
-import { getavailableposition } from "../../../Services/Superadmin/Superadmin";
+import {
+  getAdminName,
+  getavailableposition,
+} from "../../../Services/Superadmin/Superadmin";
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 
 const Position = () => {
@@ -14,6 +17,8 @@ const Position = () => {
   const [selectedAdmin, setSelectedAdmin] = useState("");
 
   const columns = [
+    { Header: "UserName", accessor: "userName" },
+
     { Header: "symbol", accessor: "symbol" },
     {
       Header: "Buy qty",
@@ -51,7 +56,10 @@ const Position = () => {
       const uniqueAdminNames = [
         ...new Set(response?.data?.map((item) => item.adminName)),
       ];
-      setAdminNames(uniqueAdminNames);
+      const res = await getAdminName();
+      const adminNames = res.data.map((item) => item.UserName);
+      console.log("AdminNames", res);
+      setAdminNames(adminNames);
 
       const searchfilter = response.data?.filter((item) => {
         const searchInputMatch =
@@ -64,20 +72,16 @@ const Position = () => {
           item.adminName.trim().toLowerCase() ===
             selectedAdmin.trim().toLowerCase();
 
-
         return adminFilterMatch && searchInputMatch;
       });
 
-    
       setData(search || selectedAdmin ? searchfilter : response.data);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
     getuserallhistory();
   }, [search, selectedAdmin]);
-
 
   return (
     <>
@@ -129,13 +133,11 @@ const Position = () => {
                         </div>
                       </div>
 
-                      {
-                        data && data.length > 0 ? (
-                          <Table columns={columns} data={data && data} />
-                        ) : (
-                          <div>No data available</div>
-                        )
-                      }
+                      {data && data.length > 0 ? (
+                        <Table columns={columns} data={data && data} />
+                      ) : (
+                        <div>No data available</div>
+                      )}
 
                       {/* <Table columns={columns} data={data && data} /> */}
                     </div>

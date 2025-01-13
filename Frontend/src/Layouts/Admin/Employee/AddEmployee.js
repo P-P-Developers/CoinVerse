@@ -27,13 +27,13 @@ const AddEmployee = () => {
       Role: "",
       all: false,
       addclient: false,
-      Edit:false,
-      trade_history:false,
-      open_position:false,
-      Licence_Edit:false,
-      limit_edit:false,
-      Balance_edit:false
-      
+      Edit: false,
+      trade_history: false,
+      open_position: false,
+      Licence_Edit: false,
+      limit_edit: false,
+      Balance_edit: false
+
 
     },
 
@@ -133,11 +133,11 @@ const AddEmployee = () => {
         formik.setFieldValue("Balance_edit", checked);
       }
     },
-  
+
   });
 
 
-  
+
 
 
 
@@ -226,7 +226,7 @@ const AddEmployee = () => {
     },
     {
       name: "trade_history",
-      label: "trade_history",
+      label: "Trade History",
       type: "checkbox",
       label_size: 12,
       col_size: 3,
@@ -234,7 +234,7 @@ const AddEmployee = () => {
     },
     {
       name: "open_position",
-      label: "open_position",
+      label: "Open Position",
       type: "checkbox",
       label_size: 12,
       col_size: 3,
@@ -243,7 +243,7 @@ const AddEmployee = () => {
     },
     {
       name: "Licence_Edit",
-      label: "Licence_Edit",
+      label: "Licence Edit",
       type: "checkbox",
       label_size: 12,
       col_size: 3,
@@ -252,7 +252,7 @@ const AddEmployee = () => {
     },
     {
       name: "limit_edit",
-      label: "limit_edit",
+      label: "Limit Edit",
       type: "checkbox",
       label_size: 12,
       col_size: 3,
@@ -261,7 +261,7 @@ const AddEmployee = () => {
     },
     {
       name: "Balance_edit",
-      label: "Balance_edit",
+      label: "Balance Edit",
       type: "checkbox",
       label_size: 12,
       col_size: 3,

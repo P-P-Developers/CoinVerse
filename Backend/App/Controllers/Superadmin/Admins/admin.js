@@ -767,41 +767,90 @@ class Superadmin {
 
 
   //  working on getPositiondetail and above code is unchanged in case of issue you can use above code
+  // async getPosition_detail(req, res) {
+  //   try {
+  //     let result = await mainorder_model
+  //       .find({
+  //         $expr: { $ne: ["$buy_lot", "$sell_lot"] },
+  //       })
+  //       .sort({ createdAt: -1 });
+
+  //     if (!result || result.length === 0) {
+  //       return res.json({ status: false, message: "Data not found", data: [] });
+  //     }
+
+  //     // Assuming you have a users collection where you store the admin usernames
+  //     // Fetch the users corresponding to adminid
+  //     const adminIds = result.map((item) => item.adminid);
+  //     const adminUsers = await User_model.find({ _id: { $in: adminIds } });
+
+  //     // Create a mapping of adminid to username
+  //     const adminUsernameMap = adminUsers.reduce((acc, user) => {
+  //       acc[user._id] = user.UserName; // Assuming 'username' is the key for usernames
+  //       return acc;
+  //     }, {});
+
+  //     // Add the adminName to each result based on adminid
+  //     result = result.map((item) => {
+  //       return {
+  //         ...item.toObject(),
+  //         adminName: adminUsernameMap[item.adminid] || "Unknown", // Default to "Unknown" if not found
+  //       };
+  //     });
+  //     return res.json({ status: true, message: "Data found", data: result });
+  //   } catch (error) {
+  //     return res.json({ status: false, message: "Internal error", data: [] });
+  //   }
+  // }
+
+
+
   async getPosition_detail(req, res) {
-    try {
-      let result = await mainorder_model
-        .find({
-          $expr: { $ne: ["$buy_lot", "$sell_lot"] },
-        })
-        .sort({ createdAt: -1 });
+  try {
+    let result = await mainorder_model
+      .find({
+        $expr: { $ne: ["$buy_lot", "$sell_lot"] },
+      })
+      .sort({ createdAt: -1 });
 
-      if (!result || result.length === 0) {
-        return res.json({ status: false, message: "Data not found", data: [] });
-      }
-
-      // Assuming you have a users collection where you store the admin usernames
-      // Fetch the users corresponding to adminid
-      const adminIds = result.map((item) => item.adminid);
-      const adminUsers = await User_model.find({ _id: { $in: adminIds } });
-
-      // Create a mapping of adminid to username
-      const adminUsernameMap = adminUsers.reduce((acc, user) => {
-        acc[user._id] = user.UserName; // Assuming 'username' is the key for usernames
-        return acc;
-      }, {});
-
-      // Add the adminName to each result based on adminid
-      result = result.map((item) => {
-        return {
-          ...item.toObject(),
-          adminName: adminUsernameMap[item.adminid] || "Unknown", // Default to "Unknown" if not found
-        };
-      });
-      return res.json({ status: true, message: "Data found", data: result });
-    } catch (error) {
-      return res.json({ status: false, message: "Internal error", data: [] });
+    if (!result || result.length === 0) {
+      return res.json({ status: false, message: "Data not found", data: [] });
     }
+
+    // Assuming you have a users collection where you store the admin and user usernames
+    // Fetch the users corresponding to adminid and userid
+    const adminIds = result.map((item) => item.adminid);
+    const userIds = result.map((item) => item.userid);
+
+    const adminUsers = await User_model.find({ _id: { $in: adminIds } });
+    const users = await User_model.find({ _id: { $in: userIds } });
+
+    // Create a mapping of adminid to username
+    const adminUsernameMap = adminUsers.reduce((acc, user) => {
+      acc[user._id] = user.UserName; // Assuming 'UserName' is the key for usernames
+      return acc;
+    }, {});
+
+    // Create a mapping of userid to username
+    const userUsernameMap = users.reduce((acc, user) => {
+      acc[user._id] = user.UserName; // Assuming 'UserName' is the key for usernames
+      return acc;
+    }, {});
+
+    // Add the adminName and userName to each result based on adminid and userid
+    result = result.map((item) => {
+      return {
+        ...item.toObject(),
+        adminName: adminUsernameMap[item.adminid] || "Unknown", // Default to "Unknown" if not found
+        userName: userUsernameMap[item.userid] || "Unknown", // Default to "Unknown" if not found
+      };
+    });
+
+    return res.json({ status: true, message: "Data found", data: result });
+  } catch (error) {
+    return res.json({ status: false, message: "Internal error", data: [] });
   }
+}
 
 
   //  --------------
@@ -1124,6 +1173,23 @@ class Superadmin {
         message: "Internal error",
         data: [],
       });
+    }
+  }
+
+
+  async getAdminName(req, res) {
+    try {
+      
+      const result = await User_model.find({
+        Role: "ADMIN",
+        
+      }).select("FullName UserName _id");
+      if (!result) {
+        return res.json({ status: false, message: "User not found", data: [] });
+      }
+      return res.json({ status: true, message: "User found", data: result });
+    } catch (error) {
+      return res.json({ status: false, message: "internal error", data: [] });
     }
   }
 

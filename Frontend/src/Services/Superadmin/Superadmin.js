@@ -248,3 +248,27 @@ export async function getCompanyApi() {
     return
   }
 }
+  export async function getAdminName() {
+    try {
+      let res = await axios.get(`${Config.base_url}getAdminName`);
+      return await res?.data;
+    } catch (error) {
+      return
+    }
+  }
+
+
+export async function switchOrderType(data, token) {
+  try {
+    const res = await axios.post(`${Config.base_url}switchOrderType`, data, {
+      data: {},
+    })
+    return await res?.data;
+  }
+  catch (err) {
+    return await err;
+
+  }
+
+}
+

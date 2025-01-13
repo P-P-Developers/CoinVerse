@@ -512,7 +512,7 @@ const Admin = () => {
                     to="/superadmin/addmin"
                     className="float-end mb-2 btn btn-primary"
                   >
-                    Add Admins
+                    Add Admin
                   </Link>
                 </div>
                 <div className="card-body p-0">

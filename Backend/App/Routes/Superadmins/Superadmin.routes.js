@@ -9,7 +9,8 @@ const { AddAdmin, walletRecharge, getAdminDetail, UpdateActiveStatusAdmin, getad
     createOrUpdateCompany,
     getCompany,
     updateCompany,
-    deleteCompany } = require("../../Controllers/Superadmin/Admins/admin")
+    deleteCompany, 
+    getAdminName} = require("../../Controllers/Superadmin/Admins/admin")
 
 
 
@@ -34,6 +35,7 @@ router.post("/getProfitMargin", getProfitMargin)
 
 router.post('/createOrUpdateCompany', createOrUpdateCompany)
 router.get('/getCompany', getCompany)
+router.get('/getAdminName', getAdminName)
 // router.put('/updateCompany', updateCompany)
 router.delete('/deleteCompany', deleteCompany)
 

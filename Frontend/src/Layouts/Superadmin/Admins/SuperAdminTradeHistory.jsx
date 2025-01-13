@@ -1,20 +1,27 @@
 import React, { useEffect, useState } from "react";
-import Table from "../../Utils/Table/Table";
-import { fDateTime, fDateTimesec } from "../../Utils/Date_format/datefromat";
+import Table from "../../../Utils/Table/Table";
+import { fDateTime, fDateTimesec } from "../../../Utils/Date_format/datefromat";
 import { useParams } from "react-router-dom";
-import { Clienthistory } from "../../Services/Admin/Addmin";
+import { Clienthistory } from "../../../Services/Admin/Addmin";
 import { DollarSign } from "lucide-react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { GetUsersName, switchOrderType } from "../../Services/Admin/Addmin";
-import { ArrowLeftRight } from "lucide-react";
+// import { switchOrderType } from "../../../Services/Admin/Addmin";
 
-const Tradehistory = () => {
+import { ArrowLeftRight } from "lucide-react";
+import {
+  getAdminName,
+  switchOrderType,
+} from "../../../Services/Superadmin/Superadmin";
+
+const SuperAdminTradeHistory = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
   const Role = userDetails?.Role;
   const [data, setData] = useState([]);
   const [userName, setUserName] = useState();
   const [Userid, setUserId] = useState();
+
+  console.log("data is", data);
 
   // Define columns for the table
   const columns = [
@@ -144,8 +151,9 @@ const Tradehistory = () => {
   // Function to get user history
   const getuserallhistory = async () => {
     try {
-      const data = { userid: Userid, adminid: user_id };
+      const data = { adminid: Userid };
       const response = await Clienthistory(data);
+      console.log("Response is ", response);
       setData(response.data);
     } catch (error) {
       console.log("error", error);
@@ -156,7 +164,7 @@ const Tradehistory = () => {
     try {
       // Trade History 1
       const admin_id = user_id;
-      const response = await GetUsersName({admin_id});
+      const response = await getAdminName();
       if (response.status) {
         setUserName(response.data);
       }
@@ -216,7 +224,7 @@ const Tradehistory = () => {
               <div className="card transaction-table">
                 <div className="card-header border-0 flex-wrap pb-0">
                   <div className="mb-4">
-                    <h4 className="card-title">Trade History 1</h4>
+                    <h4 className="card-title">Trade History </h4>
                   </div>
                   <Link
                     to="/admin/users"
@@ -270,7 +278,7 @@ const Tradehistory = () => {
                               fontSize: "16px",
                               marginRight: "0.5rem",
                             }}>
-                            Users:
+                            Admin:
                           </label>
                           <select
                             className="form-select"
@@ -284,7 +292,7 @@ const Tradehistory = () => {
                             }}
                             onChange={(e) => setUserId(e.target.value)}
                             defaultValue="">
-                            <option value="all">Select a user</option>
+                            <option value="">Select a user</option>
                             {userName &&
                               userName.map((username) => (
                                 <option key={username._id} value={username._id}>
@@ -295,7 +303,7 @@ const Tradehistory = () => {
                         </div>
                       </div>
 
-                      <h5>
+                      <h5 className="ms-3">
                         Total Profit/Loss:{" "}
                         <span
                           style={{
@@ -306,7 +314,15 @@ const Tradehistory = () => {
                           {totalProfitLoss}
                         </span>
                       </h5>
-                      <Table columns={columns} data={data && data} />
+                      {Userid ? (
+                        <Table columns={columns} data={data && data} />
+                      ) : (
+                        <div
+                          className="alert alert-warning text-center text-black"
+                          role="alert">
+                          Please select an admin first.
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -319,4 +335,4 @@ const Tradehistory = () => {
   );
 };
 
-export default Tradehistory;
+export default SuperAdminTradeHistory;
