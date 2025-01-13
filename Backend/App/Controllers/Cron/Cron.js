@@ -20,7 +20,6 @@ const UpdateCompany = async () => {
   }
 };
 
-cron.schedule("* * * * *", () => {
-  console.log("Cron is running");
+cron.schedule("1 5 * * *", () => {
   UpdateCompany();
 });
