@@ -20,30 +20,37 @@ export const superadmin_header = [
     },
     {
         id: 4,
+        name: 'Trade History',
+        icon: "fe fe-activity",
+        route: "/superadmin/tradehistory",
+    },
+    
+    {
+        id: 5,
         name: 'Available Positions',
         icon: "fa fa-home",
         route: "/superadmin/position",
     },
     // {
-    //     id: 5,
+    //     id: 6,
     //     name: 'Broadcast',
     //     icon: "fe fe-dollar-sign",
     //     route: "/superadmin/broadcast",
     // },
     {
-        id: 6,
+        id: 7,
         name: 'Hold off',
         icon: "fe fe-dollar-sign",
         route: "/superadmin/holdoff",
     },
     // {
-    //     id: 7,
+    //     id: 8,
     //     name: 'Brokerage',
     //     icon: "fe fe-dollar-sign",
     //     route: "/superadmin/brokerage",
     // },
     // {
-    //     id: 7,
+    //     id: 9,
     //     name: 'Currency Setup',
     //     icon: "fe fe-dollar-sign",
     //     route: "/superadmin/currency",

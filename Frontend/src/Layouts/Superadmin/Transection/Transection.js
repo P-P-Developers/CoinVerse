@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
-import { fDateTime } from "../../../Utils/Date_format/datefromat";
+import { fDateTime, fDateTimesec } from "../../../Utils/Date_format/datefromat";
 
 import { getlicencedetailforsuperadmin } from "../../../Services/Superadmin/Superadmin";
 
@@ -25,21 +25,21 @@ const Transection = () => {
       Header: "Create Date",
       accessor: "createdAt",
       Cell: ({ cell }) => {
-        return fDateTime(cell.value)
+        return fDateTimesec(cell.value)
 
       },
     },
     {
       Header: "Start_Date", accessor: "Start_Date",
       Cell: ({ cell }) => {
-        return fDateTime(cell.value)
+        return fDateTimesec(cell.value)
 
       },
     },
     {
       Header: "End_Date", accessor: "End_Date",
       Cell: ({ cell }) => {
-        return fDateTime(cell.value)
+        return fDateTimesec(cell.value)
 
       },
     },

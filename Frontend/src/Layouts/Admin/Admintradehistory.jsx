@@ -156,7 +156,7 @@ const Tradehistory = () => {
     try {
       // Trade History 1
       const admin_id = user_id;
-      const response = await GetUsersName({admin_id});
+      const response = await GetUsersName({ admin_id });
       if (response.status) {
         setUserName(response.data);
       }
@@ -295,7 +295,7 @@ const Tradehistory = () => {
                         </div>
                       </div>
 
-                      <h5>
+                      <h5 className="ms-3">
                         Total Profit/Loss:{" "}
                         <span
                           style={{

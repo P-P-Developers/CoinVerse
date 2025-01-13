@@ -7,6 +7,7 @@ const User_model = db.user;
 const MarginRequired = db.MarginRequired;
 const BalanceStatement = db.BalanceStatement;
 const mainorder_model = db.mainorder_model;
+const Order = db.Order
 const broadcasting = db.broadcasting;
 
 class Users {
@@ -330,7 +331,7 @@ class Users {
   //     const { userid } = req.body;
 
   //     // Verify userid
-      
+
   //     if (!userid) {
   //       return res.json({
   //         status: false,
@@ -369,7 +370,6 @@ class Users {
     try {
       const { userid } = req.body;
 
-      // Verify userid
       if (!userid) {
         return res.json({
           status: false,
@@ -378,7 +378,6 @@ class Users {
         });
       }
 
-      // Fetch Balance Statements
       const balanceStatements = await BalanceStatement.find({
         userid: userid,
         symbol: { $ne: null },
@@ -393,35 +392,40 @@ class Users {
       }
 
       const orderIds = balanceStatements
-        .flatMap(statement => statement.orderid || []) 
-        .map(id => new ObjectId(id)); 
+        .flatMap((statement) => statement.orderid || [])
+        .filter((id) => mongoose.Types.ObjectId.isValid(id))
+        .map((id) => new mongoose.Types.ObjectId(id));
 
-      console.log("orderIds", orderIds)
-      // Fetch matching documents from mainorder_model
-      const mainOrders = await mainorder_model.find(
-        { _id: { $in: orderIds } },
-        { totalAmount: 1, lot: 1, lotSize: 1 } 
+
+      const orders = await Order.find({ _id: { $in: orderIds } }, {
+        _id: 1,
+        totalamount: 1,
+        lot: 1,
+        qty: 1,
+        lotSize: 1,
+      });
+
+      // Map orders by _id for quick lookup
+      const orderMap = new Map(
+        orders.map((order) => [order._id.toString(), order])
       );
 
-      // Create a map for quick lookup
-      const mainOrderMap = new Map(
-        mainOrders.map(order => [order._id.toString(), order])
-      );
-
-      const enrichedData = balanceStatements.map(statement => {
-        const enrichedOrders = (statement.orderid || []).map(orderId => {
-          const orderDetails = mainOrderMap.get(orderId) || {};
+      // Enrich balance statements with order details
+      const enrichedData = balanceStatements.map((statement) => {
+        const enrichedOrders = (statement.orderid || []).map((orderId) => {
+          const orderDetails = orderMap.get(orderId.toString()) || {};
           return {
             orderid: orderId,
-            totalAmount: orderDetails.totalAmount || null,
+            totalAmount: orderDetails.totalamount || null,
             lot: orderDetails.lot || null,
             lotSize: orderDetails.lotSize || null,
+            qty: orderDetails.qty || null
           };
         });
 
         return {
           ...statement.toObject(),
-          orders: enrichedOrders,
+          orders: enrichedOrders, // Add enriched order details
         };
       });
 
@@ -440,6 +444,7 @@ class Users {
       });
     }
   }
+
 
   async generatePin(req, res) {
     try {
