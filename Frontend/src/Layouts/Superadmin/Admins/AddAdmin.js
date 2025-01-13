@@ -14,7 +14,7 @@
 //   const Role = userDetails?.Role;
 //   const user_id = userDetails?.user_id;
 
-  
+
 
 //   const formik = useFormik({
 //     initialValues: {
@@ -76,7 +76,7 @@
 //         parent_id: user_id,
 //         Role: "ADMIN",
 //         ProfitMargin:values.ProfitMargin
-        
+
 //       };
 
 //       setSubmitting(false);
@@ -186,7 +186,7 @@
 
 
 
- 
+
 
 //   return (
 //     <Form
@@ -267,19 +267,19 @@ const AddAdmin = () => {
       } else if (values.password !== values.confirmPassword) {
         errors.confirmPassword = "Passwords do not match";
       }
-      if(!values.Licence){
+      if (!values.Licence) {
         errors.Licence = "Please Enter Licence"
-      }else if(values.Licence < 0 || values.Licence > 12){
+      } else if (values.Licence < 0 || values.Licence > 12) {
         errors.Licence = "Licence Value should be in 0 to 12"
       }
       if (!values.ProfitMargin) {
         errors.ProfitMargin = "Please Enter Profit Margin";
       }
-      
+
 
       return errors;
     },
-    
+
     onSubmit: async (values, { setSubmitting }) => {
       // Generate Referral Code
       const referralCode = `REF-${values.username}-${Math.random().toString(36).substr(2, 8)}`;
@@ -301,7 +301,7 @@ const AddAdmin = () => {
       setSubmitting(false);
 
       await AddnewUsers(data)
-        .then(async(response) => {
+        .then(async (response) => {
           if (response.status) {
             const data = {
               adminid: response.data._id,
@@ -374,7 +374,7 @@ const AddAdmin = () => {
     },
     {
       name: "Licence",
-      label: "Licence (0-12)",
+      label: "Licence",
       type: "text3",
       label_size: 12,
       col_size: 6,

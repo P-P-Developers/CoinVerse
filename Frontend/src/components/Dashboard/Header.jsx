@@ -303,19 +303,23 @@ const Header = () => {
               <h2 className="text-white m-0">
                 {formattedSegment === "Admin"
                   ? "Add Admin"
-                  : formattedSegment === "Adminuser"
-                    ? "Admin Users"
-                    : formattedSegment === "Adminemployee"
-                      ? "Admin Employees"
-                      : formattedSegment === "Position"
-                        ? "Available Position"
-                        : formattedSegment === "Tradehistory"
-                          ? "Trade History"
-                          : formattedSegment === "Holdoff"
-                            ? "Hold Off"
-                            : formattedSegment === "Addemployees"
-                              ? "Add Employee"
-                              : formattedSegment}
+                  : formattedSegment === "Addmin"
+                    ? "Add Admin"
+                    : formattedSegment === "Loginstatus"
+                      ? "Login Status"
+                      : formattedSegment === "Adminuser"
+                        ? "Admin Users"
+                        : formattedSegment === "Adminemployee"
+                          ? "Admin Employees"
+                          : formattedSegment === "Position"
+                            ? "Available Position"
+                            : formattedSegment === "Tradehistory"
+                              ? "Trade History"
+                              : formattedSegment === "Holdoff"
+                                ? "Hold Off"
+                                : formattedSegment === "Addemployees"
+                                  ? "Add Employee"
+                                  : formattedSegment}
               </h2>
             </div>
           </div>
