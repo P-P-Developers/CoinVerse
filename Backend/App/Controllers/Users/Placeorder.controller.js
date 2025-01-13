@@ -536,10 +536,12 @@ class Placeorder {
       console.log("checkadmin.limit", checkadmin.limit);
       console.log("checkbalance", checkbalance);
       console.log("requiredFund", requiredFund);
+      const totalamount = parseFloat(requiredFund) / Number(checkadmin.limit);
 
-      console.log("checkbalance < requiredFund + brokerage",  requiredFund + brokerage);
+      let brokerageFund = requiredFund + brokerage + brokerage;
+      console.log("Number(brokerageFund)", Number(brokerageFund));
 
-      if (checkbalance < requiredFund + brokerage) {
+      if (Number(checkadmin.Balance) < Number(brokerageFund)) {
         const rejectedOrder = new Order({
           userid,
           symbol,
@@ -564,6 +566,8 @@ class Placeorder {
         });
       }
 
+      console.log("SymbolToken", SymbolToken);
+
       // Create a new order object
       const newOrder = new Order({
         userid,
@@ -571,6 +575,7 @@ class Placeorder {
         price,
         lot,
         qty,
+        totalamount: totalamount + brokerage,
         adminid: checkadmin.parent_id,
         pertrade: checkadmin.userdata,
         perlot: checkadmin.perlot,
@@ -578,7 +583,7 @@ class Placeorder {
         brokerage: brokerage,
         limit: checkadmin.limit,
         requiredFund,
-        token: SymbolToken,
+        token: SymbolToken?.token,
         type,
         lotsize: lotsize,
         status: "Completed",
