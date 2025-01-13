@@ -69,9 +69,6 @@ export async function marginUpdateOnUserCreate(data) {
 
 }
 
-// update user data
-
-
 export async function updateuserdata(data, token) {
     try {
         const res = await axios.post(`${Config.base_url}admin/updateUser`, data, {

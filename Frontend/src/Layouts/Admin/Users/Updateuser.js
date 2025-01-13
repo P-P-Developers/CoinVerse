@@ -126,10 +126,16 @@ const Updateuser = () => {
   useEffect(() => {
     if (rowData) {
       const determineSelectedOption = () => {
-        if (rowData.pertrade !== undefined) return "pertrade";
-        if (rowData.perlot !== undefined) return "perlot";
-        return "pertrade";
+        if (rowData.pertrade && rowData.pertrade !== 0) {
+          return "pertrade";
+        } else if (rowData.perlot && rowData.perlot !== 0) {
+          return "perlot";
+        }
+        return "pertrade"; // Default to "pertrade" if both are null, undefined, or 0.
       };
+      
+      console.log("rowData", rowData);
+
 
       formik.setValues({
         fullName: rowData.FullName || "",
@@ -140,7 +146,7 @@ const Updateuser = () => {
         Balance: rowData.Balance || "",
         employee_id: rowData.employee_id || "",
         Licence: rowData.Licence || "",
-        selectedOption: rowData.selectedOption || determineSelectedOption(),
+        selectedOption:  determineSelectedOption(),
         inputValue:
           rowData.pertrade ||
           rowData.perlot ||
@@ -217,14 +223,7 @@ const Updateuser = () => {
       col_size: 6,
       disable: true,
     },
-    {
-      name: "Balance",
-      label: "Balance",
-      type: "number",
-      label_size: 12,
-      col_size: 6,
-      disable: false,
-    },
+    
     {
       name: "employee_id",
       label: "Employee",
