@@ -42,7 +42,7 @@ const Transaction = () => {
   
       setGetparentid(parentIds)
     } catch (error) {
-      console.log("error", error);
+  
     }
   };
 
@@ -56,7 +56,7 @@ const Transaction = () => {
       })
       setData(result);
     } catch (error) {
-      console.log("error", error);
+ 
     }
   };
 

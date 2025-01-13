@@ -23,7 +23,7 @@ const AddUsers = () => {
   const [dollarPrice, setDollarPrice] = useState(0);
   const [checkdolarprice, setCheckdolarprice] = useState(0);
   const [checkLicence, setCheckLicence] = useState([]);
-  // console.log("checklicence ", checkLicence)
+
 
   const [data, setData] = useState([]);
 
@@ -178,7 +178,6 @@ const AddUsers = () => {
 
       try {
         const response = await AddUser(data);
-        // console.log("response on ading use is ", response)
 
 
         if (response.status) {
@@ -221,7 +220,7 @@ const AddUsers = () => {
       setCheckprice(response.Balance);
       setCheckdolarprice(response.dollarPriceDoc.dollarprice);
     } catch (error) {
-      console.log("error", error);
+      
     }
   };
 
@@ -231,7 +230,7 @@ const AddUsers = () => {
       const response = await TotalcountLicence(data);
       setCheckLicence(response.data);
     } catch (error) {
-      console.log("error", error);
+    
     }
   };
 
@@ -247,7 +246,7 @@ const AddUsers = () => {
         });
       setData(result);
     } catch (error) {
-      console.log("error", error);
+   
     }
   };
 

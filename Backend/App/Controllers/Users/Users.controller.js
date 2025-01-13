@@ -154,7 +154,6 @@ class Users {
   
       // Access the first element of result1 to avoid errors
       const user = result1[0];
-      console.log("user pertrade:", user.pertrade, "user perlot:", user.perlot);
   
       const result = await MarginRequired.findOne({
         adminid: user.parent_id,

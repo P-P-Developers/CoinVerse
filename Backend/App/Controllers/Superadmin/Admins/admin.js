@@ -743,26 +743,7 @@ class Superadmin {
     }
   }
 
-  // get all available position
-  // async getPosition_detail(req, res) {
-  //   try {
-  //     let result = await mainorder_model
-  //       .find({
-  //         $expr: { $ne: ["$buy_lot", "$sell_lot"] },
-  //       })
-  //       .sort({ createdAt: -1 });
-
-  //     if (!result || result.length === 0) {
-  //       return res.json({ status: false, message: "Data not found", data: [] });
-  //     }
-  //     // console.log("result is ", result)
-  //     return res.json({ status: true, message: "Data found", data: result });
-  //   } catch (error) {
-  //     return res.json({ status: false, message: "Internal error", data: [] });
-  //   }
-  // }
-
-  // get all brokerage data
+  
 
 
 

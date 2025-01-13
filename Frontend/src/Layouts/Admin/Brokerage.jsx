@@ -123,7 +123,7 @@ const Holdoff = () => {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [adminData, setAdminData] = useState("");
-  // console.log("adminData is ", adminData);
+
   const [completed, setCompleted] = useState("");
   const [profitBalance, setProfitBalance] = useState("");
   const columns = [

@@ -56,7 +56,7 @@ const Header = () => {
   const toggleHamburger = () => {
     setIsActive((prev) => !prev);
     const element = document.querySelector(".wallet-open.show.active");
-    console.log("Element", element);
+
     if (element) {
       element.classList.toggle("menu-toggle");
     } else {

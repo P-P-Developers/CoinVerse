@@ -310,7 +310,7 @@ const AddAdmin = () => {
               forex: "100",
             }
             const res = await marginUpdateOnUserCreate(data)
-            console.log("Updated MarginValue", res)
+           
 
 
             Swal.fire({
