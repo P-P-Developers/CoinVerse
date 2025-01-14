@@ -160,9 +160,12 @@ const Updateuser = () => {
   useEffect(() => {
     if (rowData) {
       const determineSelectedOption = () => {
-        if (rowData.pertrade !== undefined) return "pertrade";
-        if (rowData.perlot !== undefined) return "perlot";
-        return "pertrade";
+        if (rowData.pertrade && rowData.pertrade !== 0) {
+          return "pertrade";
+        } else if (rowData.perlot && rowData.perlot !== 0) {
+          return "perlot";
+        }
+        return "pertrade"; // Default to "pertrade" if both are null, undefined, or 0.
       };
 
       formik.setValues({

@@ -279,13 +279,7 @@ class Superadmin {
 
       await newUser.save();
 
-      // Create user wallet (if needed)
-      // const userWallet = new Wallet_model({
-      //   user_Id: newUser._id,
-      //   Balance: dollarcount,
-      //   parent_Id: parent_id
-      // });
-      // await userWallet.save();
+   
 
       let licence = new totalLicense({
         user_Id: newUser._id,
@@ -300,6 +294,7 @@ class Superadmin {
       if (Employee_permission) {
         const {
           Edit,
+          client_add,
           trade_history,
           open_position,
           Licence_Edit,
@@ -319,6 +314,7 @@ class Superadmin {
           perlot_edit,
           limit_edit,
           Balance_edit,
+          client_add
         });
 
         await newPermission.save();
