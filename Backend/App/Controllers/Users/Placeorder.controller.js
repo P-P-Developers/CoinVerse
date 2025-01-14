@@ -418,6 +418,7 @@ class Placeorder {
       const totalamountCal =
         parseFloat(tradehistory.totalamount) * qty +
         parseFloat(Totalupdateuserbalance);
+      console.log("totalamountCal", totalamountCal);
 
       // Create a new order entry
       const newOrder = new Order({
@@ -439,7 +440,8 @@ class Placeorder {
       });
 
       const orderdata = await newOrder.save();
-
+      console.log("newOrder", orderdata);
+      console.log("tradehistory", tradehistory.orderid);
 
       // Update trade history with the new order ID
       if (Array.isArray(tradehistory.orderid)) {
@@ -447,6 +449,7 @@ class Placeorder {
       } else {
         tradehistory.orderid = [orderdata._id];
       }
+      console.log(type, "tradehistory", tradehistory);
 
       // Update trade history and user balance based on the type (buy or sell)
       if (type === "buy") {
@@ -481,6 +484,7 @@ class Placeorder {
         await tradehistory.save();
       }
 
+      console.log("totaladdbalance", totaladdbalance);
       // Update user balance in the database
       await User_model.updateOne(
         { _id: checkadmin._id },
@@ -550,12 +554,33 @@ class Placeorder {
         brokerage = parseFloat(checkadmin.perlot) * parseFloat(lot);
       }
 
-      const checkbalance = checkadmin.Balance * checkadmin.limit;
+      // Chaeck by Margin fund--------------------------------------------------------------------
+
+      // const checkbalance = checkadmin.Balance * checkadmin.limit;
+
+      // const totalamount =
+      //   parseFloat(requiredFund) / parseFloat(checkadmin.limit);
+
+      // console.log("requiredFund", requiredFund);
+
+      // let brokerageFund = requiredFund + brokerage + brokerage;
+      // console.log("brokerageFund", brokerageFund);
+
+      // console.log("checkbalance", checkbalance);
+
+      // Check by Orignal Balance  -------------------------------------------------------------------------------------
+
+      const checkbalance = checkadmin.Balance;
 
       const totalamount =
         parseFloat(requiredFund) / parseFloat(checkadmin.limit);
 
-      let brokerageFund = requiredFund + brokerage + brokerage;
+      console.log("requiredFund", requiredFund);
+
+      let brokerageFund = totalamount + brokerage + brokerage;
+      console.log("brokerageFund", brokerageFund);
+
+      console.log("checkbalance", checkbalance);
 
       if (parseFloat(checkbalance) < parseFloat(brokerageFund)) {
         const rejectedOrder = new Order({
@@ -582,6 +607,7 @@ class Placeorder {
         });
       }
 
+      console.log("SymbolToken", SymbolToken);
 
       // Create a new order object
       const newOrder = new Order({
