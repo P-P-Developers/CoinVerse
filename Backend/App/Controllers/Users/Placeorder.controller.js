@@ -274,165 +274,6 @@ class Placeorder {
     }
   }
 
-  // squareoff
-  async Squareoff(req, res) {
-    try {
-      const { id, userid, symbol, type, lot, price, qty, requiredFund } =
-        req.body;
-
-      const priceNum = parseFloat(price);
-      const lotNum = parseFloat(lot, 10);
-      const qtyNum = parseFloat(qty, 10);
-
-      const tradehistory = await mainorder_model.findOne({ _id: id });
-      const checkadmin = await User_model.findOne({ _id: userid });
-
-      if (!tradehistory) {
-        return res.json({
-          status: false,
-          message: "Trade Not Found",
-          data: [],
-        });
-      }
-
-      if (!checkadmin) {
-        return res.json({
-          status: false,
-          message: "User Not Found",
-          data: [],
-        });
-      }
-
-      // Calculate brokerage
-      let brokerage = 0;
-      if (checkadmin.pertrade) {
-        brokerage = parseFloat(checkadmin.pertrade);
-      } else if (checkadmin.perlot) {
-        brokerage = parseFloat(checkadmin.perlot) * parseFloat(lot);
-      }
-
-      // Validate lot size based on the type
-      if (
-        type === "buy" &&
-        (tradehistory.buy_lot || 0) + lotNum > tradehistory.sell_lot
-      ) {
-        return res.json({
-          status: false,
-          message: "The lot size is greater than allowed",
-          data: [],
-        });
-      } else if (
-        type === "sell" &&
-        (tradehistory.sell_lot || 0) + lotNum > tradehistory.buy_lot
-      ) {
-        return res.json({
-          status: false,
-          message: "The lot size is greater than allowed",
-          data: [],
-        });
-      }
-
-      // Create a new order
-      const newOrder = new Order({
-        userid,
-        symbol,
-        price,
-        lot,
-        qty,
-        adminid: checkadmin.parent_id,
-        pertrade: checkadmin.userdata,
-        perlot: checkadmin.perlot,
-        turn_over_percentage: checkadmin.turn_over_percentage,
-        brokerage: brokerage,
-        limit: checkadmin.limit,
-        requiredFund,
-        type,
-        status: "Completed",
-      });
-
-      const orderdata = await newOrder.save();
-
-      // Update trade history with new order ID
-      if (Array.isArray(tradehistory.orderid)) {
-        tradehistory.orderid.push(orderdata._id);
-      } else {
-        tradehistory.orderid = [orderdata._id];
-      }
-
-      let Calculatefund = priceNum * qtyNum;
-
-      let totalcalculatefund = Calculatefund / Number(checkadmin.limit);
-
-      let Totalupdateuserbalance = totalcalculatefund - parseFloat(brokerage);
-
-      let totaladdbalance =
-        parseFloat(checkadmin.Balance) + Totalupdateuserbalance;
-
-      if (type === "buy") {
-        const totalQuantity = (tradehistory.buy_lot || 0) + lotNum;
-        const totalCost =
-          (tradehistory.buy_price * tradehistory.buy_lot || 0) +
-          priceNum * lotNum;
-        const avgPrice = totalCost / totalQuantity;
-
-        tradehistory.buy_price = avgPrice;
-        tradehistory.buy_lot = totalQuantity;
-        tradehistory.buy_qty = (tradehistory.buy_qty || 0) + qtyNum;
-        tradehistory.buy_type = type;
-        tradehistory.buy_time = new Date();
-
-        await tradehistory.save();
-      } else if (type === "sell") {
-        const totalQuantity = (tradehistory.sell_lot || 0) + lotNum;
-        const totalCost =
-          (tradehistory.sell_price * tradehistory.sell_lot || 0) +
-          priceNum * lotNum;
-        const avgPrice = totalCost / totalQuantity;
-
-        tradehistory.sell_price = avgPrice;
-        tradehistory.sell_lot = totalQuantity;
-        tradehistory.sell_qty = (tradehistory.sell_qty || 0) + qtyNum;
-        tradehistory.sell_type = type;
-        tradehistory.sell_time = new Date();
-
-        await tradehistory.save();
-      }
-
-      // Update user balance
-      await User_model.updateOne(
-        { _id: checkadmin._id },
-        { $set: { Balance: totaladdbalance } }
-      );
-
-      // Create a new balance statement
-      const newstatement = new BalanceStatement({
-        userid: userid,
-        orderid: orderdata._id,
-        Amount: Calculatefund,
-        type: "CREDIT",
-        message: "Balanced used to sell",
-        symbol: symbol,
-        brokerage: brokerage,
-      });
-
-      await newstatement.save();
-
-      return res.json({
-        status: true,
-        message: `${
-          type.charAt(0).toUpperCase() + type.slice(1)
-        } order updated successfully`,
-        data: [],
-      });
-    } catch (error) {
-      return res.json({
-        status: false,
-        message: "Internal server error",
-        data: [],
-      });
-    }
-  }
-
   // Switch between buy and sell orders based on the type of order placed by the user
   async switchOrderType(req, res) {
     try {
@@ -494,6 +335,188 @@ class Placeorder {
     }
   }
 
+  // squareoff
+  async Squareoff(req, res) {
+    try {
+      const { id, userid, symbol, type, lot, price, qty, requiredFund } =
+        req.body;
+
+      // Parse input values as floating-point numbers to handle decimals
+      const priceNum = parseFloat(price);
+      const lotNum = parseFloat(lot);
+      const qtyNum = parseFloat(qty);
+
+      // Fetch trade history and user details
+      const tradehistory = await mainorder_model.findOne({ _id: id });
+      const checkadmin = await User_model.findOne({ _id: userid });
+
+      if (!tradehistory) {
+        return res.json({
+          status: false,
+          message: "Trade Not Found",
+          data: [],
+        });
+      }
+
+      if (!checkadmin) {
+        return res.json({
+          status: false,
+          message: "User Not Found",
+          data: [],
+        });
+      }
+
+      // Calculate brokerage
+      let brokerage = 0;
+      if (checkadmin.pertrade) {
+        brokerage = parseFloat(checkadmin.pertrade);
+      } else if (checkadmin.perlot) {
+        brokerage = parseFloat(checkadmin.perlot) * lotNum;
+      }
+
+      // Validate lot size based on type (buy or sell)
+      if (
+        type === "buy" &&
+        (tradehistory.buy_lot || 0) + lotNum > tradehistory.sell_lot
+      ) {
+        return res.json({
+          status: false,
+          message: "The lot size is greater than allowed",
+          data: [],
+        });
+      } else if (
+        type === "sell" &&
+        (tradehistory.sell_lot || 0) + lotNum > tradehistory.buy_lot
+      ) {
+        return res.json({
+          status: false,
+          message: "The lot size is greater than allowed",
+          data: [],
+        });
+      }
+
+      let Calculatefund = priceNum * qtyNum;
+      let Profitloss;
+
+      if (tradehistory.signal_type === "buy_sell") {
+        Profitloss = priceNum * qtyNum - tradehistory.buy_price * qtyNum;
+      } else {
+        Profitloss = tradehistory.sell_price * qtyNum - priceNum * qtyNum;
+      }
+
+      console.log("Profitloss", Profitloss);
+
+      let Totalupdateuserbalance = Profitloss - brokerage;
+
+      console.log("Totalupdateuserbalance", Totalupdateuserbalance);
+
+      let totaladdbalance =
+        parseFloat(tradehistory.totalamount) * qtyNum +
+        parseFloat(checkadmin.Balance) +
+        Totalupdateuserbalance;
+
+      const totalamountCal =
+        parseFloat(tradehistory.totalamount) * qty +
+        parseFloat(Totalupdateuserbalance);
+
+      // Create a new order entry
+      const newOrder = new Order({
+        userid,
+        symbol,
+        price,
+        lot,
+        qty,
+        adminid: checkadmin.parent_id,
+        pertrade: checkadmin.userdata,
+        perlot: checkadmin.perlot,
+        turn_over_percentage: checkadmin.turn_over_percentage,
+        brokerage: brokerage,
+        totalamount: totalamountCal,
+        limit: checkadmin.limit,
+        requiredFund,
+        type,
+        status: "Completed",
+      });
+
+      const orderdata = await newOrder.save();
+
+
+      // Update trade history with the new order ID
+      if (Array.isArray(tradehistory.orderid)) {
+        tradehistory.orderid.push(orderdata._id);
+      } else {
+        tradehistory.orderid = [orderdata._id];
+      }
+
+      // Update trade history and user balance based on the type (buy or sell)
+      if (type === "buy") {
+        const totalQuantity = (tradehistory.buy_lot || 0) + lotNum;
+        const totalCost =
+          (tradehistory.buy_price * tradehistory.buy_lot || 0) +
+          priceNum * lotNum;
+        const avgPrice = totalCost / totalQuantity;
+
+        tradehistory.buy_price = avgPrice;
+        tradehistory.buy_lot = totalQuantity;
+        tradehistory.buy_qty = (tradehistory.buy_qty || 0) + qtyNum;
+        tradehistory.buy_type = type;
+        tradehistory.buy_time = new Date();
+        tradehistory.profitloss = Profitloss;
+
+        await tradehistory.save();
+      } else if (type === "sell") {
+        const totalQuantity = (tradehistory.sell_lot || 0) + lotNum;
+        const totalCost =
+          (tradehistory.sell_price * tradehistory.sell_lot || 0) +
+          priceNum * lotNum;
+        const avgPrice = totalCost / totalQuantity;
+
+        tradehistory.sell_price = avgPrice;
+        tradehistory.sell_lot = totalQuantity;
+        tradehistory.sell_qty = (tradehistory.sell_qty || 0) + qtyNum;
+        tradehistory.sell_type = type;
+        tradehistory.sell_time = new Date();
+        tradehistory.profitloss = Profitloss;
+
+        await tradehistory.save();
+      }
+
+      // Update user balance in the database
+      await User_model.updateOne(
+        { _id: checkadmin._id },
+        { $set: { Balance: totaladdbalance } }
+      );
+
+      // Create a new balance statement
+      const newstatement = new BalanceStatement({
+        userid: userid,
+        orderid: orderdata._id,
+        Amount: Calculatefund,
+        type: "CREDIT",
+        message: "Balance used to sell",
+        symbol: symbol,
+        brokerage: brokerage,
+      });
+
+      await newstatement.save();
+
+      return res.json({
+        status: true,
+        message: `${
+          type.charAt(0).toUpperCase() + type.slice(1)
+        } order updated successfully`,
+        data: [],
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        data: [],
+      });
+    }
+  }
+
   // placeorder
   async placeorder(req, res) {
     try {
@@ -509,7 +532,6 @@ class Placeorder {
         lotsize,
       } = req.body;
 
-      console.log(req.body);
       const checkadmin = await User_model.findOne({
         _id: userid,
         Role: "USER",
@@ -530,18 +552,12 @@ class Placeorder {
 
       const checkbalance = checkadmin.Balance * checkadmin.limit;
 
-      console.log("brokerage", brokerage);
-
-      console.log("checkadmin.Balance", checkadmin.Balance);
-      console.log("checkadmin.limit", checkadmin.limit);
-      console.log("checkbalance", checkbalance);
-      console.log("requiredFund", requiredFund);
-      const totalamount = parseFloat(requiredFund) / Number(checkadmin.limit);
+      const totalamount =
+        parseFloat(requiredFund) / parseFloat(checkadmin.limit);
 
       let brokerageFund = requiredFund + brokerage + brokerage;
-      console.log("Number(brokerageFund)", Number(brokerageFund));
 
-      if (Number(checkadmin.Balance) < Number(brokerageFund)) {
+      if (parseFloat(checkbalance) < parseFloat(brokerageFund)) {
         const rejectedOrder = new Order({
           userid,
           symbol,
@@ -566,7 +582,6 @@ class Placeorder {
         });
       }
 
-      console.log("SymbolToken", SymbolToken);
 
       // Create a new order object
       const newOrder = new Order({
@@ -600,7 +615,8 @@ class Placeorder {
           orderdata,
           checkadmin,
           SymbolToken,
-          brokerage
+          brokerage,
+          totalamount
         );
       } else if (type === "sell") {
         await ExitTrade(
@@ -609,7 +625,8 @@ class Placeorder {
           orderdata,
           checkadmin,
           SymbolToken,
-          brokerage
+          brokerage,
+          totalamount
         );
       } else {
         return res.json({ status: false, message: "Invalid request" });
@@ -631,7 +648,8 @@ const EntryTrade = async (
   orderdata,
   checkadmin,
   SymbolToken,
-  brokerage
+  brokerage,
+  totalamount
 ) => {
   try {
     const { userid, symbol, price, lot, qty, requiredFund, lotsize, type } =
@@ -652,33 +670,6 @@ const EntryTrade = async (
         $lt: new Date().setHours(23, 59, 59, 999),
       },
     });
-
-    const checkbalance = checkadmin.Balance * checkadmin.limit;
-
-    if (checkbalance < requiredFund) {
-      const rejectedOrder = new Order({
-        userid,
-        symbol,
-        price,
-        lot,
-        qty,
-        adminid: checkadmin.parent_id,
-        requiredFund,
-        token,
-        type,
-        lotsize,
-        status: "rejected",
-        reason: "Order rejected due to low Balance",
-      });
-
-      await rejectedOrder.save();
-
-      return res.json({
-        status: false,
-        message: "Order rejected due to low Balance",
-        order: rejectedOrder,
-      });
-    }
 
     tradehistory = new mainorder_model({
       orderid: orderdata._id,
@@ -701,41 +692,24 @@ const EntryTrade = async (
       status: "Completed",
       createdAt: currentTime,
       signal_type: "buy_sell",
+      totalamount: totalamount / qtyNum,
     });
 
     await tradehistory.save();
-    // }
-    console.log("requiredFund", parseFloat(requiredFund));
-    console.log("Number(checkadmin.limit)", Number(checkadmin.limit));
 
     const limitclaculation =
-      parseFloat(requiredFund) / Number(checkadmin.limit);
-    console.log("limitclaculation", limitclaculation);
-    console.log(" parseFloat(limitclaculation)", parseFloat(limitclaculation));
+      parseFloat(requiredFund) / parseFloat(checkadmin.limit);
 
-    console.log("checkadmin.Balance", parseFloat(checkadmin.Balance));
     const updateuserbalance =
       parseFloat(checkadmin.Balance) - parseFloat(limitclaculation);
-    console.log("updateuserbalance", updateuserbalance);
 
     const Totalupdateuserbalance =
       parseFloat(updateuserbalance) - parseFloat(brokerage);
-    console.log("brokerage", parseFloat(brokerage));
-    console.log("Totalupdateuserbalance", Totalupdateuserbalance);
+
     await User_model.updateOne(
       { _id: checkadmin._id },
       { $set: { Balance: Totalupdateuserbalance } }
     );
-
-    console.log({
-      userid: userid,
-      orderid: orderdata._id,
-      Amount: -(priceNum * qtyNum),
-      type: "DEBIT",
-      message: "Balanced used to buy",
-      symbol: symbol,
-      brokerage: brokerage,
-    });
 
     let newstatement = new BalanceStatement({
       userid: userid,
@@ -764,7 +738,8 @@ const ExitTrade = async (
   orderdata,
   checkadmin,
   SymbolToken,
-  brokerage
+  brokerage,
+  totalamount
 ) => {
   const { userid, symbol, price, type, lot, qty, lotsize, requiredFund } =
     req.body;
@@ -833,12 +808,13 @@ const ExitTrade = async (
       status: "Completed",
       createdAt: currentTime,
       signal_type: "sell_buy",
+      totalamount: totalamount / qty,
     });
 
     await tradehistory.save();
 
     const limitclaculation =
-      parseFloat(requiredFund) / Number(checkadmin.limit);
+      parseFloat(requiredFund) / parseFloat(checkadmin.limit);
     const updateuserbalance =
       parseFloat(checkadmin.Balance) - parseFloat(limitclaculation);
 

@@ -58,7 +58,7 @@ const Position = () => {
       ];
       const res = await getAdminName();
       const adminNames = res.data.map((item) => item.UserName);
-      console.log("AdminNames", res);
+ 
       setAdminNames(adminNames);
 
       const searchfilter = response.data?.filter((item) => {

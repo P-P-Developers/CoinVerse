@@ -21,7 +21,6 @@ const SuperAdminTradeHistory = () => {
   const [userName, setUserName] = useState();
   const [Userid, setUserId] = useState();
 
-  console.log("data is", data);
 
   // Define columns for the table
   const columns = [

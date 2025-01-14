@@ -83,10 +83,7 @@ const mainorderSchema = new mongoose.Schema({
     type: Number,
     default: null,
   },
-  totalamount: {
-    type: Number,
-    default: null,
-  },
+ 
   reason: {
     type: String,
     default: null,
