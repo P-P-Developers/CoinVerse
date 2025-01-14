@@ -1,7 +1,41 @@
 module.exports = function (app, io) {
   const WebSocket = require("ws");
 
-  const API_KEY = "e7edf7d2974a17556ee79ce31330b8536b3338e0";
+  const API_KEY = "15f8313fe4cb381f874987a362af94f8ea8f4e0b";
+
+  const formatNumber = (num) => {
+    if (typeof num !== "number" || isNaN(num)) {
+      return num; // Return as is if not a valid number
+    }
+
+    const parts = num.toString().split("."); // Split the number into integer and fractional parts
+    const integerLength = parts[0].length;
+
+    if (integerLength === 1) {
+      return parseFloat(num.toFixed(5)); // 1 digit before decimal -> 5 digits after
+    } else if (integerLength === 2) {
+      return parseFloat(num.toFixed(3)); // 2 digits before decimal -> 3 digits after
+    } else if (integerLength === 3) {
+      return parseFloat(num.toFixed(3)); // 2 digits before decimal -> 3 digits after
+    } else if (integerLength === 4) {
+      return parseFloat(num.toFixed(3)); // 2 digits before decimal -> 3 digits after
+    } else if (integerLength >= 5) {
+      return parseFloat(num.toFixed(2)); // 5 or more digits before decimal -> 2 digits after
+    } else {
+      return num; // Default case, return as is
+    }
+  };
+
+  const formatPrices = (item) => {
+    if (Array.isArray(item)) {
+      item[4] = formatNumber(item[4]);
+      item[5] = formatNumber(item[5]);
+      item[6] = formatNumber(item[6]);
+      item[7] = formatNumber(item[7]);
+    }
+
+    return item;
+  };
 
   const forexSocket = () => {
     const ws = new WebSocket("wss://api.tiingo.com/fx");
@@ -45,11 +79,9 @@ module.exports = function (app, io) {
       const response = JSON.parse(data.data);
 
       if (response.messageType === "A" && response.data?.length > 0) {
-        const dataType = response.data[0];
+        const formattedData = formatPrices(response.data);
 
-        if (dataType === "Q") {
-          io.emit("receive_data_forex", { data: response.data, type: "forex" });
-        }
+        io.emit("receive_data_forex", { data: formattedData, type: "forex" });
       }
     };
 
@@ -62,7 +94,6 @@ module.exports = function (app, io) {
     };
   };
 
-  // WebSocket handler for Crypto data
   const cryptoSocket = () => {
     const ws = new WebSocket("wss://api.tiingo.com/crypto");
 
@@ -96,13 +127,9 @@ module.exports = function (app, io) {
       const response = JSON.parse(data.data);
 
       if (response.messageType === "A" && response.data?.length > 0) {
-        const dataType = response.data[0];
-        if (dataType === "Q" || dataType === "T") {
-          io.emit("receive_data_forex", {
-            data: response.data,
-            type: "crypto",
-          });
-        }
+        const formattedData = formatPrices(response.data);
+
+        io.emit("receive_data_forex", { data: formattedData, type: "crypto" });
       }
     };
 
@@ -115,7 +142,6 @@ module.exports = function (app, io) {
     };
   };
 
-  // Start both Forex and Crypto WebSocket connections
   async function startSockets() {
     console.log("Starting WebSocket connections");
     forexSocket();
