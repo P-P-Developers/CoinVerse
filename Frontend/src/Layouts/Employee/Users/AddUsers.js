@@ -206,7 +206,7 @@ const AddUsers = () => {
       setCheckprice(response.Balance);
       setCheckdolarprice(response.dollarPriceDoc.dollarprice);
     } catch (error) {
-      console.log("error", error);
+     
     }
   };
 
@@ -218,7 +218,7 @@ const AddUsers = () => {
       const response = await TotalcountLicence(data);
       setCheckLicence(response.data);
     } catch (error) {
-      console.log("error", error);
+   
     }
   };
 
@@ -235,7 +235,7 @@ const AddUsers = () => {
       }
 
     } catch (error) {
-      console.log("error")
+  
     }
   }
 

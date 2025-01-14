@@ -126,7 +126,7 @@ class Users {
 
       const result = await User_model.find({ _id: userid, Role: "USER" })
         .select(
-          "FullName Balance limit pertrade perlot turn_over_percentage brokerage UserName createdAt"
+          "FullName Balance limit pertrade perlot turn_over_percentage brokerage UserName createdAt Start_Date End_Date"
         )
         .sort({ createdAt: -1 });
 
@@ -154,7 +154,6 @@ class Users {
   
       // Access the first element of result1 to avoid errors
       const user = result1[0];
-      console.log("user pertrade:", user.pertrade, "user perlot:", user.perlot);
   
       const result = await MarginRequired.findOne({
         adminid: user.parent_id,

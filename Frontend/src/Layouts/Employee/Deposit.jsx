@@ -83,7 +83,7 @@ const Deposit = () => {
                 text: error.message || 'An unexpected error occurred. Please try again.',
                 timer:2000
             });
-            console.log("Error:", error);
+           
         }
     }
     
@@ -108,7 +108,7 @@ const Deposit = () => {
                 setData(filtertype);
             }
         } catch (error) {
-            console.log("error");
+      
         }
     };
 

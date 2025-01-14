@@ -448,7 +448,7 @@ const Users = () => {
       setFilteredData(result);
       setLoading(false);
     } catch (error) {
-      console.log("error", error);
+  
     }
   };
 
@@ -462,7 +462,6 @@ const Users = () => {
       }
 
     } catch (error) {
-      console.log("error")
     }
   }
 

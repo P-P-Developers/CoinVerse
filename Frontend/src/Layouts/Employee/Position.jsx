@@ -72,7 +72,7 @@ const Position = () => {
       });
       setData(search ? searchfilter : filterdata);
     } catch (error) {
-      console.log("error", error);
+   
     }
   };
   

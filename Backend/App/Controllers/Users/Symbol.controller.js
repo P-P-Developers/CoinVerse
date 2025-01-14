@@ -11,31 +11,25 @@ class UserSymbol {
     try {
       const symboleName = req.body.symboleName;
       let condition = {};
-
-      if (symboleName) {
+  
+      // If symboleName is not an empty string, add the regex condition for symbol search
+      if (symboleName && symboleName.trim() !== "") {
         condition.trading_symbol = { $regex: symboleName, $options: "i" };
       }
-
+  
       const symbols = await Symbol.find(condition)
         .select("-symbol")
         .sort({ trading_symbol: "asc" });
-
-      if (symbols[0].status == 0) {
+  
+      // If no symbols are found or the first symbol has status 0, return not found
+      if (symbols.length === 0 || symbols[0].status == 0) {
         return res.json({
           status: false,
           message: "Symbol not found",
           data: [],
         });
       }
-
-      if (!symboleName || symbols.length === 0) {
-        return res.json({
-          status: false,
-          message: "Symbol not found",
-          data: [],
-        });
-      }
-
+  
       return res.json({ status: true, message: "Find Success", data: symbols });
     } catch (err) {
       return res.json({
@@ -45,6 +39,7 @@ class UserSymbol {
       });
     }
   }
+  
 
   // add user symbol
   async addSymbol(req, res) {

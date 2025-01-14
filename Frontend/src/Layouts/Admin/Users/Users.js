@@ -504,7 +504,7 @@ const Users = () => {
       const response = await TotalcountLicence(data);
       setCheckLicence(response.data);
     } catch (error) {
-      console.log("error", error);
+
     }
   };
 

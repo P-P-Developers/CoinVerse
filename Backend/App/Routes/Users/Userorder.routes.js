@@ -23,7 +23,6 @@ const { statement } = require("../../Controllers/Users/Statement.controller")
 
 router.post('/users/addSymbol', addSymbol);
 router.post('/users/symbolSearch', symbolSearch);
-router.post('/users/symbolSearch', symbolSearch);
 router.post('/users/userSymbollist', userSymbollist);
 router.post('/users/deletwatchlistsymbol', deletwatchlistsymbol);
 router.post('/users/placeorder', placeorder);

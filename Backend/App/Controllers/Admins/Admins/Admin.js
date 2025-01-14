@@ -441,7 +441,7 @@ class Admin {
   async UpdateStatus(req, res) {
     try {
       const { admin_id, id, status } = req.body;
-      console.log("adminid is ", admin_id);
+      
 
       // Validate and find the payment history
       const paymentHistoryFind = await PaymenetHistorySchema.findOne({
@@ -486,7 +486,6 @@ class Admin {
             Type: "DEBIT",
           });
 
-          // console.log("adminId is", admin_id)
 
 
 
@@ -501,7 +500,6 @@ class Admin {
 
           });
           await balanceStatement.save();
-          // console.log("DEBIT/withdrawl is", balanceStatement);
           await walletUpdateResult.save();
 
           const { DeviceToken } = findUser;
@@ -528,7 +526,6 @@ class Admin {
           // Update payment history
           paymentHistoryFind.status = status;
           await paymentHistoryFind.save();
-          // console.log("adminId is", admin_id)
 
           // Update wallet
           const walletUpdateResult = new Wallet_model({

@@ -134,7 +134,6 @@ const Updateuser = () => {
         return "pertrade"; // Default to "pertrade" if both are null, undefined, or 0.
       };
       
-      console.log("rowData", rowData);
 
 
       formik.setValues({
@@ -173,7 +172,7 @@ const Updateuser = () => {
         });
       setData(result);
     } catch (error) {
-      console.log("error", error);
+   
     }
   };
 
