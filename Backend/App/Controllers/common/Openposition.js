@@ -1,80 +1,79 @@
 const db = require("../../Models");
-
 const axios = require("axios");
 const open_position = db.open_position;
 
 class OpenPositions {
   constructor() {
-    this.fetchPositions();
+    this.startFetching();
+  }
+
+  async startFetching() {
+    try {
+      while (true) {
+        // Delay of 1 second
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await this.fetchPositions();
+      }
+    } catch (error) {
+      console.log("Error in startFetching:", error.message);
+    }
   }
 
   async fetchPositions() {
     try {
-      while (true) {
-        // Delay of 1 second between each execution
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+      const openPositions = await open_position
+        .find({ checkSlPercent: true, live_price: { $ne: null } })
+        .toArray();
 
-        // Fetch open positions
-        let openPositions = await open_position
-          .find({ checkSlPercent: true })
-          .toArray();
-        if (openPositions && openPositions.length > 0) {
-          openPositions?.forEach((position) => {
-            let data;
-            console.log("position", position);
-            if (position?.userid == "6787568e44721dbd2c3314b5") {
-              if (position?.signal_type == "buy_sell") {
-                data = JSON.stringify({
-                  userid: position?.userid,
-                  symbol: position?.symbol,
-                  id: position?._id,
-                  price: position?.live_price,
-                  lot: position?.buy_lot || 0 - position?.sell_lot || 0,
-                  qty: position?.buy_qty || 0 - position?.sell_qty || 0,
-                  requiredFund:
-                    position?.live_price * position?.buy_qty -
-                    (position?.buy_qty || 0 - position?.sell_qty || 0),
-                  type: "sell",
-                  lotsize: position?.lotsize,
-                });
-                console.log("sell", data);
-              } else {
-                data = JSON.stringify({
-                  userid: position?.userid,
-                  symbol: position?.symbol,
-                  id: position?._id,
-                  price: position?.live_price,
-                  lot: position?.buy_lot || 0 - position?.sell_lot || 0,
-                  qty: position?.buy_qty || 0 - position?.sell_qty || 0,
-                  requiredFund:
-                    position?.live_price * position?.buy_qty -
-                    (position?.buy_qty || 0 - position?.sell_qty || 0),
-                  type: "buy",
-                  lotsize: position?.lotsize,
-                });
-                console.log("buy", data);
-              }
+      if (openPositions && openPositions.length > 0) {
+        for (const position of openPositions) {
+          let commonData;
 
-              let config = {
-                method: "post",
-                maxBodyLength: Infinity,
-                url: "http://localhost:8800/Squareoff",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                data: data,
-              };
+          if (position?.signal_type === "buy_sell") {
+            commonData = {
+              userid: position?.userid,
+              symbol: position?.symbol,
+              id: position?._id,
+              price: position?.live_price,
+              lot: (position?.buy_lot || 0) - (position?.sell_lot || 0),
+              qty: (position?.buy_qty || 0) - (position?.sell_qty || 0),
+              requiredFund:
+                position?.live_price *
+                ((position?.buy_qty || 0) - (position?.sell_qty || 0)),
+              lotsize: position?.lotsize,
+              type: "sell",
+            };
+          } else if (position?.signal_type == "sell_buy") {
+            commonData = {
+              userid: position?.userid,
+              symbol: position?.symbol,
+              id: position?._id,
+              price: position?.live_price,
+              lot: (position?.sell_lot || 0) - (position?.buy_lot || 0),
+              qty: (position?.sell_qty || 0) - (position?.buy_qty || 0),
+              requiredFund:
+                position?.live_price *
+                ((position?.sell_qty || 0) - (position?.buy_qty || 0)),
+              lotsize: position?.lotsize,
+              type: "buy",
+            };
+          }
 
-              // axios.request(config)
-              // .then((response) => {
-              //   console.log(response.data);
-              // })
-              // .catch((error) => {
-              //   console.log(error);
-              // });
-            }
-          });
+          const config = {
+            method: "post",
+            maxBodyLength: Infinity,
+            url: process.env.base_url + "Squareoff",
+            // url: "http://localhost:8800/Squareoff",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            data: commonData,
+          };
+          // console.log("config", config);
+          const response = await axios(config);
+          console.log("response", response.data);
         }
+      } else {
       }
     } catch (error) {
       console.log("Error fetching open positions:", error.message);

@@ -105,19 +105,19 @@ const mainorderSchema = new mongoose.Schema({
     default: null,
   },
   brokerage: {
-    type: Number,
+    type: String,
     default: null,
   },
   limit: {
-    type: Number,
+    type: String,
     default: null,
   },
   profitloss : {
-    type: Number,
+    type: String,
     default: null,
   },
   Sl_price_percentage: {
-    type: Number,
+    type: String,
     default: null,
   },
   orderid: [

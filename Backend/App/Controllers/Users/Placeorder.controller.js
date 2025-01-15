@@ -470,7 +470,7 @@ class Placeorder {
         brokerage: brokerage,
         totalamount: totalamountCal,
         limit: checkadmin.limit,
-        requiredFund,
+        requiredFund:totalamountCal,
         type,
         status: "Completed",
       });
@@ -593,20 +593,6 @@ class Placeorder {
       } else if (checkadmin.perlot) {
         brokerage = parseFloat(checkadmin.perlot) * parseFloat(lot);
       }
-
-      // Chaeck by Margin fund--------------------------------------------------------------------
-
-      // const checkbalance = checkadmin.Balance * checkadmin.limit;
-
-      // const totalamount =
-      //   parseFloat(requiredFund) / parseFloat(checkadmin.limit);
-
-
-      // let brokerageFund = requiredFund + brokerage + brokerage;
-    
-
-
-      // Check by Orignal Balance  -------------------------------------------------------------------------------------
 
       const checkbalance = checkadmin.Balance;
 
@@ -753,7 +739,7 @@ const EntryTrade = async (
     console.log("seventyPercent - ", seventyPercent);
     console.log("price - ", price);
 
-    console.log("price - seventyPercent", price - seventyPercent);
+    console.log("price - seventyPercent", parseFloat(price) - parseFloat(seventyPercent));
 
     tradehistory = new mainorder_model({
       orderid: orderdata._id,
@@ -777,7 +763,7 @@ const EntryTrade = async (
       createdAt: currentTime,
       signal_type: "buy_sell",
       totalamount: totalamount / qtyNum,
-      Sl_price_percentage: price - seventyPercent,
+      Sl_price_percentage: parseFloat(price) - parseFloat(seventyPercent),
     });
 
     await tradehistory.save();
@@ -886,7 +872,7 @@ const ExitTrade = async (
       console.log("seventyPercent - ", seventyPercent);
       console.log("price - ", price);
   
-      console.log("sell price - seventyPercent", price + seventyPercent);
+      console.log("sell price - seventyPercent", parseFloat(price) + parseFloat(seventyPercent));
 
     tradehistory = new mainorder_model({
       orderid: orderdata._id,
@@ -910,7 +896,7 @@ const ExitTrade = async (
       createdAt: currentTime,
       signal_type: "sell_buy",
       totalamount: totalamount / qty,
-      Sl_price_percentage: price + seventyPercent,
+      Sl_price_percentage: parseFloat(price) + parseFloat(seventyPercent),
     });
 
     await tradehistory.save();
