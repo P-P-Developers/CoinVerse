@@ -15,10 +15,10 @@ const Dashboard = () => {
       if (response.status) {
         setCountdata(response.data);
       } else {
-        console.error("Error: ", response.message || "Unknown error occurred");
+        console.log("Error: ", response.message || "Unknown error occurred");
       }
     } catch (error) {
-      console.error("API call failed: ", error.message);
+      console.log("API call failed: ", error.message);
     }
   };
 

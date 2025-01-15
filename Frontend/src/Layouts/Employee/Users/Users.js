@@ -364,47 +364,6 @@ const Users = () => {
 
 
 
-  // update acctive status
-
-  // const updateactivestatus = async (event, id) => {
-  //   const user_active_status = event.target.checked ? 1 : 0;
-
-  //   const result = await Swal.fire({
-  //     title: "Do you want to save the changes?",
-  //     showCancelButton: true,
-  //     confirmButtonText: "Save",
-  //     cancelButtonText: "Cancel",
-  //     allowOutsideClick: false,
-  //   });
-
-  //   if (result.isConfirmed) {
-  //     try {
-  //       const response = await updateActivestatus({ id, user_active_status });
-  //       if (response.status) {
-  //         Swal.fire({
-  //           title: "Saved!",
-  //           icon: "success",
-  //           timer: 1000,
-  //           timerProgressBar: true,
-  //         });
-  //         setTimeout(() => {
-  //           Swal.close(); // Close the modal
-  //         }, 1000);
-  //       }
-  //     } catch (error) {
-  //       Swal.fire(
-  //         "Error",
-  //         "There was an error processing your request.",
-  //         "error"
-  //       );
-  //     }
-  //   } else if (result.dismiss === Swal.DismissReason.cancel) {
-  //     getAlluserdata();
-  //   }
-  // };
-
-
-
 
   const getpermission = async () => {
     try {
@@ -415,7 +374,7 @@ const Users = () => {
         setGetaccess(response.data[0]);
       }
     } catch (error) {
-      console.error("Error fetching permissions:", error);
+      console.log("Error fetching permissions:", error);
     }
   };
 

@@ -88,7 +88,7 @@ var symbols = "ETH/USD,USD/EUR,USD/JPY,BTC/USD,EUR/USD,ETH/BTC,ETH/XRP,ETH/USD,X
       };
 
       ws.onerror = (error) => {
-        console.error("WebSocket Error:", error);
+        console.log("WebSocket Error:", error);
       };
 
       ws.onclose = () => {

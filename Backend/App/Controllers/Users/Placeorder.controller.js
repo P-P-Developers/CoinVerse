@@ -25,7 +25,7 @@ class Placeorder {
       }
       return res.json({ status: true, message: "Orders found", data: result });
     } catch (error) {
-      console.error("Error fetching order book:", error);
+      console.log("Error fetching order book:", error);
       return res.json({
         status: false,
         message: "Internal server error",
@@ -345,7 +345,7 @@ class Placeorder {
         balanceStatements: "",
       });
     } catch (error) {
-      console.error("Error:", error);
+      console.log("Error:", error);
       return res
         .status(500)
         .json({ status: false, message: "An error occurred", error });
@@ -539,7 +539,7 @@ class Placeorder {
         data: [],
       });
     } catch (error) {
-      console.error("Error:", error);
+      console.log("Error:", error);
       return res.json({
         status: false,
         message: "Internal server error",
@@ -783,7 +783,7 @@ const EntryTrade = async (
       message: "Order placed",
     });
   } catch (error) {
-    console.error("Error processing buy order:", error);
+    console.log("Error processing buy order:", error);
     return res.json({ status: false, message: "internal error", data: [] });
   }
 };
@@ -918,7 +918,7 @@ const ExitTrade = async (
       message: "Order placed",
     });
   } catch (error) {
-    console.error("Error processing sell order:", error);
+    console.log("Error processing sell order:", error);
     return res.json({
       status: false,
       message: "An error occurred while processing the sell order",

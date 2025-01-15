@@ -161,7 +161,7 @@ const [rowsPerPage, setRowsPerPage] = useState(10);
 
       setData(search ? searchfilter : CreateDaynamicData);
     } catch (error) {
-      console.error("Error fetching brokerage data:", error);
+      console.log("Error fetching brokerage data:", error);
       Swal.fire("Error", "Failed to fetch data. Please try again.", "error"); // Display error message
     }
   };
@@ -174,7 +174,7 @@ const [rowsPerPage, setRowsPerPage] = useState(10);
         setAdminData(res.data);
       }
     } catch (err) {
-      console.error("Error in getting admin details", err);
+      console.log("Error in getting admin details", err);
     }
   };
 
@@ -192,7 +192,7 @@ const [rowsPerPage, setRowsPerPage] = useState(10);
       );
       setCompleted(CompletedValue);
     } catch (err) {
-      console.error("Error in getting margin data", err);
+      console.log("Error in getting margin data", err);
     }
   };
  

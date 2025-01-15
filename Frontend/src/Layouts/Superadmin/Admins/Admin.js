@@ -468,7 +468,7 @@ const Admin = () => {
         }
 
       } catch (error) {
-        console.error("Error", error);
+        console.log("Error", error);
         Swal.fire("Error", "There was an error processing your request.", "error");
       }
     } else if (result.dismiss === Swal.DismissReason.cancel) {

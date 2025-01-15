@@ -114,63 +114,7 @@ class Auth {
   // ----Original code----
 
 
-  // async SignIn(req, res) {
-  //   try {
-  //     const { FullName, UserName, PhoneNo, password } = req.body;
-
-  //     if (!FullName || !UserName || !PhoneNo || !password) {
-  //       return res.json({
-  //         status: false,
-  //         message: "Missing required fields",
-  //         data: [],
-  //       });
-  //     }
-
-  //     // Check if username already exists
-  //     const existingUsers = await User_model.find({
-  //       UserName: { $in: [UserName] },
-  //     });
-
-  //     if (existingUsers.length > 0) {
-  //       return res.json({
-  //         status: false,
-  //         message: "Username already exists",
-  //         data: [],
-  //       });
-  //     }
-
-  //     // Create new user
-  //     const signinuser = new Sign_In({
-  //       FullName,
-  //       UserName,
-  //       password,
-  //       PhoneNo,
-  //     });
-
-  //     const result = await signinuser.save();
-
-  //     if (!result) {
-  //       return res.json({
-  //         status: false,
-  //         message: "Unable to sign in",
-  //         data: [],
-  //       });
-  //     }
-
-  //     return res.json({
-  //       status: true,
-  //       message: "Signed in successfully",
-  //       data: result,
-  //     });
-  //   } catch (error) {
-  //     console.error(error); // Log the error for debugging
-  //     return res.json({
-  //       status: false,
-  //       message: "Internal error",
-  //       data: [],
-  //     });
-  //   }
-  // }
+  
 
   // ------------------------------------------------------
   // // My testing with the code

@@ -16,171 +16,7 @@ const ProfitmarginData = db.Profitmargin;
 const crypto = require("crypto");
 const Company = require("../../../Models/Company.model");
 
-
 class Superadmin {
-  //   async AddAdmin(req, res) {
-  //     try {
-  //       const {
-  //         FullName,
-  //         UserName,
-  //         Email,
-  //         PhoneNo,
-  //         parent_id,
-  //         parent_role,
-  //         password,
-  //         Otp,
-  //         Role,
-  //         Licence,
-  //         pertrade,
-  //         perlot,
-  //         turn_over_percentage,
-  //         brokerage,
-  //         limit,
-  //         Employee_permission,
-  //         ProfitMargin,
-  //       } = req.body;
-
-  //       if (!FullName || !UserName || !Email || !PhoneNo || !password || !Role) {
-  //         return res
-  //           .status(400)
-  //           .json({ status: false, message: "Missing required fields" });
-  //       }
-
-  //       const existingUser = await User_model.findOne({
-  //         $or: [{ UserName }, { Email }, { PhoneNo }],
-  //       });
-
-  //       if (existingUser) {
-  //         if (existingUser.UserName === UserName) {
-  //           return res.json({
-  //             status: false,
-  //             message: "Username already exists",
-  //           });
-  //         }
-
-  //         if (existingUser.Email === Email) {
-  //           return res.json({ status: false, message: "Email already exists" });
-  //         }
-
-  //         if (existingUser.PhoneNo === PhoneNo) {
-  //           return res.json({
-  //             status: false,
-  //             message: "Phone Number already exists",
-  //           });
-  //         }
-  //       }
-
-  //       // Current date as start date
-  //       const startDate = new Date();
-  //       let endDate = new Date(startDate);
-  //       endDate.setMonth(endDate.getMonth() + Number(Licence));
-
-  //       if (endDate.getDate() < startDate.getDate()) {
-  //         endDate.setDate(0);
-  //       }
-
-  //       // // Fetch dollar price data
-  //       // const dollarPriceData = await MarginRequired.findOne({adminid:parent_id }).select("dollarprice");
-  //       // if (!dollarPriceData) {
-  //       //   return res.json({ status: false, message: "Dollar price data not found" });
-  //       // }
-
-  //       // // Calculate dollar count
-  //       // const dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
-
-  //       // Hash password
-  //       const salt = await bcrypt.genSalt(10);
-  //       const hashedPassword = await bcrypt.hash(password.toString(), salt);
-
-  //       const activeStatus = parent_role === "EMPLOYE" ? 0 : 1;
-
-  //       // Create new user
-  //       const newUser = new User_model({
-  //         FullName,
-  //         UserName,
-  //         Email,
-  //         PhoneNo,
-  //         parent_id,
-  //         parent_role,
-  //         Otp: password,
-  //         Role,
-  //         pertrade,
-  //         perlot,
-  //         turn_over_percentage,
-  //         brokerage,
-  //         limit,
-  //         Licence,
-  //         password: hashedPassword,
-  //         Start_Date: startDate,
-  //         End_Date: endDate,
-  //         ActiveStatus: activeStatus,
-  //         ProfitMargin: ProfitMargin,
-  //       });
-
-  //       await newUser.save();
-
-  //       // // Create user wallet
-  //       // const userWallet = new Wallet_model({
-  //       //   user_Id: newUser._id,
-  //       //   Balance: dollarcount,
-  //       //   parent_Id: parent_id
-  //       // });
-  //       // await userWallet.save();
-
-  //       let licence = new totalLicense({
-  //         user_Id: newUser._id,
-  //         Licence: Licence,
-  //         parent_Id: parent_id,
-  //         Start_Date: startDate,
-  //         End_Date: endDate,
-  //       });
-
-  //       await licence.save();
-
-  //       if (Employee_permission) {
-  //         const {
-  //           Edit,
-  //           trade_history,
-  //           open_position,
-  //           Licence_Edit,
-  //           pertrade_edit,
-  //           perlot_edit,
-  //           limit_edit,
-  //           Balance_edit,
-  //         } = Employee_permission;
-
-  //         const newPermission = new employee_permission({
-  //           employee_id: newUser._id,
-  //           Edit,
-  //           trade_history,
-  //           open_position,
-  //           Licence_Edit,
-  //           pertrade_edit,
-  //           perlot_edit,
-  //           limit_edit,
-  //           Balance_edit,
-  //         });
-
-  //         await newPermission.save();
-  //       }
-
-  //       return res.json({
-  //         status: true,
-  //         message: "User added successfully",
-  //         data: newUser,
-  //       });
-  //     } catch (error) {
-  //       console.error(error);
-  //       return res.json({
-  //         status: false,
-  //         message: "Failed to add user",
-  //         data: [],
-  //       });
-  //     }
-  //   }
-
-  // -----------------Testing------------
-
   async AddAdmin(req, res) {
     try {
       const {
@@ -233,15 +69,13 @@ class Superadmin {
         }
       }
 
-      // adding referal code //new added
-      const referralCode = crypto.randomBytes(3).toString('hex').toUpperCase(); // Generates a 6-character referral code
+      const referralCode = crypto.randomBytes(3).toString("hex").toUpperCase(); 
 
       // Current date as start date
       const startDate = new Date();
       let endDate = new Date(startDate);
       // endDate.setMonth(endDate.getMonth() + Number(Licence));
       endDate.setMonth(endDate.getMonth() + Number(12));
-
 
       if (endDate.getDate() < startDate.getDate()) {
         endDate.setDate(0);
@@ -274,12 +108,10 @@ class Superadmin {
         End_Date: endDate,
         ActiveStatus: activeStatus,
         ProfitMargin: ProfitMargin,
-        ReferralCode: referralCode,  // Add referral code to the user
+        ReferralCode: referralCode, // Add referral code to the user
       });
 
       await newUser.save();
-
-   
 
       let licence = new totalLicense({
         user_Id: newUser._id,
@@ -314,7 +146,7 @@ class Superadmin {
           perlot_edit,
           limit_edit,
           Balance_edit,
-          client_add
+          client_add,
         });
 
         await newPermission.save();
@@ -346,7 +178,6 @@ class Superadmin {
           data: [],
         });
       }
-
 
       // Parse Balance to a float
       const dollarcount = parseFloat(Balance);
@@ -424,7 +255,6 @@ class Superadmin {
     }
   }
 
-
   async getAdminDetail(req, res) {
     try {
       const { id } = req.body;
@@ -489,8 +319,7 @@ class Superadmin {
           data: result,
         });
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   }
 
   // admin history
@@ -739,10 +568,6 @@ class Superadmin {
     }
   }
 
-  
-
-
-
   //  working on getPositiondetail and above code is unchanged in case of issue you can use above code
   // async getPosition_detail(req, res) {
   //   try {
@@ -780,55 +605,52 @@ class Superadmin {
   //   }
   // }
 
-
-
   async getPosition_detail(req, res) {
-  try {
-    let result = await mainorder_model
-      .find({
-        $expr: { $ne: ["$buy_lot", "$sell_lot"] },
-      })
-      .sort({ createdAt: -1 });
+    try {
+      let result = await mainorder_model
+        .find({
+          $expr: { $ne: ["$buy_lot", "$sell_lot"] },
+        })
+        .sort({ createdAt: -1 });
 
-    if (!result || result.length === 0) {
-      return res.json({ status: false, message: "Data not found", data: [] });
+      if (!result || result.length === 0) {
+        return res.json({ status: false, message: "Data not found", data: [] });
+      }
+
+      // Assuming you have a users collection where you store the admin and user usernames
+      // Fetch the users corresponding to adminid and userid
+      const adminIds = result.map((item) => item.adminid);
+      const userIds = result.map((item) => item.userid);
+
+      const adminUsers = await User_model.find({ _id: { $in: adminIds } });
+      const users = await User_model.find({ _id: { $in: userIds } });
+
+      // Create a mapping of adminid to username
+      const adminUsernameMap = adminUsers.reduce((acc, user) => {
+        acc[user._id] = user.UserName; // Assuming 'UserName' is the key for usernames
+        return acc;
+      }, {});
+
+      // Create a mapping of userid to username
+      const userUsernameMap = users.reduce((acc, user) => {
+        acc[user._id] = user.UserName; // Assuming 'UserName' is the key for usernames
+        return acc;
+      }, {});
+
+      // Add the adminName and userName to each result based on adminid and userid
+      result = result.map((item) => {
+        return {
+          ...item.toObject(),
+          adminName: adminUsernameMap[item.adminid] || "Unknown", // Default to "Unknown" if not found
+          userName: userUsernameMap[item.userid] || "Unknown", // Default to "Unknown" if not found
+        };
+      });
+
+      return res.json({ status: true, message: "Data found", data: result });
+    } catch (error) {
+      return res.json({ status: false, message: "Internal error", data: [] });
     }
-
-    // Assuming you have a users collection where you store the admin and user usernames
-    // Fetch the users corresponding to adminid and userid
-    const adminIds = result.map((item) => item.adminid);
-    const userIds = result.map((item) => item.userid);
-
-    const adminUsers = await User_model.find({ _id: { $in: adminIds } });
-    const users = await User_model.find({ _id: { $in: userIds } });
-
-    // Create a mapping of adminid to username
-    const adminUsernameMap = adminUsers.reduce((acc, user) => {
-      acc[user._id] = user.UserName; // Assuming 'UserName' is the key for usernames
-      return acc;
-    }, {});
-
-    // Create a mapping of userid to username
-    const userUsernameMap = users.reduce((acc, user) => {
-      acc[user._id] = user.UserName; // Assuming 'UserName' is the key for usernames
-      return acc;
-    }, {});
-
-    // Add the adminName and userName to each result based on adminid and userid
-    result = result.map((item) => {
-      return {
-        ...item.toObject(),
-        adminName: adminUsernameMap[item.adminid] || "Unknown", // Default to "Unknown" if not found
-        userName: userUsernameMap[item.userid] || "Unknown", // Default to "Unknown" if not found
-      };
-    });
-
-    return res.json({ status: true, message: "Data found", data: result });
-  } catch (error) {
-    return res.json({ status: false, message: "Internal error", data: [] });
   }
-}
-
 
   //  --------------
   async brokerageDataForSuperAdmin(req, res) {
@@ -968,7 +790,9 @@ class Superadmin {
         });
       }
 
-      const profitMarginData = await ProfitmarginData.find({ adminid: admin_id });
+      const profitMarginData = await ProfitmarginData.find({
+        adminid: admin_id,
+      });
       if (!profitMarginData || profitMarginData.length === 0) {
         return res.json({
           status: false,
@@ -982,8 +806,7 @@ class Superadmin {
         message: "Profit margin data found",
         data: profitMarginData,
       });
-    }
-    catch (error) {
+    } catch (error) {
       console.error("Error at getProfitMargin", error);
       return res.json({
         status: false,
@@ -992,7 +815,6 @@ class Superadmin {
       });
     }
   }
-
 
   // ___________CompanyModel Controller________
   async createOrUpdateCompany(req, res) {
@@ -1012,9 +834,12 @@ class Superadmin {
 
       if (company) {
         // Update existing company settings
-        company = await Company.findOneAndUpdate(
-          { panelName, logo, favicon, loginImage },
-        );
+        company = await Company.findOneAndUpdate({
+          panelName,
+          logo,
+          favicon,
+          loginImage,
+        });
         return res.json({
           status: true,
           message: "Company settings updated successfully",
@@ -1068,51 +893,7 @@ class Superadmin {
     }
   }
 
-  // UPDATE: Update company settings
-  // async updateCompany(req, res) {
-  //   try {
-  //     const { panelName, logo, favicon, loginImage } = req.body;
 
-  //     if (!panelName || !logo || !favicon || !loginImage) {
-  //       return res.json({
-  //         status: false,
-  //         message: "Missing required fields",
-  //         data: [],
-  //       });
-  //     }
-
-  //     const company = await Company.findOne({ panelName });
-
-  //     if (!company) {
-  //       return res.json({
-  //         status: false,
-  //         message: "Company settings not found",
-  //         data: [],
-  //       });
-  //     }
-
-  //     // Update existing company settings
-  //     company.panelName = panelName;
-  //     company.logo = logo;
-  //     company.favicon = favicon;
-  //     company.loginImage = loginImage;
-
-  //     await company.save();
-
-  //     return res.json({
-  //       status: true,
-  //       message: "Company settings updated successfully",
-  //       data: company,
-  //     });
-  //   } catch (error) {
-  //     console.error("Error at updateCompany", error);
-  //     return res.json({
-  //       status: false,
-  //       message: "Internal error",
-  //       data: [],
-  //     });
-  //   }
-  // }
 
   // DELETE: Delete company settings
   async deleteCompany(req, res) {
@@ -1153,13 +934,10 @@ class Superadmin {
     }
   }
 
-
   async getAdminName(req, res) {
     try {
-      
       const result = await User_model.find({
         Role: "ADMIN",
-        
       }).select("FullName UserName _id");
       if (!result) {
         return res.json({ status: false, message: "User not found", data: [] });
@@ -1169,9 +947,6 @@ class Superadmin {
       return res.json({ status: false, message: "internal error", data: [] });
     }
   }
-
 }
-
-
 
 module.exports = new Superadmin();

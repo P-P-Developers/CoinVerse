@@ -47,7 +47,7 @@ const Brokerage = () => {
         setAdminData(res.data);
       }
     } catch (err) {
-      console.error("Error in getting admin details", err);
+      console.log("Error in getting admin details", err);
     }
   };
 
@@ -58,7 +58,7 @@ const Brokerage = () => {
         setMarginLogs(res.data);
       }
     } catch (err) {
-      console.error("Error in getting margin data", err);
+      console.log("Error in getting margin data", err);
     }
   };
 
