@@ -37,7 +37,6 @@ const io = socketIo(server, {
   },
 });
 
-require("./forexSocketData")(app, io);
 
 // Importing routes
 require("./App/Routes")(app);

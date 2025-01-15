@@ -8,7 +8,7 @@ const User_model = db.user;
 const MarginRequired = db.MarginRequired;
 const BalanceStatement = db.BalanceStatement;
 const mainorder_model = db.mainorder_model;
-const Order = db.Order
+const Order = db.Order;
 const broadcasting = db.broadcasting;
 
 class Users {
@@ -151,29 +151,26 @@ class Users {
       const result1 = await User_model.find({ _id: userid })
         .select("parent_id pertrade perlot")
         .sort({ createdAt: -1 });
-  
+
       // Access the first element of result1 to avoid errors
       const user = result1[0];
-  
+
       const result = await MarginRequired.findOne({
         adminid: user.parent_id,
       }).select("crypto forex");
-  
+
       if (!result) {
         return res.json({ status: false, message: "not found", data: [] });
       }
-  
+
       let Obj = {
-        option:
-          user.pertrade && user.pertrade !== 0 ? "pertrade" : "perlot",
+        option: user.pertrade && user.pertrade !== 0 ? "pertrade" : "perlot",
         value1:
-          user.pertrade && user.pertrade !== 0
-            ? user.pertrade
-            : user.perlot,
+          user.pertrade && user.pertrade !== 0 ? user.pertrade : user.perlot,
         crypto: result.crypto || 100,
         forex: result.forex || 100,
       };
-  
+
       return res.json({
         status: true,
         message: "getting successfully",
@@ -183,7 +180,6 @@ class Users {
       return res.json({ status: false, message: "internal error", data: [] });
     }
   }
-  
 
   async getAllstatement(req, res) {
     try {
@@ -344,45 +340,6 @@ class Users {
     }
   }
 
-  // async tradeStatementForUser(req, res) {
-  //   try {
-  //     const { userid } = req.body;
-
-  //     // Verify userid
-
-  //     if (!userid) {
-  //       return res.json({
-  //         status: false,
-  //         message: "User ID is required",
-  //         data: [],
-  //       });
-  //     }
-
-  //     const result = await BalanceStatement.find({
-  //       userid: userid,
-  //       symbol: { $ne: null },
-  //     }).sort({ createdAt: -1 });
-
-  //     if (!result || result.length === 0) {
-  //       return res.json({ status: false, message: "Data not found", data: [] });
-  //     }
-
-  //     return res.json({
-  //       status: true,
-  //       message: "Data retrieved successfully",
-  //       data: result,
-  //     });
-  //   } catch (error) {
-  //     console.error("Error in balanceStatementForUser:", error);
-
-  //     return res.json({
-  //       status: false,
-  //       message: "Internal server error",
-  //       data: [],
-  //     });
-  //   }
-  // }
-
   async tradeStatementForUser(req, res) {
     try {
       const { userid } = req.body;
@@ -413,14 +370,16 @@ class Users {
         .filter((id) => mongoose.Types.ObjectId.isValid(id))
         .map((id) => new mongoose.Types.ObjectId(id));
 
-
-      const orders = await Order.find({ _id: { $in: orderIds } }, {
-        _id: 1,
-        totalamount: 1,
-        lot: 1,
-        qty: 1,
-        lotSize: 1,
-      });
+      const orders = await Order.find(
+        { _id: { $in: orderIds } },
+        {
+          _id: 1,
+          totalamount: 1,
+          lot: 1,
+          qty: 1,
+          lotSize: 1,
+        }
+      );
 
       // Map orders by _id for quick lookup
       const orderMap = new Map(
@@ -436,7 +395,7 @@ class Users {
             totalAmount: orderDetails.totalamount || null,
             lot: orderDetails.lot || null,
             lotSize: orderDetails.lotSize || null,
-            qty: orderDetails.qty || null
+            qty: orderDetails.qty || null,
           };
         });
 
@@ -462,83 +421,98 @@ class Users {
     }
   }
 
-
- async  tradeStatementForOrder(req, res) {
-  try {
-    const { orderid } = req.body;
-
-    if (!Array.isArray(orderid) || orderid.length === 0) {
+  async tradeStatementForOrder(req, res) {
+    try {
+      const { orderid } = req.body;
+  
+      if (!orderid) {
+        return res.json({
+          status: false,
+          message: "Order IDs are required",
+          data: [],
+        });
+      }
+  
+      const TradeOrderId = await mainorder_model
+        .find({ _id: orderid })
+        .select("orderid");
+  
+      if (TradeOrderId?.length === 0) {
+        return res.json({
+          status: false,
+          message: "Order not found",
+          data: [],
+        });
+      }
+  
+      const DataArray = await Promise.all(
+        TradeOrderId[0]?.orderid?.map(async (id) => {
+          const results = await BalanceStatement.aggregate([
+            {
+              $match: {
+                orderid: id, // Ensure `id` is a valid ObjectId or an array of ObjectIds
+                symbol: { $ne: null },
+              },
+            },
+            {
+              $sort: { createdAt: -1 }, // Sort by createdAt in descending order
+            },
+            {
+              $lookup: {
+                from: "orders", // The name of the orders collection
+                localField: "orderid", // Field in BalanceStatement containing orderid
+                foreignField: "_id", // Field in orders collection to match
+                as: "orderDetails", // Name of the field to store joined data
+              },
+            },
+            {
+              $unwind: "$orderDetails", // Unwind the orderDetails array to simplify results
+            },
+            {
+              $addFields: {
+                totalamount: "$orderDetails.totalamount",
+                lot: "$orderDetails.lot",
+                qty: "$orderDetails.qty",
+                lotSize: "$orderDetails.lotSize",
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+                orderid: 1,
+                symbol: 1,
+                Amount: 1,
+                createdAt: 1,
+                type: 1,
+                message: 1,
+                brokerage: 1,
+                totalamount: 1,
+                lot: 1,
+                qty: 1,
+                lotSize: 1,
+              },
+            },
+          ]);
+          return results; // Return the results for this iteration
+        })
+      );
+  
+      return res.json({
+        status: true,
+        message: "Data retrieved successfully",
+        data: DataArray.flat(), // Flatten the array of results
+      });
+    } catch (error) {
+      console.error("Error in tradeStatementForOrder:", error);
+  
       return res.json({
         status: false,
-        message: "Order IDs are required",
+        message: "Internal server error",
         data: [],
       });
     }
-
-    const balanceStatements = await BalanceStatement.find({
-      orderid: { $in: orderid },  
-      symbol: { $ne: null },
-    }).sort({ createdAt: -1 });
-
-    if (!balanceStatements || balanceStatements.length === 0) {
-      return res.json({
-        status: false,
-        message: "Data not found",
-        data: [],
-      });
-    }
-
-    const uniqueOrderIds = balanceStatements
-      .flatMap((statement) => statement.orderid || [])
-      .filter((id) => mongoose.Types.ObjectId.isValid(id))
-      .map((id) => new mongoose.Types.ObjectId(id));
-
-    const orders = await Order.find({ _id: { $in: uniqueOrderIds } }, {
-      _id: 1,
-      totalamount: 1,
-      lot: 1,
-      qty: 1,
-      lotSize: 1,
-    });
-
-    const orderMap = new Map(
-      orders.map((order) => [order._id.toString(), order])
-    );
-
-    const enrichedData = balanceStatements.map((statement) => {
-      const enrichedOrders = (statement.orderid || []).map((orderId) => {
-        const orderDetails = orderMap.get(orderId.toString()) || {};
-        return {
-          orderid: orderId,
-          totalAmount: orderDetails.totalamount || null,
-          lot: orderDetails.lot || null,
-          lotSize: orderDetails.lotSize || null,
-          qty: orderDetails.qty || null
-        };
-      });
-
-      return {
-        ...statement.toObject(),
-        orders: enrichedOrders,  
-      };
-    });
-
-    return res.json({
-      status: true,
-      message: "Data retrieved successfully",
-      data: enrichedData,
-    });
-  } catch (error) {
-    console.error("Error in tradeStatementForOrder:", error);
-
-    return res.json({
-      status: false,
-      message: "Internal server error",
-      data: [],
-    });
   }
-}
-
+  
 
   async generatePin(req, res) {
     try {
