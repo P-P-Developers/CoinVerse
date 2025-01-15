@@ -9,6 +9,7 @@ const mainorder_model = db.mainorder_model;
 const BalanceStatement = db.BalanceStatement;
 
 class Placeorder {
+  
   // get order book
   async getOrderBook(req, res) {
     try {
@@ -195,7 +196,13 @@ class Placeorder {
         },
         { openPositions: [] }
       );
-
+      if (currentPosition?.openPositions?.length == 0) {
+        return res.json({
+          status: false,
+          error: "No positions found",
+          data: [],
+        });
+      }
       res.json({ status: true, data: currentPosition.openPositions });
     } catch (error) {
       res.json({ status: false, error: "Internal Server Error", data: [] });
@@ -218,7 +225,7 @@ class Placeorder {
         })
         .sort({ createdAt: -1 });
 
-      if (!finduser || finduser.length === 0) {
+      if (finduser.length == 0) {
         return res.json({
           status: false,
           error: "No holdings found",
@@ -251,7 +258,7 @@ class Placeorder {
             requiredFund: trade.requiredFund,
             lotsize: trade.lotsize,
             signal_type: trade.signal_type,
-            buy_price: trade.buy_price,
+            buy_price: trade.buy_price?.toFixed(5),
             buy_lot: trade.buy_lot,
             buy_qty: trade.buy_qty,
             buy_type: trade.buy_type,
@@ -260,17 +267,28 @@ class Placeorder {
             sell_lot: trade.sell_lot,
             sell_qty: trade.sell_qty,
             sell_time: trade.sell_time,
-            sell_price: trade.sell_price,
+            sell_price: trade.sell_price?.toFixed(5),
           });
 
           return acc;
         },
         { holdings: [] }
       );
+      if (currentHoldings?.holdings?.length == 0) {
+        return res.json({
+          status: false,
+          error: "No holdings found",
+          data: [],
+        });
+      }
 
-      res.json({ status: true, data: currentHoldings.holdings });
+      return res.json({ status: true, data: currentHoldings.holdings });
     } catch (error) {
-      res.json({ status: false, error: "Internal Server Error", data: [] });
+      return res.json({
+        status: false,
+        error: "Internal Server Error",
+        data: [],
+      });
     }
   }
 
@@ -377,22 +395,21 @@ class Placeorder {
       let totalQty = 0;
       let RemainingQty = 0;
       if (type === "buy") {
-        console.log("tradehistory.buy_lot");
+
         totalQty = (tradehistory.buy_lot || 0) + lotNum;
         RemainingQty = tradehistory.sell_lot - totalQty;
       } else {
-        console.log("tradehistory.sell_lot");
+      
         totalQty = (tradehistory.sell_lot || 0) + lotNum;
         RemainingQty = tradehistory.buy_lot - totalQty;
       }
 
       if (RemainingQty == 0 && checkadmin.pertrade) {
-        console.log("brokerage--------------");
+     
         brokerage = 0;
       }
 
-      console.log("totalQty--", totalQty);
-      console.log("RemainingQty--", RemainingQty);
+ 
 
       // Validate lot size based on type (buy or sell)
       if (
@@ -424,11 +441,11 @@ class Placeorder {
         Profitloss = tradehistory.sell_price * qtyNum - priceNum * qtyNum;
       }
 
-      console.log("Profitloss--", Profitloss);
+      console.log("sq Profitloss--", Profitloss);
 
       let Totalupdateuserbalance = Profitloss - brokerage;
 
-      console.log("Totalupdateuserbalance--", Totalupdateuserbalance);
+      console.log("sq Totalupdateuserbalance--", Totalupdateuserbalance);
 
       let totaladdbalance =
         parseFloat(tradehistory?.totalamount || 1) * qtyNum +
@@ -466,7 +483,6 @@ class Placeorder {
       } else {
         tradehistory.orderid = [orderdata._id];
       }
-      console.log("type", type);
 
       // Update trade history and user balance based on the type (buy or sell)
       if (type === "buy") {
@@ -553,8 +569,6 @@ class Placeorder {
         lotsize,
       } = req.body;
 
-      console.log("req.body", req.body);
-
       const checkadmin = await User_model.findOne({
         _id: userid,
         Role: "USER",
@@ -587,12 +601,10 @@ class Placeorder {
       // const totalamount =
       //   parseFloat(requiredFund) / parseFloat(checkadmin.limit);
 
-      // console.log("requiredFund", requiredFund);
 
       // let brokerageFund = requiredFund + brokerage + brokerage;
-      // console.log("brokerageFund", brokerageFund);
+    
 
-      // console.log("checkbalance", checkbalance);
 
       // Check by Orignal Balance  -------------------------------------------------------------------------------------
 
@@ -601,12 +613,10 @@ class Placeorder {
       const totalamount =
         parseFloat(requiredFund) / parseFloat(checkadmin.limit);
 
-      console.log("requiredFund-", requiredFund);
 
       let brokerageFund = totalamount + brokerage + brokerage;
-      console.log("brokerageFund-", brokerageFund);
+    
 
-      console.log("checkbalance-", checkbalance);
 
       if (parseFloat(checkbalance) < parseFloat(brokerageFund)) {
         const rejectedOrder = new Order({
@@ -721,6 +731,30 @@ const EntryTrade = async (
       },
     });
 
+    const limitclaculation =
+      parseFloat(requiredFund) / parseFloat(checkadmin.limit);
+
+    const updateuserbalance =
+      parseFloat(checkadmin.Balance) - parseFloat(limitclaculation);
+
+    const Totalupdateuserbalance =
+      parseFloat(updateuserbalance) - parseFloat(brokerage) * 2;
+
+    console.log("limitclaculation", limitclaculation);
+
+    console.log("lot - ", lot);
+    let ActualFun = limitclaculation;
+    if (lot > 1) {
+      ActualFun = limitclaculation / lot;
+    }
+    console.log("ActualFun - ", ActualFun);
+    const seventyPercent = (ActualFun * 70) / 100;
+
+    console.log("seventyPercent - ", seventyPercent);
+    console.log("price - ", price);
+
+    console.log("price - seventyPercent", price - seventyPercent);
+
     tradehistory = new mainorder_model({
       orderid: orderdata._id,
       userid,
@@ -743,18 +777,10 @@ const EntryTrade = async (
       createdAt: currentTime,
       signal_type: "buy_sell",
       totalamount: totalamount / qtyNum,
+      Sl_price_percentage: price - seventyPercent,
     });
 
     await tradehistory.save();
-
-    const limitclaculation =
-      parseFloat(requiredFund) / parseFloat(checkadmin.limit);
-
-    const updateuserbalance =
-      parseFloat(checkadmin.Balance) - parseFloat(limitclaculation);
-
-    const Totalupdateuserbalance =
-      parseFloat(updateuserbalance) - parseFloat(brokerage) * 2;
 
     await User_model.updateOne(
       { _id: checkadmin._id },
@@ -777,6 +803,7 @@ const EntryTrade = async (
       message: "Order placed",
     });
   } catch (error) {
+    console.error("Error processing buy order:", error);
     return res.json({ status: false, message: "internal error", data: [] });
   }
 };
@@ -837,6 +864,30 @@ const ExitTrade = async (
       });
     }
 
+    const limitclaculation =
+      parseFloat(requiredFund) / parseFloat(checkadmin.limit);
+    const updateuserbalance =
+      parseFloat(checkadmin.Balance) - parseFloat(limitclaculation);
+
+    const Totalupdateuserbalance =
+      parseFloat(updateuserbalance) - parseFloat(brokerage) * 2;
+
+
+      console.log("limitclaculation", limitclaculation);
+
+      console.log("lot - ", lot);
+      let ActualFun = limitclaculation;
+      if (lot > 1) {
+        ActualFun = limitclaculation / lot;
+      }
+      console.log("ActualFun - ", ActualFun);
+      const seventyPercent = (ActualFun * 70) / 100;
+  
+      console.log("seventyPercent - ", seventyPercent);
+      console.log("price - ", price);
+  
+      console.log("sell price - seventyPercent", price + seventyPercent);
+
     tradehistory = new mainorder_model({
       orderid: orderdata._id,
       userid,
@@ -859,17 +910,10 @@ const ExitTrade = async (
       createdAt: currentTime,
       signal_type: "sell_buy",
       totalamount: totalamount / qty,
+      Sl_price_percentage: price + seventyPercent,
     });
 
     await tradehistory.save();
-
-    const limitclaculation =
-      parseFloat(requiredFund) / parseFloat(checkadmin.limit);
-    const updateuserbalance =
-      parseFloat(checkadmin.Balance) - parseFloat(limitclaculation);
-
-    const Totalupdateuserbalance =
-      parseFloat(updateuserbalance) - parseFloat(brokerage) * 2;
 
     await User_model.updateOne(
       { _id: checkadmin._id },

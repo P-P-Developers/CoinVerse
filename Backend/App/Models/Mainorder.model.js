@@ -116,6 +116,10 @@ const mainorderSchema = new mongoose.Schema({
     type: Number,
     default: null,
   },
+  Sl_price_percentage: {
+    type: Number,
+    default: null,
+  },
   orderid: [
     {
       type: mongoose.Schema.Types.ObjectId,
