@@ -13,6 +13,7 @@ const Tradehistory = () => {
   const Role = userDetails?.Role;
 
   const [data, setData] = useState([]);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   // Define columns for the table
   const columns = [
@@ -190,7 +191,33 @@ const Tradehistory = () => {
                           {totalProfitLoss}
                         </span>
                       </h5>
-                      <Table columns={columns} data={data && data} />
+                      <Table
+                        columns={columns}
+                        data={data && data}
+                        rowsPerPage={rowsPerPage}
+                      />
+                      <div
+                        className="d-flex align-items-center"
+                        style={{
+                          marginBottom: "20px",
+                          marginLeft: "20px",
+                          marginTop: "-48px",
+                        }}>
+                        Rows per page:{" "}
+                        <select
+                          className="form-select ml-2"
+                          value={rowsPerPage}
+                          onChange={(e) =>
+                            setRowsPerPage(Number(e.target.value))
+                          }
+                          style={{ width: "auto", marginLeft: "10px" }}>
+                          <option value={5}>5</option>
+                          <option value={10}>10</option>
+                          <option value={20}>20</option>
+                          <option value={50}>50</option>
+                          <option value={100}>100</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
                 </div>

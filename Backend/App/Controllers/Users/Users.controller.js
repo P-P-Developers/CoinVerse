@@ -463,6 +463,83 @@ class Users {
   }
 
 
+ async  tradeStatementForOrder(req, res) {
+  try {
+    const { orderid } = req.body;
+
+    if (!Array.isArray(orderid) || orderid.length === 0) {
+      return res.json({
+        status: false,
+        message: "Order IDs are required",
+        data: [],
+      });
+    }
+
+    const balanceStatements = await BalanceStatement.find({
+      orderid: { $in: orderid },  
+      symbol: { $ne: null },
+    }).sort({ createdAt: -1 });
+
+    if (!balanceStatements || balanceStatements.length === 0) {
+      return res.json({
+        status: false,
+        message: "Data not found",
+        data: [],
+      });
+    }
+
+    const uniqueOrderIds = balanceStatements
+      .flatMap((statement) => statement.orderid || [])
+      .filter((id) => mongoose.Types.ObjectId.isValid(id))
+      .map((id) => new mongoose.Types.ObjectId(id));
+
+    const orders = await Order.find({ _id: { $in: uniqueOrderIds } }, {
+      _id: 1,
+      totalamount: 1,
+      lot: 1,
+      qty: 1,
+      lotSize: 1,
+    });
+
+    const orderMap = new Map(
+      orders.map((order) => [order._id.toString(), order])
+    );
+
+    const enrichedData = balanceStatements.map((statement) => {
+      const enrichedOrders = (statement.orderid || []).map((orderId) => {
+        const orderDetails = orderMap.get(orderId.toString()) || {};
+        return {
+          orderid: orderId,
+          totalAmount: orderDetails.totalamount || null,
+          lot: orderDetails.lot || null,
+          lotSize: orderDetails.lotSize || null,
+          qty: orderDetails.qty || null
+        };
+      });
+
+      return {
+        ...statement.toObject(),
+        orders: enrichedOrders,  
+      };
+    });
+
+    return res.json({
+      status: true,
+      message: "Data retrieved successfully",
+      data: enrichedData,
+    });
+  } catch (error) {
+    console.error("Error in tradeStatementForOrder:", error);
+
+    return res.json({
+      status: false,
+      message: "Internal server error",
+      data: [],
+    });
+  }
+}
+
+
   async generatePin(req, res) {
     try {
       const { user_id, pin } = req.body;
@@ -554,7 +631,6 @@ class Users {
           data: [],
         });
       }
-
       // Validate the new PIN and confirm PIN to ensure they're 4
       if (!/^\d{4}$/.test(newPin)) {
         return res.send({

@@ -12,6 +12,7 @@ const Position = () => {
   const [selectedUserName, setSelectedUserName] = useState(null); // state for selected user
   const [data, setData] = useState([]); // Filtered data for table
   const [search, setSearch] = useState("");
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const columns = [
     { Header: "symbol", accessor: "symbol" },
@@ -99,7 +100,11 @@ const Position = () => {
                 </div>
                 <div className="card-body p-0">
                   <div className="tab-content" id="myTabContent1">
-                    <div className="tab-pane fade show active" id="Week" role="tabpanel" aria-labelledby="Week-tab">
+                    <div
+                      className="tab-pane fade show active"
+                      id="Week"
+                      role="tabpanel"
+                      aria-labelledby="Week-tab">
                       <div className="mb-3 ms-4">
                         {/* Horizontal Layout for Search and Select User */}
                         <div className="d-flex align-items-center mb-3">
@@ -120,9 +125,10 @@ const Position = () => {
                             <label className="form-label">Select User:</label>
                             <select
                               className="form-control"
-                              onChange={(e) => setSelectedUserName(e.target.value)}
-                              value={selectedUserName}
-                            >
+                              onChange={(e) =>
+                                setSelectedUserName(e.target.value)
+                              }
+                              value={selectedUserName}>
                               <option value="">Select a user</option>
                               {originalData.length > 0 ? (
                                 originalData.map((user) => (
@@ -139,7 +145,33 @@ const Position = () => {
                       </div>
 
                       {/* Table */}
-                      <Table columns={columns} data={data && data} />
+                      <Table
+                        columns={columns}
+                        data={data && data}
+                        rowsPerPage={rowsPerPage}
+                      />
+                      <div
+                        className="d-flex align-items-center"
+                        style={{
+                          marginBottom: "20px",
+                          marginLeft: "20px",
+                          marginTop: "-48px",
+                        }}>
+                        Rows per page:{" "}
+                        <select
+                          className="form-select ml-2"
+                          value={rowsPerPage}
+                          onChange={(e) =>
+                            setRowsPerPage(Number(e.target.value))
+                          }
+                          style={{ width: "auto", marginLeft: "10px" }}>
+                          <option value={5}>5</option>
+                          <option value={10}>10</option>
+                          <option value={20}>20</option>
+                          <option value={50}>50</option>
+                          <option value={100}>100</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
                 </div>

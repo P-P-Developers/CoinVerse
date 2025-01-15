@@ -20,6 +20,8 @@ const SuperAdminTradeHistory = () => {
   const [data, setData] = useState([]);
   const [userName, setUserName] = useState();
   const [Userid, setUserId] = useState();
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
 
 
   // Define columns for the table
@@ -317,7 +319,36 @@ const SuperAdminTradeHistory = () => {
                         </span>
                       </h5>
                       {Userid ? (
-                        <Table columns={columns} data={data && data} />
+                        <div>
+                          {" "}
+                          <Table
+                            columns={columns}
+                            data={data && data}
+                            rowsPerPage={rowsPerPage}
+                          />
+                          <div
+                            className="d-flex align-items-center"
+                            style={{
+                              marginBottom: "20px",
+                              marginLeft: "20px",
+                              marginTop: "-48px",
+                            }}>
+                            Rows per page:{" "}
+                            <select
+                              className="form-select ml-2"
+                              value={rowsPerPage}
+                              onChange={(e) =>
+                                setRowsPerPage(Number(e.target.value))
+                              }
+                              style={{ width: "auto", marginLeft: "10px" }}>
+                              <option value={5}>5</option>
+                              <option value={10}>10</option>
+                              <option value={20}>20</option>
+                              <option value={50}>50</option>
+                              <option value={100}>100</option>
+                            </select>
+                          </div>
+                        </div>
                       ) : (
                         <div
                           className="alert alert-warning text-center text-black"

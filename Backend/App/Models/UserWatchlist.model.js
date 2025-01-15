@@ -25,6 +25,10 @@ const userwatchlistSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
 },
+  isFav: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const Userwatchlist = mongoose.model('Userwatchlist', userwatchlistSchema);
