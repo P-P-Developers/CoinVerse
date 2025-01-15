@@ -97,15 +97,75 @@ class UserSymbol {
   }
 
   // user userwalist list / backup code 
+  // async userSymbollist(req, res) {
+  //   try {
+
+
+  //     const userWatchlistRecords = await Userwatchlist.find({
+  //       userid: req.body.userid,
+  //     })
+  //       .select("-createdAt -_id")
+  //       .sort({ _id: -1 });
+
+  //     const result = await Userwatchlist.aggregate([
+  //       { $match: { userid: req.body.userid } },
+  //       {
+  //         $lookup: {
+  //           from: "symbols",
+  //           localField: "symbol",
+  //           foreignField: "symbol",
+  //           as: "symbolDetails",
+  //           pipeline: [
+  //             { $match: { status: 1 } }, // Includingg status = 1
+  //           ],
+  //         },
+  //       },
+  //       { $unwind: "$symbolDetails" },
+  //       {
+  //         $project: {
+  //           symbol: 1,
+  //           userid: 1,
+  //           token: 1,
+  //           symbol_name: 1,
+  //           exch_seg: 1,
+
+  //           lotsize: "$symbolDetails.lotsize",
+  //         },
+  //       },
+  //     ]);
+
+  //     // Check if records are found and return the appropriate response
+  //     if (result.length > 0) {
+  //       return res.json({ status: true, data: result });
+  //     } else {
+  //       res.json({ status: false, message: "No data available", data: [] });
+  //     }
+  //   } catch (err) {
+  //     return res.json({
+  //       status: false,
+  //       message:
+  //         err.message ||
+  //         "An error occurred while retrieving the User Symbol List.",
+  //       data: [],
+  //     });
+  //   }
+  // }
+
+
+  // Userwatchlist with favourite status new code 
   async userSymbollist(req, res) {
     try {
-
-
       const userWatchlistRecords = await Userwatchlist.find({
         userid: req.body.userid,
       })
         .select("-createdAt -_id")
         .sort({ _id: -1 });
+
+      const favouriteList = await Favouritelist.find({
+        userid: req.body.userid,
+      }).select("symbol");
+
+      const favouriteSymbols = favouriteList.map(item => item.symbol);
 
       const result = await Userwatchlist.aggregate([
         { $match: { userid: req.body.userid } },
@@ -115,9 +175,7 @@ class UserSymbol {
             localField: "symbol",
             foreignField: "symbol",
             as: "symbolDetails",
-            pipeline: [
-              { $match: { status: 1 } }, // Includingg status = 1
-            ],
+            pipeline: [{ $match: { status: 1 } }],
           },
         },
         { $unwind: "$symbolDetails" },
@@ -128,13 +186,19 @@ class UserSymbol {
             token: 1,
             symbol_name: 1,
             exch_seg: 1,
-
             lotsize: "$symbolDetails.lotsize",
           },
         },
       ]);
 
-      // Check if records are found and return the appropriate response
+      result.forEach((item) => {
+        if (favouriteSymbols.includes(item.symbol)) {
+          item.isFav = true;
+        } else {
+          item.isFav = false;
+        }
+      });
+
       if (result.length > 0) {
         return res.json({ status: true, data: result });
       } else {
@@ -144,8 +208,7 @@ class UserSymbol {
       return res.json({
         status: false,
         message:
-          err.message ||
-          "An error occurred while retrieving the User Symbol List.",
+          err.message || "An error occurred while retrieving the User Symbol List.",
         data: [],
       });
     }

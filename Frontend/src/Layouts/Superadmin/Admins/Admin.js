@@ -33,6 +33,8 @@ const Admin = () => {
 
   const [loading, setLoading] = useState(false);
   const [rowId, setRowId] = useState('');
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
 
 
 
@@ -530,7 +532,29 @@ const Admin = () => {
                           style={{ width: "20%" }}
                         />
                       </div>
-                      <Table columns={columns} data={data} />
+                        <Table columns={columns} data={data} rowsPerPage={rowsPerPage} />
+                        <div
+                          className="d-flex align-items-center"
+                          style={{
+                            marginBottom: "20px",
+                            marginLeft: "20px",
+                            marginTop: "-48px",
+                          }}>
+                          Rows per page:{" "}
+                          <select
+                            className="form-select ml-2"
+                            value={rowsPerPage}
+                            onChange={(e) =>
+                              setRowsPerPage(Number(e.target.value))
+                            }
+                            style={{ width: "auto", marginLeft: "10px" }}>
+                            <option value={5}>5</option>
+                            <option value={10}>10</option>
+                            <option value={20}>20</option>
+                            <option value={50}>50</option>
+                            <option value={50}>100</option>
+                          </select>
+                        </div>
                     </div>
                   </div>
                 </div>
