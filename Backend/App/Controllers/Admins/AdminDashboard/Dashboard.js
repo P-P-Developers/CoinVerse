@@ -88,7 +88,7 @@ class Dashboard {
   //       data: Count,
   //     });
   //   } catch (error) {
-  
+
   //     res.status(500).send({
   //       status: false,
   //       message: "Internal Server Error",
@@ -96,13 +96,15 @@ class Dashboard {
   //   }
   // }
 
-
   async GetDashboardData(req, res) {
     try {
       const { parent_id } = req.body;
 
       // Fetch total licenses for the given parent_id
-      const parentData = await User_model.findOne({ _id: parent_id }, { Licence: 1 });
+      const parentData = await User_model.findOne(
+        { _id: parent_id },
+        { Licence: 1 }
+      );
       const TotalLicence = parentData ? parentData.Licence || 0 : 0;
 
       // Fetch the sum of Licences from all Users and Employees under the parent_id
@@ -215,7 +217,61 @@ class Dashboard {
     }
   }
 
+  async apiPrice(req, res) {
+    const API_TOKEN = process.env.API_TOKEN;
 
+    // Extract the symbol from the query parameters
+    const { symbol, day } = req.query;
+
+    if (!symbol) {
+      return res
+        .status(400)
+        .json({ error: "Symbol is required in the query." });
+    }
+
+    // Calculate the date range (from 50 days before yesterday to yesterday)
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    const startDate = new Date(yesterday);
+    startDate.setDate(yesterday.getDate() - day);
+
+    // Format dates as 'YYYY-MM-DD'
+    const formatDate = (date) => date.toISOString().split("T")[0];
+    const formattedStartDate = formatDate(startDate);
+    const formattedEndDate = formatDate(yesterday);
+
+    // Function to fetch data from Tiingo API
+    const fetchTiingoData = async () => {
+      const url = `https://api.tiingo.com/tiingo/daily/${symbol}/prices?startDate=${formattedStartDate}&endDate=${formattedEndDate}&token=${API_TOKEN}`;
+
+      try {
+        const response = await axios.get(url, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        // Check if the response is valid
+        if (response.status === 200) {
+          return res.status(200).json(response.data);
+        } else {
+          return res
+            .status(response.status)
+            .json({ error: `Error: Received status code ${response.status}` });
+        }
+      } catch (error) {
+        console.log("Error fetching data:", error.message);
+        return res
+          .status(500)
+          .json({ error: "An error occurred while fetching data." });
+      }
+    };
+
+    // Call the fetch function
+    fetchTiingoData();
+  }
 }
 
 module.exports = new Dashboard();
