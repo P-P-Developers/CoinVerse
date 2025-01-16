@@ -276,7 +276,7 @@ class Users {
           data: [],
         });
       }
-cd
+
       const adminId = user.parent_id;
 
       // Define start and end of today
