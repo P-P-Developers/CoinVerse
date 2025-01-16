@@ -129,6 +129,10 @@ const mainorderSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  Exittype: {
+    type: String,
+    default: null,
+  },
 
   orderid: [
     {

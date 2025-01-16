@@ -125,21 +125,14 @@ db.createView(
               {
                 case: {
                   $and: [
+                    { $ne: ["$stoploss_price", null] }, // Check for null
+                    { $regexMatch: { input: "$stoploss_price", regex: /^[0-9]+(\.[0-9]+)?$/ } }, // Check valid numeric format
                     { $eq: ["$signal_type", "buy_sell"] },
                     {
                       $lte: [
                         "$livePriceData.Bid_Price",
                         {
-                          $ifNull: [
-                            {
-                              $cond: {
-                                if: { $regexMatch: { input: "$stoploss_price", regex: /^[0-9]+(\.[0-9]+)?$/ } },
-                                then: { $toDouble: "$stoploss_price" },
-                                else: null,
-                              },
-                            },
-                            false,
-                          ],
+                          $toDouble: "$stoploss_price",
                         },
                       ],
                     },
@@ -150,21 +143,14 @@ db.createView(
               {
                 case: {
                   $and: [
+                    { $ne: ["$stoploss_price", null] }, // Check for null
+                    { $regexMatch: { input: "$stoploss_price", regex: /^[0-9]+(\.[0-9]+)?$/ } }, // Check valid numeric format
                     { $eq: ["$signal_type", "sell_buy"] },
                     {
                       $gte: [
                         "$livePriceData.Bid_Price",
                         {
-                          $ifNull: [
-                            {
-                              $cond: {
-                                if: { $regexMatch: { input: "$stoploss_price", regex: /^[0-9]+(\.[0-9]+)?$/ } },
-                                then: { $toDouble: "$stoploss_price" },
-                                else: null,
-                              },
-                            },
-                            false,
-                          ],
+                          $toDouble: "$stoploss_price",
                         },
                       ],
                     },
@@ -176,6 +162,8 @@ db.createView(
             default: false,
           },
         },
+        
+        
         checkSlPercent_target: {
           $switch: {
             branches: [
@@ -183,21 +171,18 @@ db.createView(
                 case: {
                   $and: [
                     { $eq: ["$signal_type", "buy_sell"] },
+                    { 
+                      $ne: ["$Target_price", null] }, // Check if Target_price is not null
+                    {
+                      $regexMatch: { 
+                        input: "$Target_price", 
+                        regex: /^[0-9]+(\.[0-9]+)?$/ 
+                      }, // Ensure Target_price is a valid numeric value
+                    },
                     {
                       $gte: [
                         "$livePriceData.Bid_Price",
-                        {
-                          $ifNull: [
-                            {
-                              $cond: {
-                                if: { $regexMatch: { input: "$Target_price", regex: /^[0-9]+(\.[0-9]+)?$/ } },
-                                then: { $toDouble: "$Target_price" },
-                                else: null,
-                              },
-                            },
-                            false,
-                          ],
-                        },
+                        { $toDouble: "$Target_price" },
                       ],
                     },
                   ],
@@ -208,21 +193,18 @@ db.createView(
                 case: {
                   $and: [
                     { $eq: ["$signal_type", "sell_buy"] },
+                    { 
+                      $ne: ["$Target_price", null] }, // Check if Target_price is not null
+                    {
+                      $regexMatch: { 
+                        input: "$Target_price", 
+                        regex: /^[0-9]+(\.[0-9]+)?$/ 
+                      }, // Ensure Target_price is a valid numeric value
+                    },
                     {
                       $lte: [
                         "$livePriceData.Bid_Price",
-                        {
-                          $ifNull: [
-                            {
-                              $cond: {
-                                if: { $regexMatch: { input: "$Target_price", regex: /^[0-9]+(\.[0-9]+)?$/ } },
-                                then: { $toDouble: "$Target_price" },
-                                else: null,
-                              },
-                            },
-                            false,
-                          ],
-                        },
+                        { $toDouble: "$Target_price" },
                       ],
                     },
                   ],
@@ -233,6 +215,7 @@ db.createView(
             default: false,
           },
         },
+        
         
         
         buy_time: 1,

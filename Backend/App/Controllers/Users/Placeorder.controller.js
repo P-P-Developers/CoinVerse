@@ -177,7 +177,7 @@ class Placeorder {
             userid,
             createdAt: { $gte: new Date(startOfDay), $lte: new Date(endOfDay) },
             // $or: [{ buy_type: null }, { sell_type: null }],
-            $expr: { $ne: ["$buy_qty", "$sell_qty"] },
+            // $expr: { $ne: ["$buy_qty", "$sell_qty"] },
           },
         },
         {
@@ -211,9 +211,10 @@ class Placeorder {
             Target_price: 1,
             stoploss_price: 1,
             Mk_type: 1, // Include Mk_type in the response
+            Exittype: 1,
           },
         },
-        { $sort: { createdAt: -1 } },
+        // { $sort: { createdAt: -1 } },
       ]);
 
       if (!finduser.length) {
@@ -224,7 +225,21 @@ class Placeorder {
         });
       }
 
-      res.json({ status: true, data: finduser });
+      let PositionData = finduser.map((data) => {
+        return {
+          ...data,
+          buy_price:
+            data?.buy_price && !isNaN(data.buy_price)
+              ? data.buy_price.toFixed(4)
+              : null,
+          sell_price:
+            data?.sell_price && !isNaN(data.sell_price)
+              ? data.sell_price.toFixed(4)
+              : null,
+        };
+      });
+
+      res.json({ status: true, data: PositionData });
     } catch (error) {
       console.error("Error fetching positions:", error);
       res.json({ status: false, error: "Internal Server Error", data: [] });
@@ -294,6 +309,7 @@ class Placeorder {
             Target_price: 1,
             stoploss_price: 1,
             Mk_type: 1, // Include Mk_type in the response
+            Exittype: 1,
           },
         },
         { $sort: { createdAt: -1 } },
@@ -403,13 +419,24 @@ class Placeorder {
   // squareoff
   async Squareoff(req, res) {
     try {
-      const { id, userid, symbol, type, lot, price, qty, requiredFund } =
-        req.body;
+      const {
+        id,
+        userid,
+        symbol,
+        type,
+        lot,
+        price,
+        qty,
+        requiredFund,
+        Exittype,
+      } = req.body;
 
       // Parse input values as floating-point numbers to handle decimals
       const priceNum = parseFloat(price);
       const lotNum = parseFloat(lot);
       const qtyNum = parseFloat(qty);
+
+      let ExittypeData = Exittype ?? "SQUAREOFF";
 
       // Fetch trade history and user details
       const tradehistory = await mainorder_model.findOne({ _id: id });
@@ -515,6 +542,7 @@ class Placeorder {
         requiredFund: totalamountCal,
         type,
         status: "Completed",
+        Exittype: ExittypeData,
       });
 
       const orderdata = await newOrder.save();
@@ -541,6 +569,7 @@ class Placeorder {
         tradehistory.buy_type = type;
         tradehistory.buy_time = new Date();
         tradehistory.profitloss = Profitloss;
+        tradehistory.Exittype = ExittypeData;
 
         await tradehistory.save();
       } else if (type === "sell") {
@@ -556,6 +585,7 @@ class Placeorder {
         tradehistory.sell_type = type;
         tradehistory.sell_time = new Date();
         tradehistory.profitloss = Profitloss;
+        tradehistory.Exittype = ExittypeData;
 
         await tradehistory.save();
       }
@@ -575,6 +605,7 @@ class Placeorder {
         message: "Balance used to sell",
         symbol: symbol,
         brokerage: brokerage,
+        Exittype: ExittypeData,
       });
 
       await newstatement.save();

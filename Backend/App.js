@@ -43,7 +43,7 @@ require("./App/Routes")(app);
 require("./App/Controllers/Cron/Cron");
 
 
-require("./App/Controllers/common/Openposition");
+// require("./App/Controllers/common/Openposition");
 
 // httpsserver.listen(1001)
 server.listen(process.env.PORT, () => {

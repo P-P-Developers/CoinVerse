@@ -49,6 +49,7 @@ class OpenPositions {
                 ((position?.buy_qty || 0) - (position?.sell_qty || 0)),
               lotsize: position?.lotsize,
               type: "sell",
+              Exittype:position.checkSlPercent ? "FUND_WISE" : position.checkSlPercent_sl ? "SL" : "TARGET",
             };
           } else if (position?.signal_type == "sell_buy") {
             commonData = {
@@ -63,6 +64,8 @@ class OpenPositions {
                 ((position?.sell_qty || 0) - (position?.buy_qty || 0)),
               lotsize: position?.lotsize,
               type: "buy",
+              Exittype:position.checkSlPercent ? "FUND_WISE" : position.checkSlPercent_sl ? "SL" : "TARGET"
+
             };
           }
 

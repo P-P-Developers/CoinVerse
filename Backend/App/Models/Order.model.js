@@ -86,6 +86,10 @@ const orderSchema = new mongoose.Schema({
     type: Number,
     default: null,
   },
+  Exittype: {
+    type: String,
+    default: null,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

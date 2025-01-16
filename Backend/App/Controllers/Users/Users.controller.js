@@ -378,6 +378,7 @@ class Users {
           lot: 1,
           qty: 1,
           lotSize: 1,
+          Exittype: 1,
         }
       );
 
@@ -388,20 +389,21 @@ class Users {
 
       // Enrich balance statements with order details
       const enrichedData = balanceStatements.map((statement) => {
-        const enrichedOrders = (statement.orderid || []).map((orderId) => {
-          const orderDetails = orderMap.get(orderId.toString()) || {};
+        const enrichedOrders = (statement?.orderid || []).map((orderId) => {
+          const orderDetails = orderMap?.get(orderId?.toString()) || {};
           return {
             orderid: orderId,
-            totalAmount: orderDetails?.totalamount.toFixed(4) || null,
+            totalAmount: orderDetails?.totalamount?.toFixed(4) || null,
             lot: orderDetails.lot || null,
-            lotSize: orderDetails.lotSize || null,
+            lotSize: orderDetails?.lotSize || null,
             qty: orderDetails.qty || null,
+            Exittype: orderDetails?.Exittype || null,
           };
         });
 
         return {
           ...statement.toObject(),
-          Amount: statement.Amount.toFixed(4), // Format the amount
+          Amount: statement?.Amount?.toFixed(4), // Format the amount
           orders: enrichedOrders, // Add enriched order details
         };
       });
@@ -566,6 +568,7 @@ class Users {
                 lot: "$orderDetails.lot",
                 qty: "$orderDetails.qty",
                 lotSize: "$orderDetails.lotSize",
+                Exittype: "$orderDetails.Exittype",
               },
             },
             {
@@ -582,6 +585,7 @@ class Users {
                 lot: 1,
                 qty: 1,
                 lotSize: 1,
+                Exittype: 1,
               },
             },
           ]);
