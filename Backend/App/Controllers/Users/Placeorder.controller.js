@@ -140,70 +140,79 @@ class Placeorder {
       const { userid } = req.body;
 
       const today = new Date();
-      const startOfDay = new Date(today.setHours(0, 0, 0, 0));
-      const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+      const startOfDay = today.setHours(0, 0, 0, 0);
+      const endOfDay = today.setHours(23, 59, 59, 999);
 
-      const finduser = await mainorder_model
-        .find({
-          userid: userid,
-          createdAt: { $gte: startOfDay, $lte: endOfDay },
-        })
-        .sort({ createdAt: -1 });
+      // List of crypto tokens
+      const cryptoTokens = [
+        "usdtusd",
+        "btcxrp",
+        "btcusd",
+        "ethxrp",
+        "ethusd",
+        "usdcusd",
+        "solusd",
+        "solbtc",
+        "bnbbtc",
+        "xrpusd",
+        "daiusd",
+        "dogeusd",
+      ];
 
-      if (!finduser || finduser.length === 0) {
-        return res.json({
-          status: false,
-          error: "No positions found",
-          data: [],
-        });
-      }
-
-      const symbols = [...new Set(finduser.map((trade) => trade.symbol))];
-
-      const tokenDataMap = await Symbol.find({ symbol: { $in: symbols } }).then(
-        (symbolsData) =>
-          symbolsData.reduce((map, symbolData) => {
-            map[symbolData.symbol] = symbolData.token;
-            return map;
-          }, {})
-      );
-
-      const currentPosition = finduser.reduce(
-        (acc, trade) => {
-          const token = tokenDataMap[trade.symbol];
-
-          acc.openPositions.push({
-            _id: trade._id,
-            symbol: trade.symbol,
-            token: token,
-            requiredFund: trade.requiredFund,
-            lotsize: trade.lotsize,
-            signal_type: trade.signal_type,
-            buy_price: trade.buy_price?.toFixed(5),
-            buy_lot: trade.buy_lot,
-            buy_qty: trade.buy_qty,
-            buy_type: trade.buy_type,
-            buy_time: trade.buy_time,
-            sell_type: trade.sell_type,
-            sell_lot: trade.sell_lot,
-            sell_qty: trade.sell_qty,
-            sell_time: trade.sell_time,
-            sell_price: trade.sell_price?.toFixed(5),
-          });
-
-          return acc;
+      const finduser = await mainorder_model.aggregate([
+        {
+          $match: {
+            userid,
+            createdAt: { $gte: new Date(startOfDay), $lte: new Date(endOfDay) },
+            $or: [{ buy_type: null }, { sell_type: null }],
+          },
         },
-        { openPositions: [] }
-      );
-      if (currentPosition?.openPositions?.length == 0) {
+        {
+          $addFields: {
+            Mk_type: {
+              $cond: {
+                if: { $in: [{ $toLower: "$token" }, cryptoTokens] },
+                then: "crypto",
+                else: "forex",
+              },
+            },
+          },
+        },
+        {
+          $project: {
+            symbol: 1,
+            buy_type: 1,
+            sell_type: 1,
+            buy_lot: 1,
+            sell_lot: 1,
+            buy_qty: 1,
+            sell_qty: 1,
+            buy_price: 1,
+            sell_price: 1,
+            requiredFund: 1,
+            lotsize: 1,
+            signal_type: 1,
+            buy_time: 1,
+            sell_time: 1,
+            token: 1,
+            Mk_type: 1, // Include Mk_type in the response
+          },
+        },
+        { $sort: { createdAt: -1 } },
+      ]);
+
+      if (!finduser.length) {
         return res.json({
           status: false,
           error: "No positions found",
           data: [],
         });
       }
-      res.json({ status: true, data: currentPosition.openPositions });
+
+      console.log("currentPosition", finduser);
+      res.json({ status: true, data: finduser });
     } catch (error) {
+      console.error("Error fetching positions:", error);
       res.json({ status: false, error: "Internal Server Error", data: [] });
     }
   }
@@ -216,13 +225,62 @@ class Placeorder {
       const today = new Date();
       const startOfDay = new Date(today.setHours(0, 0, 0, 0));
 
-      // Fetch all records before today
-      const finduser = await mainorder_model
-        .find({
-          userid: userid,
-          createdAt: { $lt: startOfDay },
-        })
-        .sort({ createdAt: -1 });
+      const cryptoTokens = [
+        "usdtusd",
+        "btcxrp",
+        "btcusd",
+        "ethxrp",
+        "ethusd",
+        "usdcusd",
+        "solusd",
+        "solbtc",
+        "bnbbtc",
+        "xrpusd",
+        "daiusd",
+        "dogeusd",
+      ];
+
+      const finduser = await mainorder_model.aggregate([
+        {
+          $match: {
+            userid,
+            createdAt: { $lt: startOfDay },
+            $or: [{ buy_type: null }, { sell_type: null }],
+          },
+        },
+        {
+          $addFields: {
+            Mk_type: {
+              $cond: {
+                if: { $in: [{ $toLower: "$token" }, cryptoTokens] },
+                then: "crypto",
+                else: "forex",
+              },
+            },
+          },
+        },
+        {
+          $project: {
+            symbol: 1,
+            buy_type: 1,
+            sell_type: 1,
+            buy_lot: 1,
+            sell_lot: 1,
+            buy_qty: 1,
+            sell_qty: 1,
+            buy_price: 1,
+            sell_price: 1,
+            requiredFund: 1,
+            lotsize: 1,
+            signal_type: 1,
+            buy_time: 1,
+            sell_time: 1,
+            token: 1,
+            Mk_type: 1, // Include Mk_type in the response
+          },
+        },
+        { $sort: { createdAt: -1 } },
+      ]);
 
       if (finduser.length == 0) {
         return res.json({
@@ -232,56 +290,7 @@ class Placeorder {
         });
       }
 
-      const symbols = [...new Set(finduser.map((trade) => trade.symbol))];
-
-      const tokenDataMap = await Symbol.find({ symbol: { $in: symbols } }).then(
-        (symbolsData) =>
-          symbolsData.reduce((map, symbolData) => {
-            map[symbolData.symbol] = symbolData.token;
-            return map;
-          }, {})
-      );
-
-      const currentHoldings = finduser.reduce(
-        (acc, trade) => {
-          if (trade.buy_lot === trade.sell_lot) {
-            return acc;
-          }
-
-          const token = tokenDataMap[trade.symbol];
-
-          acc.holdings.push({
-            _id: trade._id,
-            symbol: trade.symbol,
-            token: token,
-            requiredFund: trade.requiredFund,
-            lotsize: trade.lotsize,
-            signal_type: trade.signal_type,
-            buy_price: trade.buy_price?.toFixed(5),
-            buy_lot: trade.buy_lot,
-            buy_qty: trade.buy_qty,
-            buy_type: trade.buy_type,
-            buy_time: trade.buy_time,
-            sell_type: trade.sell_type,
-            sell_lot: trade.sell_lot,
-            sell_qty: trade.sell_qty,
-            sell_time: trade.sell_time,
-            sell_price: trade.sell_price?.toFixed(5),
-          });
-
-          return acc;
-        },
-        { holdings: [] }
-      );
-      if (currentHoldings?.holdings?.length == 0) {
-        return res.json({
-          status: false,
-          error: "No holdings found",
-          data: [],
-        });
-      }
-
-      return res.json({ status: true, data: currentHoldings.holdings });
+      return res.json({ status: true, data: finduser });
     } catch (error) {
       return res.json({
         status: false,
@@ -427,6 +436,7 @@ class Placeorder {
         brokerage = 0;
       }
 
+      // Validate lot size based on type (buy or sell)
       if (
         type === "buy" &&
         (tradehistory.buy_lot || 0) + lotNum > tradehistory.sell_lot
@@ -456,7 +466,11 @@ class Placeorder {
         Profitloss = tradehistory.sell_price * qtyNum - priceNum * qtyNum;
       }
 
+      console.log("sq Profitloss--", Profitloss);
+
       let Totalupdateuserbalance = Profitloss - brokerage;
+
+      console.log("sq Totalupdateuserbalance--", Totalupdateuserbalance);
 
       let totaladdbalance =
         parseFloat(tradehistory?.totalamount || 1) * qtyNum +
@@ -484,7 +498,6 @@ class Placeorder {
         requiredFund: totalamountCal,
         type,
         status: "Completed",
-        Profitloss: Profitloss,
       });
 
       const orderdata = await newOrder.save();
@@ -557,7 +570,7 @@ class Placeorder {
         data: [],
       });
     } catch (error) {
-      console.log("Error:", error);
+      console.error("Error:", error);
       return res.json({
         status: false,
         message: "Internal server error",
@@ -735,11 +748,23 @@ const EntryTrade = async (
     const Totalupdateuserbalance =
       parseFloat(updateuserbalance) - parseFloat(brokerage) * 2;
 
+    console.log("limitclaculation", limitclaculation);
+
+    console.log("lot - ", qty);
     let ActualFun = limitclaculation;
-    if (lot > 1) {
-      ActualFun = limitclaculation / lot;
+    if (qty > 1) {
+      ActualFun = limitclaculation / qty;
     }
+    console.log("ActualFun - ", ActualFun);
     const seventyPercent = (ActualFun * 70) / 100;
+
+    console.log("seventyPercent - ", seventyPercent);
+    console.log("price - ", price);
+
+    console.log(
+      "price - seventyPercent",
+      parseFloat(price) - parseFloat(seventyPercent)
+    );
 
     tradehistory = new mainorder_model({
       orderid: orderdata._id,
@@ -789,7 +814,7 @@ const EntryTrade = async (
       message: "Order placed",
     });
   } catch (error) {
-    console.log("Error processing buy order:", error);
+    console.error("Error processing buy order:", error);
     return res.json({ status: false, message: "internal error", data: [] });
   }
 };
@@ -858,11 +883,23 @@ const ExitTrade = async (
     const Totalupdateuserbalance =
       parseFloat(updateuserbalance) - parseFloat(brokerage) * 2;
 
+    console.log("limitclaculation", limitclaculation);
+
+    console.log("lot - ", qty);
     let ActualFun = limitclaculation;
-    if (lot > 1) {
-      ActualFun = limitclaculation / lot;
+    if (qty > 1) {
+      ActualFun = limitclaculation / qty;
     }
+    console.log("ActualFun - ", ActualFun);
     const seventyPercent = (ActualFun * 70) / 100;
+
+    console.log("seventyPercent - ", seventyPercent);
+    console.log("price - ", price);
+
+    console.log(
+      "sell price - seventyPercent",
+      parseFloat(price) + parseFloat(seventyPercent)
+    );
 
     tradehistory = new mainorder_model({
       orderid: orderdata._id,
@@ -912,7 +949,7 @@ const ExitTrade = async (
       message: "Order placed",
     });
   } catch (error) {
-    console.log("Error processing sell order:", error);
+    console.error("Error processing sell order:", error);
     return res.json({
       status: false,
       message: "An error occurred while processing the sell order",
