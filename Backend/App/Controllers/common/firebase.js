@@ -3,12 +3,12 @@
 const admin = require("firebase-admin");
 
 // Firebase Admin SDK Initialization (only once)
-if (!admin.apps.length) {
-  const serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS);
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-  });
-}
+// if (!admin.apps.length) {
+//   const serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS);
+//   admin.initializeApp({
+//     credential: admin.credential.cert(serviceAccount),
+//   });
+// }
 // Function to send push notifications Single User
 const sendPushNotification = async (firebaseToken, title, message) => {
   try {
@@ -17,7 +17,7 @@ const sendPushNotification = async (firebaseToken, title, message) => {
         title: title,
         body: message,
       },
-      token: firebaseToken,
+      token: "",
     };
 
     const response = await admin.messaging().send(payload);
@@ -42,7 +42,7 @@ const sendMultiplePushNotification = async (firebaseTokens, title, message) => {
                     title: title,
                     body: message,
                   },
-                  token: firebaseToken,
+                  token: "",
                 };
             
                 const response = await admin.messaging().send(payload);
