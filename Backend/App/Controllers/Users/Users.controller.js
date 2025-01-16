@@ -392,7 +392,7 @@ class Users {
           const orderDetails = orderMap.get(orderId.toString()) || {};
           return {
             orderid: orderId,
-            totalAmount: orderDetails.totalamount || null,
+            totalAmount: orderDetails?.totalamount.toFixed(4) || null,
             lot: orderDetails.lot || null,
             lotSize: orderDetails.lotSize || null,
             qty: orderDetails.qty || null,
@@ -401,6 +401,7 @@ class Users {
 
         return {
           ...statement.toObject(),
+          Amount: statement.Amount.toFixed(4), // Format the amount
           orders: enrichedOrders, // Add enriched order details
         };
       });
@@ -584,9 +585,16 @@ class Users {
               },
             },
           ]);
-          return results; // Return the results for this iteration
+      
+          // Apply toFixed(4) for Amount and totalamount in each document
+          return results.map((doc) => ({
+            ...doc,
+            Amount: doc.Amount ? parseFloat(doc.Amount).toFixed(4) : null,
+            totalamount: doc.totalamount ? parseFloat(doc.totalamount).toFixed(4) : null,
+          }));
         })
       );
+      
 
       return res.json({
         status: true,

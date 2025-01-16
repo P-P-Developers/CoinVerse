@@ -119,6 +119,120 @@ db.createView(
             default: false,
           },
         },
+        checkSlPercent_sl: {
+          $switch: {
+            branches: [
+              {
+                case: {
+                  $and: [
+                    { $eq: ["$signal_type", "buy_sell"] },
+                    {
+                      $lte: [
+                        "$livePriceData.Bid_Price",
+                        {
+                          $ifNull: [
+                            {
+                              $cond: {
+                                if: { $regexMatch: { input: "$stoploss_price", regex: /^[0-9]+(\.[0-9]+)?$/ } },
+                                then: { $toDouble: "$stoploss_price" },
+                                else: null,
+                              },
+                            },
+                            false,
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                then: true,
+              },
+              {
+                case: {
+                  $and: [
+                    { $eq: ["$signal_type", "sell_buy"] },
+                    {
+                      $gte: [
+                        "$livePriceData.Bid_Price",
+                        {
+                          $ifNull: [
+                            {
+                              $cond: {
+                                if: { $regexMatch: { input: "$stoploss_price", regex: /^[0-9]+(\.[0-9]+)?$/ } },
+                                then: { $toDouble: "$stoploss_price" },
+                                else: null,
+                              },
+                            },
+                            false,
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                then: true,
+              },
+            ],
+            default: false,
+          },
+        },
+        checkSlPercent_target: {
+          $switch: {
+            branches: [
+              {
+                case: {
+                  $and: [
+                    { $eq: ["$signal_type", "buy_sell"] },
+                    {
+                      $gte: [
+                        "$livePriceData.Bid_Price",
+                        {
+                          $ifNull: [
+                            {
+                              $cond: {
+                                if: { $regexMatch: { input: "$Target_price", regex: /^[0-9]+(\.[0-9]+)?$/ } },
+                                then: { $toDouble: "$Target_price" },
+                                else: null,
+                              },
+                            },
+                            false,
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                then: true,
+              },
+              {
+                case: {
+                  $and: [
+                    { $eq: ["$signal_type", "sell_buy"] },
+                    {
+                      $lte: [
+                        "$livePriceData.Bid_Price",
+                        {
+                          $ifNull: [
+                            {
+                              $cond: {
+                                if: { $regexMatch: { input: "$Target_price", regex: /^[0-9]+(\.[0-9]+)?$/ } },
+                                then: { $toDouble: "$Target_price" },
+                                else: null,
+                              },
+                            },
+                            false,
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                then: true,
+              },
+            ],
+            default: false,
+          },
+        },
         
         
         buy_time: 1,

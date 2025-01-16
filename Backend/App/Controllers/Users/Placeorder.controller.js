@@ -23,7 +23,20 @@ class Placeorder {
           data: [],
         });
       }
-      return res.json({ status: true, message: "Orders found", data: result });
+
+      // Format the result
+      const formattedResult = result.map((order) => ({
+        ...order.toObject(),
+        price: order.price?.toFixed(4) || null,
+        totalamount: order.totalamount?.toFixed(4) || null,
+        requiredFund: order.requiredFund?.toFixed(4) || null,
+      }));
+
+      return res.json({
+        status: true,
+        message: "Orders found",
+        data: formattedResult,
+      });
     } catch (error) {
       console.log("Error fetching order book:", error);
       return res.json({
@@ -133,7 +146,6 @@ class Placeorder {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
-
   // position
   async position(req, res) {
     try {
@@ -164,7 +176,8 @@ class Placeorder {
           $match: {
             userid,
             createdAt: { $gte: new Date(startOfDay), $lte: new Date(endOfDay) },
-            $or: [{ buy_type: null }, { sell_type: null }],
+            // $or: [{ buy_type: null }, { sell_type: null }],
+            $expr: { $ne: ["$buy_qty", "$sell_qty"] },
           },
         },
         {
@@ -195,6 +208,8 @@ class Placeorder {
             buy_time: 1,
             sell_time: 1,
             token: 1,
+            Target_price: 1,
+            stoploss_price: 1,
             Mk_type: 1, // Include Mk_type in the response
           },
         },
@@ -244,7 +259,8 @@ class Placeorder {
           $match: {
             userid,
             createdAt: { $lt: startOfDay },
-            $or: [{ buy_type: null }, { sell_type: null }],
+            // $or: [{ buy_type: null }, { sell_type: null }],
+            $expr: { $ne: ["$buy_qty", "$sell_qty"] },
           },
         },
         {
@@ -275,6 +291,8 @@ class Placeorder {
             buy_time: 1,
             sell_time: 1,
             token: 1,
+            Target_price: 1,
+            stoploss_price: 1,
             Mk_type: 1, // Include Mk_type in the response
           },
         },

@@ -22,8 +22,15 @@ class OpenPositions {
   async fetchPositions() {
     try {
       const openPositions = await open_position
-        .find({ checkSlPercent: true, live_price: { $ne: null } })
-        .toArray();
+      .find({
+        live_price: { $ne: null },
+        $or: [
+          { checkSlPercent: true },
+          { checkSlPercent_sl: true },
+          { checkSlPercent_target: true },
+        ],
+      })
+      .toArray();
 
       if (openPositions && openPositions.length > 0) {
         for (const position of openPositions) {
