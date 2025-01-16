@@ -209,7 +209,6 @@ class Placeorder {
         });
       }
 
-      console.log("currentPosition", finduser);
       res.json({ status: true, data: finduser });
     } catch (error) {
       console.error("Error fetching positions:", error);
