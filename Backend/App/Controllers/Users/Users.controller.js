@@ -276,7 +276,7 @@ class Users {
           data: [],
         });
       }
-
+cd
       const adminId = user.parent_id;
 
       // Define start and end of today
@@ -421,10 +421,101 @@ class Users {
     }
   }
 
+
+  async tradeStatementForUser1(req, res) {
+    try {
+      const { userid } = req.body;
+
+      if (!userid) {
+        return res.json({
+          status: false,
+          message: "User ID is required",
+          data: [],
+        });
+      }
+
+      const balanceStatements = await BalanceStatement.aggregate([
+        {
+          $match: {
+            userid: userid, // userid string me h
+            symbol: { $ne: null }, 
+                    },
+        },
+        {
+          $sort: { createdAt: -1 },        },
+        {
+          $unwind: { path: "$orderid", preserveNullAndEmptyArrays: true }, // Unwind the orderid array
+        },
+        {
+          $lookup: {
+            from: "orders", 
+            localField: "orderid",
+            foreignField: "_id", 
+            as: "orderDetails", 
+          },
+        },
+        {
+          $unwind: { path: "$orderDetails", preserveNullAndEmptyArrays: true }, 
+        },
+        {
+          $addFields: {
+            totalamount: "$orderDetails.totalamount", 
+            lot: "$orderDetails.lot",
+            qty: "$orderDetails.qty",
+            lotSize: "$orderDetails.lotSize",
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            orderid: 1,
+            symbol: 1,
+            Amount: 1,
+            createdAt: 1,
+            type: 1,
+            message: 1,
+            brokerage: 1,
+            totalamount: 1,
+            lot: 1,
+            qty: 1,
+            lotSize: 1,
+          },
+        },
+      ]);
+
+      if (!balanceStatements || balanceStatements.length === 0) {
+        return res.json({
+          status: false,
+          message: "No data found for the given user",
+          data: [],
+        });
+      }
+
+      return res.json({
+        status: true,
+        message: "Data retrieved successfully",
+        data: balanceStatements, // Return the enriched data
+      });
+    } catch (error) {
+      console.error("Error in tradeStatementForUser1:", error);
+
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        data: [],
+      });
+    }
+  }
+
+
+
+
+
+
   async tradeStatementForOrder(req, res) {
     try {
       const { orderid } = req.body;
-  
+
       if (!orderid) {
         return res.json({
           status: false,
@@ -432,11 +523,11 @@ class Users {
           data: [],
         });
       }
-  
+
       const TradeOrderId = await mainorder_model
         .find({ _id: orderid })
         .select("orderid");
-  
+
       if (TradeOrderId?.length === 0) {
         return res.json({
           status: false,
@@ -444,7 +535,7 @@ class Users {
           data: [],
         });
       }
-  
+
       const DataArray = await Promise.all(
         TradeOrderId[0]?.orderid?.map(async (id) => {
           const results = await BalanceStatement.aggregate([
@@ -496,7 +587,7 @@ class Users {
           return results; // Return the results for this iteration
         })
       );
-  
+
       return res.json({
         status: true,
         message: "Data retrieved successfully",
@@ -504,7 +595,7 @@ class Users {
       });
     } catch (error) {
       console.error("Error in tradeStatementForOrder:", error);
-  
+
       return res.json({
         status: false,
         message: "Internal server error",
@@ -512,7 +603,7 @@ class Users {
       });
     }
   }
-  
+
 
   async generatePin(req, res) {
     try {
