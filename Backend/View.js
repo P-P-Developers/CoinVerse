@@ -55,10 +55,12 @@ db.createView(
         token: 1,
         buy_type: 1,
         sell_type: 1,
-        status: 1,
-        signal_type: 1,
-        lotsize: 1,
         Sl_price_percentage: 1, 
+        Target_price:1,
+        stoploss_price:1,
+        signal_type: 1,
+        status: 1,
+        lotsize: 1,
         live_price: "$livePriceData.Bid_Price", 
         checkSlPercent: {
           $switch: {

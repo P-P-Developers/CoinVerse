@@ -352,6 +352,28 @@ class Placeorder {
     }
   }
 
+  async UpdateTargetSlPRice(req, res) {
+    try {
+      const { id, stoploss_price, Target_price } = req.body;
+
+      const order = await mainorder_model.findOne({ _id: id });
+
+      if (!order) {
+        return res.json({ status: false, message: "Order not found" });
+      }
+
+      order.stoploss_price = stoploss_price;
+      order.Target_price = Target_price;
+
+      await order.save();
+
+      return res.json({ status: true, message: "Order updated successfully" });
+    } catch (error) {
+      console.log("Error:", error);
+      return res.json({ status: false, message: "An error occurred", error });
+    }
+  }
+
   // squareoff
   async Squareoff(req, res) {
     try {
@@ -405,7 +427,6 @@ class Placeorder {
         brokerage = 0;
       }
 
-      // Validate lot size based on type (buy or sell)
       if (
         type === "buy" &&
         (tradehistory.buy_lot || 0) + lotNum > tradehistory.sell_lot
@@ -435,11 +456,7 @@ class Placeorder {
         Profitloss = tradehistory.sell_price * qtyNum - priceNum * qtyNum;
       }
 
-      console.log("sq Profitloss--", Profitloss);
-
       let Totalupdateuserbalance = Profitloss - brokerage;
-
-      console.log("sq Totalupdateuserbalance--", Totalupdateuserbalance);
 
       let totaladdbalance =
         parseFloat(tradehistory?.totalamount || 1) * qtyNum +
@@ -467,6 +484,7 @@ class Placeorder {
         requiredFund: totalamountCal,
         type,
         status: "Completed",
+        Profitloss: Profitloss,
       });
 
       const orderdata = await newOrder.save();
@@ -717,23 +735,11 @@ const EntryTrade = async (
     const Totalupdateuserbalance =
       parseFloat(updateuserbalance) - parseFloat(brokerage) * 2;
 
-    console.log("limitclaculation", limitclaculation);
-
-    console.log("lot - ", lot);
     let ActualFun = limitclaculation;
     if (lot > 1) {
       ActualFun = limitclaculation / lot;
     }
-    console.log("ActualFun - ", ActualFun);
     const seventyPercent = (ActualFun * 70) / 100;
-
-    console.log("seventyPercent - ", seventyPercent);
-    console.log("price - ", price);
-
-    console.log(
-      "price - seventyPercent",
-      parseFloat(price) - parseFloat(seventyPercent)
-    );
 
     tradehistory = new mainorder_model({
       orderid: orderdata._id,
@@ -852,23 +858,11 @@ const ExitTrade = async (
     const Totalupdateuserbalance =
       parseFloat(updateuserbalance) - parseFloat(brokerage) * 2;
 
-    console.log("limitclaculation", limitclaculation);
-
-    console.log("lot - ", lot);
     let ActualFun = limitclaculation;
     if (lot > 1) {
       ActualFun = limitclaculation / lot;
     }
-    console.log("ActualFun - ", ActualFun);
     const seventyPercent = (ActualFun * 70) / 100;
-
-    console.log("seventyPercent - ", seventyPercent);
-    console.log("price - ", price);
-
-    console.log(
-      "sell price - seventyPercent",
-      parseFloat(price) + parseFloat(seventyPercent)
-    );
 
     tradehistory = new mainorder_model({
       orderid: orderdata._id,

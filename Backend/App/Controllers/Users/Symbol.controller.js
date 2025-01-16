@@ -155,6 +155,61 @@ class UserSymbol {
   // Userwatchlist with favourite status new code 
   async userSymbollist(req, res) {
     try {
+
+      // const result1 = await Userwatchlist.aggregate([
+      //   { $match: { userid: req.body.userid } },
+      //   {
+      //     $lookup: {
+      //       from: "symbols",
+      //       localField: "symbol",
+      //       foreignField: "symbol",
+      //       as: "symbolDetails",
+      //       pipeline: [{ $match: { status: 1 } }],
+      //     },
+      //   },
+      //   { $unwind: "$symbolDetails" },
+      
+      //   {
+      //     $lookup: {
+      //       from: "favouritelists",
+      //       let: { userId: "$userid", token: "$token" },
+      //       pipeline: [
+      //         {
+      //           $match: {
+      //             $expr: {
+      //               $and: [
+      //                 { $eq: ["$userid", "$$userId"] },
+      //                 { $eq: ["$token", "$$token"] },
+      //                 { $eq: ["$status", 1] },
+      //               ],
+      //             },
+      //           },
+      //         },
+      //       ],
+      //       as: "favouritelists",
+      //     },
+      //   },
+      //   { $unwind: "$favouritelists" },
+      //   {
+      //     $project: {
+      //       symbol: 1,
+      //       userid: 1,
+      //       token: 1,
+      //       symbol_name: 1,
+      //       exch_seg: 1,
+      //       lotsize: "$symbolDetails.lotsize",
+      //       favourite: {
+      //         $cond: {
+      //           if: { $eq: ["$favouritelists.status", 1] },
+      //           then: true,
+      //           else: false,
+      //         },
+      //       },
+      //     },
+      //   },
+      // ]);
+      // console.log(result1);
+      
       const userWatchlistRecords = await Userwatchlist.find({
         userid: req.body.userid,
       })

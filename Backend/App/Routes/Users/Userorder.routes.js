@@ -6,7 +6,7 @@ const { addSymbol, symbolSearch, userSymbollist, deletwatchlistsymbol, getFavour
     Favouritelist,
     removeFavourite
 } = require("../../Controllers/Users/Symbol.controller")
-const { placeorder, getOrderBook, gettardehistory, position, holding, Squareoff, switchOrderType } = require("../../Controllers/Users/Placeorder.controller")
+const { placeorder, getOrderBook, gettardehistory, position, holding, Squareoff, switchOrderType,UpdateTargetSlPRice } = require("../../Controllers/Users/Placeorder.controller")
 const { userWithdrawalanddeposite, getpaymenthistory, getUserDetail, getmarginpriceforuser, getAllstatement,
 
     getuserorderdata,
@@ -21,7 +21,6 @@ const { userWithdrawalanddeposite, getpaymenthistory, getUserDetail, getmarginpr
 } = require("../../Controllers/Users/Users.controller")
 const { statement } = require("../../Controllers/Users/Statement.controller")
 
-
 router.post('/users/addSymbol', addSymbol);
 router.post('/users/symbolSearch', symbolSearch);
 router.post('/users/userSymbollist', userSymbollist);
@@ -29,7 +28,6 @@ router.post('/users/deletwatchlistsymbol', deletwatchlistsymbol);
 router.post('/users/placeorder', placeorder);
 router.post('/userWithdrawalanddeposite', userWithdrawalanddeposite);
 router.post('/getpaymenthistory', getpaymenthistory);
-// adding for testing- get all usersdata
 router.get('/getAllUsers', getAllUsers);
 
 router.post('/getUserDetail', getUserDetail);
@@ -54,11 +52,8 @@ router.post('/user/generateMPin', generatePin)
 router.post('/user/matchPin', matchPin);
 router.post('/user/changePin', changePin);
 
-
-
-
 router.post('/switchOrderType', switchOrderType);
-
+router.post('/UpdateTargetSlPRice', UpdateTargetSlPRice);
 
 
 
