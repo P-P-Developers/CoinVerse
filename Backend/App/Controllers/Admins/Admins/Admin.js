@@ -54,8 +54,8 @@ class Admin {
           existingUser.UserName === UserName
             ? "Username"
             : existingUser.Email === Email
-              ? "Email"
-              : "Phone Number";
+            ? "Email"
+            : "Phone Number";
 
         return res.json({
           status: false,
@@ -441,7 +441,6 @@ class Admin {
   async UpdateStatus(req, res) {
     try {
       const { admin_id, id, status } = req.body;
-      
 
       // Validate and find the payment history
       const paymentHistoryFind = await PaymenetHistorySchema.findOne({
@@ -486,10 +485,6 @@ class Admin {
             Type: "DEBIT",
           });
 
-
-
-
-
           const balanceStatement = new BalanceStatement({
             userid: findUser._id,
             Amount: -paymentHistoryFind.Balance,
@@ -497,7 +492,6 @@ class Admin {
             message: "Balance used for withdrawal",
             parent_Id: admin_id,
             orderid: null,
-
           });
           await balanceStatement.save();
           await walletUpdateResult.save();
@@ -545,8 +539,6 @@ class Admin {
             orderid: null,
           });
           await balanceStatement.save();
-
-
 
           // Send push notification for Accepted Status
           const { DeviceToken } = findUser;
@@ -930,33 +922,6 @@ class Admin {
     }
   }
 
-  // async getclienttradehistory(req, res) {
-  //   try {
-  //     const { userid, adminid } = req.body;
-  //     let result;
-
-  //     if (!userid || userid === "all") {
-  //       result = await mainorder_model
-  //         .find({ adminid })
-  //         .sort({ createdAt: -1 });
-  //     } else {
-  //       result = await mainorder_model
-  //         .find({ userid: userid })
-  //         .sort({ createdAt: -1 });
-  //     }
-
-  //     if (!result) {
-  //       return res.json({ status: false, message: "user not found", data: [] });
-  //     }
-
-  //     return res.json({ status: true, message: "user found", data: result });
-  //   } catch (error) {
-  //     return res.json({ status: false, message: "internal error", data: [] });
-  //   }
-  // }
-
-
-
   async getclienttradehistory(req, res) {
     try {
       const { userid, adminid } = req.body;
@@ -964,11 +929,16 @@ class Admin {
 
       if (!userid || userid === "all") {
         result = await mainorder_model
-          .find({ adminid })
+          .find({ adminid ,
+            $expr: { $eq: ["$sell_lot", "$buy_lot"] },
+          })
           .sort({ createdAt: -1 });
       } else {
         result = await mainorder_model
-          .find({ userid })
+          .find({
+            userid,
+            $expr: { $eq: ["$sell_lot", "$buy_lot"] },
+          })
           .sort({ createdAt: -1 });
       }
 
@@ -976,23 +946,19 @@ class Admin {
         return res.json({ status: false, message: "user not found", data: [] });
       }
 
-      // Extract all unique userIds from the result
-      const userIds = result.map(item => item.userid);
+      const userIds = result.map((item) => item.userid);
 
-      // Fetch all users corresponding to these userIds
       const users = await User_model.find({ _id: { $in: userIds } });
 
-      // Create a mapping of userid to UserName
       const userNameMap = users.reduce((acc, user) => {
-        acc[user._id] = user.UserName;  // Assuming UserName is the field for the username
+        acc[user._id] = user.UserName;
         return acc;
       }, {});
 
-      // Add the UserName to each document in the result
-      result = result.map(item => {
+      result = result.map((item) => {
         return {
           ...item.toObject(),
-          userName: userNameMap[item.userid] || "Unknown",  // Default to "Unknown" if not found
+          userName: userNameMap[item.userid] || "Unknown", 
         };
       });
 
@@ -1002,25 +968,6 @@ class Admin {
       return res.json({ status: false, message: "internal error", data: [] });
     }
   }
-
-
-
-
-
-  //  async getlicensedata(req,res){
-  //     try {
-  //        const {userid} = req.body
-  //        const result = await User_model.find({parent_id:userid})
-
-  //        if(!result){
-  //         return res.json({ status: false, message: "User not found" , data:[]});
-  //        }
-  //        return res.json({ status: true, message: "User found" , data:result});
-
-  //     } catch (error) {
-  //       return res.json({ status: false, message: "internal error" , data:[]})
-  //     }
-  //  }
 
   async getlicensedata(req, res) {
     try {
