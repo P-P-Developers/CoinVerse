@@ -276,7 +276,6 @@ const Admin = () => {
 
   // update admin data 
 
-
   const updateAdmin = (_id,obj) => {
     navigate(`updateadmin/${_id}`,{ state: { rowData: obj.row }});
    
