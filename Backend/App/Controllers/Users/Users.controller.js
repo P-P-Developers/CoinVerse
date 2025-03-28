@@ -215,7 +215,7 @@ class Users {
     try {
       const { userid, symbol } = req.body;
 
-console
+console.log("userid", userid, symbol);
       const startOfDay = new Date();
       startOfDay.setHours(0, 0, 0, 0);
 
