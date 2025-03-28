@@ -12,7 +12,7 @@ const { MongoClient } = require("mongodb");
 const API_KEY = process.env.TIINGO_API_KEY || "your_api_key";
 const PORT = process.env.PORT || 5008;
 const databaseURLs =
-  "mongodb://testing:MWQ5RP%26k5T567Gy%26Maa@185.209.75.198:27017/";
+"mongodb://testing:MWQ5RP%26k5T567Gy%26Maa@185.209.75.198:27017/"
 
 // MongoDB Variables
 let client;
