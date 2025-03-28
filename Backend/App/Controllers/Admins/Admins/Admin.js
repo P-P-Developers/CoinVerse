@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 const db = require("../../../Models");
+const { sendPushNotification } = require("../../common/firebase");
 const User_model = db.user;
 const Role = db.role;
 const Wallet_model = db.WalletRecharge;
@@ -17,7 +18,6 @@ const employee_permission = db.employee_permission;
 // const nodemailer = require('nodemailer');
 
 class Admin {
-
   async AddUser(req, res) {
     try {
       const {
@@ -39,18 +39,15 @@ class Admin {
         limit,
         employee_id,
       } = req.body;
-      
-    
+
       if (!FullName || !UserName || !Email || !PhoneNo || !password || !Role) {
         return res.json({ status: false, message: "Missing required fields" });
       }
-
 
       // Check if user already exists
       const existingUser = await User_model.findOne({
         $or: [{ UserName }, { Email }, { PhoneNo }],
       });
-
 
       if (existingUser) {
         const duplicateField =
@@ -67,55 +64,25 @@ class Admin {
         });
       }
 
-      
       // Set end date based on license duration
       const startDate = new Date();
       const endDate = new Date(startDate);
       endDate.setMonth(endDate.getMonth() + Number(Licence));
 
-
-
-
       // Hash password
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password.toString(), salt);
 
-  
-      let dollarPriceData, dollarcount;
+      let brokeragepertrade = pertrade ? parseFloat(pertrade) : 0;
+      let brokerageperlot = perlot ? parseFloat(perlot) : 0;
 
-      // if (parent_role === "EMPLOYE") {
-      //   const empoyeedata = await User_model.findOne({ _id: parent_id });
-  
-      //   dollarPriceData = await MarginRequired.findOne({
-      //     adminid: empoyeedata.parent_id,
-      //   }).select("dollarprice");
-  
-      //   dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
-      // } else {
-        // Fetch dollar price
-        dollarPriceData = await MarginRequired.findOne({
-          adminid: parent_id,
-        }).select("dollarprice");
-  
-        dollarcount = (Balance / dollarPriceData.dollarprice).toFixed(3);
-      // }
-      
-      let brokeragepertrade = (
-        parseFloat(pertrade) / dollarPriceData.dollarprice
-      ).toFixed(3);
-      let brokerageperlot = (
-        parseFloat(perlot) / dollarPriceData.dollarprice
-      ).toFixed(3);
-
-    
+      // Handle NaN cases explicitly
       brokeragepertrade = isNaN(brokeragepertrade) ? null : brokeragepertrade;
       brokerageperlot = isNaN(brokerageperlot) ? null : brokerageperlot;
-     
 
-     // Set ActiveStatus based on parent_role
-     const activeStatus = parent_role === "EMPLOYE" ? 0 : 1;
+      // Set ActiveStatus based on parent_role
+      const activeStatus = parent_role === "EMPLOYE" ? 0 : 1;
 
-     
       // Create new user
       const newUser = new User_model({
         FullName,
@@ -125,7 +92,7 @@ class Admin {
         employee_id,
         parent_id,
         parent_role,
-        Balance: dollarcount,
+        Balance: Balance,
         Otp: password,
         Role,
         Licence,
@@ -142,27 +109,23 @@ class Admin {
 
       await newUser.save();
 
-
       // Create wallet and balance statement
       const userWallet = new Wallet_model({
         user_Id: newUser._id,
-        Balance: dollarcount,
+        Balance: Balance,
         parent_Id: parent_id,
         Type: "CREDIT",
       });
       await userWallet.save();
-  
 
-      
       const newStatement = new BalanceStatement({
         userid: newUser._id,
-        Amount: dollarcount,
+        Amount: Balance,
         parent_Id: parent_id,
         type: "CREDIT",
         message: "Balance Added",
       });
       await newStatement.save();
-
 
       // Create license record
       const licenceRecord = new totalLicense({
@@ -174,15 +137,13 @@ class Admin {
       });
       await licenceRecord.save();
 
-
       return res.json({
         status: true,
         message: "User added successfully",
         data: newUser,
       });
-
     } catch (error) {
-      console.error("Error adding user:", error); 
+      console.error("Error adding user:", error);
       return res.json({
         status: false,
         message: "Failed to add User",
@@ -191,9 +152,80 @@ class Admin {
     }
   }
 
+  async updateUser(req, res) {
+    try {
+      const { id, perlot, pertrade, ...rest } = req.body;
 
+      const userdetail = await User_model.findOne({ _id: id });
 
-  
+      // Convert perlot and pertrade using the dollar price
+      let brokeragepertrade = pertrade;
+      let brokerageperlot = perlot;
+
+      // Handle NaN cases
+      brokeragepertrade = isNaN(brokeragepertrade) ? null : brokeragepertrade;
+      brokerageperlot = isNaN(brokerageperlot) ? null : brokerageperlot;
+
+      const values = [brokerageperlot, brokeragepertrade];
+      const nonZeroValues = values.filter(
+        (value) => value !== null && value !== 0
+      );
+
+      if (nonZeroValues.length > 1) {
+        return res.send({
+          status: false,
+          message: "Only one of perlot or pertrade can have a non-zero value",
+        });
+      }
+
+      // Initialize dataToUpdate with default zero values
+      let dataToUpdate = {
+        perlot: 0,
+        pertrade: 0,
+        ...rest,
+      };
+
+      // Assign non-zero converted values accordingly
+      if (brokerageperlot !== null && brokerageperlot !== 0) {
+        dataToUpdate.perlot = brokerageperlot;
+      } else if (brokeragepertrade !== null && brokeragepertrade !== 0) {
+        dataToUpdate.pertrade = brokeragepertrade;
+      }
+
+      const filter = { _id: id };
+      const updateOperation = { $set: dataToUpdate };
+
+      const updatedUser = await User_model.findOneAndUpdate(
+        filter,
+        updateOperation,
+        {
+          new: true,
+          upsert: true,
+        }
+      );
+
+      if (!updatedUser) {
+        return res.send({
+          status: false,
+          message: "Data not updated",
+          data: [],
+        });
+      }
+
+      return res.send({
+        status: true,
+        message: "Data updated successfully",
+        data: updatedUser,
+      });
+    } catch (error) {
+      console.error("Internal error:", error);
+      return res.send({
+        status: false,
+        message: "Internal server error",
+      });
+    }
+  }
+
   async updateLicence(req, res) {
     try {
       const { id, Licence, parent_Id } = req.body;
@@ -248,164 +280,7 @@ class Admin {
     }
   }
 
-  // update user
-  // async updateUser(req, res) {
-  //   try {
-  //     const { id, perlot, pertrade, ...rest } = req.body;
-
-  //     const values = [perlot, pertrade];
-  //     const nonZeroValues = values.filter(
-  //       (value) => value !== undefined && value !== 0
-  //     );
-
-  //     if (nonZeroValues.length > 1) {
-  //       return res.status(400).send({
-  //         status: false,
-  //         msg: "Only one of perlot or pertrade can have a non-zero value",
-  //       });
-  //     }
-
-  //     // Initialize dataToUpdate with default zero values
-  //     let dataToUpdate = {
-  //       perlot: 0,
-  //       pertrade: 0,
-  //       ...rest,
-  //     };
-
-  //     // Assign non-zero values accordingly
-  //     if (perlot !== undefined && perlot !== 0) {
-  //       dataToUpdate.perlot = perlot;
-  //     } else if (pertrade !== undefined && pertrade !== 0) {
-  //       dataToUpdate.pertrade = pertrade;
-  //     }
-
-  //     const filter = { _id: id };
-  //     const updateOperation = { $set: dataToUpdate };
-
-  //     const updatedUser = await User_model.findOneAndUpdate(
-  //       filter,
-  //       updateOperation,
-  //       {
-  //         new: true,
-  //         upsert: true,
-  //       }
-  //     );
-
-  //     if (!updatedUser) {
-  //       return res.status(404).send({
-  //         status: false,
-  //         msg: "Data not updated",
-  //         data: [],
-  //       });
-  //     }
-
-  //     return res.send({
-  //       status: true,
-  //       msg: "Data updated successfully",
-  //       data: updatedUser,
-  //     });
-  //   } catch (error) {
-  //     console.error("Internal error:", error);
-  //     return res.status(500).send({
-  //       status: false,
-  //       msg: "Internal server error",
-  //     });
-  //   }
-  // }
-
-  async updateUser(req, res) {
-    try {
-      const { id, perlot, pertrade, ...rest } = req.body;
-
-      const userdetail = await User_model.findOne({_id:id})
-      const dollarPriceData = await MarginRequired.findOne({
-        adminid: userdetail.parent_id,
-      }).select("dollarprice");
-
-
-      if (!dollarPriceData) {
-        return res.send({
-          status: false,
-          msg: "Dollar price not found",
-        });
-      }
-
-      // Convert perlot and pertrade using the dollar price
-      let brokeragepertrade = pertrade
-        ? (parseFloat(pertrade) / dollarPriceData.dollarprice).toFixed(3)
-        : 0;
-      let brokerageperlot = perlot
-        ? (parseFloat(perlot) / dollarPriceData.dollarprice).toFixed(3)
-        : 0;
-
-      // Handle NaN cases
-      brokeragepertrade = isNaN(brokeragepertrade) ? null : brokeragepertrade;
-      brokerageperlot = isNaN(brokerageperlot) ? null : brokerageperlot;
-
-      const values = [brokerageperlot, brokeragepertrade];
-      const nonZeroValues = values.filter(
-        (value) => value !== null && value !== 0
-      );
-
-      if (nonZeroValues.length > 1) {
-        return res.send({
-          status: false,
-          msg: "Only one of perlot or pertrade can have a non-zero value",
-        });
-      }
-
-      // Initialize dataToUpdate with default zero values
-      let dataToUpdate = {
-        perlot: 0,
-        pertrade: 0,
-        ...rest,
-      };
-
-      // Assign non-zero converted values accordingly
-      if (brokerageperlot !== null && brokerageperlot !== 0) {
-        dataToUpdate.perlot = brokerageperlot;
-      } else if (brokeragepertrade !== null && brokeragepertrade !== 0) {
-        dataToUpdate.pertrade = brokeragepertrade;
-      }
-
-      const filter = { _id: id };
-      const updateOperation = { $set: dataToUpdate };
-
-      const updatedUser = await User_model.findOneAndUpdate(
-        filter,
-        updateOperation,
-        {
-          new: true,
-          upsert: true,
-        }
-      );
-
-      if (!updatedUser) {
-        return res.send({
-          status: false,
-          msg: "Data not updated",
-          data: [],
-        });
-      }
-
-      return res.send({
-        status: true,
-        msg: "Data updated successfully",
-        data: updatedUser,
-      });
-    } catch (error) {
-      console.error("Internal error:", error);
-      return res.send({
-        status: false,
-        msg: "Internal server error",
-      });
-    }
-  }
-
-
-
   // user by id
-
   async DeleteUser(req, res) {
     try {
       const { id } = req.body;
@@ -429,50 +304,16 @@ class Admin {
     }
   }
 
-  // Employee updare
-
-  // async Update_Employe(req, res) {
-  //   try {
-       
-  //     const data = req.body;
-  //     const id = req.body.id;
-    
-
-  //     const filter = { _id: id };
-  //     const updateOperation = { $set: data };
-
-  //     const result = await User_model.updateOne(filter, updateOperation);
-
-  //     if (result.nModified === 0) {
-  //       return res.json({
-  //         status: false,
-  //         message: "Data not updated",
-  //         data: [],
-  //       });
-  //     }
-  //     return res.json({ status: true, message: "Data updated", data: result });
-  //   } catch (error) {
-  //     return res.json({
-  //       status: false,
-  //       message: "Internal server error",
-  //       error: error.message,
-  //     });
-  //   }
-  // }
-
-
   async Update_Employe(req, res) {
     try {
-
       const data = req.body;
       const id = req.body.id;
-      const employeePermissionData = req.body.Employee_permission; 
-  
+      const employeePermissionData = req.body.Employee_permission;
 
       const filter = { _id: id };
       const updateOperation = { $set: data };
       const result = await User_model.updateOne(filter, updateOperation);
-  
+
       if (result.nModified === 0) {
         return res.json({
           status: false,
@@ -480,11 +321,15 @@ class Admin {
           data: [],
         });
       }
-  
-      const permissionFilter = {employee_id: id }; 
+
+      const permissionFilter = { employee_id: id };
       const permissionUpdateOperation = { $set: employeePermissionData };
-      await employee_permission.updateOne(permissionFilter, permissionUpdateOperation, { upsert: true });
-  
+      await employee_permission.updateOne(
+        permissionFilter,
+        permissionUpdateOperation,
+        { upsert: true }
+      );
+
       return res.json({ status: true, message: "Data updated", data: result });
     } catch (error) {
       return res.json({
@@ -494,8 +339,6 @@ class Admin {
       });
     }
   }
-  
-
 
   // delete Employee User
 
@@ -595,18 +438,14 @@ class Admin {
     }
   }
 
-
-
-
-  // update by status
-
   async UpdateStatus(req, res) {
     try {
-      const { id, status } = req.body;
+      const { admin_id, id, status } = req.body;
 
-      const filter = { _id: new ObjectId(id) };
-      const paymentHistoryFind = await PaymenetHistorySchema.findOne(filter);
-
+      // Validate and find the payment history
+      const paymentHistoryFind = await PaymenetHistorySchema.findOne({
+        _id: new ObjectId(id),
+      });
       if (!paymentHistoryFind) {
         return res.json({
           status: false,
@@ -614,84 +453,155 @@ class Admin {
         });
       }
 
+      // Find the user balance and DeviceToken
       const findUser = await User_model.findOne({
         _id: new ObjectId(paymentHistoryFind.userid),
-      }).select("Balance");
-
+      }).select("Balance DeviceToken");
       if (!findUser) {
-        return res.json({
-          status: false,
-          message: "User not found",
-        });
+        return res.json({ status: false, message: "User not found" });
       }
 
+      // Handle Status = 1 (Accepted)
       if (status == 1) {
-        if (paymentHistoryFind.type == 0) {
+        if (paymentHistoryFind.type === 0) {
+          // Withdrawal Request
           if (paymentHistoryFind.Balance > findUser.Balance) {
-            return res.json({
-              status: false,
-              message: "Insufficient balance",
-            });
+            return res.json({ status: false, message: "Insufficient balance" });
           }
 
+          // Deduct balance
           findUser.Balance -= paymentHistoryFind.Balance;
           await findUser.save();
 
+          // Update payment history
           paymentHistoryFind.status = status;
           await paymentHistoryFind.save();
 
+          // Update wallet
           const walletUpdateResult = new Wallet_model({
             user_Id: findUser._id,
             Balance: paymentHistoryFind.Balance,
-            parent_Id: paymentHistoryFind.adminid,
+            parent_Id: admin_id,
             Type: "DEBIT",
-    
           });
 
+          const balanceStatement = new BalanceStatement({
+            userid: findUser._id,
+            Amount: -paymentHistoryFind.Balance,
+            type: "DEBIT",
+            message: "Balance used for withdrawal",
+            parent_Id: admin_id,
+            orderid: null,
+          });
+          await balanceStatement.save();
           await walletUpdateResult.save();
+
+          const { DeviceToken } = findUser;
+          if (DeviceToken) {
+            await sendPushNotification(
+              DeviceToken,
+              "Withdrawal Accepted",
+              "Your withdrawal request has been accepted successfully."
+            );
+          } else {
+            console.warn("DeviceToken not found for user:", findUser._id);
+          }
+
           return res.json({
             status: true,
-            message: "Withdrawal request Accepted successfully",
+            message: "Withdrawal request accepted successfully",
           });
-        } else if (paymentHistoryFind.type == 1) {
+        } else if (paymentHistoryFind.type === 1) {
+          // Deposit Request
+          // Add balance
           findUser.Balance += paymentHistoryFind.Balance;
           await findUser.save();
 
+          // Update payment history
           paymentHistoryFind.status = status;
           await paymentHistoryFind.save();
 
+          // Update wallet
           const walletUpdateResult = new Wallet_model({
             user_Id: findUser._id,
             Balance: paymentHistoryFind.Balance,
-            parent_Id: paymentHistoryFind.adminid,
+            parent_Id: admin_id,
             Type: "CREDIT",
           });
-
           await walletUpdateResult.save();
+
+          const balanceStatement = new BalanceStatement({
+            userid: findUser._id,
+            Amount: -paymentHistoryFind.Balance,
+            type: "CREDIT",
+            message: "Balance used for Deposit",
+            parent_Id: admin_id,
+            orderid: null,
+          });
+          await balanceStatement.save();
+
+          // Send push notification for Accepted Status
+          const { DeviceToken } = findUser;
+          if (DeviceToken) {
+            await sendPushNotification(
+              DeviceToken,
+              "Deposit Accepted",
+              "Your deposit request has been accepted successfully."
+            );
+          } else {
+            console.warn("DeviceToken not found for user:", findUser._id);
+          }
+
           return res.json({
             status: true,
-            message: "Deposit request Accepted successfully",
+            message: "Deposit request accepted successfully",
           });
         } else {
-          return res.json({
-            status: false,
-            message: "Invalid type provided",
-          });
+          return res.json({ status: false, message: "Invalid type provided" });
         }
+
+        // Handle Status = 2 (Rejected)
       } else if (status == 2) {
+        // Update the payment history to rejected
         paymentHistoryFind.status = status;
         await paymentHistoryFind.save();
+
+        // Check if it's a withdrawal request (type === 0)
+        if (paymentHistoryFind.type === 0) {
+          // Withdrawal Request
+          const { DeviceToken } = findUser;
+          if (DeviceToken) {
+            await sendPushNotification(
+              DeviceToken,
+              "Withdrawal Rejected",
+              "Your withdrawal request has been rejected."
+            );
+          } else {
+            console.warn("DeviceToken not found for user:", findUser._id);
+          }
+        } else if (paymentHistoryFind.type === 1) {
+          // Deposit Request
+          const { DeviceToken } = findUser;
+          if (DeviceToken) {
+            await sendPushNotification(
+              DeviceToken,
+              "Deposit Rejected",
+              "Your deposit request has been rejected."
+            );
+          } else {
+            console.warn("DeviceToken not found for user:", findUser._id);
+          }
+        }
+
         return res.json({
           status: true,
-          message: "Order is rejected",
+          message: "Request rejected successfully",
         });
       } else {
-        return res.json({
-          status: false,
-          message: "Invalid status provided",
-        });
+        return res.json({ status: false, message: "Invalid status provided" });
       }
     } catch (error) {
+      console.error("Error in UpdateStatus:", error);
       return res.json({
         status: false,
         message: "Internal server error",
@@ -700,9 +610,7 @@ class Admin {
     }
   }
 
-
-
-
+  // ----------------------- Working code ----------------------------
 
   async getsymbolholdoff(req, res) {
     try {
@@ -720,9 +628,93 @@ class Admin {
     }
   }
 
+  // ---------------- getBrockerage data api for brockerage page
 
+  // 66adf2e5c1718a8affb23545 // admin_id
 
+  async brokerageData(req, res) {
+    try {
+      const { admin_id } = req.body;
 
+      if (!admin_id) {
+        return res.json({
+          status: false,
+          message: "Admin ID is required",
+          data: [],
+        });
+      }
+
+      const aggregatedData = await User_model.aggregate([
+        {
+          $match: {
+            Role: "USER",
+            parent_id: admin_id,
+          },
+        },
+        {
+          $lookup: {
+            from: "balancestatements",
+            let: { userId: "$_id" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: [{ $toObjectId: "$userid" }, "$$userId"] },
+                      { $ne: ["$symbol", null] },
+                    ],
+                  },
+                },
+              },
+            ],
+            as: "balance_data",
+          },
+        },
+        {
+          $unwind: "$balance_data",
+        },
+        {
+          $project: {
+            _id: 0,
+            user_id: 1,
+            UserName: 1,
+            balance_data: 1,
+          },
+        },
+      ]);
+
+      // Format the `brokerage` value to 5 decimal places
+      const formattedData = aggregatedData.map((item) => {
+        if (item.balance_data?.brokerage) {
+          item.balance_data.brokerage = Number(
+            item.balance_data.brokerage
+          ).toFixed(5);
+        }
+        return item;
+      });
+
+      if (!formattedData || formattedData.length === 0) {
+        return res.json({
+          status: true,
+          message: "No data found",
+          data: [],
+        });
+      }
+
+      return res.json({
+        status: true,
+        message: "Data fetched successfully",
+        data: formattedData,
+      });
+    } catch (error) {
+      console.error("Error at brokerageData", error);
+      return res.json({
+        status: false,
+        message: "Internal error",
+        data: [],
+      });
+    }
+  }
 
   async updatesymbolholoff(req, res) {
     try {
@@ -752,9 +744,6 @@ class Admin {
     }
   }
 
-
-
-
   // async getbalancandLicence(req,res){
   //     try {
   //       const {userid ,Role} = req.body
@@ -778,9 +767,9 @@ class Admin {
       const { userid, Role } = req.body;
 
       // Fetch user details
-      const result = await User_model.findOne({ _id: userid, Role }).select(
-        "Balance Licence"
-      ).sort({ createdAt: -1 });
+      const result = await User_model.findOne({ _id: userid, Role })
+        .select("Balance Licence")
+        .sort({ createdAt: -1 });
       if (!result) {
         return res.json({ status: false, message: "User not found", data: [] });
       }
@@ -856,10 +845,8 @@ class Admin {
       const counttotalbalance =
         Number(findadmin.Balance) - Number(totalBalance);
 
-
       const dollarPriceDoc = await MarginRequired.findOne({ adminid: userid });
 
-      
       if (!dollarPriceDoc || !dollarPriceDoc.dollarprice) {
         return res.json({
           status: false,
@@ -868,10 +855,8 @@ class Admin {
         });
       }
 
-
       const conversionRate = dollarPriceDoc.dollarprice;
       const balanceInRupees = counttotalbalance * conversionRate;
-
 
       return res.json({
         status: true,
@@ -887,8 +872,6 @@ class Admin {
       });
     }
   }
-
-
 
   // totalcount Licence
   async TotalcountLicence(req, res) {
@@ -939,58 +922,59 @@ class Admin {
     }
   }
 
-
-
-
   async getclienttradehistory(req, res) {
     try {
-      const { userid } = req.body;
-      let result
+      const { userid, adminid } = req.body;
+      let result;
 
-      if(!userid || userid === "all"){
-        result = await mainorder_model.find().sort({createdAt: -1 });
-
-      }else{
-
-         result = await mainorder_model.find({ userid: userid }).sort({createdAt: -1 });
+      if (!userid || userid === "all") {
+        result = await mainorder_model
+          .find({ adminid ,
+            $expr: { $eq: ["$sell_lot", "$buy_lot"] },
+          })
+          .sort({ createdAt: -1 });
+      } else {
+        result = await mainorder_model
+          .find({
+            userid,
+            $expr: { $eq: ["$sell_lot", "$buy_lot"] },
+          })
+          .sort({ createdAt: -1 });
       }
 
-      if (!result) {
+      if (!result || result.length === 0) {
         return res.json({ status: false, message: "user not found", data: [] });
       }
 
+      const userIds = result.map((item) => item.userid);
+
+      const users = await User_model.find({ _id: { $in: userIds } });
+
+      const userNameMap = users.reduce((acc, user) => {
+        acc[user._id] = user.UserName;
+        return acc;
+      }, {});
+
+      result = result.map((item) => {
+        return {
+          ...item.toObject(),
+          userName: userNameMap[item.userid] || "Unknown", 
+        };
+      });
+
       return res.json({ status: true, message: "user found", data: result });
     } catch (error) {
+      console.error(error);
       return res.json({ status: false, message: "internal error", data: [] });
     }
   }
 
-
-
-
-  //  async getlicensedata(req,res){
-  //     try {
-  //        const {userid} = req.body
-  //        const result = await User_model.find({parent_id:userid})
-
-  //        if(!result){
-  //         return res.json({ status: false, message: "User not found" , data:[]});
-  //        }
-  //        return res.json({ status: true, message: "User found" , data:result});
-
-  //     } catch (error) {
-  //       return res.json({ status: false, message: "internal error" , data:[]})
-  //     }
-  //  }
-
-
-
   async getlicensedata(req, res) {
     try {
       const { userid } = req.body;
-      const result = await User_model.find({ parent_id: userid }).select(
-        "UserName Start_Date End_Date"
-      ).sort({createdAt: -1 });
+      const result = await User_model.find({ parent_id: userid })
+        .select("UserName Start_Date End_Date")
+        .sort({ createdAt: -1 });
 
       if (!result || result.length === 0) {
         return res.json({ status: false, message: "User not found", data: [] });
@@ -1018,8 +1002,6 @@ class Admin {
     }
   }
 
-
-   
   async employee_permission(req, res) {
     try {
       const {
@@ -1030,15 +1012,19 @@ class Admin {
         Licence_Edit,
         pertrade_edit,
         perlot_edit,
-        limit_edit
+        limit_edit,
       } = req.body;
-  
+
       const employee = await employee_permission.findById(employee_id);
-  
+
       if (!employee) {
-        return res.json({status:false, message: "Employee not found",data:[] });
+        return res.json({
+          status: false,
+          message: "Employee not found",
+          data: [],
+        });
       }
-  
+
       employee.Edit = Edit;
       employee.trade_history = trade_history;
       employee.open_position = open_position;
@@ -1046,30 +1032,37 @@ class Admin {
       employee.pertrade_edit = pertrade_edit;
       employee.perlot_edit = perlot_edit;
       employee.limit_edit = limit_edit;
-  
+
       await employee.save();
-  
-      return res.status.json({status:true, message: "Employee permissions updated successfully" });
+
+      return res.status.json({
+        status: true,
+        message: "Employee permissions updated successfully",
+      });
     } catch (error) {
-      return res.status.json({status:false, message: "Server error",data:[] });
+      return res.status.json({
+        status: false,
+        message: "Server error",
+        data: [],
+      });
     }
   }
-  
 
-  async getUsersName(req,res){
+  async getUsersName(req, res) {
     try {
-      const result = await User_model.find({}).select("FullName UserName")
-      if(!result){
-        return res.json({status:false, message:"User not found", data:[]})
+      const { admin_id } = req.body;
+      const result = await User_model.find({
+        Role: "USER",
+        parent_id: admin_id,
+      }).select("FullName UserName");
+      if (!result) {
+        return res.json({ status: false, message: "User not found", data: [] });
       }
-      return res.json({status:true, message:"User found", data:result})
-    }catch(error){
-      return res.json({status:false, message:"internal error", data:[]})
+      return res.json({ status: true, message: "User found", data: result });
+    } catch (error) {
+      return res.json({ status: false, message: "internal error", data: [] });
     }
-
   }
-
-
 }
 
 module.exports = new Admin();

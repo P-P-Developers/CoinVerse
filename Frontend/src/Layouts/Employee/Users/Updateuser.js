@@ -35,54 +35,94 @@ const Updateuser = () => {
     },
     validate: (values) => {
       let errors = {};
-      // Validation rules for form fields
+
+      // Full Name validation
       if (!values.fullName) {
         errors.fullName = "Please Enter Full Name";
       }
+
+      // Username validation
       if (!values.username) {
         errors.username = "Please Enter Username";
       }
+
+      // Email validation
       if (!values.email) {
         errors.email = "Please Enter Email Address";
       } else if (!/^\S+@\S+\.\S+$/.test(values.email)) {
         errors.email = "Please enter a valid email address.";
       }
+
+      // Phone validation
       if (!values.phone) {
         errors.phone = "Please Enter Phone Number";
       } else if (!/^\d{10}$/.test(values.phone)) {
         errors.phone = "Please enter a valid 10-digit phone number.";
       }
-      // if (!values.Balance) {
-      //   errors.Balance = "Please Enter Balance";
-      // } else if (isNaN(values.Balance)) {
-      //   errors.Balance = "Balance must be a number";
-      // }
+
+      // Licence validation
       if (!values.Licence) {
         errors.Licence = "Please Enter Licence";
+      } else if (isNaN(values.Licence) || values.Licence < 1 || values.Licence > 12) {
+        errors.Licence = "Licence must be a number between 1 and 12.";
       }
+
+      // Limit validation
+      if (!values.limit) {
+        errors.limit = "Please enter a value for Limit";
+      } else if (isNaN(values.limit) || values.limit < 0 || values.limit > 100) {
+        errors.limit = "Limit must be a number between 0 and 100.";
+      }
+
+      // Selected option validation
       if (!values.selectedOption) {
         errors.selectedOption = "Please select an option";
       }
+
+      // Input value validation
       if (!values.inputValue) {
         errors.inputValue = "Please enter a value for the selected option";
       }
-      if (!values.limit) {
-        errors.limit = "Please enter a value for Limit";
-      }
+
       return errors;
     },
+
     onSubmit: async (values, { setSubmitting }) => {
-      const selectedOption = values.selectedOption;
+      if (values.Licence < 1 || values.Licence > 12) {
+        Swal.fire({
+          title: "Invalid Input",
+          text: "Licence must be a number between 1 and 12.",
+          icon: "warning",
+          timer: 2000,
+          timerProgressBar: true,
+        });
+        setSubmitting(false);
+        return;
+      }
+
+      if (values.limit < 0 || values.limit > 100) {
+        Swal.fire({
+          title: "Invalid Input",
+          text: "Limit must be a number between 0 and 100.",
+          icon: "warning",
+          timer: 2000,
+          timerProgressBar: true,
+        });
+        setSubmitting(false);
+        return;
+      }
+
       const data = {
         id: rowData && rowData._id,
         limit: values.limit,
         Licence: values.Licence,
-        [selectedOption]: values.inputValue,
+        [values.selectedOption]: values.inputValue,
       };
-      setSubmitting(false);
+
       try {
         const response = await updateuserdata(data);
-        if (response.status) {
+
+        if (response && response.status) {
           Swal.fire({
             title: "User Updated!",
             text: "User updated successfully",
@@ -90,19 +130,18 @@ const Updateuser = () => {
             timer: 2000,
             timerProgressBar: true,
           });
-          setTimeout(() => {
-            navigate("/admin/users");
-          }, 2000);
+          setTimeout(() => navigate("/admin/users"), 2000);
         } else {
           Swal.fire({
-            title: "Error!",
-            text: response.message || "User update error",
+            title: "Update Failed",
+            text: response?.message || "Unknown error occurred.",
             icon: "error",
             timer: 3000,
             timerProgressBar: true,
           });
         }
       } catch (error) {
+        console.log("Update Error:", error); // Debugging line
         Swal.fire({
           title: "Error!",
           text: "Failed to update user. Please try again later.",
@@ -110,16 +149,23 @@ const Updateuser = () => {
           timer: 3000,
           timerProgressBar: true,
         });
+      } finally {
+        setSubmitting(false);
       }
     },
+
+
   });
 
   useEffect(() => {
     if (rowData) {
       const determineSelectedOption = () => {
-        if (rowData.pertrade !== undefined) return "pertrade";
-        if (rowData.perlot !== undefined) return "perlot";
-        return "pertrade";
+        if (rowData.pertrade && rowData.pertrade !== 0) {
+          return "pertrade";
+        } else if (rowData.perlot && rowData.perlot !== 0) {
+          return "perlot";
+        }
+        return "pertrade"; // Default to "pertrade" if both are null, undefined, or 0.
       };
 
       formik.setValues({
@@ -182,14 +228,7 @@ const Updateuser = () => {
       col_size: 6,
       disable: true,
     },
-    // {
-    //   name: "Balance",
-    //   label: "Balance",
-    //   type: "text3",
-    //   label_size: 12,
-    //   col_size: 6,
-    //   disable: false,
-    // },
+    
     {
       name: "Licence",
       label: "Licence",
@@ -197,14 +236,19 @@ const Updateuser = () => {
       label_size: 12,
       col_size: 6,
       disable: false,
+      min: 1,
+      max: 12,
     },
     {
       name: "limit",
-      label: "Limit",
+      label: "number",
       type: "text",
       label_size: 12,
       col_size: 6,
       disable: false,
+      min: 0, // Minimum value allowed
+      max: 100, // Maximum value allowed
+      step: 1, // Optional: step for finer control
     },
     {
       name: "selectedOption",

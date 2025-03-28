@@ -7,10 +7,12 @@ const Report = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
 
+  // Ensure the state is initialized as an array
   const [alllivedata, setAlllivedata] = useState([]);
   const [activedata, setActivedata] = useState([]);
   const [expired, setExpired] = useState([]);
   const [search, setSearch] = useState("");
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const columns = [
     { Header: "UserName", accessor: "UserName" },
@@ -30,12 +32,14 @@ const Report = () => {
     },
   ];
 
-  // getting data
+  // Fetching license history
   const getlicensehistory = async () => {
     try {
       const data = { userid: user_id };
       const response = await getlicencedata(data);
-      const searchfilter = response.data.allData?.filter((item) => {
+
+      // Ensure filters are applied only when `response.data` exists
+      const searchfilter = response?.data?.allData?.filter((item) => {
         const searchInputMatch =
           search === "" ||
           (item.UserName &&
@@ -43,9 +47,9 @@ const Report = () => {
           (item.Type && item.Type.toLowerCase().includes(search.toLowerCase()));
 
         return searchInputMatch;
-      });
+      }) || [];
 
-      const searchfilter1 = response.data.liveData?.filter((item) => {
+      const searchfilter1 = response?.data?.liveData?.filter((item) => {
         const searchInputMatch =
           search === "" ||
           (item.UserName &&
@@ -53,9 +57,9 @@ const Report = () => {
           (item.Type && item.Type.toLowerCase().includes(search.toLowerCase()));
 
         return searchInputMatch;
-      });
+      }) || [];
 
-      const searchfilter2 = response.data.expiredData?.filter((item) => {
+      const searchfilter2 = response?.data?.expiredData?.filter((item) => {
         const searchInputMatch =
           search === "" ||
           (item.UserName &&
@@ -63,11 +67,11 @@ const Report = () => {
           (item.Type && item.Type.toLowerCase().includes(search.toLowerCase()));
 
         return searchInputMatch;
-      });
+      }) || [];
 
-      setAlllivedata(search ? searchfilter : response.data.allData);
-      setActivedata(search ? searchfilter1 : response.data.liveData);
-      setExpired(search ? searchfilter2 : response.data.expiredData);
+      setAlllivedata(search ? searchfilter : response?.data?.allData || []);
+      setActivedata(search ? searchfilter1 : response?.data?.liveData || []);
+      setExpired(search ? searchfilter2 : response?.data?.expiredData || []);
     } catch (error) {
       console.log("error", error);
     }
@@ -89,21 +93,14 @@ const Report = () => {
                     <h4 className="card-title">Reports</h4>
                   </div>
                   <div className="tab-content" id="myTabContent3">
-                    <div
-                      className="tab-pane fade show active"
-                      id="NavPills"
-                      role="tabpanel"
-                      aria-labelledby="home-tab3"
-                    >
+                    <div className="tab-pane fade show active" id="NavPills">
                       <div className="card-body pt-0">
-                        <ul className="nav nav-pills  mb-4 light">
-                          <li className=" nav-item">
+                        <ul className="nav nav-pills mb-4 light">
+                          <li className="nav-item">
                             <a
                               href="#navpills-1"
                               className="nav-link active navlink"
-                              data-bs-toggle="tab"
-                              aria-expanded="false"
-                            >
+                              data-bs-toggle="tab">
                               All Clients
                             </a>
                           </li>
@@ -111,9 +108,7 @@ const Report = () => {
                             <a
                               href="#navpills-2"
                               className="nav-link navlink"
-                              data-bs-toggle="tab"
-                              aria-expanded="false"
-                            >
+                              data-bs-toggle="tab">
                               Active Live Clients
                             </a>
                           </li>
@@ -121,9 +116,7 @@ const Report = () => {
                             <a
                               href="#navpills-3"
                               className="nav-link navlink"
-                              data-bs-toggle="tab"
-                              aria-expanded="true"
-                            >
+                              data-bs-toggle="tab">
                               Expired Live Clients
                             </a>
                           </li>
@@ -134,36 +127,51 @@ const Report = () => {
                               <div className="col-lg-12">
                                 <div className="card transaction-table">
                                   <div className="card-body p-0">
-                                    <div
-                                      className="tab-content"
-                                      id="myTabContent1"
-                                    >
+                                    <div className="table-responsive">
+                                      <div className="mb-3 ms-4">
+                                        Search :{" "}
+                                        <input
+                                          className="ml-2 input-search form-control"
+                                          style={{ width: "20%" }}
+                                          type="text"
+                                          placeholder="Search..."
+                                          value={search}
+                                          onChange={(e) =>
+                                            setSearch(e.target.value)
+                                          }
+                                        />
+                                      </div>
+                                      <Table
+                                        columns={columns}
+                                        data={alllivedata}
+                                        rowsPerPage={rowsPerPage}
+                                      />
                                       <div
-                                        className="tab-pane fade show active"
-                                        id="Week"
-                                        role="tabpanel"
-                                        aria-labelledby="Week-tab"
-                                      >
-                                        <div className="table-responsive">
-                                          <div className="mb-3 ms-4">
-                                            Search :{" "}
-                                            <input
-                                              className="ml-2 input-search form-control"
-                                              style={{ width: "20%" }}
-                                              type="text"
-                                              placeholder="Search..."
-                                              value={search}
-                                              onChange={(e) =>
-                                                setSearch(e.target.value)
-                                              }
-                                            />
-                                          </div>
-
-                                          <Table
-                                            columns={columns}
-                                            data={alllivedata && alllivedata}
-                                          />
-                                        </div>
+                                        className="d-flex align-items-center"
+                                        style={{
+                                          marginBottom: "20px",
+                                          marginLeft: "20px",
+                                          marginTop: "-48px",
+                                        }}>
+                                        Rows per page:{" "}
+                                        <select
+                                          className="form-select ml-2"
+                                          value={rowsPerPage}
+                                          onChange={(e) =>
+                                            setRowsPerPage(
+                                              Number(e.target.value)
+                                            )
+                                          }
+                                          style={{
+                                            width: "auto",
+                                            marginLeft: "10px",
+                                          }}>
+                                          <option value={5}>5</option>
+                                          <option value={10}>10</option>
+                                          <option value={20}>20</option>
+                                          <option value={50}>50</option>
+                                          <option value={100}>100</option>
+                                        </select>
                                       </div>
                                     </div>
                                   </div>
@@ -176,37 +184,30 @@ const Report = () => {
                               <div className="col-lg-12">
                                 <div className="card transaction-table">
                                   <div className="card-body p-0">
-                                    <div
-                                      className="tab-content"
-                                      id="myTabContent1"
-                                    >
-                                      <div
-                                        className="tab-pane fade show active"
-                                        id="Week"
-                                        role="tabpanel"
-                                        aria-labelledby="Week-tab"
-                                      >
-                                        <div className="table-responsive">
-                                          <div className="mb-3 ms-4">
-                                            Search :{" "}
-                                            <input
-                                              className="ml-2 input-search form-control"
-                                              style={{ width: "20%" }}
-                                              type="text"
-                                              placeholder="Search..."
-                                              value={search}
-                                              onChange={(e) =>
-                                                setSearch(e.target.value)
-                                              }
-                                            />
-                                          </div>
-
-                                          <Table
-                                            columns={columns}
-                                            data={activedata && activedata}
-                                          />
-                                        </div>
+                                    <div className="table-responsive">
+                                      <div className="mb-3 ms-4">
+                                        Search :{" "}
+                                        <input
+                                          className="ml-2 input-search form-control"
+                                          style={{ width: "20%" }}
+                                          type="text"
+                                          placeholder="Search..."
+                                          value={search}
+                                          onChange={(e) =>
+                                            setSearch(e.target.value)
+                                          }
+                                        />
                                       </div>
+                                      {activedata.length > 0 ? (
+                                        <Table
+                                          columns={columns}
+                                          data={activedata}
+                                        />
+                                      ) : (
+                                        <div className="text-center">
+                                          No Data Found
+                                        </div>
+                                      )}
                                     </div>
                                   </div>
                                 </div>
@@ -214,87 +215,29 @@ const Report = () => {
                             </div>
                           </div>
                           <div id="navpills-3" className="tab-pane">
-                            <div
-                              className="tab-pane fade show active"
-                              id="Week"
-                              role="tabpanel"
-                              aria-labelledby="Week-tab"
-                            >
-                              <div className="table-responsive">
-                                <div className="mb-3 ms-4">
-                                  Search :{" "}
-                                  <input
-                                    className="ml-2 input-search form-control"
-                                    style={{ width: "20%" }}
-                                    type="text"
-                                    placeholder="Search..."
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                  />
-                                </div>
-                                <div>
-                                  <div className="table-responsive">
-                                    <Table
-                                      columns={columns}
-                                      data={expired && expired}
-                                    />
-                                  </div>
-                                  <div className="pagination">
-                                    <button
-                                      disabled=""
-                                      className="pagination-button pagination-button-left"
-                                    >
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width={20}
-                                        height={20}
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth={2}
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="lucide lucide-arrow-left"
-                                      >
-                                        <path d="m12 19-7-7 7-7" />
-                                        <path d="M19 12H5" />
-                                      </svg>
-                                    </button>
-                                    <span>Page 1 of 1</span>
-                                    <button
-                                      className="pagination-button pagination-button-right"
-                                      disabled=""
-                                    >
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width={20}
-                                        height={20}
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth={2}
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="lucide lucide-arrow-right"
-                                      >
-                                        <path d="M5 12h14" />
-                                        <path d="m12 5 7 7-7 7" />
-                                      </svg>
-                                    </button>
-                                  </div>
-                                </div>
+                            <div className="table-responsive">
+                              <div className="mb-3 ms-4">
+                                Search :{" "}
+                                <input
+                                  className="ml-2 input-search form-control"
+                                  style={{ width: "20%" }}
+                                  type="text"
+                                  placeholder="Search..."
+                                  value={search}
+                                  onChange={(e) => setSearch(e.target.value)}
+                                />
                               </div>
+                              {expired.length > 0 ? (
+                                <Table columns={columns} data={expired} />
+                              ) : (
+                                <div className="text-center">No Data Found</div>
+                              )}
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <div
-                      className="tab-pane fade"
-                      id="NavPills-html"
-                      role="tabpanel"
-                      aria-labelledby="home-tab3"
-                    ></div>
+                    <div className="tab-pane fade" id="NavPills-html"></div>
                   </div>
                 </div>
               </div>

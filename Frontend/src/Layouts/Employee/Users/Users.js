@@ -50,9 +50,8 @@ const Users = () => {
   const [loading, setLoading] = useState(false);
   const [getaccess, setGetaccess] = useState({});
 
-  const [getid,setGetid] = useState([])
-
-
+  const [getid, setGetid] = useState([])
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const columns = [
     { Header: "FullName", accessor: "FullName" },
@@ -227,7 +226,7 @@ const Users = () => {
         );
       },
     },
-    
+
     getaccess.trade_history === 1 && {
       Header: "Trade History",
       accessor: "Trade History",
@@ -365,47 +364,6 @@ const Users = () => {
 
 
 
-  // update acctive status
-
-  // const updateactivestatus = async (event, id) => {
-  //   const user_active_status = event.target.checked ? 1 : 0;
-
-  //   const result = await Swal.fire({
-  //     title: "Do you want to save the changes?",
-  //     showCancelButton: true,
-  //     confirmButtonText: "Save",
-  //     cancelButtonText: "Cancel",
-  //     allowOutsideClick: false,
-  //   });
-
-  //   if (result.isConfirmed) {
-  //     try {
-  //       const response = await updateActivestatus({ id, user_active_status });
-  //       if (response.status) {
-  //         Swal.fire({
-  //           title: "Saved!",
-  //           icon: "success",
-  //           timer: 1000,
-  //           timerProgressBar: true,
-  //         });
-  //         setTimeout(() => {
-  //           Swal.close(); // Close the modal
-  //         }, 1000);
-  //       }
-  //     } catch (error) {
-  //       Swal.fire(
-  //         "Error",
-  //         "There was an error processing your request.",
-  //         "error"
-  //       );
-  //     }
-  //   } else if (result.dismiss === Swal.DismissReason.cancel) {
-  //     getAlluserdata();
-  //   }
-  // };
-
-
-
 
   const getpermission = async () => {
     try {
@@ -416,12 +374,10 @@ const Users = () => {
         setGetaccess(response.data[0]);
       }
     } catch (error) {
-      console.error("Error fetching permissions:", error);
+      console.log("Error fetching permissions:", error);
     }
   };
 
-  
-  // console.log("getaccess",getaccess)
 
   // get all admin
   const getAlluserdata = async () => {
@@ -451,26 +407,24 @@ const Users = () => {
       setFilteredData(result);
       setLoading(false);
     } catch (error) {
-      console.log("error", error);
+  
     }
   };
 
-  
-  const getallclient=async()=>{
+
+  const getallclient = async () => {
     try {
-      const data = {userid:user_id}
+      const data = { userid: user_id }
       const response = await getAllClient(data)
-      if(response.status){
-        // console.log("response",response.data.parent_id)
+      if (response.status) {
         setGetid(response.data.parent_id)
       }
 
     } catch (error) {
-      console.log("error")
     }
- }
+  }
 
- 
+
 
 
 
@@ -492,12 +446,22 @@ const Users = () => {
                 <div className="mb-4">
                   <h4 className="card-title">All Users</h4>
                 </div>
-                <Link
+                {/* <Link
                   to="/employee/adduser"
                   className="float-end mb-4 btn btn-primary"
                 >
                   Add User
-                </Link>
+                </Link> */}
+
+                {
+                  getaccess && getaccess.client_add === 1 ? (<Link
+                    to="/employee/adduser"
+                    className="float-end mb-4 btn btn-primary"
+                  >
+                    Add User
+                  </Link>) :
+                  ""
+                }
               </div>
               <div className="card-body p-0">
                 <div className="tab-content" id="myTabContent1">
@@ -522,9 +486,27 @@ const Users = () => {
                     {loading ? (
                       <Loader />
                     ) : (
-                      <Table columns={columns} data={data && data} />
+                        <Table columns={columns} data={data && data} rowsPerPage={rowsPerPage} />
                     )}
+                    <div className="d-flex align-items-center" style={{ marginBottom: "20px", marginLeft: "20px", marginTop: "-48px" }}>
+
+                      Rows per page:{" "}
+                      <select
+                        className="form-select ml-2"
+                        value={rowsPerPage}
+                        onChange={(e) => setRowsPerPage(Number(e.target.value))}
+                        style={{ width: "auto", marginLeft: "10px" }}
+                      >
+                        <option value={5}>5</option>
+                        <option value={10}>10</option>
+                        <option value={20}>20</option>
+                        <option value={50}>50</option>
+                        <option value={100}>100</option>
+
+                      </select>
+                    </div>
                   </div>
+                  
                 </div>
               </div>
             </div>

@@ -49,12 +49,13 @@ const Users = () => {
   const [loading, setLoading] = useState(false);
 
   const [checkprice, setCheckprice] = useState("");
-   
-  const [employeename,setEmployeename] = useState([])
- 
 
-  
-   
+  const [employeename, setEmployeename] = useState([])
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+
+
+
   const columns = [
     { Header: "FullName", accessor: "FullName" },
     { Header: "UserName", accessor: "UserName" },
@@ -128,9 +129,9 @@ const Users = () => {
       accessor: "employee_id",
       Cell: ({ cell, row }) => {
         const employee_id = cell.row.employee_id;
-        
+
         const employee = employeename.find(emp => emp._id === employee_id);
-    
+
         return employee ? employee.UserName : 'N/A';
       }
     },
@@ -242,6 +243,7 @@ const Users = () => {
         );
       },
     },
+    
 
     ,
   ];
@@ -311,17 +313,29 @@ const Users = () => {
         Licence: licencevalue,
         parent_Id: user_id,
       });
+      if (licencevalue) {
+        Swal.fire({
+          icon: "success",
+          title: "Licence Updated",
+          text: "The Licence has been updated successfully.",
+        });
+      }
 
-      Swal.fire({
-        icon: "success",
-        title: "Licence Updated",
-        text: "The Licence has been updated successfully.",
-      });
+      else {
+        Swal.fire({
+          icon: "error",
+          title: "Invalid Licence Value",
+          text: "Please enter a valid licence value and try again.",
+        });
+      }
+
       // setrefresh(!refresh)
 
       getAlluserdata();
       getadminLicence();
       setLicence(false);
+
+      setLicencevalue("");
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -337,6 +351,17 @@ const Users = () => {
   // update  balance
   const updateBalance = async () => {
     try {
+      // Validate if balance is provided
+      if (!balance || isNaN(balance) || parseFloat(balance) <= 0) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Please enter a valid number greater than zero for the balance.",
+        });
+        return;
+      }
+
+
       // Make the API call to add balance
       const response = await Addbalance({
         id: id,
@@ -345,25 +370,35 @@ const Users = () => {
         Type: type,
       });
 
-      // Show success message
-      Swal.fire({
-        icon: "success",
-        title: "Balance Updated",
-        text: response.message || "The balance has been updated successfully.",
-      });
+      // Handle API response
+      if (response.status) {
+        Swal.fire({
+          icon: "success",
+          title: "Balance Updated",
+          text: response.message || "The balance has been updated successfully.",
+        });
 
-      // Refresh user data and close the modal
-
-      getAlluserdata();
-      setModal(false);
+        // Refresh data and reset states
+        getAlluserdata();
+        setModal(false);
+        setBalance("");
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: response.message || "An error occurred while updating the balance.",
+        });
+      }
     } catch (error) {
+      // Handle unexpected errors
       Swal.fire({
         icon: "error",
         title: "Update Failed",
-        text: "error",
+        text: error.message || "An unexpected error occurred.",
       });
     }
   };
+
 
 
 
@@ -424,10 +459,10 @@ const Users = () => {
         response.data.filter((item) => {
           return item.Role === "USER";
         });
-     
-        const filterusername = response.data && response.data.filter((item)=>{
-           return  item._id
-        })
+
+      const filterusername = response.data && response.data.filter((item) => {
+        return item._id
+      })
 
       const searchfilter = result?.filter((item) => {
         const searchInputMatch =
@@ -442,13 +477,11 @@ const Users = () => {
         return searchInputMatch;
       });
 
-      // console.log("filterusername",filterusername[0].UserName)
       setEmployeename(filterusername)
       setData(search ? searchfilter : result);
       setFilteredData(result);
       setLoading(false);
     } catch (error) {
-      console.log("error", error);
     }
   };
 
@@ -459,7 +492,6 @@ const Users = () => {
   //     const response = await adminWalletBalance(data);
   //     setCheckprice(response.Balance);
   //   } catch (error) {
-  //     console.log("error", error);
   //   }
   // };
 
@@ -473,7 +505,7 @@ const Users = () => {
       const response = await TotalcountLicence(data);
       setCheckLicence(response.data);
     } catch (error) {
-      console.log("error", error);
+
     }
   };
 
@@ -532,8 +564,25 @@ const Users = () => {
                     {loading ? (
                       <Loader />
                     ) : (
-                      <Table columns={columns} data={data && data} />
+                        <Table columns={columns} data={data && data} rowsPerPage={rowsPerPage} />
                     )}
+                  </div>
+                  <div className="d-flex align-items-center" style={{ marginBottom: "20px", marginLeft: "20px", marginTop: "-48px" }}>
+
+                    Rows per page:{" "}
+                    <select
+                      className="form-select ml-2"
+                      value={rowsPerPage}
+                      onChange={(e) => setRowsPerPage(Number(e.target.value))}
+                      style={{ width: "auto", marginLeft: "10px" }}
+                    >
+                      <option value={5}>5</option>
+                      <option value={10}>10</option>
+                      <option value={20}>20</option>
+                      <option value={50}>50</option>
+                      <option value={100}>100</option>
+
+                    </select>
                   </div>
                 </div>
               </div>
@@ -568,7 +617,7 @@ const Users = () => {
                 <div className="modal-body">
                   <div className="row">
                     <div className="col-lg-12 col-sm-12">
-                    <div className="input-block mb-3">
+                      <div className="input-block mb-3">
                         <input
                           type="text"
                           className="form-control"
@@ -637,13 +686,15 @@ const Users = () => {
                         <input
                           type="text"
                           className="form-control"
-                          placeholder="Enter Licence"
+                          placeholder="Enter Licence Here"
                           onChange={(e) => {
-                            const value = e.target.value.replace(/\D/g, "");
+                            let value = e.target.value.replace(/\D/g, "");
+                            value = Math.max(0, Math.min(12, value));
                             setLicencevalue(value);
                           }}
-                          value={licencevalue}
+                          value={licencevalue ? `${licencevalue}` : ""} // Display the value with no '%', since it's not applicable here
                         />
+
                       </div>
                     </div>
                   </div>

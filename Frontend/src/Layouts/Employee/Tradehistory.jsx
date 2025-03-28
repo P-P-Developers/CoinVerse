@@ -15,6 +15,8 @@ const Tradehistory = () => {
 
   const [data, setData] = useState([]);
 
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
   // Define columns for the table
   const columns = [
     { Header: "Symbol", accessor: "symbol" },
@@ -104,7 +106,7 @@ const Tradehistory = () => {
       const response = await Clienthistory(data);
       setData(response.data);
     } catch (error) {
-      console.log("error", error);
+   
     }
   };
 
@@ -145,22 +147,19 @@ const Tradehistory = () => {
                     <h4 className="card-title">Trade History</h4>
                   </div>
                   <Link
-                  to="/employee/users"
-                  className="float-end mb-4 btn btn-primary"
-                >
-                  Back
-                </Link>
+                    to="/employee/users"
+                    className="float-end mb-4 btn btn-primary">
+                    Back
+                  </Link>
                 </div>
                 <div className="card-body p-0">
                   <div className="tab-content" id="myTabContent1">
-                 
                     <div
                       className="tab-pane fade show active"
                       id="Week"
                       role="tabpanel"
-                      aria-labelledby="Week-tab"
-                    >
-                      <div className='mb-3 ms-4'>
+                      aria-labelledby="Week-tab">
+                      <div className="mb-3 ms-4">
                         Search :{" "}
                         <input
                           className="ml-2 input-search form-control"
@@ -168,8 +167,44 @@ const Tradehistory = () => {
                           style={{ width: "20%" }}
                         />
                       </div>
-                      <h5>Total Profit/Loss: <span  style={{ color: totalProfitLoss > 0 ? 'green' : 'red' }}> <DollarSign />{totalProfitLoss}</span></h5>
-                      <Table columns={columns} data={data && data} />
+                      <h5>
+                        Total Profit/Loss:{" "}
+                        <span
+                          style={{
+                            color: totalProfitLoss > 0 ? "green" : "red",
+                          }}>
+                          {" "}
+                          <DollarSign />
+                          {totalProfitLoss}
+                        </span>
+                      </h5>
+                      <Table
+                        columns={columns}
+                        data={data && data}
+                        rowsPerPage={rowsPerPage}
+                      />
+                      <div
+                        className="d-flex align-items-center"
+                        style={{
+                          marginBottom: "20px",
+                          marginLeft: "20px",
+                          marginTop: "-48px",
+                        }}>
+                        Rows per page:{" "}
+                        <select
+                          className="form-select ml-2"
+                          value={rowsPerPage}
+                          onChange={(e) =>
+                            setRowsPerPage(Number(e.target.value))
+                          }
+                          style={{ width: "auto", marginLeft: "10px" }}>
+                          <option value={5}>5</option>
+                          <option value={10}>10</option>
+                          <option value={20}>20</option>
+                          <option value={50}>50</option>
+                          <option value={100}>100</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
                 </div>

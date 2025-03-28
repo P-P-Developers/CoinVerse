@@ -1,4 +1,7 @@
-import React, { useEffect,useState } from "react";
+
+
+
+import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -13,7 +16,6 @@ const Updateuser = () => {
 
   const [data, setData] = useState([]);
 
-
   // Retrieving user details from localStorage (ensure secure usage)
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const Role = userDetails?.Role;
@@ -26,7 +28,7 @@ const Updateuser = () => {
       email: "",
       phone: "",
       Balance: "",
-      employee_id:"",
+      employee_id: "",
       Licence: "",
       limit: "",
       selectedOption: "",
@@ -58,6 +60,13 @@ const Updateuser = () => {
       }
       if (!values.Licence) {
         errors.Licence = "Please Enter Licence";
+      } else if (isNaN(values.Licence) || values.Licence < 0 || values.Licence > 12) {
+        errors.Licence = "Licence must be a number between 0 and 12.";
+      }
+      if (!values.limit) {
+        errors.limit = "Please enter a value for Limit";
+      } else if (isNaN(values.limit) || values.limit < 0 || values.limit > 100) {
+        errors.limit = "Limit must be a number between 0 and 100.";
       }
       if (!values.selectedOption) {
         errors.selectedOption = "Please select an option";
@@ -65,11 +74,8 @@ const Updateuser = () => {
       if (!values.inputValue) {
         errors.inputValue = "Please enter a value for the selected option";
       }
-      if (!values.limit) {
-        errors.limit = "Please enter a value for Limit";
-      }
       if (!values.employee_id) {
-        errors.employee_id = "Please select a Employee";
+        errors.employee_id = "Please select an Employee";
       }
       return errors;
     },
@@ -78,7 +84,7 @@ const Updateuser = () => {
       const data = {
         id: rowData && rowData._id,
         limit: values.limit,
-        employee_id:values.employee_id,
+        employee_id: values.employee_id,
         Licence: values.Licence,
         [selectedOption]: values.inputValue,
       };
@@ -117,26 +123,29 @@ const Updateuser = () => {
     },
   });
 
-
-
   useEffect(() => {
     if (rowData) {
       const determineSelectedOption = () => {
-        if (rowData.pertrade !== undefined) return "pertrade";
-        if (rowData.perlot !== undefined) return "perlot";
-        return "pertrade"; 
+        if (rowData.pertrade && rowData.pertrade !== 0) {
+          return "pertrade";
+        } else if (rowData.perlot && rowData.perlot !== 0) {
+          return "perlot";
+        }
+        return "pertrade"; // Default to "pertrade" if both are null, undefined, or 0.
       };
+      
+
 
       formik.setValues({
         fullName: rowData.FullName || "",
         username: rowData.UserName || "",
         email: rowData.Email || "",
         phone: rowData.PhoneNo || "",
-        Password:rowData.Otp || "" ,
+        Password: rowData.Otp || "",
         Balance: rowData.Balance || "",
-        employee_id:rowData.employee_id || "",
+        employee_id: rowData.employee_id || "",
         Licence: rowData.Licence || "",
-        selectedOption: rowData.selectedOption || determineSelectedOption(),
+        selectedOption:  determineSelectedOption(),
         inputValue:
           rowData.pertrade ||
           rowData.perlot ||
@@ -146,14 +155,11 @@ const Updateuser = () => {
     }
   }, [rowData]);
 
-
-
   const getInputValueLabel = (selectedOption) => {
     if (selectedOption === "pertrade") return "Enter Value for Per Trade";
     if (selectedOption === "perlot") return "Enter Value for Per Lot";
     return "Enter Value";
   };
-
 
   const getAlluserdata = async () => {
     const data = { id: user_id };
@@ -166,15 +172,13 @@ const Updateuser = () => {
         });
       setData(result);
     } catch (error) {
-      console.log("error", error);
+   
     }
   };
-
 
   useEffect(() => {
     getAlluserdata();
   }, []);
-
 
   // Form fields configuration
   const fields = [
@@ -218,26 +222,18 @@ const Updateuser = () => {
       col_size: 6,
       disable: true,
     },
-    {
-      name: "Balance",
-      label: "Balance",
-      type: "text3",
-      label_size: 12,
-      col_size: 6,
-      disable: false,
-    },
+    
     {
       name: "employee_id",
       label: "Employee",
       type: "select",
       options: [
-        { label: "Admin", value: "Admin" }, 
+        { label: "Admin", value: "Admin" },
         ...(data
           ? data.map((item) => ({
-            
-              label: item.UserName,
-              value: item._id,
-            }))
+            label: item.UserName,
+            value: item._id,
+          }))
           : []),
       ],
       label_size: 12,
@@ -246,16 +242,16 @@ const Updateuser = () => {
     },
     {
       name: "Licence",
-      label: "Licence",
-      type: "text",
+      label: "Licence (0-12)",
+      type: "number",
       label_size: 12,
       col_size: 6,
       disable: false,
     },
     {
       name: "limit",
-      label: "Limit",
-      type: "text",
+      label: "Margin (0-100%)",
+      type: "number",
       label_size: 12,
       col_size: 6,
       disable: false,
@@ -283,9 +279,6 @@ const Updateuser = () => {
     },
   ];
 
-
-
-  
   return (
     <Form
       fields={fields}
@@ -293,7 +286,7 @@ const Updateuser = () => {
       btn_name="Update User"
       btn_name1="Cancel"
       formik={formik}
-      btn_name1_route={"/admin/users"} 
+      btn_name1_route={"/admin/users"}
     />
   );
 };

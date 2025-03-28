@@ -3,18 +3,25 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { LOGIN_API } from "../../Services/Auth/Auth";
 import { Link } from "react-router-dom";
+import { getCompanyApi } from "../../Services/Superadmin/Superadmin";
+
 
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [logo, setLogo] = useState('');
 
   const navigate = useNavigate();
 
   const handleUsernameChange = (e) => setUsername(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
 
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible);
+  }
   const validate = () => {
     let inputErrors = {};
     if (!username) inputErrors.username = "Username is required";
@@ -22,6 +29,32 @@ const Login = () => {
     return inputErrors;
   };
 
+  const changeFavicon = (iconPath) => {
+    const link = document.querySelector("favicon") || document.createElement("link");
+    link.type = "image/x-icon";
+    link.rel = "icon";
+    link.href = iconPath;
+    document.getElementsByTagName("head")[0].appendChild(link);
+  };
+
+
+  useEffect(() => {
+    fetchLogo();
+  }, [])
+
+  const fetchLogo = async () => {
+    const res = await getCompanyApi()
+    const link = document.querySelector("link[rel*='icon']") || document.createElement("link");
+    link.type = "image/x-icon";
+    link.rel = "icon";
+    link.href = res.data.favicon;
+    document.getElementsByTagName("head")[0].appendChild(link);
+
+    document.title = res.data.panelName;
+
+    setLogo(res.data.logo);
+    changeFavicon(res.data.favicon);
+  }
   const handleSubmit = async (e) => {
     e.preventDefault();
     const inputErrors = validate();
@@ -29,6 +62,7 @@ const Login = () => {
       setErrors(inputErrors);
       return;
     }
+    
 
     try {
       const response = await LOGIN_API({ UserName: username, password: password });
@@ -36,11 +70,20 @@ const Login = () => {
       const { Role } = response.data;
 
       if (response.status) {
+        if (response.data.Role === "USER") {
+          Swal.fire({
+            icon: "error",
+            title: "Login failed",
+            text: "User Can't Login On WebPage!",
+          });
+          return;
+        }
         localStorage.setItem("user_details", JSON.stringify(response.data));
         localStorage.setItem("user_role", JSON.stringify(response.data.Role));
         localStorage.setItem("UserName", JSON.stringify(response.data.UserName));
+        localStorage.setItem("ReferralCode", JSON.stringify(response.data?.ReferralCode))
 
-        
+
         Swal.fire({
           icon: "success",
           title: "Login successful",
@@ -48,7 +91,7 @@ const Login = () => {
           timer: 1500,
           showConfirmButton: false,
         }).then(() => {
-          
+
 
           if (Role === "SUPERADMIN") {
             navigate("/superadmin/dashboard");
@@ -60,11 +103,21 @@ const Login = () => {
           }
         });
       } else {
-        Swal.fire({
-          icon: "error",
-          title: "Login failed",
-          text: response.msg,
-        });
+        if (response.message === "Password Not Match") {
+
+          Swal.fire({
+            icon: "error",
+            title: "Login failed",
+            text: response.message,
+          });
+
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Login failed",
+            text: response.message,
+          });
+        }
       }
     } catch (error) {
       Swal.fire({
@@ -72,7 +125,7 @@ const Login = () => {
         title: "Login failed",
         text: error.msg || "An unexpected error occurred",
       });
-      
+
     }
   };
 
@@ -81,7 +134,7 @@ const Login = () => {
       <div className="login-aside text-center d-flex flex-column flex-row-auto">
         <div className="d-flex flex-column-auto flex-column pt-lg-40 pt-15">
           <div className="text-center mb-lg-4 mb-2 pt-5 logo">
-            <img src="/assets/images/pnpp.png" style={{ height: "46px" }} alt="Logo" />
+            <img src={logo} style={{ height: "100px" }} alt="Logo" />
           </div>
           <h3 className="mb-2 text-white">Welcome back!</h3>
           {/* <p className="mb-4">
@@ -157,19 +210,20 @@ const Login = () => {
                     <div className="mb-3 position-relative">
                       <label className="form-label required">Password</label>
                       <input
-                        type="password"
+
+                        type={isPasswordVisible ? "text" : "password"}
                         id="dlab-password"
                         className="form-control"
                         value={password}
                         onChange={handlePasswordChange}
                       />
+
+                      <span className="show-pass eye" onClick={togglePasswordVisibility}>
+                        <i className={isPasswordVisible ? "fa fa-eye" : "fa fa-eye-slash"} />
+                      </span>
                       {errors.password && (
                         <div className="text-danger">{errors.password}</div>
                       )}
-                      <span className="show-pass eye">
-                        <i className="fa fa-eye-slash" />
-                        <i className="fa fa-eye" />
-                      </span>
                     </div>
 
                     <button className="btn btn-block btn-primary">

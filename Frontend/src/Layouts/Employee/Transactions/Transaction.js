@@ -39,16 +39,12 @@ const Transaction = () => {
       const data = {employee_id:user_id}
       const response = await getEmployeeUserHistory(data);
       const parentIds = response.data && response.data.map((item) => item.parent_id);
-      // console.log("parentIds",parentIds)
-      // console.log("response",response)
+  
       setGetparentid(parentIds)
     } catch (error) {
-      console.log("error", error);
+  
     }
   };
-
-  
-  // console.log("getparentid",getparentid)
 
   
   // getting data
@@ -58,10 +54,9 @@ const Transaction = () => {
       const result = response.data && response.data.filter((item) => {
         return item.parent_Id === getparentid
       })
-      // console.log("result123",result)
       setData(result);
     } catch (error) {
-      console.log("error", error);
+ 
     }
   };
 

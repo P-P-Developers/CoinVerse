@@ -11,7 +11,7 @@ const Withdraw = () => {
     const [activeTab, setActiveTab] = useState('Pending');
     const [selectedValues, setSelectedValues] = useState({});
      const [search, setSearch] = useState("");
-
+const [rowsPerPage, setRowsPerPage] = useState(10);
 
     const userDetails = JSON.parse(localStorage.getItem("user_details"));
     const user_id = userDetails?.user_id;
@@ -40,7 +40,7 @@ const Withdraw = () => {
                     <select 
                         className='form-select'
                         onChange={(event) => handleSelectChange(cell.row.id, cell.row, event)}
-                        defaultValue={selectedValues[cell.row.id] || "0"}
+                        Value={selectedValues[cell.row.id] || "0"}
                     >
                         <option value="0">Pending</option>
                         <option value="2">Reject</option>
@@ -64,7 +64,8 @@ const Withdraw = () => {
   
     const Updatestatus = async (id, status) => {
         try {
-            const data = { id, status };
+            const admin_id = user_id;
+            const data = {admin_id, id, status };
             const response = await UpdatestatusForpaymenthistory(data);
             
             if (response.status) {
@@ -140,21 +141,45 @@ const Withdraw = () => {
     
     const renderTable = (status) => {
         return (
-            <div className="table-responsive">
-                <div className="mb-3 ms-4">
-                        Search :{" "}
-                        <input
-                          className="ml-2 input-search form-control"
-                          style={{ width: "20%" }}
-                          type="text"
-                          placeholder="Search..."
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
-                        />
-                      </div>
-                <h5>{activeTab}Transactions</h5>
-                <Table columns={columns} data={filterDataByStatus(status)} />
+          <div className="table-responsive">
+            <div className="mb-3 ms-4">
+              Search :{" "}
+              <input
+                className="ml-2 input-search form-control"
+                style={{ width: "20%" }}
+                type="text"
+                placeholder="Search..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
             </div>
+            <h5>{activeTab}Transactions</h5>
+            <Table
+              columns={columns}
+              data={filterDataByStatus(status)}
+              rowsPerPage={rowsPerPage}
+            />
+            <div
+              className="d-flex align-items-center"
+              style={{
+                marginBottom: "20px",
+                marginLeft: "20px",
+                marginTop: "-48px",
+              }}>
+              Rows per page:{" "}
+              <select
+                className="form-select ml-2"
+                value={rowsPerPage}
+                onChange={(e) => setRowsPerPage(Number(e.target.value))}
+                style={{ width: "auto", marginLeft: "10px" }}>
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+            </div>
+          </div>
         );
     };
 

@@ -32,6 +32,7 @@ const Employee = () => {
   const [search, setSearch] = useState("");
 
   const [loading, setLoading] = useState(false);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const columns = [
     { Header: "FullName", accessor: "FullName" },
@@ -150,6 +151,13 @@ const Employee = () => {
         return fDateTime(cell.value);
       },
     },
+    {
+      Header : "End Date",
+      accessor: "End_Date",
+      Cell: ({ cell }) => {
+        return fDateTime(cell.value);
+      },
+    }
   ];
 
   const updateEmploye = (_id, obj) => {
@@ -340,9 +348,26 @@ const Employee = () => {
                       loading ? (
                         <Loader />
      
-                     ) :(<Table columns={columns} data={data} />
+                      ) : (<Table columns={columns} data={data} rowsPerPage={rowsPerPage} />
                     )}
                     </div>
+                  <div className="d-flex align-items-center" style={{ marginBottom: "20px", marginLeft: "20px", marginTop: "-48px" }}>
+
+                    Rows per page:{" "}
+                    <select
+                      className="form-select ml-2"
+                      value={rowsPerPage}
+                      onChange={(e) => setRowsPerPage(Number(e.target.value))}
+                      style={{ width: "auto", marginLeft: "10px" }}
+                    >
+                      <option value={5}>5</option>
+                      <option value={10}>10</option>
+                      <option value={20}>20</option>
+                      <option value={50}>50</option>
+                      <option value={100}>100</option>
+
+                    </select>
+                  </div>
                   </div>
                 </div>
               </div>

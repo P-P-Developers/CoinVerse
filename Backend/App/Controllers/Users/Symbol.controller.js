@@ -1,49 +1,36 @@
 "use strict";
-const bcrypt = require("bcrypt");
-const mongoose = require("mongoose");
-const ObjectId = mongoose.Types.ObjectId;
+
 const db = require("../../Models");
 const Symbol = db.Symbol;
 const Userwatchlist = db.Userwatchlist;
-const Favouritelist = db.Favouritelist
-
+const Favouritelist = db.Favouritelist;
 
 class UserSymbol {
-
-
   //user search symbol
-
   async symbolSearch(req, res) {
     try {
       const symboleName = req.body.symboleName;
       let condition = {};
-
-      if (symboleName) {
+  
+      // If symboleName is not an empty string, add the regex condition for symbol search
+      if (symboleName && symboleName.trim() !== "") {
         condition.trading_symbol = { $regex: symboleName, $options: "i" };
       }
-
+  
       const symbols = await Symbol.find(condition)
         .select("-symbol")
-        .sort({ trading_symbol: "asc" })
-
-      if(symbols[0].status == 0){
+        .sort({ trading_symbol: "asc" });
+  
+      // If no symbols are found or the first symbol has status 0, return not found
+      if (symbols.length === 0 || symbols[0].status == 0) {
         return res.json({
           status: false,
           message: "Symbol not found",
           data: [],
         });
       }
-      
-      if (!symboleName || symbols.length === 0) {
-        return res.json({
-          status: false,
-          message: "Symbol not found",
-          data: [],
-        });
-      }
-
+  
       return res.json({ status: true, message: "Find Success", data: symbols });
-
     } catch (err) {
       return res.json({
         status: false,
@@ -52,12 +39,9 @@ class UserSymbol {
       });
     }
   }
-
-
-
+  
 
   // add user symbol
-
   async addSymbol(req, res) {
     const condition = {
       userid: req.body.userid,
@@ -112,17 +96,131 @@ class UserSymbol {
     }
   }
 
+  // user userwalist list / backup code 
+  // async userSymbollist(req, res) {
+  //   try {
 
 
-// user userwalist list
+  //     const userWatchlistRecords = await Userwatchlist.find({
+  //       userid: req.body.userid,
+  //     })
+  //       .select("-createdAt -_id")
+  //       .sort({ _id: -1 });
+
+  //     const result = await Userwatchlist.aggregate([
+  //       { $match: { userid: req.body.userid } },
+  //       {
+  //         $lookup: {
+  //           from: "symbols",
+  //           localField: "symbol",
+  //           foreignField: "symbol",
+  //           as: "symbolDetails",
+  //           pipeline: [
+  //             { $match: { status: 1 } }, // Includingg status = 1
+  //           ],
+  //         },
+  //       },
+  //       { $unwind: "$symbolDetails" },
+  //       {
+  //         $project: {
+  //           symbol: 1,
+  //           userid: 1,
+  //           token: 1,
+  //           symbol_name: 1,
+  //           exch_seg: 1,
+
+  //           lotsize: "$symbolDetails.lotsize",
+  //         },
+  //       },
+  //     ]);
+
+  //     // Check if records are found and return the appropriate response
+  //     if (result.length > 0) {
+  //       return res.json({ status: true, data: result });
+  //     } else {
+  //       res.json({ status: false, message: "No data available", data: [] });
+  //     }
+  //   } catch (err) {
+  //     return res.json({
+  //       status: false,
+  //       message:
+  //         err.message ||
+  //         "An error occurred while retrieving the User Symbol List.",
+  //       data: [],
+  //     });
+  //   }
+  // }
+
+
+  // Userwatchlist with favourite status new code 
   async userSymbollist(req, res) {
     try {
-     
+
+      // const result1 = await Userwatchlist.aggregate([
+      //   { $match: { userid: req.body.userid } },
+      //   {
+      //     $lookup: {
+      //       from: "symbols",
+      //       localField: "symbol",
+      //       foreignField: "symbol",
+      //       as: "symbolDetails",
+      //       pipeline: [{ $match: { status: 1 } }],
+      //     },
+      //   },
+      //   { $unwind: "$symbolDetails" },
+      
+      //   {
+      //     $lookup: {
+      //       from: "favouritelists",
+      //       let: { userId: "$userid", token: "$token" },
+      //       pipeline: [
+      //         {
+      //           $match: {
+      //             $expr: {
+      //               $and: [
+      //                 { $eq: ["$userid", "$$userId"] },
+      //                 { $eq: ["$token", "$$token"] },
+      //                 { $eq: ["$status", 1] },
+      //               ],
+      //             },
+      //           },
+      //         },
+      //       ],
+      //       as: "favouritelists",
+      //     },
+      //   },
+      //   { $unwind: "$favouritelists" },
+      //   {
+      //     $project: {
+      //       symbol: 1,
+      //       userid: 1,
+      //       token: 1,
+      //       symbol_name: 1,
+      //       exch_seg: 1,
+      //       lotsize: "$symbolDetails.lotsize",
+      //       favourite: {
+      //         $cond: {
+      //           if: { $eq: ["$favouritelists.status", 1] },
+      //           then: true,
+      //           else: false,
+      //         },
+      //       },
+      //     },
+      //   },
+      // ]);
+      // console.log(result1);
+      
       const userWatchlistRecords = await Userwatchlist.find({
         userid: req.body.userid,
       })
         .select("-createdAt -_id")
         .sort({ _id: -1 });
+
+      const favouriteList = await Favouritelist.find({
+        userid: req.body.userid,
+      }).select("symbol");
+
+      const favouriteSymbols = favouriteList.map(item => item.symbol);
 
       const result = await Userwatchlist.aggregate([
         { $match: { userid: req.body.userid } },
@@ -132,6 +230,7 @@ class UserSymbol {
             localField: "symbol",
             foreignField: "symbol",
             as: "symbolDetails",
+            pipeline: [{ $match: { status: 1 } }],
           },
         },
         { $unwind: "$symbolDetails" },
@@ -142,13 +241,19 @@ class UserSymbol {
             token: 1,
             symbol_name: 1,
             exch_seg: 1,
-
             lotsize: "$symbolDetails.lotsize",
           },
         },
       ]);
 
-      // Check if records are found and return the appropriate response
+      result.forEach((item) => {
+        if (favouriteSymbols.includes(item.symbol)) {
+          item.isFav = true;
+        } else {
+          item.isFav = false;
+        }
+      });
+
       if (result.length > 0) {
         return res.json({ status: true, data: result });
       } else {
@@ -158,19 +263,19 @@ class UserSymbol {
       return res.json({
         status: false,
         message:
-          err.message ||
-          "An error occurred while retrieving the User Symbol List.",
+          err.message || "An error occurred while retrieving the User Symbol List.",
         data: [],
       });
     }
   }
 
 
-  // user userwalist2 list
 
+
+
+  // user userwalist2 list
   async getFavouritelist(req, res) {
     try {
-     
       const userWatchlistRecords = await Favouritelist.find({
         userid: req.body.userid,
       })
@@ -185,6 +290,9 @@ class UserSymbol {
             localField: "symbol",
             foreignField: "symbol",
             as: "symbolDetails",
+            pipeline: [
+              { $match: { status: 1 } }, // Includingg status = 1
+            ],
           },
         },
         { $unwind: "$symbolDetails" },
@@ -220,10 +328,10 @@ class UserSymbol {
 
 
 
-  
-  // add favouritelist
 
- async Favouritelist(req, res) {
+
+  // add favouritelist
+  async Favouritelist(req, res) {
     const condition = {
       userid: req.body.userid,
       symbol: req.body.symbolname,
@@ -277,10 +385,42 @@ class UserSymbol {
     }
   }
 
+  // Remove symbol from Favurite list
+  async removeFavourite(req, res) {
+    const condition = {
+      userid: req.body.userid,
+      symbol: req.body.symbolname,
+    };
 
+    try {
+      const userWatchlistRecord = await Favouritelist.findOne(condition);
+      if (!userWatchlistRecord) {
+        return res.json({
+          status: false,
+          message: "Symbol not found in the favorite list!",
+          data: [],
+        });
+      }
+
+      // Remove the symbol from the favorite list
+      await Favouritelist.deleteOne(condition);
+
+      return res.json({
+        status: true,
+        message: "Symbol removed successfully!",
+        data: [],
+      });
+    } catch (err) {
+      return res.json({
+        status: false,
+        message:
+          err.message || "Some error occurred while removing the symbol.",
+        data: [],
+      });
+    }
+  }
 
   // delete  user  symbole
-
   async deletwatchlistsymbol(req, res) {
     const { symbolname, userid } = req.body;
     try {
@@ -311,7 +451,5 @@ class UserSymbol {
     }
   }
 }
-
-
 
 module.exports = new UserSymbol();

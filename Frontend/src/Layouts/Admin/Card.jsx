@@ -59,7 +59,6 @@ var symbols = "ETH/USD,USD/EUR,USD/JPY,BTC/USD,EUR/USD,ETH/BTC,ETH/XRP,ETH/USD,X
     };
 
     const reconnectWebSocket = () => {
-      // console.log("Reconnecting WebSocket...");
       ws = new WebSocket(url);
       ws.onopen = () => {
         subscribeToSymbols();
@@ -89,11 +88,10 @@ var symbols = "ETH/USD,USD/EUR,USD/JPY,BTC/USD,EUR/USD,ETH/BTC,ETH/XRP,ETH/USD,X
       };
 
       ws.onerror = (error) => {
-        console.error("WebSocket Error:", error);
+        console.log("WebSocket Error:", error);
       };
 
       ws.onclose = () => {
-        // console.log("WebSocket connection closed");
         // Reconnect after 3 seconds
         setTimeout(reconnectWebSocket, 3000);
       };
@@ -109,7 +107,7 @@ var symbols = "ETH/USD,USD/EUR,USD/JPY,BTC/USD,EUR/USD,ETH/BTC,ETH/XRP,ETH/USD,X
 
 
   const renderPriceCards = () => {
-    // Split the symbols and map over each to render a price card
+    // Split the symbols  manda pover each to render a price card
     return symbols.split(",").map((symbol) => {
       const priceData = prices[symbol];
   

@@ -1,10 +1,7 @@
-
-
-
 import React, { useEffect, useState } from "react";
 import Table from "../../Utils/Table/Table";
 import { fDateTime } from "../../Utils/Date_format/datefromat";
-import { getlogoutuser, getAllUsers, getAllUser, GetUsersName } from "../../Services/Admin/Addmin";
+import { getlogoutuser, GetUsersName } from "../../Services/Admin/Addmin";
 
 const Loginstatus = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
@@ -14,61 +11,64 @@ const Loginstatus = () => {
   const [search, setSearch] = useState("");
   const [selectedUserId, setSelectedUserId] = useState(null); // For selected user
   const [users, setUsers] = useState([]); // For dropdown user list
-  const [selectedUserDetails, setSelectedUserDetails] = useState();
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   // Fetch users for dropdown
   const fetchUsers = async () => {
     try {
-      // Fetch users data from API
-      const response = await GetUsersName();
-      // console.log("Response is ",response)
-      
-      // Ensure users data is available
+      const response = await GetUsersName({ admin_id: user_id });
       if (response && response.data && response.data.length > 0) {
         setUsers(response.data);
       } else {
-        setUsers([]); // Fallback if no data
+        setUsers([]);
       }
     } catch (error) {
       setUsers([]); // Fallback in case of error
     }
   };
 
-  // Fetch logs when selected user changes
+  // Fetch logs when selected user changes or no user is selected (show all data)
   const getLogsForSelectedUser = async () => {
     try {
       const data = { userid: user_id, selectedUserId };
+
+      // Fetch all data if no user is selected
       const response = await getlogoutuser(data);
 
+      // Check if selectedUserId is empty or null and show data of all users
       const filteredData = response.data?.filter((item) => {
         // Search filter logic
         const searchInputMatch =
           search === "" ||
-          (item.UserName && item.UserName.toLowerCase().includes(search.toLowerCase())) ||
-          (item.login_status && item.login_status.toLowerCase().includes(search.toLowerCase()));
+          (item.UserName &&
+            item.UserName.toLowerCase().includes(search.toLowerCase())) ||
+          (item.login_status &&
+            item.login_status.toLowerCase().includes(search.toLowerCase()));
 
-        // Filter by selectedUserId
-        const userMatch = item.UserName === selectedUserId;
+        // If selectedUserId is null or empty, show data for all users
+        if (!selectedUserId) {
+          return searchInputMatch;
+        }
 
-        return searchInputMatch && userMatch; // Filter by both search and user match
+        // If a user is selected, filter by selectedUserId
+        return searchInputMatch && item.UserName === selectedUserId;
       });
 
       setData(filteredData || response.data);
     } catch (error) {
-      console.error("Error:", error);
+      console.log("Error:", error);
     }
   };
 
-  // Fetch users and logs data when component mounts or when selected user changes
+  // Fetch users when component mounts
   useEffect(() => {
     fetchUsers();
-  }, []); // Fetch users on component mount
+  }, []);
 
+  // Fetch logs whenever selectedUserId or search changes
   useEffect(() => {
-    if (selectedUserId) {
-      getLogsForSelectedUser(); // Fetch logs for selected user
-    }
-  }, [selectedUserId, search]); // Trigger when selectedUserId or search changes
+    getLogsForSelectedUser();
+  }, [selectedUserId, search]);
 
   const columns = [
     { Header: "UserName", accessor: "UserName" },
@@ -104,47 +104,77 @@ const Loginstatus = () => {
               </div>
               <div className="card-body p-0">
                 <div className="tab-content" id="myTabContent1">
+                  <div className="row mb-3 ms-3">
+                    {/* Vertical Layout for Search and Select User */}
+                    <div className="col-md-3">
+                      <div className="">
+                        <label className="me-2">Search:</label>
+                        <input
+                          className="form-control"
+                          style={{ width: "75%" }}
+                          type="text"
+                          placeholder="Search..."
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    {/* User Dropdown */}
+                    <div className="col-md-3">
+                      <div className="">
+                        <label className="me-2">Select User:</label>
+                        <select
+                          className="form-control"
+                          style={{ width: "50%%" }}
+                          onChange={(e) => setSelectedUserId(e.target.value)}
+                          value={selectedUserId}>
+                          <option value="">Select a user</option>
+                          {users.length > 0 ? (
+                            users.map((user) => (
+                              <option key={user.id} value={user.id}>
+                                {user?.UserName}
+                              </option>
+                            ))
+                          ) : (
+                            <option>No users available</option>
+                          )}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Table Section */}
                   <div
-                    className="tab-pane fade show active flex"
+                    className="tab-pane fade show active"
                     id="Week"
                     role="tabpanel"
-                    aria-labelledby="Week-tab"
-                  >
-                    <div className="mb-3 ms-4">
-                      Search :{" "}
-                      <input
-                        className="ml-2 input-search form-control"
-                        style={{ width: "20%" }}
-                        type="text"
-                        placeholder="Search..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                      />
-                    </div>
-
-                    <div className="mb-3">
-                      {/* Dropdown for selecting user */}
-                      Select User:{" "}
+                    aria-labelledby="Week-tab">
+                    <Table
+                      columns={columns}
+                      data={data}
+                      rowsPerPage={rowsPerPage}
+                    />
+                    <div
+                      className="d-flex align-items-center"
+                      style={{
+                        marginBottom: "20px",
+                        marginLeft: "20px",
+                        marginTop: "-48px",
+                      }}>
+                      Rows per page:{" "}
                       <select
-                        className="form-control"
-                        style={{ width: "200px", display: "inline-block" }}
-                        onChange={(e) => setSelectedUserId(e.target.value)}
-                        value={selectedUserId}
-                      >
-                        <option value="">Select a user</option>
-                        {users.length > 0 ? (
-                          users.map((user) => (
-                            <option key={user.id} value={user.id}>
-                              {user?.UserName}
-                            </option>
-                          ))
-                        ) : (
-                          <option>No users available</option>
-                        )}
+                        className="form-select ml-2"
+                        value={rowsPerPage}
+                        onChange={(e) => setRowsPerPage(Number(e.target.value))}
+                        style={{ width: "auto", marginLeft: "10px" }}>
+                        <option value={5}>5</option>
+                        <option value={10}>10</option>
+                        <option value={20}>20</option>
+                        <option value={50}>50</option>
+                        <option value={100}>100</option>
                       </select>
                     </div>
-
-                    <Table columns={columns} data={data} />
                   </div>
                 </div>
               </div>

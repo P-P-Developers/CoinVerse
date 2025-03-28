@@ -7,8 +7,8 @@ const Footer = () => {
                 <div className="copyright">
                     <p>
                         Copyright © Designed &amp; Developed by{" "}
-                        <a href="https://www.pnpuniverse.com/" target="_blank">
-                            P&P infotech
+                        <a>
+                            Coin Verse
                         </a>{" "}
                         <span className="current-year">2024</span>
                     </p>

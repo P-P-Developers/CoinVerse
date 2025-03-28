@@ -36,21 +36,31 @@ const userModel = Schema({
         unique: true,
         default: null
     },
-    password:{
-        type:String,
+    password: {
+        type: String,
         required: true,
         trim: true,
         default: null
+    },
+    pin: {
+        type: String, 
+        default: null
+        
+    },
+
+    pin_status: {
+        type: Boolean, // Indicates if pin has been set
+        default: false
     },
     Otp: {
         type: String,
         trim: true,
         default: null
     },
-    employee_id :{
-         type:String,
-         trim: true,
-         default: null
+    employee_id: {
+        type: String,
+        trim: true,
+        default: null
     },
     Create_Date: {
         type: Date,
@@ -59,7 +69,7 @@ const userModel = Schema({
     Role: {
         type: String,
         required: true
-    },  
+    },
     Is_Active: {
         type: String,
         enum: ['1', '0'],
@@ -79,14 +89,14 @@ const userModel = Schema({
         required: true,
     },
     Balance: {
-        type:Number,
+        type: Number,
         default: null
     },
     Licence: {
-        type:Number,
+        type: Number,
         default: null
     },
-   
+
     Start_Date: {
         type: Date,
         default: null
@@ -100,19 +110,44 @@ const userModel = Schema({
         required: true,
 
     },
-    pertrade :{
+    pertrade: {
         type: Number,
-        defaultValue : null
+        defaultValue: null
     },
-    perlot :{
+    perlot: {
         type: Number,
-        default : null
+        default: null
     },
-    limit :{
+    limit: {
         type: Number,
-        default : null
-    }
-    
+        default: null
+    },
+    ProfitMargin: {
+        type: Number,
+        default: null
+    },
+    ProfitBalance: {
+        type: Number,
+        default: null
+    },
+
+    ReferralCode: {
+        type: String,
+        trim: true,
+        default: null,
+    },
+
+    ReferredBy: {
+        type: String, // Stores the referral code of the referrer
+        trim: true,
+        default: null,
+    },
+    DeviceToken: {
+        type: String,
+        trim: true,
+        default: null
+    },
+
 },
     {
         timestamps: true

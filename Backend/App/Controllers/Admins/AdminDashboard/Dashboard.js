@@ -1,19 +1,41 @@
 "use strict";
-const bcrypt = require("bcrypt");
-const mongoose = require("mongoose");
-const ObjectId = mongoose.Types.ObjectId;
 const db = require("../../../Models");
-const { findOne } = require("../../../Models/Role.model");
 const User_model = db.user;
-const Role = db.role;
-const Wallet_model = db.WalletRecharge;
+const axios = require("axios");
 
+class Dashboard {
 
-class Dashboard{
 
   async GetDashboardData(req, res) {
     try {
-      const { parent_id } = req.body; 
+      const { parent_id } = req.body;
+
+      // Fetch total licenses for the given parent_id
+      const parentData = await User_model.findOne(
+        { _id: parent_id },
+        { Licence: 1 }
+      );
+      const TotalLicence = parentData ? parentData.Licence || 0 : 0;
+
+      // Fetch the sum of Licences from all Users and Employees under the parent_id
+      const UsedLicenceData = await User_model.aggregate([
+        {
+          $match: {
+            parent_id: parent_id,
+            Role: { $in: ["USER", "EMPLOYE"] },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            totalUsedLicences: { $sum: "$Licence" },
+          },
+        },
+      ]);
+
+      const UsedLicence =
+        UsedLicenceData.length > 0 ? UsedLicenceData[0].totalUsedLicences : 0;
+
       const counts = await User_model.aggregate([
         {
           $facet: {
@@ -51,46 +73,115 @@ class Dashboard{
         },
         {
           $project: {
-            TotalEmployeCount: { $ifNull: [{ $arrayElemAt: ["$TotalEmployeCount.count", 0] }, 0] },
-            TotalActiveEmployeCount: { $ifNull: [{ $arrayElemAt: ["$TotalActiveEmployeCount.count", 0] }, 0] },
-            TotalUserCount: { $ifNull: [{ $arrayElemAt: ["$TotalUserCount.count", 0] }, 0] },
-            TotalActiveUserCount: { $ifNull: [{ $arrayElemAt: ["$TotalActiveUserCount.count", 0] }, 0] },
+            TotalEmployeCount: {
+              $ifNull: [{ $arrayElemAt: ["$TotalEmployeCount.count", 0] }, 0],
+            },
+            TotalActiveEmployeCount: {
+              $ifNull: [
+                { $arrayElemAt: ["$TotalActiveEmployeCount.count", 0] },
+                0,
+              ],
+            },
+            TotalUserCount: {
+              $ifNull: [{ $arrayElemAt: ["$TotalUserCount.count", 0] }, 0],
+            },
+            TotalActiveUserCount: {
+              $ifNull: [
+                { $arrayElemAt: ["$TotalActiveUserCount.count", 0] },
+                0,
+              ],
+            },
           },
         },
       ]);
-  
+
       const {
         TotalEmployeCount,
         TotalActiveEmployeCount,
         TotalUserCount,
         TotalActiveUserCount,
       } = counts[0];
-  
-      var Count = {
+
+      const Count = {
         TotalEmployeCount: TotalEmployeCount,
         TotalActiveEmployeCount: TotalActiveEmployeCount,
         TotalInActiveEmployeCount: TotalEmployeCount - TotalActiveEmployeCount,
         TotalUserCount: TotalUserCount,
         TotalActiveUserCount: TotalActiveUserCount,
         TotalInActiveUserCount: TotalUserCount - TotalActiveUserCount,
+        TotalLicence: TotalLicence,
+        UsedLicence: UsedLicence,
       };
-  
+
       // DATA GET SUCCESSFULLY
       res.send({
         status: true,
-        msg: "Get Dashboard Data",
+        message: "Get Dashboard Data",
         data: Count,
       });
     } catch (error) {
-      console.log("Error getting Dashboard Data:", error);
       res.status(500).send({
         status: false,
-        msg: "Internal Server Error",
+        message: "Internal Server Error",
       });
     }
   }
-  
-    
+
+  async apiPrice(req, res) {
+    const API_TOKEN = process.env.API_TOKEN;
+
+    // Extract the symbol from the query parameters
+    const { symbol, day } = req.query;
+
+    if (!symbol) {
+      return res
+        .status(400)
+        .json({ error: "Symbol is required in the query." });
+    }
+
+    // Calculate the date range (from 50 days before yesterday to yesterday)
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    const startDate = new Date(yesterday);
+    startDate.setDate(yesterday.getDate() - day);
+
+    // Format dates as 'YYYY-MM-DD'
+    const formatDate = (date) => date.toISOString().split("T")[0];
+    const formattedStartDate = formatDate(startDate);
+    const formattedEndDate = formatDate(yesterday);
+
+    // Function to fetch data from Tiingo API
+    const fetchTiingoData = async () => {
+      const url = `https://api.tiingo.com/tiingo/daily/${symbol}/prices?startDate=${formattedStartDate}&endDate=${formattedEndDate}&token=${API_TOKEN}`;
+
+      try {
+        const response = await axios.get(url, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        // Check if the response is valid
+        if (response.status === 200) {
+          return res.status(200).json(response.data);
+        } else {
+          return res
+            .status(response.status)
+            .json({ error: `Error: Received status code ${response.status}` });
+        }
+      } catch (error) {
+        console.log("Error fetching data:", error.message);
+        return res
+          .status(500)
+          .json({ error: "An error occurred while fetching data." });
+      }
+    };
+
+    // Call the fetch function
+    fetchTiingoData();
+  }
 }
 
 module.exports = new Dashboard();

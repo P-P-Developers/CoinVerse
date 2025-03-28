@@ -963,20 +963,31 @@ const DynamicForm = ({
                         </>
                       ) : field.type === "convertprice" ? (
                         <>
-                        <div key={index} className={`col-md-${field.col_size}`}>
-              <label htmlFor={field.name}>{field.label}</label>
-              <input
-                type="text"
-                id={field.name}
-                {...formik.getFieldProps(field.name)}
-                disabled={field.disable}
-                className={`form-control ${formik.touched[field.name] && formik.errors[field.name] ? 'is-invalid' : ''}`}
-              />
-              {formik.touched[field.name] && formik.errors[field.name] ? (
-                <div className="invalid-feedback">{formik.errors[field.name]}</div>
-              ) : null}
-              {field.customElement}
-            </div>
+                          <div
+                            key={index}
+                            className={`col-md-${field.col_size}`}
+                          >
+                            <label htmlFor={field.name}>{field.label}</label>
+                            <input
+                              type="text"
+                              id={field.name}
+                              {...formik.getFieldProps(field.name)}
+                              disabled={field.disable}
+                              className={`form-control ${
+                                formik.touched[field.name] &&
+                                formik.errors[field.name]
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                            />
+                            {formik.touched[field.name] &&
+                            formik.errors[field.name] ? (
+                              <div className="invalid-feedback">
+                                {formik.errors[field.name]}
+                              </div>
+                            ) : null}
+                            {field.customElement}
+                          </div>
                         </>
                       ) : (
                         <>

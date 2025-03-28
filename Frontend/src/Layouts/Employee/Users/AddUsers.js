@@ -23,8 +23,8 @@ const AddUsers = () => {
   const [checkdolarprice, setCheckdolarprice] = useState(0);
   const [checkLicence, setCheckLicence] = useState([]);
 
-  
-  const [getid,setGetid] = useState([])
+
+  const [getid, setGetid] = useState([])
 
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const Role = userDetails?.Role;
@@ -33,13 +33,13 @@ const AddUsers = () => {
 
   const formik = useFormik({
     initialValues: {
-      fullName:"",
-      username:"",
+      fullName: "",
+      username: "",
       email: "",
-      phone:"",
-      employee_id:"",
+      phone: "",
+      employee_id: "",
       Balance: "",
-      password:"",
+      password: "",
       confirmPassword: "",
       Licence: "",
       limit: "",
@@ -80,7 +80,7 @@ const AddUsers = () => {
       } else if (values.password !== values.confirmPassword) {
         errors.confirmPassword = "Passwords do not match";
       }
-      if (!values.Licence) {
+      if (!values.Licence || values.Licence === "") {
         errors.Licence = "Please Enter Licence";
       }
       if (!values.selectedOption) {
@@ -92,11 +92,22 @@ const AddUsers = () => {
       if (!values.limit) {
         errors.limit = "Please enter a value for Limit";
       }
-     
+
       return errors;
     },
 
     onSubmit: async (values, { setSubmitting }) => {
+
+      if (!values.Licence || values.Licence === "") {
+        Swal.fire({
+          title: "Error",
+          text: "Licence is required",
+          icon: "error",
+          timer: 1000,
+          timerProgressBar: true,
+        })
+      }
+
       const selectedOption = values.selectedOption;
 
       const data = {
@@ -114,6 +125,9 @@ const AddUsers = () => {
         Licence: values.Licence,
         [selectedOption]: values.inputValue,
       };
+
+
+
 
       setSubmitting(false);
 
@@ -192,12 +206,11 @@ const AddUsers = () => {
       setCheckprice(response.Balance);
       setCheckdolarprice(response.dollarPriceDoc.dollarprice);
     } catch (error) {
-      console.log("error", error);
+     
     }
   };
 
 
-  // console.log("getid",getid)
 
   const getadminLicence = async () => {
     const data = { userid: getid };
@@ -205,7 +218,7 @@ const AddUsers = () => {
       const response = await TotalcountLicence(data);
       setCheckLicence(response.data);
     } catch (error) {
-      console.log("error", error);
+   
     }
   };
 
@@ -213,21 +226,19 @@ const AddUsers = () => {
 
 
 
-  const getallclient=async()=>{
+  const getallclient = async () => {
     try {
-      const data = {userid:user_id}
+      const data = { userid: user_id }
       const response = await getAllClient(data)
-      if(response.status){
-        // console.log("response",response.data.parent_id)
+      if (response.status) {
         setGetid(response.data.parent_id)
       }
 
     } catch (error) {
-      console.log("error")
+  
     }
- }
+  }
 
-  // console.log("getid",getid)
 
 
   useEffect(() => {
@@ -242,14 +253,14 @@ const AddUsers = () => {
     const exchangeRate = Number(checkdolarprice);
     setDollarPrice(
       formik.values.Balance
-        ? parseFloat(formik.values.Balance)/exchangeRate
+        ? parseFloat(formik.values.Balance) / exchangeRate
         : 0
     );
   }, [formik.values.Balance]);
 
 
 
-  
+
   const fields = [
     {
       name: "fullName",
@@ -335,19 +346,18 @@ const AddUsers = () => {
       col_size: 6,
       disable: false,
     },
-    {
-      name: "inputValue",
-      label: formik.values.selectedOption
-        ? formik.values.selectedOption === "pertrade"
+    ...(formik.values.selectedOption ? [
+      {
+        name: "inputValue",
+        label: formik.values.selectedOption === "pertrade"
           ? "Per Trade"
-          : "Per Lot"
-        : "Input Value",
-      type: "text",
-      label_size: 12,
-      col_size: 6,
-      disable: false,
-      showWhen: (values) => !!values.selectedOption,
-    },
+          : "Per Lot",
+        type: "text",
+        label_size: 12,
+        col_size: 6,
+        disable: false,
+      },
+    ] : []),
   ];
 
   return (

@@ -1,88 +1,90 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const mainorderSchema = new mongoose.Schema({
   userid: {
     type: String,
-    default: null
+    default: null,
   },
   adminid: {
     type: String,
-    default: null
+    default: null,
   },
   symbol: {
     type: String,
-    default: null
+    default: null,
   },
   // Type Buy Sell
   buy_type: {
     type: String,
-    default: null
+    default: null,
   },
   sell_type: {
     type: String,
-    default: null
+    default: null,
   },
   buy_price: {
     type: Number,
-    default: null
+    default: null,
   },
   sell_price: {
     type: Number,
-    default: null
+    default: null,
   },
   buy_lot: {
     type: Number,
-    default: null
+    default: null,
   },
   sell_lot: {
     type: Number,
-    default: null
+    default: null,
   },
 
   buy_qty: {
     type: Number,
-    default: null
+    default: null,
   },
   sell_qty: {
     type: Number,
-    default: null
+    default: null,
   },
   buy_time: {
     type: Date,
-    default: null
+    default: null,
   },
   sell_time: {
     type: Date,
-    default: null
+    default: null,
   },
-  signal_type:{
+  signal_type: {
     type: String,
-    default: null
+    default: null,
   },
   totalamount: {
     type: Number,
-    default: null
+    default: null,
   },
   previous_trade_id: {
     type: String,
-    default: null
+    default: null,
   },
   type_entry_exit: {
     type: String,
-    default: null
+    default: null,
   },
-  lotsize:{
+  lotsize: {
     type: Number,
     default: null,
   },
   token: {
     type: String,
-    default: null
+    default: null,
+    index: true,
   },
   requiredFund: {
     type: Number,
     default: null,
   },
+
   reason: {
     type: String,
     default: null,
@@ -104,30 +106,47 @@ const mainorderSchema = new mongoose.Schema({
     default: null,
   },
   brokerage: {
-    type: Number,
+    type: String,
     default: null,
   },
   limit: {
-    type: Number,
+    type: String,
     default: null,
   },
+  profitloss: {
+    type: String,
+    default: null,
+  },
+  Sl_price_percentage: {
+    type: String,
+    default: null,
+  },
+  Target_price: {
+    type: String,
+    default: null,
+  },
+  stoploss_price: {
+    type: String,
+    default: null,
+  },
+  Exittype: {
+    type: String,
+    default: null,
+  },
+
   orderid: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Order'
-    }
+      ref: "Order",
+    },
   ],
-
 
   createdAt: {
     type: Date,
-    default: Date.now
+    default: Date.now,
   },
-
 });
 
-const mainorder_model = mongoose.model('mainorder', mainorderSchema);
-
-
+const mainorder_model = mongoose.model("mainorder", mainorderSchema);
 
 module.exports = mainorder_model;

@@ -1,81 +1,89 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
-import { getavailableposition } from "../../../Services/Superadmin/Superadmin";
+import {
+  getAdminName,
+  getavailableposition,
+} from "../../../Services/Superadmin/Superadmin";
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 
-
-
-
 const Position = () => {
-
-
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
   const Role = userDetails?.Role;
 
-
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
+  const [adminNames, setAdminNames] = useState([]);
+  const [selectedAdmin, setSelectedAdmin] = useState("");
 
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const columns = [
+    { Header: "UserName", accessor: "userName" },
+
     { Header: "symbol", accessor: "symbol" },
     {
       Header: "Buy qty",
       accessor: "buy_qty",
       Cell: ({ cell }) => {
-        const buy_qty = cell.row.buy_qty; 
-        return buy_qty ? buy_qty : "-"; 
-      }
+        const buy_qty = cell.row.buy_qty;
+        return buy_qty ? buy_qty : "-";
+      },
     },
     {
       Header: "Sell qty",
       accessor: "sell_qty",
       Cell: ({ cell }) => {
-        const sell_qty = cell.row.sell_qty; 
-        return sell_qty ? sell_qty : "-"; 
-      }
+        const sell_qty = cell.row.sell_qty;
+        return sell_qty ? sell_qty : "-";
+      },
     },
     {
       Header: "Position Avg",
       accessor: "Position Avg",
       Cell: ({ cell }) => {
-        const { sell_qty, buy_qty } = cell.row; 
+        const { sell_qty, buy_qty } = cell.row;
         const availablePosition = buy_qty - sell_qty;
-        return (
-          <span>{availablePosition}</span>
-        );
+        return <span>{availablePosition}</span>;
       },
     },
-
   ];
-
-
 
   // getting data
   const getuserallhistory = async () => {
     try {
       const response = await getavailableposition({});
 
+      // Get unique admin names
+      const uniqueAdminNames = [
+        ...new Set(response?.data?.map((item) => item.adminName)),
+      ];
+      const res = await getAdminName();
+      const adminNames = res.data.map((item) => item.UserName);
+ 
+      setAdminNames(adminNames);
+
       const searchfilter = response.data?.filter((item) => {
         const searchInputMatch =
           search === "" ||
-          (item.symbol && item.symbol.toLowerCase().includes(search.toLowerCase())) 
-          
+          (item.symbol &&
+            item.symbol.toLowerCase().includes(search.toLowerCase()));
 
-        return searchInputMatch;
+        const adminFilterMatch =
+          selectedAdmin === "" ||
+          item.adminName.trim().toLowerCase() ===
+            selectedAdmin.trim().toLowerCase();
+
+        return adminFilterMatch && searchInputMatch;
       });
-      setData(search  ?searchfilter : response.data);
-    } catch (error) {
-      console.log("error", error);
-    }
+
+      setData(search || selectedAdmin ? searchfilter : response.data);
+    } catch (error) {}
   };
 
   useEffect(() => {
     getuserallhistory();
-  }, [search]);
-
-
+  }, [search, selectedAdmin]);
 
   return (
     <>
@@ -95,20 +103,74 @@ const Position = () => {
                       className="tab-pane fade show active"
                       id="Week"
                       role="tabpanel"
-                      aria-labelledby="Week-tab"
-                    >
-                     <div className="mb-3 ms-4">
-                        Search :{" "}
-                        <input
-                          className="ml-2 input-search form-control"
-                          style={{ width: "20%" }}
-                          type="text"
-                          placeholder="Search..."
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
-                        />
+                      aria-labelledby="Week-tab">
+                      <div className="mb-3 ms-4 d-flex align-items-center">
+                        {/* Search Input */}
+                        <div className="me-3">
+                          Search:{" "}
+                          <input
+                            className="input-search form-control"
+                            style={{ width: "200px" }}
+                            type="text"
+                            placeholder="Search..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                          />
+                        </div>
+
+                        {/* Dropdown */}
+                        <div className="mt-3">
+                          <select
+                            className="form-select"
+                            style={{ width: "200px", height: "35px" }} // Adjust width if needed
+                            onChange={(e) => setSelectedAdmin(e.target.value)}>
+                            <option value={selectedAdmin}>Select Admin</option>
+                            {/* Render admin names dynamically */}
+                            {adminNames.map((item, index) => (
+                              <option key={index} value={item}>
+                                {item}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                       </div>
-                      <Table columns={columns} data={data && data} />
+
+                      {data && data.length > 0 ? (
+                        <div>
+                          {" "}
+                          <Table
+                            columns={columns}
+                            data={data && data}
+                            rowsPerPage={rowsPerPage}
+                          />
+                          <div
+                            className="d-flex align-items-center"
+                            style={{
+                              marginBottom: "20px",
+                              marginLeft: "20px",
+                              marginTop: "-48px",
+                            }}>
+                            Rows per page:{" "}
+                            <select
+                              className="form-select ml-2"
+                              value={rowsPerPage}
+                              onChange={(e) =>
+                                setRowsPerPage(Number(e.target.value))
+                              }
+                              style={{ width: "auto", marginLeft: "10px" }}>
+                              <option value={5}>5</option>
+                              <option value={10}>10</option>
+                              <option value={20}>20</option>
+                              <option value={50}>50</option>
+                              <option value={100}>100</option>
+                            </select>
+                          </div>
+                        </div>
+                      ) : (
+                        <div>No data available</div>
+                      )}
+
+                      {/* <Table columns={columns} data={data && data} /> */}
                     </div>
                   </div>
                 </div>
