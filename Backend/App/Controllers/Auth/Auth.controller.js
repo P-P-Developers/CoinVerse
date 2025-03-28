@@ -92,7 +92,7 @@ class Auth {
       // Send successful login response with JWT and user details
       return res.send({
         status: true,
-        message: "Login successfully",
+        msg: "Login successfully",
         data: {
           token: token,
           Role: EmailCheck.Role,
