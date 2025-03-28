@@ -80,18 +80,28 @@ const AddUsers = () => {
       } else if (values.password !== values.confirmPassword) {
         errors.confirmPassword = "Passwords do not match";
       }
-      if (!values.Licence || values.Licence === "") {
+      if (!values.Licence) {
         errors.Licence = "Please Enter Licence";
       }
+      else if (values.Licence > checkLicence) {
+        errors.Licence = "You Don't have Enough Licence"
+      } else if (isNaN(values.Licence) || values.Licence < 1 || values.Licence > 12) {
+        errors.Licence = "Licence should be a number between 1 and 12";
+      }
+
       if (!values.selectedOption) {
         errors.selectedOption = "Please select an option";
       }
       if (!values.inputValue) {
         errors.inputValue = "Please enter a value for the selected option";
       }
+
       if (!values.limit) {
         errors.limit = "Please enter a value for Limit";
+      } else if (isNaN(values.limit) || values.limit < 0 || values.limit > 100) {
+        errors.limit = "Limit should be a number between 0 and 100";
       }
+
 
       return errors;
     },
@@ -206,7 +216,7 @@ const AddUsers = () => {
       setCheckprice(response.Balance);
       setCheckdolarprice(response.dollarPriceDoc.dollarprice);
     } catch (error) {
-     
+
     }
   };
 
@@ -218,7 +228,7 @@ const AddUsers = () => {
       const response = await TotalcountLicence(data);
       setCheckLicence(response.data);
     } catch (error) {
-   
+
     }
   };
 
@@ -235,7 +245,7 @@ const AddUsers = () => {
       }
 
     } catch (error) {
-  
+
     }
   }
 
@@ -320,7 +330,7 @@ const AddUsers = () => {
     },
     {
       name: "Licence",
-      label: "Licence",
+      label: "Licence(1-12)",
       type: "text3",
       label_size: 12,
       col_size: 6,
@@ -328,7 +338,7 @@ const AddUsers = () => {
     },
     {
       name: "limit",
-      label: "Limit",
+      label: "Margin(0-100%)",
       type: "text3",
       label_size: 12,
       col_size: 6,
