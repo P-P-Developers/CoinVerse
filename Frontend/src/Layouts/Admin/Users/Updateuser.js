@@ -240,14 +240,14 @@ const Updateuser = () => {
       col_size: 6,
       disable: false,
     },
-    {
-      name: "Licence",
-      label: "Licence (0-12)",
-      type: "number",
-      label_size: 12,
-      col_size: 6,
-      disable: false,
-    },
+    // {
+    //   name: "Licence",
+    //   label: "Licence (0-12)",
+    //   type: "number",
+    //   label_size: 12,
+    //   col_size: 6,
+    //   disable: true,
+    // },
     {
       name: "limit",
       label: "Margin (0-100%)",
@@ -266,7 +266,7 @@ const Updateuser = () => {
       ],
       label_size: 12,
       col_size: 6,
-      disable: false,
+      disable: true,
     },
     {
       name: "inputValue",
@@ -274,7 +274,7 @@ const Updateuser = () => {
       type: "text",
       label_size: 12,
       col_size: 6,
-      disable: false,
+      disable: true,
       showWhen: (values) => !!values.selectedOption,
     },
   ];

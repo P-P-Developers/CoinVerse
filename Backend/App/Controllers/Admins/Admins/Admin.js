@@ -532,7 +532,7 @@ class Admin {
 
           const balanceStatement = new BalanceStatement({
             userid: findUser._id,
-            Amount: -paymentHistoryFind.Balance,
+            Amount: paymentHistoryFind.Balance,
             type: "CREDIT",
             message: "Balance used for Deposit",
             parent_Id: admin_id,
