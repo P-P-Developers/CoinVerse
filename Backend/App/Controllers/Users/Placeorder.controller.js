@@ -210,7 +210,7 @@ class Placeorder {
             token: 1,
             Target_price: 1,
             stoploss_price: 1,
-            Mk_type: 1, // Include Mk_type in the response
+            Mk_type: 1, 
             Exittype: 1,
           },
         },
@@ -410,6 +410,27 @@ class Placeorder {
       await order.save();
 
       return res.json({ status: true, message: "Order updated successfully" });
+    } catch (error) {
+      console.log("Error:", error);
+      return res.json({ status: false, message: "An error occurred", error });
+    }
+  }
+
+  async GetModifyOrder(req, res) {
+    try {
+      const { id } = req.body;
+
+      const GetModifyOrder = await mainorder_model.findOne({ _id: id });
+
+      if (!GetModifyOrder) {
+        return res.json({ status: false, message: "Order not found" });
+      }
+
+      return res.json({
+        status: true,
+        message: "Order found",
+        data: GetModifyOrder,
+      });
     } catch (error) {
       console.log("Error:", error);
       return res.json({ status: false, message: "An error occurred", error });
