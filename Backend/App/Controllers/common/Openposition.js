@@ -69,6 +69,7 @@ class OpenPositions {
             };
           }
 
+
           const config = {
             method: "post",
             maxBodyLength: Infinity,
@@ -81,7 +82,6 @@ class OpenPositions {
           };
           // console.log("config", config);
           const response = await axios(config);
-          console.log("response", response.data);
         }
       } else {
       }
