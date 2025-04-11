@@ -30,6 +30,6 @@ module.exports = {
   Profitmargin: require("./Profitmargin.model"),
   Company: require("./Company.model"),
   live_priceModal: require("./liveprice"),
-
+  ResearchModel : require("./Research"),
   open_position: open_position,
 };

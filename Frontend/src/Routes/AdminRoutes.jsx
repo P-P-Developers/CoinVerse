@@ -11,9 +11,7 @@ import Loginstatus from "../Layouts/Admin/Loginstatus";
 import Withdraw from "../Layouts/Admin/Withdraw";
 import Deposit from "../Layouts/Admin/Deposit";
 import Position from "../Layouts/Admin/Position";
-// import Employee from '../Layouts/Admin/Employee';
 import User from "../Layouts/Admin/User";
-// import Transaction from '../Layouts/Admin/Transaction';
 import Users from "../Layouts/Admin/Users/Users";
 import AddUsers from "../Layouts/Admin/Users/AddUsers";
 import Transaction from "../Layouts/Admin/Transactions/Transaction";
@@ -30,6 +28,7 @@ import Signup from "../Layouts/Admin/Signup";
 import Brokerage from "../Layouts/Admin/Brokerage";
 
 import AdminTradehistory from "../Layouts/Admin/Admintradehistory";
+import Research from "../Layouts/Admin/Research"
 
 const AdminRoutes = () => {
   const [isMenuToggled, setIsMenuToggled] = useState(false);
@@ -80,6 +79,8 @@ const AdminRoutes = () => {
           <Route path="/signup" element={<Signup />} />
           <Route path="/tradehistory" element={<AdminTradehistory />} />
           <Route path="/brokerage" element={<Brokerage />} />
+
+          <Route path="/research" element={<Research />} />
         </Routes>
       </div>
       <Footer />

@@ -153,6 +153,14 @@ export const admin_header = [
         icon: "fa fa-dollar-sign",
         route: "/admin/signup",
     },
+    {
+        id: 14,
+        name:"Research",
+        icon: "fe fe-check-square",
+        route: "/admin/research",
+
+
+    }
 
 ];
 

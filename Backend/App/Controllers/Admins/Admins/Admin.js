@@ -14,6 +14,7 @@ const Symbol = db.Symbol;
 const BalanceStatement = db.BalanceStatement;
 const mainorder_model = db.mainorder_model;
 const employee_permission = db.employee_permission;
+const ResearchModel = db.ResearchModel;
 
 // const nodemailer = require('nodemailer');
 
@@ -341,7 +342,6 @@ class Admin {
   }
 
   // delete Employee User
-
   async Delete_Employee(req, res) {
     try {
       const { id } = req.body;
@@ -373,7 +373,6 @@ class Admin {
   }
 
   // get paymentstatus
-
   async getuserpaymentstatus(req, res) {
     try {
       const { adminid } = req.body;
@@ -611,7 +610,6 @@ class Admin {
   }
 
   // ----------------------- Working code ----------------------------
-
   async getsymbolholdoff(req, res) {
     try {
       const result = await Symbol.find({});
@@ -629,9 +627,6 @@ class Admin {
   }
 
   // ---------------- getBrockerage data api for brockerage page
-
-  // 66adf2e5c1718a8affb23545 // admin_id
-
   async brokerageData(req, res) {
     try {
       const { admin_id } = req.body;
@@ -744,24 +739,6 @@ class Admin {
     }
   }
 
-  // async getbalancandLicence(req,res){
-  //     try {
-  //       const {userid ,Role} = req.body
-  //       const result = await User_model.findOne({_id:userid , Role:Role}).select("Balance Licence")
-
-  //       const dolaarprice = await MarginRequired.findOne({adminid:userid})
-
-  //       if(!result){
-  //        return  res.json({status:false,message:"not found",data:[]})
-  //       }
-
-  //       return res.json({status:true,message:"found",data:result})
-
-  //     } catch (error) {
-  //       return  res.json({status:false , message:"iternal error", data:[]})
-  //     }
-  // }
-
   async getbalancandLicence(req, res) {
     try {
       const { userid, Role } = req.body;
@@ -803,7 +780,6 @@ class Admin {
   }
 
   // count toatal baance
-
   async countuserBalance(req, res) {
     try {
       const { userid } = req.body;
@@ -929,9 +905,7 @@ class Admin {
 
       if (!userid || userid === "all") {
         result = await mainorder_model
-          .find({ adminid ,
-            $expr: { $eq: ["$sell_lot", "$buy_lot"] },
-          })
+          .find({ adminid, $expr: { $eq: ["$sell_lot", "$buy_lot"] } })
           .sort({ createdAt: -1 });
       } else {
         result = await mainorder_model
@@ -958,7 +932,7 @@ class Admin {
       result = result.map((item) => {
         return {
           ...item.toObject(),
-          userName: userNameMap[item.userid] || "Unknown", 
+          userName: userNameMap[item.userid] || "Unknown",
         };
       });
 
@@ -1063,6 +1037,193 @@ class Admin {
       return res.json({ status: false, message: "internal error", data: [] });
     }
   }
+
+  async AddResearch(req, res) {
+    try {
+      const {
+        researchType,
+        coin,
+        price,
+        targetPrice,
+        stopLoss,
+        entryReason,
+        note,
+        user_id,
+      } = req.body;
+
+      if (!researchType || !coin || !price || !targetPrice || !stopLoss) {
+        return res.json({
+          status: false,
+          message: "Missing required fields",
+        });
+      }
+
+      // Check if the research type is valid
+      const validResearchTypes = ["Crypto", "Forex"];
+
+      if (!validResearchTypes.includes(researchType)) {
+        return res.json({
+          status: false,
+          message: "Invalid research type",
+        });
+      }
+
+      const newResearch = new ResearchModel({
+        researchType,
+        coin,
+        price,
+        targetPrice,
+        stopLoss,
+        entryReason,
+        note,
+        user_id,
+      });
+
+      await newResearch.save();
+
+      return res.json({
+        status: true,
+        message: "Research added successfully",
+        data: newResearch,
+      });
+    } catch (error) {
+      console.error("Error in AddResearch:", error);
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  }
+
+  async getResearch(req, res) {
+    try {
+      console.log("getResearch called", req.query.id);
+      const GetAllResearch = await ResearchModel.find({}).sort({
+        createdAt: -1,
+      });
+      if (!GetAllResearch || GetAllResearch.length === 0) {
+        return res.json({
+          status: false,
+          message: "No research found",
+          data: [],
+        });
+      }
+
+      return res.json({
+        status: true,
+        message: "Research found",
+        data: GetAllResearch,
+      });
+    } catch (error) {
+      console.error("Error in getResearch:", error);
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  }
+
+  async EditResearch(req, res) {
+    try {
+      const {
+        id,
+        researchType,
+        coin,
+        price,
+        targetPrice,
+        stopLoss,
+        entryReason,
+        note,
+      } = req.body;
+
+      if (!id) {
+        return res.json({ status: false, message: "Research ID is required" });
+      }
+
+      // Find the research document by ID
+      const research = await ResearchModel.findById(id);
+      if (!research) {
+        return res.json({ status: false, message: "Research not found" });
+      }
+
+      // Update the research document with new data
+
+      research.price = price || research.price;
+      research.targetPrice = targetPrice || research.targetPrice;
+      research.stopLoss = stopLoss || research.stopLoss;
+      research.entryReason = entryReason || research.entryReason;
+      research.note = note || research.note;
+
+      // Save the updated research document
+      await research.save();
+
+      return res.json({
+        status: true,
+        message: "Research updated successfully",
+        data: research,
+      });
+    } catch (error) {
+      console.log("Error in EditResearch:", error);
+    }
+  }
+
+  async DeleteResearch(req, res) {
+    try {
+      const { id } = req.body;
+
+      const result = await ResearchModel.findByIdAndDelete(id);
+      if (!result) {
+        return res.json({
+          status: false,
+          message: "Research not found",
+        });
+      }
+
+      return res.json({
+        status: true,
+        message: "Research deleted successfully",
+        data: result,
+      });
+    } catch (error) {
+      console.error("Error in DeleteResearch:", error);
+    }
+  }
+
+  async UpdatStatus(req, res) {
+    try {
+      const { id, status } = req.body;
+
+      const result = await ResearchModel.findByIdAndUpdate(
+        id,
+        { status },
+        { new: true }
+      );
+
+      if (!result) {
+        return res.json({
+          status: false,
+          message: "Research not found",
+        });
+      }
+
+      return res.json({
+        status: true,
+        message: "Research status updated successfully",
+        data: result,
+      });
+    } catch (error) {
+      console.error("Error in UpdatStatus:", error);
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  }
+
+  
 }
 
 module.exports = new Admin();

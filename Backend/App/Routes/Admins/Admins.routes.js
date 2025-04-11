@@ -25,6 +25,11 @@ const {
   employee_permission,
   getUsersName,
   brokerageData,
+  AddResearch,
+  getResearch,
+  EditResearch,
+  UpdatStatus,
+  DeleteResearch
 } = require("../../Controllers/Admins/Admins/Admin");
 const {
   marginupdate,
@@ -58,5 +63,12 @@ router.post("/TotalcountLicence", TotalcountLicence);
 router.post("/getclienttradehistory", getclienttradehistory);
 router.post("/getlicensedata", getlicensedata);
 router.post("/employee_permission", employee_permission);
+
+
+router.post("/admin/addresearch", AddResearch);
+router.get("/admin/getresearch", getResearch);
+router.post("/admin/editresearch", EditResearch);
+router.post("/admin/updatstatus", UpdatStatus);
+router.post("/admin/deleteresearch", DeleteResearch);
 
 module.exports = router;

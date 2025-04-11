@@ -100,6 +100,7 @@ class Auth {
           UserName: EmailCheck.UserName,
           ReferralCode: EmailCheck.ReferralCode,
           ReferredBy: EmailCheck.ReferredBy,
+          parent_id: EmailCheck.parent_id,
         },
       });
 

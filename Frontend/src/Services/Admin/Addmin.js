@@ -512,3 +512,73 @@ export async function switchOrderType(data, token) {
     }
 
 }
+
+export async function AddResearch(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}admin/addresearch`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+}
+
+export async function getResearch(userId, token) {
+    try {
+      console.log("userId", userId);
+      const res = await axios.get(`${Config.base_url}admin/getresearch`, {
+        params: { id: userId },
+        headers: {
+          Authorization: `Bearer ${token}`, // optional, if your API uses token
+        },
+      });
+      return res?.data;
+    } catch (err) {
+      console.error("Error fetching research:", err);
+      return err;
+    }
+  }
+  
+export async function EditResearch(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}admin/editresearch`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+}
+
+
+export async function UpdatStatus(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}admin/updatstatus`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+}
+
+export async function DeleteResearch(data, token) {
+    try {
+        console.log("data", data);
+        const res = await axios.post(`${Config.base_url}admin/deleteresearch`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+}

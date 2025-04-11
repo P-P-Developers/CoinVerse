@@ -9,7 +9,7 @@ const WebSocket = require("ws");
 const { MongoClient } = require("mongodb");
 
 // Constants
-const API_KEY = process.env.TIINGO_API_KEY || "your_api_key";
+const API_KEY = process.env.TIINGO_API_KEY || "e533600bac1b5195c93e19a99b72720043ba3d79";
 const PORT = process.env.PORT || 5008;
 const databaseURLs =
 "mongodb://testing:MWQ5RP%26k5T567Gy%26Maa@185.209.75.198:27017/"
@@ -243,6 +243,20 @@ app.use(
 );
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+
+
+  
+
+
+
+// Create Api To check socket connection
+app.get("/", (req, res) => {
+  res.send("Socket connection is working!");
+});
+
+
+require("./Socket")(app, io); // Import routes
 
 // Start Server
 server.listen(PORT, async () => {
