@@ -1068,6 +1068,15 @@ class Admin {
         });
       }
 
+      const MatchSymbol = await Symbol.findOne({ symbol: coin });
+
+      if (!MatchSymbol) {
+        return res.json({
+          status: false,
+          message: "Symbol not found",
+        });
+      }
+
       const newResearch = new ResearchModel({
         researchType,
         coin,
@@ -1077,6 +1086,8 @@ class Admin {
         entryReason,
         note,
         user_id,
+        token: MatchSymbol.token,
+        lotsize: MatchSymbol.lotsize,
       });
 
       await newResearch.save();
@@ -1222,8 +1233,6 @@ class Admin {
       });
     }
   }
-
-  
 }
 
 module.exports = new Admin();

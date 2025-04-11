@@ -40,6 +40,14 @@ const researchSchema = new mongoose.Schema({
     enum: ["Open", "Close"],
     default: "Open",
   },
+  token: {
+    type: String,
+    default: "",
+  },
+  lotsize: {
+    type: String,
+    required: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
