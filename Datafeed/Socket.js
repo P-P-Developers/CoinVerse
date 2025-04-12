@@ -129,6 +129,10 @@ module.exports = function (app, io) {
       if (response.messageType === "A" && response.data?.length > 0) {
         const formattedData = formatPrices(response.data);
 
+        if(formattedData?.includes("undefined") ||  formattedData?.includes(undefined) || formattedData?.includes(null) || formattedData?.includes("null")){ 
+          return
+        }
+
         io.emit("receive_data_forex", { data: formattedData, type: "crypto" });
       }
     };
