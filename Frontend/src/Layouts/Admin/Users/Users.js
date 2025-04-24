@@ -216,7 +216,7 @@ const Users = () => {
               style={{ cursor: "pointer", color: "#33B469" }}
               onClick={() => updateuserpage(cell.row._id, cell)}
             />
-            <Trash2
+            {/* <Trash2
               style={{
                 cursor: "pointer",
                 marginRight: "10px",
@@ -224,7 +224,7 @@ const Users = () => {
                 color: "red",
               }}
               onClick={() => DeleteUser(cell.row._id)}
-            />
+            /> */}
           </div>
         );
       },
