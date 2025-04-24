@@ -29,6 +29,7 @@ import Brokerage from "../Layouts/Admin/Brokerage";
 
 import AdminTradehistory from "../Layouts/Admin/Admintradehistory";
 import Research from "../Layouts/Admin/Research"
+import Bankdetails from "../Layouts/Admin/Bankdetails"
 
 const AdminRoutes = () => {
   const [isMenuToggled, setIsMenuToggled] = useState(false);
@@ -81,6 +82,8 @@ const AdminRoutes = () => {
           <Route path="/brokerage" element={<Brokerage />} />
 
           <Route path="/research" element={<Research />} />
+          <Route path="/bankdetails" element={<Bankdetails />} />
+
         </Routes>
       </div>
       <Footer />

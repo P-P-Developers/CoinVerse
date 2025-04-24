@@ -142,7 +142,8 @@ const Header = () => {
     <div>
       <div
         className="header-banner"
-        style={{ backgroundImage: "url(/assets/images/bg-1.png)" }}></div>
+        style={{ backgroundImage: "url(/assets/images/bg-1.png)" }}
+      ></div>
 
       <div className="nav-header">
         <a href="index.html" className="brand-logo">
@@ -154,7 +155,8 @@ const Header = () => {
         <div className="nav-control">
           <div
             className={`hamburger ${isActive ? "is-active" : ""}`}
-            onClick={toggleHamburger}>
+            onClick={toggleHamburger}
+          >
             <span className="line" />
             <span className="line" />
             <span className="line" />
@@ -191,7 +193,8 @@ const Header = () => {
                     className="nav-link"
                     role="button"
                     data-bs-toggle="dropdown"
-                    aria-expanded="false">
+                    aria-expanded="false"
+                  >
                     <i
                       className="fa fa-bell"
                       style={{ fontSize: "32px", color: "white" }}
@@ -201,7 +204,8 @@ const Header = () => {
                     <div
                       id="DZ_W_Notification3"
                       className="widget-media dlab-scroll p-3"
-                      style={{ height: 380 }}>
+                      style={{ height: 380 }}
+                    >
                       {user_role === "ADMIN" && (
                         <ul className="timeline">
                           {notification.map((item) => (
@@ -239,7 +243,8 @@ const Header = () => {
                       className="nav-link"
                       role="button"
                       data-bs-toggle="dropdown"
-                      aria-expanded="false">
+                      aria-expanded="false"
+                    >
                       <div className="header-info2 d-flex align-items-center">
                         <img src="/assets/images/avatar/1.png" alt="" />
                       </div>
@@ -248,21 +253,35 @@ const Header = () => {
                       {user_role === "ADMIN" && (
                         <Link
                           to="/admin/profile"
-                          className="dropdown-item ai-icon">
+                          className="dropdown-item ai-icon"
+                        >
                           <i
                             className="fas fa-user"
-                            style={{ fontSize: "24px", color: "#000" }}
+                            style={{ fontSize: "18px", color: "#000" }}
                           />
                           <span className="ms-2">Profile</span>
+                        </Link>
+                      )}
+                      {user_role === "ADMIN" && (
+                        <Link
+                          to="/admin/bankdetails"
+                          className="dropdown-item ai-icon"
+                        >
+                          <i
+                            className="fas fa-university"
+                            style={{ fontSize: "18px", color: "#000" }}
+                          />
+                          <span className="ms-2">Bank Details</span>
                         </Link>
                       )}
                       {user_role === "SUPERADMIN" && (
                         <Link
                           to="/superadmin/system"
-                          className="dropdown-item ai-icon">
+                          className="dropdown-item ai-icon"
+                        >
                           <i
-                            className="fa-solid fa-gear"
-                            style={{ color: "#0c0808" }}
+                            className="fas fa-cogs"
+                            style={{ fontSize: "18px", color: "#000" }}
                           />
                           <span className="ms-2">System</span>
                         </Link>
@@ -272,18 +291,20 @@ const Header = () => {
                           to={`/${
                             user_role === "ADMIN" ? "admin" : "employee"
                           }/changedpassword`}
-                          className="dropdown-item ai-icon">
+                          className="dropdown-item ai-icon"
+                        >
                           <i
-                            className="fas fa-cogs"
-                            style={{ fontSize: "24px", color: "#000" }}
+                            className="fas fa-lock"
+                            style={{ fontSize: "18px", color: "#000" }}
                           />
-                          <span className="ms-2">Settings</span>
+                          <span className="ms-2">Change Password</span>
                         </Link>
                       )}
                       <Link
                         to="/login"
                         className="dropdown-item ai-icon"
-                        onClick={logoutuser}>
+                        onClick={logoutuser}
+                      >
                         <i
                           className="fas fa-sign-out-alt"
                           style={{ fontSize: "18px", color: "#fd5353" }}
@@ -304,22 +325,22 @@ const Header = () => {
                 {formattedSegment === "Admin"
                   ? "Add Admin"
                   : formattedSegment === "Addmin"
-                    ? "Add Admin"
-                    : formattedSegment === "Loginstatus"
-                      ? "Login Status"
-                      : formattedSegment === "Adminuser"
-                        ? "Admin Users"
-                        : formattedSegment === "Adminemployee"
-                          ? "Admin Employees"
-                          : formattedSegment === "Position"
-                            ? "Available Position"
-                            : formattedSegment === "Tradehistory"
-                              ? "Trade History"
-                              : formattedSegment === "Holdoff"
-                                ? "Hold Off"
-                                : formattedSegment === "Addemployees"
-                                  ? "Add Employee"
-                                  : formattedSegment}
+                  ? "Add Admin"
+                  : formattedSegment === "Loginstatus"
+                  ? "Login Status"
+                  : formattedSegment === "Adminuser"
+                  ? "Admin Users"
+                  : formattedSegment === "Adminemployee"
+                  ? "Admin Employees"
+                  : formattedSegment === "Position"
+                  ? "Available Position"
+                  : formattedSegment === "Tradehistory"
+                  ? "Trade History"
+                  : formattedSegment === "Holdoff"
+                  ? "Hold Off"
+                  : formattedSegment === "Addemployees"
+                  ? "Add Employee"
+                  : formattedSegment}
               </h2>
             </div>
           </div>

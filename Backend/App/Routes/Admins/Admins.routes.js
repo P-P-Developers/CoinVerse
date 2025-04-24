@@ -29,7 +29,9 @@ const {
   getResearch,
   EditResearch,
   UpdatStatus,
-  DeleteResearch
+  DeleteResearch,
+  UpdateUpiDetails,
+  getUpiDetails
 } = require("../../Controllers/Admins/Admins/Admin");
 const {
   marginupdate,
@@ -70,5 +72,8 @@ router.get("/admin/getresearch", getResearch);
 router.post("/admin/editresearch", EditResearch);
 router.post("/admin/updatstatus", UpdatStatus);
 router.post("/admin/deleteresearch", DeleteResearch);
+
+router.post("/admin/updateUpiDetails", UpdateUpiDetails);
+router.post("/admin/getUpiDetails", getUpiDetails);
 
 module.exports = router;

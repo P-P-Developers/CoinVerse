@@ -582,3 +582,33 @@ export async function DeleteResearch(data, token) {
 
     }
 }
+
+
+// /admin/updateUpiDetails
+export async function UpdateUpiDetails(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}admin/updateUpiDetails`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+}
+
+// /admin/getUpiDetails
+export async function getUpiDetails(data, token) {
+    try {
+        console.log("data", data);
+        const res = await axios.post(`${Config.base_url}admin/getUpiDetails`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+}

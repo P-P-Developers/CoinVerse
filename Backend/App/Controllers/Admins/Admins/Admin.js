@@ -15,7 +15,7 @@ const BalanceStatement = db.BalanceStatement;
 const mainorder_model = db.mainorder_model;
 const employee_permission = db.employee_permission;
 const ResearchModel = db.ResearchModel;
-
+const UpiDetails = db.UpiDetails;
 // const nodemailer = require('nodemailer');
 
 class Admin {
@@ -1233,6 +1233,115 @@ class Admin {
       });
     }
   }
+
+  async UpdateUpiDetails(req, res) {
+    try {
+      const {
+        id,
+        upiId,
+        accountHolderName,
+        bankName,
+        bankAccountNo,
+        bankIfsc,
+        qrCodeBase64,
+      } = req.body;
+
+      const GetData = await UpiDetails.findById(id);
+      // if (!GetData) {
+      //   return res.json({ status: false, message: "UPI details not found" });
+      // }
+
+      if (!upiId) {
+        return res.json({ status: false, message: "UPI ID is required" });
+      }
+
+      if (!accountHolderName) {
+        return res.json({
+          status: false,
+          message: "Account Holder Name is required",
+        });
+      }
+      if (!bankName) {
+        return res.json({ status: false, message: "Bank Name is required" });
+      }
+      if (!bankAccountNo) {
+        return res.json({
+          status: false,
+          message: "Bank Account Number is required",
+        });
+      }
+
+      if (!bankIfsc) {
+        return res.json({ status: false, message: "Bank IFSC is required" });
+      }
+      if (!qrCodeBase64) {
+        return res.json({ status: false, message: "QR Code is required" });
+      }
+
+      // Update the UPI details
+      let updatedDetails = {
+        upiId,
+        accountHolderName,
+        bankName,
+        bankAccountNo,
+        bankIfsc,
+        qrCodeBase64,
+      };
+      const updatedUpiDetails = await UpiDetails.updateOne(
+        { _id: id },
+        updatedDetails,
+          {
+            upsert: true,
+          }
+
+      );
+
+      if (!updatedUpiDetails) {
+        return res.json({
+          status: false,
+          message: "Failed to update UPI details",
+        });
+      }
+      return res.json({
+        status: true,
+        message: "UPI details updated successfully",
+        data: updatedUpiDetails,
+      });
+    } catch (error) {
+      console.error("Error in UpdateUpiDetails:", error);
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  }
+
+  async getUpiDetails(req, res) {
+    try {
+      const { id } = req.body;
+
+      const GetData = await UpiDetails.findById(id);
+      if (!GetData) {
+        return res.json({ status: false, message: "UPI details not found" });
+      }
+
+      return res.json({
+        status: true,
+        message: "UPI details found",
+        data: GetData,
+      });
+    } catch (error) {
+      console.error("Error in getUpiDetails:", error);
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  }
+
+
 }
 
 module.exports = new Admin();

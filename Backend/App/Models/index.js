@@ -32,4 +32,5 @@ module.exports = {
   live_priceModal: require("./liveprice"),
   ResearchModel : require("./Research"),
   open_position: open_position,
+  UpiDetails: require("./UpiDetails"),
 };
