@@ -528,7 +528,6 @@ export async function AddResearch(data, token) {
 
 export async function getResearch(userId, token) {
     try {
-      console.log("userId", userId);
       const res = await axios.get(`${Config.base_url}admin/getresearch`, {
         params: { id: userId },
         headers: {
@@ -571,7 +570,7 @@ export async function UpdatStatus(data, token) {
 
 export async function DeleteResearch(data, token) {
     try {
-        console.log("data", data);
+  
         const res = await axios.post(`${Config.base_url}admin/deleteresearch`, data, {
             data: {},
         })
@@ -601,7 +600,7 @@ export async function UpdateUpiDetails(data, token) {
 // /admin/getUpiDetails
 export async function getUpiDetails(data, token) {
     try {
-        console.log("data", data);
+  
         const res = await axios.post(`${Config.base_url}admin/getUpiDetails`, data, {
             data: {},
         })

@@ -33,4 +33,7 @@ module.exports = {
   ResearchModel : require("./Research"),
   open_position: open_position,
   UpiDetails: require("./UpiDetails"),
+  Useraccount: require("./Useraccount"),
+  Conversation: require("./Conversation"),
+  Message: require("./Message"),
 };

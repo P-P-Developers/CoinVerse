@@ -10,6 +10,7 @@ const BalanceStatement = db.BalanceStatement;
 const mainorder_model = db.mainorder_model;
 const Order = db.Order;
 const broadcasting = db.broadcasting;
+const Useraccount = db.Useraccount;
 
 class Users {
   async userWithdrawalanddeposite(req, res) {
@@ -510,11 +511,6 @@ class Users {
     }
   }
 
-
-
-
-
-
   async tradeStatementForOrder(req, res) {
     try {
       const { orderid } = req.body;
@@ -768,6 +764,84 @@ class Users {
         status: false,
         message: "Server side error",
         data: error,
+      });
+    }
+  }
+
+
+  async getUserAccountDetails(req, res) {
+    try {
+      const { userId } = req.body;
+
+      if (!userId) {
+        return res.json({
+          status: false,
+          message: "User ID is required",
+          data: [],
+        });
+      }
+
+      const userAccountDetails = await Useraccount.findOne({ userId });
+
+      if (!userAccountDetails) {
+        return res.json({
+          status: false,
+          message: "User account details not found",
+          data: [],
+        });
+      }
+
+      return res.json({
+        status: true,
+        message: "User account details retrieved successfully",
+        data: userAccountDetails,
+      });
+    } catch (error) {
+      console.error("Error in getUserAccountDetails:", error);
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        data: [],
+      });
+    }
+  }
+  async updateUserAccountDetails(req, res) {
+    try {
+      const { userId, upiId, accountHolderName, bankName, bankAccountNo, bankIfsc } = req.body;
+
+      if (!userId) {
+        return res.json({
+          status: false,
+          message: "User ID is required",
+          data: [],
+        });
+      }
+
+      const updatedDetails = await Useraccount.findOneAndUpdate(
+        { userId },
+        { upiId, accountHolderName, bankName, bankAccountNo, bankIfsc },
+        { new: true }
+      );
+
+      if (!updatedDetails) {
+        return res.json({
+          status: false,
+          message: "Failed to update user account details",
+          data: [],
+        });
+      }
+
+      return res.json({
+        status: true,
+        message: "User account details updated successfully",
+        data: updatedDetails,
+      });
+    } catch (error) {
+      console.error("Error in updateUserAccountDetails:", error);
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        data: [],
       });
     }
   }

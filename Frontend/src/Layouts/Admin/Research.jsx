@@ -133,7 +133,7 @@ const Research = () => {
   };
 
   const handleToggleStatus = async (id, status) => {
-    console.log(id, status);
+
     const confirmToggle = window.confirm(
       `Are you sure you want to ${
         status === "Open" ? "close" : "open"
@@ -191,7 +191,7 @@ const Research = () => {
       accessor: "actions",
       Cell: (row) => (
         <div style={{ display: "flex", gap: "8px" }}>
-          {console.log(row.cell.row.status)}
+
 
           <Button
             variant="warning"

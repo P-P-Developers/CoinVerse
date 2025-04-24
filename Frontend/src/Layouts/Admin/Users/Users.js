@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
+import ChatModal from "../ChatModal";
 import {
   getUserdata,
   Addbalance,
@@ -53,8 +54,7 @@ const Users = () => {
   const [employeename, setEmployeename] = useState([])
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-
-
+  const [selectedUser, setSelectedUser] = useState(null);
 
   const columns = [
     { Header: "FullName", accessor: "FullName" },
@@ -243,7 +243,20 @@ const Users = () => {
         );
       },
     },
-    
+    {
+      Header: "Chat",
+      accessor: "Chat",
+      Cell: ({ cell }) => {
+        return (
+          <div>
+            <CircleDollarSign
+              style={{ cursor: "pointer", color: "#33B469" }}
+              onClick={() => setSelectedUser(cell.row)}
+            />
+          </div>
+        );
+      },
+    }
 
     ,
   ];
@@ -297,9 +310,6 @@ const Users = () => {
   // update Licence
   const updateLicence = async () => {
     try {
-
-      console.log("checkLicence", checkLicence)
-      console.log("licencevalue", licencevalue)
 
       if (parseInt(checkLicence.CountLicence) < parseInt(licencevalue)) {
         Swal.fire({
@@ -725,8 +735,14 @@ const Users = () => {
               </div>
             </div>
           </div>
+      
         </div>
       )}
+
+
+      {selectedUser && (
+  <ChatModal user={selectedUser} adminId={user_id} onClose={() => setSelectedUser(null)} />
+)}
     </>
   );
 };

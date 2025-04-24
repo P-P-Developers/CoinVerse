@@ -17,6 +17,8 @@ const employee_permission = db.employee_permission;
 const ResearchModel = db.ResearchModel;
 const UpiDetails = db.UpiDetails;
 // const nodemailer = require('nodemailer');
+const Conversation = db.Conversation;
+const Message = db.Message;
 
 class Admin {
   async AddUser(req, res) {
@@ -1290,10 +1292,9 @@ class Admin {
       const updatedUpiDetails = await UpiDetails.updateOne(
         { _id: id },
         updatedDetails,
-          {
-            upsert: true,
-          }
-
+        {
+          upsert: true,
+        }
       );
 
       if (!updatedUpiDetails) {
@@ -1341,7 +1342,84 @@ class Admin {
     }
   }
 
+  // 🔸 Create/Get Conversation
+  async conversation(req, res) {
+    try {
+      const { userId, adminId } = req.body;
+      let convo = await Conversation.findOne({ userId, adminId });
+      if (!convo) {
+        convo = new Conversation({ userId, adminId });
+        await convo.save();
+      }
+      res.json({ success: true, conversation: convo });
+    } catch (error) {
+      console.error("Error in conversation:", error);
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  }
 
+  // 🔸 Send Message
+  async message(req, res) {
+    try {
+      const { conversationId, senderId, receiverId, senderType, message } =
+        req.body;
+      const newMsg = new Message({
+        conversationId,
+        senderId,
+        receiverId,
+        senderType,
+        message,
+      });
+      await newMsg.save();
+      res.json({ success: true, message: newMsg });
+    } catch (error) {
+      console.error("Error in message:", error);
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  }
+
+  // 🔸 Get Messages by Conversation
+  async getMessages(req, res) {
+    try {
+      const messages = await Message.find({
+        conversationId: req.params.conversationId,
+      }).sort({ timestamp: 1 });
+      res.json({ success: true, messages });
+    } catch (error) {
+      console.error("Error in getMessages:", error);
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  }
+
+  // 🔸 Get Conversations for User/Admin
+  async getConversations(req, res) {
+    try {
+      const { id } = req.params;
+      const convos = await Conversation.find({
+        $or: [{ userId: id }, { adminId: id }],
+      });
+      res.json({ success: true, conversations: convos });
+    } catch (error) {
+      console.error("Error in getConversations:", error);
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  }
 }
 
 module.exports = new Admin();

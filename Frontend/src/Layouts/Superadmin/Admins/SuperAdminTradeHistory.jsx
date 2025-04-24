@@ -157,7 +157,7 @@ const SuperAdminTradeHistory = () => {
     try {
       const data = { adminid: Userid };
       const response = await Clienthistory(data);
-      console.log("Response is ", response);
+  
       setData(response.data);
     } catch (error) {
       console.log("error", error);

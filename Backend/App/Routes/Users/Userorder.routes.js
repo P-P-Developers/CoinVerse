@@ -18,7 +18,9 @@ const { userWithdrawalanddeposite, getpaymenthistory, getUserDetail, getmarginpr
     matchPin,
     changePin,
     tradeStatementForOrder,
-    tradeStatementForUser1
+    tradeStatementForUser1,
+    getUserAccountDetails,
+    updateUserAccountDetails
 } = require("../../Controllers/Users/Users.controller")
 const { statement } = require("../../Controllers/Users/Statement.controller")
 
@@ -60,6 +62,9 @@ router.post('/switchOrderType', switchOrderType);
 router.post('/UpdateTargetSlPRice', UpdateTargetSlPRice);
 
 router.post('/open/order', GetModifyOrder);
+
+router.post('/getUserAccountDetails', getUserAccountDetails);
+router.post('/updateUserAccountDetails', updateUserAccountDetails);
 
 
 

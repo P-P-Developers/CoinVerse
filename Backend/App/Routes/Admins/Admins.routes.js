@@ -31,7 +31,11 @@ const {
   UpdatStatus,
   DeleteResearch,
   UpdateUpiDetails,
-  getUpiDetails
+  getUpiDetails,
+  getConversations,
+  getMessages,
+  message,
+  conversation
 } = require("../../Controllers/Admins/Admins/Admin");
 const {
   marginupdate,
@@ -75,5 +79,11 @@ router.post("/admin/deleteresearch", DeleteResearch);
 
 router.post("/admin/updateUpiDetails", UpdateUpiDetails);
 router.post("/admin/getUpiDetails", getUpiDetails);
+
+router.post("/admin/conversation", conversation);
+router.post("/admin/message", message);
+router.get("/admin/messages/:conversationId", getMessages); 
+router.post("/admin/conversations/:id", getConversations);
+
 
 module.exports = router;
