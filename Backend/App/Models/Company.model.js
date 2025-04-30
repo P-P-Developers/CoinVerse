@@ -19,6 +19,10 @@ const companySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    loginUrl : {
+      type: String,
+      required: true,
+    },
     startOfDay: {
       type: Date,
     },

@@ -29,8 +29,9 @@ const Routing = () => {
             return;
         }
 
-        if (location.pathname === "/register") {
-            navigate("/register");
+        if (location.pathname.startsWith("/register")) {
+       
+            // navigate(location.pathname);
             return;
         }
 
@@ -78,7 +79,10 @@ const Routing = () => {
 
 
             <Route path="/login" element={<Login />} />
+            <Route path="/register/:id" element={<Register />} />
+
             <Route path="/register" element={<Register />} />
+
 
         </Routes>
     );

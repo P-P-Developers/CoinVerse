@@ -146,8 +146,8 @@ const Header = () => {
       ></div>
 
       <div className="nav-header">
-        <a href="index.html" className="brand-logo">
-          <img src={logo} width={"150px"} alt="" />
+        <a href="index.html" className="">
+          <img src={logo} width={"250px"} height={"83px"} alt="" />
 
           <div className="brand-title"></div>
         </a>

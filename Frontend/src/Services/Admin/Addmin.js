@@ -611,3 +611,17 @@ export async function getUpiDetails(data, token) {
 
     }
 }
+
+export async function UpdateRefferPrice(data, token) {
+    try {
+  
+        const res = await axios.post(`${Config.base_url}admin/updatereferprice`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+}

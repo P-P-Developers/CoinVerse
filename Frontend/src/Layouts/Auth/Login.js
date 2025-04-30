@@ -178,17 +178,10 @@ const Login = () => {
                   <form onSubmit={handleSubmit}>
                     <div className="text-center mb-4">
                       <h3 className="text-center mb-2 text-dark">Sign In</h3>
-                      {/* <span>Your Social Campaigns</span> */}
+                     
                     </div>
 
-                    {/* <div className="separator">
-                      <span
-                        className="text-center
-                      d-block mb-4 fs-13"
-                      >
-                        Or with username
-                      </span>
-                    </div> */}
+                   
                     <div className="mb-3">
                       <label
                         htmlFor="exampleFormControlInput1"

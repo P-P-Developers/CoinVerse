@@ -819,7 +819,7 @@ class Superadmin {
   // ___________CompanyModel Controller________
   async createOrUpdateCompany(req, res) {
     try {
-      const { panelName, logo, favicon, loginImage } = req.body;
+      const { panelName, logo, favicon, loginImage ,loginUrl} = req.body;
 
       if (!panelName || !logo || !favicon || !loginImage) {
         return res.json({
@@ -829,32 +829,30 @@ class Superadmin {
         });
       }
 
-      // Check if company settings already exist
-      let company = await Company.findOne();
+      let company = await Company.updateOne(
+        {},
+        {
+          $set: {
+            panelName,
+            logo,
+            favicon,
+            loginImage,
+            loginUrl
+          },
+        },
+        { upsert: true }
+      );
 
-      if (company) {
-        // Update existing company settings
-        company = await Company.findOneAndUpdate({
-          panelName,
-          logo,
-          favicon,
-          loginImage,
-        });
+      if (!company) {
         return res.json({
-          status: true,
-          message: "Company settings updated successfully",
-          data: company,
-        });
-      } else {
-        // Create new company settings
-        company = new Company({ panelName, logo, favicon, loginImage });
-        await company.save();
-        return res.json({
-          status: true,
-          message: "Company settings created successfully",
-          data: company,
+          status: false,
+          message: "Failed to create or update company settings",
+          data: [],
         });
       }
+
+      return res.json({ status: true, message: "Company settings updated", data: company });
+
     } catch (error) {
       console.error("Error at createOrUpdateCompany", error);
       return res.json({

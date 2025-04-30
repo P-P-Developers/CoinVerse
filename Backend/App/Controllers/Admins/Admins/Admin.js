@@ -1492,6 +1492,41 @@ class Admin {
     }
   }
 
+  async UpdateReferPrice(req, res) {
+  try {
+    const { userId, referPrice } = req.body;
+
+    if (!userId || !referPrice) {
+      return res.json({
+        status: false,
+        message: "User ID and referral price are required",
+      });
+    }
+
+    const user = await User_model.findById(userId);
+    if (!user) {
+      return res.json({ status: false, message: "User not found" });
+    }
+
+    user.Refer_Price = referPrice;
+    await user.save();
+
+    return res.json({
+      status: true,
+      message: "Referral price updated successfully",
+      data: user,
+    });
+
+  }catch (error) {
+    console.error("Error in UpdateReferPrice:", error);
+    return res.json({
+      status: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+}
+
   
 }
 

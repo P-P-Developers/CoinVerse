@@ -15,11 +15,13 @@ const System = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [companiesData, setCompaniesData] = useState({});
 
-  // Validation schema using Yup
   const validationSchema = Yup.object().shape({
     panelName: Yup.string()
       .required("Panel Name is required")
       .min(3, "Panel Name must be at least 3 characters"),
+    loginUrl: Yup.string()
+      .required("Login URL is required")
+      .url("Enter a valid URL"),
     logo: Yup.string().required("Logo is required"),
     favicon: Yup.string().required("Favicon is required"),
     loginImage: Yup.string().required("Login Image is required"),
@@ -34,7 +36,6 @@ const System = () => {
     document.getElementsByTagName("head")[0].appendChild(link);
   };
 
-  // Fetch companies data from the API
   const fetchCompaniesData = async () => {
     try {
       const res = await getCompanyApi({});
@@ -49,7 +50,7 @@ const System = () => {
         text: "Failed to load company data.",
       });
     } finally {
-      setIsLoading(false); // Set loading to false after data is fetched
+      setIsLoading(false);
     }
   };
 
@@ -117,9 +118,10 @@ const System = () => {
             ) : (
               <div className="card-body">
                 <Formik
-                  enableReinitialize={true} // Allows reinitialization of form values
+                  enableReinitialize={true}
                   initialValues={{
                     panelName: companiesData?.panelName || "",
+                    loginUrl: companiesData?.loginUrl || "",
                     logo: companiesData?.logo || "",
                     favicon: companiesData?.favicon || "",
                     loginImage: companiesData?.loginImage || "",
@@ -151,6 +153,30 @@ const System = () => {
                           )}
                         </div>
 
+                        <div className="col-md-6 mb-3">
+                          <label htmlFor="loginUrl" className="form-label">
+                            Login URL
+                          </label>
+                          <Field
+                            type="text"
+                            name="loginUrl"
+                            id="loginUrl"
+                            className={`form-control ${
+                              errors.loginUrl && touched.loginUrl
+                                ? "is-invalid"
+                                : ""
+                            }`}
+                            placeholder="Enter Login URL"
+                          />
+                          {errors.loginUrl && touched.loginUrl && (
+                            <div className="invalid-feedback">
+                              {errors.loginUrl}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="row">
                         <div className="col-md-6 mb-3">
                           <label htmlFor="logo" className="form-label">
                             Logo
@@ -186,9 +212,7 @@ const System = () => {
                             </div>
                           )}
                         </div>
-                      </div>
 
-                      <div className="row" style={{ marginTop: "-60px" }}>
                         <div className="col-md-6 mb-3">
                           <label htmlFor="favicon" className="form-label">
                             Favicon
@@ -217,15 +241,55 @@ const System = () => {
                           <small className="text-muted">
                             Upload a favicon file (16x16px).
                           </small>
-                          {/* {values.favicon && (
+                          {values.favicon && (
                             <div className="mt-2">
                               <img
                                 src={values.favicon}
-                                alt="Current Favicon"
-                                width="50"
+                                alt="Current login Image"
+                                width="100"
                               />
                             </div>
-                          )} */}
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="row">
+                        <div className="col-md-6 mb-3">
+                          <label htmlFor="loginImage" className="form-label">
+                            Login Image
+                          </label>
+                          <input
+                            type="file"
+                            id="loginImage"
+                            name="loginImage"
+                            className={`form-control ${
+                              errors.loginImage && touched.loginImage
+                                ? "is-invalid"
+                                : ""
+                            }`}
+                            onChange={async (e) => {
+                              const file = e.target.files[0];
+                              const base64 = await convertToBase64(file);
+                              setFieldValue("loginImage", base64);
+                            }}
+                          />
+                          {errors.loginImage && touched.loginImage && (
+                            <div className="invalid-feedback">
+                              {errors.loginImage}
+                            </div>
+                          )}
+                          <small className="text-muted">
+                            Choose a login image from your gallery.
+                          </small>
+                          {values.loginImage && (
+                            <div className="mt-2">
+                              <img
+                                src={values.loginImage}
+                                alt="Current login Image"
+                                width="100"
+                              />
+                            </div>
+                          )}
                         </div>
                       </div>
 
