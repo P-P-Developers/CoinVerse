@@ -36,7 +36,10 @@ const SignInUser = Schema({
         type: Date,
         default: Date.now
     },
-
+    isActive: {
+        type: Boolean,
+        default: false
+    },
     
 },
     {

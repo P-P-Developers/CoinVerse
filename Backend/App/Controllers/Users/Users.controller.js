@@ -13,9 +13,11 @@ const broadcasting = db.broadcasting;
 const Useraccount = db.Useraccount;
 
 class Users {
+
+
   async userWithdrawalanddeposite(req, res) {
     try {
-      const { userid, Balance, type } = req.body;
+      const { userid, Balance, type ,transactionId, ScreenShot } = req.body;
 
       // Fetch user data
       const userdata = await User_model.findById({ _id: userid }).sort({
@@ -56,6 +58,8 @@ class Users {
         Balance: dollarcount, // Store the converted dollar amount
         type: type,
         status: 0,
+        transactionId: transactionId,
+        ScreenShot: ScreenShot,
       });
 
       await paymentHistory.save();
@@ -81,7 +85,8 @@ class Users {
       const { userid } = req.body;
       const result = await PaymenetHistorySchema.find({ userid: userid }).sort({
         createdAt: -1,
-      });
+      }).select(
+        "adminid userid Balance type status message notification_title createdAt")
 
       if (!result) {
         return res.json({ status: false, message: "User not found", data: [] });
@@ -90,9 +95,9 @@ class Users {
         status: true,
         message: "Find Successfully",
         data: result,
-        data: result,
       });
     } catch (error) {
+      console.error("Error in getpaymenthistory:", error);
       return res.json({ status: false, message: "Server error", data: [] });
     }
   }
@@ -772,7 +777,7 @@ class Users {
   async getUserAccountDetails(req, res) {
     try {
       const { userId } = req.body;
-
+  
       if (!userId) {
         return res.json({
           status: false,
@@ -780,21 +785,30 @@ class Users {
           data: [],
         });
       }
-
-      const userAccountDetails = await Useraccount.findOne({ userId });
-
-      if (!userAccountDetails) {
+  
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.json({
+          status: false,
+          message: "Invalid User ID",
+          data: [],
+        });
+      }
+  
+      // ✅ Find all accounts for the given userId
+      const userAccountDetails = await Useraccount.find({ userId: new mongoose.Types.ObjectId(userId) });
+  
+      if (!userAccountDetails || userAccountDetails.length === 0) {
         return res.json({
           status: false,
           message: "User account details not found",
           data: [],
         });
       }
-
+  
       return res.json({
         status: true,
         message: "User account details retrieved successfully",
-        data: userAccountDetails,
+        data: userAccountDetails, // 👈 array of accounts
       });
     } catch (error) {
       console.error("Error in getUserAccountDetails:", error);
@@ -805,46 +819,61 @@ class Users {
       });
     }
   }
-  async updateUserAccountDetails(req, res) {
+  
+
+
+  async  updateUserAccountDetails(req, res) {
     try {
       const { userId, upiId, accountHolderName, bankName, bankAccountNo, bankIfsc } = req.body;
-
+  
+      console.log("Request body:", req.body);
+  
       if (!userId) {
-        return res.json({
+        return res.status(400).json({
           status: false,
           message: "User ID is required",
           data: [],
         });
       }
-
-      const updatedDetails = await Useraccount.findOneAndUpdate(
-        { userId },
-        { upiId, accountHolderName, bankName, bankAccountNo, bankIfsc },
-        { new: true }
-      );
-
-      if (!updatedDetails) {
-        return res.json({
+  
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({
           status: false,
-          message: "Failed to update user account details",
+          message: "Invalid userId format",
           data: [],
         });
       }
-
-      return res.json({
-        status: true,
-        message: "User account details updated successfully",
-        data: updatedDetails,
+  
+      // ✅ Directly Create a New Account Entry
+      const newAccount = new Useraccount({
+        userId: new mongoose.Types.ObjectId(userId),
+        upiId,
+        accountHolderName,
+        bankName,
+        bankAccountNo,
+        bankIfsc
       });
+  
+      const savedAccount = await newAccount.save();
+  
+      console.log("savedAccount", savedAccount);
+  
+      return res.status(201).json({
+        status: true,
+        message: "New user account added successfully",
+        data: savedAccount,
+      });
+  
     } catch (error) {
-      console.error("Error in updateUserAccountDetails:", error);
-      return res.json({
+      console.error("Error in updateUserAccountDetails:", error.message);
+      return res.status(500).json({
         status: false,
         message: "Internal server error",
         data: [],
       });
     }
   }
+  
 }
 
 module.exports = new Users();

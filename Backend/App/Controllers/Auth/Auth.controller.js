@@ -10,16 +10,18 @@ const totalLicense = db.totalLicense;
 const user_logs = db.user_logs;
 
 class Auth {
-
-
   async login(req, res) {
     try {
-      const { UserName, password,  fcm_token } = req.body;
+      const { UserName, password, fcm_token } = req.body;
 
       const EmailCheck = await User_model.findOne({ UserName: UserName });
 
       if (!EmailCheck) {
-        return res.send({ status: false, message: "User not exists", data: [] });
+        return res.send({
+          status: false,
+          message: "User not exists",
+          data: [],
+        });
       }
 
       if (EmailCheck.ActiveStatus !== "1") {
@@ -49,7 +51,11 @@ class Auth {
 
       const validPassword = await bcrypt.compare(password, EmailCheck.password);
       if (!validPassword) {
-        return res.send({ status: false, message: "Password not match", data: [] });
+        return res.send({
+          status: false,
+          message: "Password not match",
+          data: [],
+        });
       }
 
       // Check if pin_status is false
@@ -103,19 +109,16 @@ class Auth {
           parent_id: EmailCheck.parent_id,
         },
       });
-
     } catch (error) {
-      return res.send({ status: false, message: "Server side error", data: error });
+      return res.send({
+        status: false,
+        message: "Server side error",
+        data: error,
+      });
     }
   }
 
-
-
-
   // ----Original code----
-
-
-  
 
   // ------------------------------------------------------
   // // My testing with the code
@@ -165,7 +168,7 @@ class Auth {
         UserName,
         password,
         PhoneNo,
-        referred_by: referredUser ? referredUser._id : null, // Store the referring user's ID
+        referred_by: referredUser ? referredUser._id : null,
       });
 
       const result = await signinuser.save();
@@ -179,14 +182,12 @@ class Auth {
       }
 
       // Optionally, you could update the referred user's record to track the referral if needed
-
       return res.json({
         status: true,
         message: "Signed in successfully",
         data: result,
       });
     } catch (error) {
-      console.error(error); // Log the error for debugging
       return res.json({
         status: false,
         message: "Internal error",
@@ -195,12 +196,12 @@ class Auth {
     }
   }
 
-
-  // --------------------------  
   async getSignIn(req, res) {
     try {
       const { admin_id } = req.body;
-      const result = await Sign_In.find({ referred_by: admin_id }).sort({ createdAt: -1 });
+      const result = await Sign_In.find({ referred_by: admin_id ,isActive:false}).sort({
+        createdAt: -1,
+      });
 
       if (!result) {
         return res.json({ status: false, message: "data not found", data: [] });
@@ -224,7 +225,6 @@ class Auth {
 
       const user_detail = await User_model.findOne({ _id: userid });
 
-
       const user_login = new user_logs({
         user_Id: user_detail._id,
         admin_Id: user_detail.parent_id,
@@ -234,19 +234,22 @@ class Auth {
       });
       await user_login.save();
 
-      return res.send({ status: true, message: "Logout Succesfully", data: [] });
-
-    } catch (error) { }
+      return res.send({
+        status: true,
+        message: "Logout Succesfully",
+        data: [],
+      });
+    } catch (error) {}
   }
-
-
 
   // get logoutUser data
   async getlogsuser(req, res) {
     try {
       const { userid } = req.body;
 
-      const result = await user_logs.find({ admin_Id: userid }).sort({ createdAt: -1 });;
+      const result = await user_logs
+        .find({ admin_Id: userid })
+        .sort({ createdAt: -1 });
 
       if (!result) {
         return res.send({ status: false, message: "user not found", data: [] });
@@ -257,7 +260,6 @@ class Auth {
     }
   }
 
-
   // change password
 
   async PasswordChanged(req, res) {
@@ -267,13 +269,17 @@ class Auth {
       const user = await User_model.findOne({ _id: userid });
 
       if (!user) {
-        return res.json({ status: false, message: 'User not found', data: [] });
+        return res.json({ status: false, message: "User not found", data: [] });
       }
 
       const validPassword = await bcrypt.compare(oldPassword, user.password);
 
       if (!validPassword) {
-        return res.json({ status: false, message: 'Old password does not match', data: [] });
+        return res.json({
+          status: false,
+          message: "Old password does not match",
+          data: [],
+        });
       }
 
       const salt = await bcrypt.genSalt(10);
@@ -283,19 +289,19 @@ class Auth {
         user._id,
         {
           password: hashedPassword,
-          Otp: newPassword
+          Otp: newPassword,
         },
         { new: true }
       );
 
-      return res.json({ status: true, message: "Password updated successfully" }); // Return the updated user
-
+      return res.json({
+        status: true,
+        message: "Password updated successfully",
+      }); // Return the updated user
     } catch (error) {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
-
-
 }
 
 module.exports = new Auth();

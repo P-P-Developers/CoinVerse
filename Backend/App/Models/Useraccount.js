@@ -23,7 +23,7 @@ const UseraccountSchema = new mongoose.Schema({
 
   },
   qrCodeBase64: {
-    type: String, // base64 string
+    type: String, 
   },
   createdAt: {
     type: Date,

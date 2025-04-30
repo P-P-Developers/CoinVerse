@@ -19,6 +19,8 @@ const UpiDetails = db.UpiDetails;
 // const nodemailer = require('nodemailer');
 const Conversation = db.Conversation;
 const Message = db.Message;
+const Sign_In = db.Sign_In;
+const crypto = require("crypto");
 
 class Admin {
   async AddUser(req, res) {
@@ -41,6 +43,7 @@ class Admin {
         brokerage,
         limit,
         employee_id,
+        referred_by
       } = req.body;
 
       if (!FullName || !UserName || !Email || !PhoneNo || !password || !Role) {
@@ -86,6 +89,20 @@ class Admin {
       // Set ActiveStatus based on parent_role
       const activeStatus = parent_role === "EMPLOYE" ? 0 : 1;
 
+      const referralCode = crypto.randomBytes(3).toString("hex").toUpperCase();
+
+      // Check if the referral code already exists
+      const existingReferralCode = await User_model.findOne({
+        ReferralCode: referralCode,
+      });
+
+      if (existingReferralCode) {
+        // If it exists, generate a new one
+        referralCode = crypto.randomBytes(3).toString("hex").toUpperCase();
+      }
+
+      
+
       // Create new user
       const newUser = new User_model({
         FullName,
@@ -108,9 +125,19 @@ class Admin {
         Start_Date: startDate,
         End_Date: endDate,
         ActiveStatus: activeStatus,
+        ReferralCode: referralCode,
+        ReferredBy:referred_by
       });
 
       await newUser.save();
+
+      if(referred_by){
+        let UpdateStatusSign = await Sign_In.findOneAndUpdate(
+          { UserName: UserName },
+          { $set: { isActive: true } },
+          { new: true }
+        );
+      }
 
       // Create wallet and balance statement
       const userWallet = new Wallet_model({
@@ -412,6 +439,8 @@ class Admin {
             _id: 1,
             userid: 1,
             Balance: 1,
+            ScreenShot: 1,
+            transactionId: 1,
           },
         },
         {
@@ -1420,6 +1449,50 @@ class Admin {
       });
     }
   }
+
+  async GetReferralCode(req, res) {
+    try {
+      const { userId } = req.body;
+      const user = await User_model.findById(userId).select("ReferralCode");
+      if (!user) {
+        return res.json({
+          status: false,
+          message: "User not found",
+          data: [],
+        });
+      }
+
+      const referralCode = user.ReferralCode;
+
+      if (!referralCode) {
+        return res.json({
+          status: false,
+          message: "Referral code not found",
+          data: [],
+        });
+      }
+
+      let GerReferUser = await Sign_In.find({
+        referred_by: user._id,
+      });
+
+      return res.json({
+        status: true,
+        message: "Referral code found",
+        referralCode: referralCode,
+        data: GerReferUser,
+      });
+    } catch (error) {
+      console.error("Error in GetReferralCode:", error);
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  }
+
+  
 }
 
 module.exports = new Admin();

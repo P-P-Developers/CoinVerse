@@ -21,6 +21,7 @@ import {
   CircleDollarSign,
   CircleMinus,
   Eye,
+  MessageCircle 
 } from "lucide-react";
 
 import Swal from "sweetalert2";
@@ -249,7 +250,7 @@ const Users = () => {
       Cell: ({ cell }) => {
         return (
           <div>
-            <CircleDollarSign
+            <MessageCircle
               style={{ cursor: "pointer", color: "#33B469" }}
               onClick={() => setSelectedUser(cell.row)}
             />
@@ -310,6 +311,8 @@ const Users = () => {
   // update Licence
   const updateLicence = async () => {
     try {
+      console.log("licencevalue", licencevalue);
+      console.log("checkLicence", checkLicence.CountLicence); 
 
       if (parseInt(checkLicence.CountLicence) < parseInt(licencevalue)) {
         Swal.fire({

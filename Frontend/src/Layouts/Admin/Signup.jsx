@@ -79,7 +79,7 @@ const Signup = () => {
               <div className="card transaction-table">
                 <div className="card-header border-0 flex-wrap pb-0">
                   <div className="mb-4">
-                    <h4 className="card-title">SingUp Request</h4>
+                    <h4 className="card-title">Sing Up Request</h4>
                   </div>
                 </div>
                 <div className="card-body p-0">
@@ -94,7 +94,7 @@ const Signup = () => {
                           Search:{" "}
                           <input
                             className="ml-2 input-search form-control"
-                            style={{ width: "70%" }}
+                            // style={{ width: "0%" }}
                             type="text"
                             placeholder="Search..."
                             value={search}
@@ -110,7 +110,7 @@ const Signup = () => {
                               value={referralLink}
                               readOnly
                               className="form-control me-2"
-                              style={{ width: "300px" }}
+                              style={{ width: "400px" }}
                             />
                             <button
                               className="btn btn-primary"

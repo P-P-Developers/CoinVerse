@@ -4,7 +4,7 @@ import { getFundstatus } from '../../Services/Admin/Addmin';
 import { UpdatestatusForpaymenthistory } from '../../Services/Admin/Addmin';
 import Swal from 'sweetalert2';
 import {fDateTime} from "../../Utils/Date_format/datefromat"
-
+import { Modal } from "react-bootstrap";
 
 const Deposit = () => {
 
@@ -27,6 +27,13 @@ const Deposit = () => {
             Cell: ({ cell }) => (cell.row.type == 1 ? 'Deposite' : cell),
           },
         { Header: "Balance", accessor: "Balance" },
+        { Header: "Transaction Id", accessor: "transactionId" },
+        { Header: "ScreenShot", accessor: "ScreenShot",  Cell: ({ cell }) => (
+            cell.value ?
+            <ImageCell src={cell.value} /> :"No Image"
+        ) },
+
+
         {
             Header: "Date",
             accessor: "createdAt",
@@ -315,5 +322,32 @@ const Deposit = () => {
         </div>
     );
 }
+
+
+const ImageCell = ({ src }) => {
+    const [show, setShow] = useState(false);
+  
+    return (
+      <>
+        <img
+          src={src}
+          alt="Thumbnail"
+          style={{ width: "50px", height: "50px", cursor: "pointer", objectFit: "cover" }}
+          onClick={() => setShow(true)}
+        />
+  
+        <Modal show={show} onHide={() => setShow(false)} centered size="lg">
+          <Modal.Body className="p-0">
+            <img
+              src={src}
+              alt="Full View"
+              style={{ width: "100%", height: "auto", display: "block" }}
+            />
+          </Modal.Body>
+        </Modal>
+      </>
+    );
+  };
+  
 
 export default Deposit;

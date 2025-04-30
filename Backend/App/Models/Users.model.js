@@ -147,6 +147,10 @@ const userModel = Schema({
         trim: true,
         default: null
     },
+    Refer_Price: {
+        type: String,
+        default: null
+    },
 
 },
     {

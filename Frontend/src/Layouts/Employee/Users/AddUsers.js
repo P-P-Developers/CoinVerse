@@ -17,13 +17,10 @@ const AddUsers = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-
   const [checkprice, setCheckprice] = useState("");
   const [dollarPrice, setDollarPrice] = useState(0);
   const [checkdolarprice, setCheckdolarprice] = useState(0);
   const [checkLicence, setCheckLicence] = useState([]);
-
-
   const [getid, setGetid] = useState([])
 
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
@@ -206,6 +203,7 @@ const AddUsers = () => {
     },
   });
 
+  console.log("location", location);
 
 
 

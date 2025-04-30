@@ -9,6 +9,7 @@ const PaymenetHistory = new mongoose.Schema(
     userid: {
       type: String,
       default: null,
+      index: true,
     },
     Balance: {
         type: Number,
@@ -33,6 +34,14 @@ const PaymenetHistory = new mongoose.Schema(
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    ScreenShot: {
+      type: String,
+      default: null,
+    },
+    transactionId: {
+      type: String,
+      default: null,
     },
   },
   {

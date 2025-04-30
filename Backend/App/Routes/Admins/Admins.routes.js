@@ -35,7 +35,8 @@ const {
   getConversations,
   getMessages,
   message,
-  conversation
+  conversation,
+  GetReferralCode
 } = require("../../Controllers/Admins/Admins/Admin");
 const {
   marginupdate,
@@ -84,6 +85,7 @@ router.post("/admin/conversation", conversation);
 router.post("/admin/message", message);
 router.get("/admin/messages/:conversationId", getMessages); 
 router.post("/admin/conversations/:id", getConversations);
+router.post("/admin/getreferralcode", GetReferralCode);
 
 
 module.exports = router;

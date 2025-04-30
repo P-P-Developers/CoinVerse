@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import * as Config from "../../Utils/Config";
+import "./ChatModal.css"; // New external CSS file
 
 const ChatModal = ({ user, adminId, onClose }) => {
   const [messages, setMessages] = useState([]);
@@ -9,9 +10,7 @@ const ChatModal = ({ user, adminId, onClose }) => {
   const chatEndRef = useRef(null);
 
   useEffect(() => {
-    if (user?._id) {
-      fetchMessages();
-    }
+    if (user?._id) fetchMessages();
   }, [user]);
 
   const fetchMessages = async () => {
@@ -31,13 +30,12 @@ const ChatModal = ({ user, adminId, onClose }) => {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
       }, 100);
     } catch (error) {
-      console.error("Failed to fetch messages:", error);
+      console.error("Fetch messages failed:", error);
     }
   };
 
   const sendMessage = async () => {
     if (!input.trim()) return;
-
     try {
       await axios.post(`${Config.base_url}admin/message`, {
         conversationId,
@@ -46,79 +44,57 @@ const ChatModal = ({ user, adminId, onClose }) => {
         senderType: "admin",
         message: input,
       });
-
       setInput("");
       fetchMessages();
     } catch (error) {
-      console.error("Failed to send message:", error);
+      console.error("Send message failed:", error);
     }
   };
 
+  const formatTime = (timestamp) => {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
+
+
   return (
-    <div className="modal custom-modal d-block" id="chat_modal" role="dialog">
-      <div className="modal-dialog modal-dialog-centered modal-md">
-        <div className="modal-content">
-          <div className="modal-header border-0 pb-0">
-            <div className="form-header modal-header-title text-start mb-0">
-              <h4 className="mb-0">Chat</h4>
-            </div>
-            <button
-              type="button"
-              className="btn-close"
-              aria-label="Close"
-              onClick={onClose}
-            ></button>
+    <div className="modal d-block" id="chat_modal" role="dialog">
+      <div className="modal-dialog modal-dialog-scrollable modal-xl modal-dialog-centered">
+        <div className="modal-content chat-modal-content">
+          <div className="modal-header chat-modal-header">
+            <h5 className="modal-title"><strong>{user?.FullName || "User"}</strong> <span className="badge bg-success ms-2">Online</span></h5>
+            <button type="button" className="btn-close" onClick={onClose}></button>
           </div>
 
-          <div className="modal-body">
-            <div className="w-full bg-white rounded-lg shadow-lg p-4 flex flex-col h-[70vh]">
-              <div className="flex justify-between items-center mb-4 border-b pb-2">
-                <h2 className="text-lg font-semibold">
-                  Chat with {user?.name || "User"}
-                </h2>
-              </div>
-
-              <div className="flex-1 overflow-y-auto space-y-2 px-1 scrollbar-thin">
-                {messages?.map((msg, idx) => (
-                  <div
-                    key={idx}
-                    className={`flex ${
-                      msg.senderType === "admin"
-                        ? "justify-end"
-                        : "justify-start"
-                    }`}
-                  >
-                    <div
-                      className={`max-w-xs px-4 py-2 rounded-lg text-sm ${
-                        msg.senderType === "admin"
-                          ? "bg-blue-500 text-white rounded-br-none"
-                          : "bg-gray-200 text-gray-800 rounded-bl-none"
-                      }`}
-                    >
-                      {msg.message}
-                    </div>
-                  </div>
-                ))}
-                <div ref={chatEndRef} />
-              </div>
-
-              <div className="mt-3 flex items-center gap-2">
-                <input
-                  type="text"
-                  className="flex-1 border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
-                  placeholder="Type a message..."
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-                />
-                <button
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-                  onClick={sendMessage}
+          <div className="modal-body chat-modal-body">
+            <div className="chat-message-list">
+              {messages.map((msg, idx) => (
+                <div
+                  key={idx}
+                  className={`chat-message ${msg.senderType === "admin" ? "chat-right" : "chat-left"}`}
                 >
-                  Send
-                </button>
-              </div>
+                  <div className="chat-bubble">
+                    <p className="mb-1">{msg.message}</p>
+                    <small className="text">{formatTime(msg.timestamp)}</small>
+                  </div>
+                </div>
+              ))}
+              <div ref={chatEndRef} />
             </div>
+          </div>
+
+          <div className="modal-footer chat-modal-footer">
+            <input
+              type="text"
+              className="form-control me-2"
+              placeholder="Type your message..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+            />
+            <button className="btn btn-primary" onClick={sendMessage}>
+              Send
+            </button>
           </div>
         </div>
       </div>

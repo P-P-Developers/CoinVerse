@@ -147,6 +147,7 @@ const AddUsers = () => {
         limit: values.limit,
         Licence: values.Licence,
         [selectedOption]: values.inputValue,
+        referred_by:location?.state?.clientData?.referred_by || null,
       };
 
       setSubmitting(false);
@@ -212,6 +213,8 @@ const AddUsers = () => {
       }
     },
   });
+
+
 
   const getadminbalance = async () => {
     const data = { userid: user_id };
