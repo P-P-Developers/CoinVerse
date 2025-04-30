@@ -43,7 +43,7 @@ class Admin {
         brokerage,
         limit,
         employee_id,
-        referred_by
+        referred_by,
       } = req.body;
 
       if (!FullName || !UserName || !Email || !PhoneNo || !password || !Role) {
@@ -101,8 +101,6 @@ class Admin {
         referralCode = crypto.randomBytes(3).toString("hex").toUpperCase();
       }
 
-      
-
       // Create new user
       const newUser = new User_model({
         FullName,
@@ -126,18 +124,73 @@ class Admin {
         End_Date: endDate,
         ActiveStatus: activeStatus,
         ReferralCode: referralCode,
-        ReferredBy:referred_by
+        ReferredBy: referred_by,
       });
 
       await newUser.save();
 
-      if(referred_by){
-        let UpdateStatusSign = await Sign_In.findOneAndUpdate(
-          { UserName: UserName },
-          { $set: { isActive: true } },
-          { new: true }
+      if (referred_by) {
+        console.log("Referred By:", referred_by);
+      
+        // Activate referred user
+        const updateStatus = await Sign_In.updateOne(
+          { UserName },
+          { $set: { isActive: true } }
         );
+      
+        if (updateStatus.modifiedCount === 0) {
+          console.warn("User not updated or already active");
+          return;
+        }
+      
+        // Get the signed-in user
+        const referredUserSignIn = await Sign_In.findOne({ UserName });
+        if (!referredUserSignIn) {
+          console.warn("Referred user not found");
+          return;
+        }
+      
+        // Get referring user
+        const referringUser = await User_model.findById(referred_by);
+        if (!referringUser) {
+          console.warn("Referring user not found");
+          return;
+        }
+      
+        const creditAmount = referredUserSignIn.referral_price || 0;
+        const updatedBalance = (referringUser.Balance || 0) + creditAmount;
+      
+        // Update balance
+        await User_model.updateOne(
+          { _id: referred_by },
+          { $set: { Balance: updatedBalance } }
+        );
+      
+     
+        // Log in wallet
+        const walletEntry = new Wallet_model({
+          user_Id: referredUserSignIn.referred_by,  // or just `referred_by`
+          Balance: creditAmount,
+          parent_Id: referringUser.parent_id || null,
+          Type: "CREDIT",
+        });
+      
+        await walletEntry.save();
+
+        const newStatement = new BalanceStatement({
+          userid: referredUserSignIn.referred_by,
+          Amount: creditAmount ,
+          parent_Id: referringUser.parent_id ,
+          type: "CREDIT",
+          message: "Referral Balance Added",
+        });
+        await newStatement.save();
+
+
+
+
       }
+      
 
       // Create wallet and balance statement
       const userWallet = new Wallet_model({
@@ -1493,41 +1546,38 @@ class Admin {
   }
 
   async UpdateReferPrice(req, res) {
-  try {
-    const { userId, referPrice } = req.body;
+    try {
+      const { userId, referPrice } = req.body;
 
-    if (!userId || !referPrice) {
+      if (!userId || !referPrice) {
+        return res.json({
+          status: false,
+          message: "User ID and referral price are required",
+        });
+      }
+
+      const user = await User_model.findById(userId);
+      if (!user) {
+        return res.json({ status: false, message: "User not found" });
+      }
+
+      user.Refer_Price = referPrice;
+      await user.save();
+
+      return res.json({
+        status: true,
+        message: "Referral price updated successfully",
+        data: user,
+      });
+    } catch (error) {
+      console.error("Error in UpdateReferPrice:", error);
       return res.json({
         status: false,
-        message: "User ID and referral price are required",
+        message: "Internal server error",
+        error: error.message,
       });
     }
-
-    const user = await User_model.findById(userId);
-    if (!user) {
-      return res.json({ status: false, message: "User not found" });
-    }
-
-    user.Refer_Price = referPrice;
-    await user.save();
-
-    return res.json({
-      status: true,
-      message: "Referral price updated successfully",
-      data: user,
-    });
-
-  }catch (error) {
-    console.error("Error in UpdateReferPrice:", error);
-    return res.json({
-      status: false,
-      message: "Internal server error",
-      error: error.message,
-    });
   }
-}
-
-  
 }
 
 module.exports = new Admin();
