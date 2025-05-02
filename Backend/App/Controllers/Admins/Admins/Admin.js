@@ -21,6 +21,12 @@ const Conversation = db.Conversation;
 const Message = db.Message;
 const Sign_In = db.Sign_In;
 const crypto = require("crypto");
+const path = require('path');
+
+const apkPath = path.join(__dirname, '..', '..', '..', '..', 'Uploads', 'application.apk');
+
+console.log("apkPath", apkPath);
+
 
 class Admin {
   async AddUser(req, res) {
@@ -457,12 +463,39 @@ class Admin {
   // get paymentstatus
   async getuserpaymentstatus(req, res) {
     try {
-      const { adminid } = req.body;
-
+      const { adminid, type, activeTab, page = 1, limit = 10 } = req.body;
+  
+      // Validation
+      if (!adminid || !type || !activeTab) {
+        return res.status(400).json({
+          status: false,
+          message: "adminid, type, and activeTab are required",
+          data: [],
+        });
+      }
+  
+      const statusMap = {
+        "Complete": 1,
+        "Reject": 2,
+        "Pending": 0,
+      };
+  
+      const status = statusMap[activeTab] ?? 0;
+      const skip = (parseInt(page) - 1) * parseInt(limit);
+  
+      // Count total documents
+      const totalRecords = await PaymenetHistorySchema.countDocuments({
+        adminid,
+        type,
+        status,
+      });
+  
       const walletData = await PaymenetHistorySchema.aggregate([
         {
           $match: {
-            adminid: adminid,
+            adminid,
+            type,
+            status,
           },
         },
         {
@@ -479,7 +512,10 @@ class Admin {
           },
         },
         {
-          $unwind: "$userName",
+          $unwind: {
+            path: "$userName",
+            preserveNullAndEmptyArrays: true,
+          },
         },
         {
           $project: {
@@ -496,30 +532,32 @@ class Admin {
             transactionId: 1,
           },
         },
-        {
-          $sort: {
-            createdAt: -1,
-          },
-        },
+        { $sort: { createdAt: -1 } },
+        { $skip: skip },
+        { $limit: parseInt(limit) },
       ]);
-
-      if (!walletData || walletData.length === 0) {
-        return res.json({ status: false, message: "Data not found", data: [] });
-      }
-
+  
       return res.json({
         status: true,
         message: "Successfully fetched data",
         data: walletData,
+        pagination: {
+          totalRecords,
+          page: parseInt(page),
+          limit: parseInt(limit),
+          totalPages: Math.ceil(totalRecords / limit),
+        },
       });
     } catch (error) {
-      return res.json({
+      console.error("getuserpaymentstatus error:", error);
+      return res.status(500).json({
         status: false,
         message: "Internal server error",
         data: [],
       });
     }
   }
+  
 
   async UpdateStatus(req, res) {
     try {
@@ -1578,6 +1616,20 @@ class Admin {
       });
     }
   }
+
+
+
+  async  Downloadapk(req, res){
+    res.download(apkPath, 'application.apk', (err) => {
+        if (err) {
+            res.status(500).send('Error downloading file');
+        }
+    });
+};
+
+
+
+
 }
 
 module.exports = new Admin();

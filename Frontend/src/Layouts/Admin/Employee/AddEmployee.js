@@ -199,6 +199,14 @@ const AddEmployee = () => {
       disable: false,
     },
     {
+      name: "All Permissions",
+      label: "Permissions",
+      type: "Labelname",
+      label_size: 12,
+      col_size: 12,
+    
+    },
+    {
       name: "all",
       label: "Select All",
       type: "checkbox",

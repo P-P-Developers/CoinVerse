@@ -3,6 +3,7 @@ import Table from "../../Utils/Table/Table";
 import { getFundstatus } from '../../Services/Admin/Addmin';
 import { UpdatestatusForpaymenthistory } from '../../Services/Admin/Addmin';
 import Swal from 'sweetalert2';
+import { Type } from 'lucide-react';
 
 const Withdraw = () => {
 
@@ -97,7 +98,7 @@ const Withdraw = () => {
 
     const getAllfundsstatus = async () => {
         try {
-            const data = { adminid: user_id };
+            const data = { adminid: user_id ,type: 0 ,activeTab};
             let response = await getFundstatus(data);
             if (response.status) {
                 const filtertype = response.data && response.data.filter((item)=>{
@@ -112,7 +113,7 @@ const Withdraw = () => {
 
     useEffect(() => {
         getAllfundsstatus();
-    }, []);
+    }, [activeTab]);
 
     const filterDataByStatus = (status) => {
         return data.filter(item => item.status === status);

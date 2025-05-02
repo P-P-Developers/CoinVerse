@@ -99,7 +99,7 @@ const Deposit = () => {
 
     const getAllfundsstatus = async () => {
         try {
-            const data = { adminid: user_id };
+            const data = { adminid: user_id ,type: 1,activeTab};
             let response = await getFundstatus(data);
             if (response.status) {
                 const filtertype = response.data && response.data.filter((item)=>{
@@ -116,7 +116,7 @@ const Deposit = () => {
 
     useEffect(() => {
         getAllfundsstatus();
-    }, []);
+    }, [activeTab]);
 
     const filterDataByStatus = (status) => {
         return data.filter(item => item.status === status);

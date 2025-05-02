@@ -23,6 +23,7 @@ const corsOpts = {
   ],
 };
 
+// app.use(express.static("public"));
 app.use(cors(corsOpts));
 
 // Body-parser middleware setup
