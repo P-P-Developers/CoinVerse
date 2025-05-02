@@ -377,37 +377,46 @@ const Users = () => {
         });
         return;
       }
-
-
-      // Make the API call to add balance
-      const response = await Addbalance({
-        id: id,
-        Balance: balance,
-        parent_Id: user_id,
-        Type: type,
+  
+      // Show confirmation popup
+      const confirmation = await Swal.fire({
+        title: "Confirm Update",
+        text: `Are you sure you want to update the balance to ${balance}?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, update it!",
+        cancelButtonText: "Cancel",
       });
-
-      // Handle API response
-      if (response.status) {
-        Swal.fire({
-          icon: "success",
-          title: "Balance Updated",
-          text: response.message || "The balance has been updated successfully.",
+  
+      // Proceed only if user confirms
+      if (confirmation.isConfirmed) {
+        const response = await Addbalance({
+          id: id,
+          Balance: balance,
+          parent_Id: user_id,
+          Type: type,
         });
-
-        // Refresh data and reset states
-        getAlluserdata();
-        setModal(false);
-        setBalance("");
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: response.message || "An error occurred while updating the balance.",
-        });
+  
+        // Handle API response
+        if (response.status) {
+          Swal.fire({
+            icon: "success",
+            title: "Balance Updated",
+            text: response.message || "The balance has been updated successfully.",
+          });
+  
+          getAlluserdata();
+          setModal(false);
+          setBalance("");
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: response.message || "An error occurred while updating the balance.",
+          });
+        }
       }
     } catch (error) {
-      // Handle unexpected errors
       Swal.fire({
         icon: "error",
         title: "Update Failed",
@@ -415,7 +424,7 @@ const Users = () => {
       });
     }
   };
-
+  
 
 
 

@@ -25,8 +25,6 @@ const path = require('path');
 
 const apkPath = path.join(__dirname, '..', '..', '..', '..', 'Uploads', 'application.apk');
 
-console.log("apkPath", apkPath);
-
 
 class Admin {
   async AddUser(req, res) {
@@ -464,9 +462,11 @@ class Admin {
   async getuserpaymentstatus(req, res) {
     try {
       const { adminid, type, activeTab, page = 1, limit = 10 } = req.body;
+
+      console.log("Request body", req.body);
   
       // Validation
-      if (!adminid || !type || !activeTab) {
+      if (!adminid || type === "" || !activeTab) {
         return res.status(400).json({
           status: false,
           message: "adminid, type, and activeTab are required",
@@ -521,6 +521,7 @@ class Admin {
           $project: {
             UserName: "$userName.UserName",
             FullName: "$userName.FullName",
+            UserBalance: "$userName.Balance",
             adminid: 1,
             type: 1,
             status: 1,
@@ -1069,8 +1070,10 @@ class Admin {
     try {
       const { userid } = req.body;
       const result = await User_model.find({ parent_id: userid })
-        .select("UserName Start_Date End_Date")
+        .select("UserName Start_Date End_Date Role")
         .sort({ createdAt: -1 });
+
+      
 
       if (!result || result.length === 0) {
         return res.json({ status: false, message: "User not found", data: [] });

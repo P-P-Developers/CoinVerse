@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
@@ -6,6 +6,8 @@ import Form from "../../../Utils/Form/Formik";
 import { AddnewUsers } from "../../../Services/Superadmin/Superadmin";
 
 const AddEmployee = () => {
+
+
 
   const navigate = useNavigate();
 
@@ -137,6 +139,43 @@ const AddEmployee = () => {
   });
 
 
+  
+
+
+  useEffect(() => {
+    const {
+      addclient,
+      Edit,
+      trade_history,
+      open_position,
+      Licence_Edit,
+      limit_edit,
+      Balance_edit,
+    } = formik.values;
+  
+    const allSelected =
+      addclient &&
+      Edit &&
+      trade_history &&
+      open_position &&
+      Licence_Edit &&
+      limit_edit &&
+      Balance_edit;
+  
+    if (formik.values.all == allSelected) {
+      formik.setFieldValue("all", allSelected);
+    }
+  }, [
+    formik.values.addclient,
+    formik.values.Edit,
+    formik.values.trade_history,
+    formik.values.open_position,
+    formik.values.Licence_Edit,
+    formik.values.limit_edit,
+    formik.values.Balance_edit,
+    formik.values.all
+  ]);
+  
 
 
 
@@ -199,14 +238,6 @@ const AddEmployee = () => {
       disable: false,
     },
     {
-      name: "All Permissions",
-      label: "Permissions",
-      type: "Labelname",
-      label_size: 12,
-      col_size: 12,
-    
-    },
-    {
       name: "all",
       label: "Select All",
       type: "checkbox",
@@ -221,7 +252,7 @@ const AddEmployee = () => {
       label_size: 12,
       col_size: 3,
       check_box_true:
-        formik.values.all || formik.values.addclient ? true : false,
+        formik.values.all  || formik.values.addclient ? true : false,
     },
     {
       name: "Edit",

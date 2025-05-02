@@ -482,14 +482,6 @@ const DynamicForm = ({
                                   </>
                                 ))}
                             </>
-                          ) : field.type === "Labelname" ? (
-                            <div className={`col-lg-${field.col_size}`}>
-                              <div className="row d-flex justify-content-start">
-                                <div className="mb-4">
-                                  <h5>{field.label}</h5>
-                                </div>
-                              </div>
-                            </div>
                           ) : (
                             <>
                               <div className={`col-lg-${field.col_size}`}>

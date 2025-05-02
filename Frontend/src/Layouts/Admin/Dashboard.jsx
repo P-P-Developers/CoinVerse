@@ -2041,7 +2041,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="row">
+        {/* <div className="row">
           <div className="col-lg-12">
             <div className="card transaction-table">
               <div className="card-header border-0 flex-wrap pb-0">
@@ -2086,7 +2086,7 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -11,11 +11,14 @@ const Report = () => {
   const [alllivedata, setAlllivedata] = useState([]);
   const [activedata, setActivedata] = useState([]);
   const [expired, setExpired] = useState([]);
-  const [search, setSearch] = useState("");
+ 
   const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [search, setSearch] = useState("");
+  
 
   const columns = [
     { Header: "UserName", accessor: "UserName" },
+    { Header: "Role", accessor: "Role" },
     {
       Header: "Start Date",
       accessor: "Start_Date",

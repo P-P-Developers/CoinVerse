@@ -22,7 +22,9 @@ const Withdraw = () => {
       accessor: "type",
       Cell: ({ cell }) => (cell.row.type == 0 ? "Withdrawal" : cell),
     },
-    { Header: "Balance", accessor: "Balance" },
+    { Header: "Requested Balance", accessor: "Balance" },
+    { Header: "Balance", accessor: "UserBalance", Cell: ({ cell }) => cell.value?.toFixed(4) },
+,
     {
       Header: "Date",
       accessor: "createdAt",

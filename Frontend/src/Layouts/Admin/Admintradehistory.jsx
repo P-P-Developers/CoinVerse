@@ -15,6 +15,7 @@ const Tradehistory = () => {
   const [data, setData] = useState([]);
   const [userName, setUserName] = useState();
   const [Userid, setUserId] = useState();
+  const [search, setSearch] = useState("");
 
   // Define columns for the table
   const columns = [
@@ -146,7 +147,18 @@ const Tradehistory = () => {
     try {
       const data = { userid: Userid, adminid: user_id };
       const response = await Clienthistory(data);
-      setData(response.data);
+      const searchfilter = response.data?.filter((item) => {
+        const searchLower = search.toLowerCase();
+        return (
+          search === "" ||
+          (item.symbol && item.symbol.toLowerCase().includes(searchLower)) ||
+          (item.buy_price &&
+            item.buy_price.toString().toLowerCase().includes(searchLower)) ||
+          (item.sell_price &&
+            item.sell_price.toString().toLowerCase().includes(searchLower))
+        );
+      });
+      setData(search ? searchfilter : response.data);
     } catch (error) {
       console.log("error", error);
     }
@@ -158,6 +170,7 @@ const Tradehistory = () => {
       const admin_id = user_id;
       const response = await GetUsersName({ admin_id });
       if (response.status) {
+       
         setUserName(response.data);
       }
     } catch (error) {
@@ -171,7 +184,7 @@ const Tradehistory = () => {
 
   useEffect(() => {
     getuserallhistory();
-  }, [Userid]);
+  }, [Userid, search]);
 
   // Calculate total profit/loss
   const calculateTotalProfitLoss = () => {
@@ -220,7 +233,8 @@ const Tradehistory = () => {
                   </div>
                   <Link
                     to="/admin/users"
-                    className="float-end mb-4 btn btn-primary">
+                    className="float-end mb-4 btn btn-primary"
+                  >
                     Back
                   </Link>
                 </div>
@@ -230,14 +244,16 @@ const Tradehistory = () => {
                       className="tab-pane fade show active"
                       id="Week"
                       role="tabpanel"
-                      aria-labelledby="Week-tab">
+                      aria-labelledby="Week-tab"
+                    >
                       <div
                         style={{
                           display: "flex",
                           gap: "20px",
                           alignItems: "center",
                           padding: "1rem",
-                        }}>
+                        }}
+                      >
                         {/* Search Input */}
                         <div style={{ flex: 1 }}>
                           <label
@@ -245,7 +261,8 @@ const Tradehistory = () => {
                               fontWeight: "bold",
                               fontSize: "16px",
                               marginRight: "0.5rem",
-                            }}>
+                            }}
+                          >
                             Search:
                           </label>
                           <input
@@ -259,6 +276,9 @@ const Tradehistory = () => {
                               border: "1px solid #ccc",
                               backgroundColor: "#f8f9fa",
                             }}
+                            value={search}
+                            autoFocus
+                            onChange={(e) => setSearch(e.target.value)}
                           />
                         </div>
 
@@ -269,7 +289,8 @@ const Tradehistory = () => {
                               fontWeight: "bold",
                               fontSize: "16px",
                               marginRight: "0.5rem",
-                            }}>
+                            }}
+                          >
                             Users:
                           </label>
                           <select
@@ -283,7 +304,8 @@ const Tradehistory = () => {
                               color: "#333",
                             }}
                             onChange={(e) => setUserId(e.target.value)}
-                            defaultValue="">
+                            defaultValue=""
+                          >
                             <option value="all">Select a user</option>
                             {userName &&
                               userName.map((username) => (
@@ -300,7 +322,9 @@ const Tradehistory = () => {
                         <span
                           style={{
                             color: totalProfitLoss > 0 ? "green" : "red",
-                          }}>
+                            fontSize: "1.2rem",
+                          }}
+                        >
                           {" "}
                           <DollarSign />
                           {totalProfitLoss}
