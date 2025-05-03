@@ -158,8 +158,12 @@ export const admin_header = [
         name:"Research",
         icon: "fe fe-check-square",
         route: "/admin/research",
-
-
+    },
+    {
+        id: 15,
+        name:"Chat-Box",
+        icon: "fe fe-check-square",
+        route: "/admin/chatbox",
     }
 
 ];

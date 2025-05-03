@@ -1174,9 +1174,10 @@ class Admin {
         entryReason,
         note,
         user_id,
+        type
       } = req.body;
 
-      if (!researchType || !coin || !price || !targetPrice || !stopLoss) {
+      if (!researchType || !coin || !price || !targetPrice || !stopLoss || !type) {
         return res.json({
           status: false,
           message: "Missing required fields",
@@ -1213,6 +1214,7 @@ class Admin {
         user_id,
         token: MatchSymbol.token,
         lotsize: MatchSymbol.lotsize,
+        type
       });
 
       await newResearch.save();
@@ -1272,6 +1274,7 @@ class Admin {
         stopLoss,
         entryReason,
         note,
+        type
       } = req.body;
 
       if (!id) {
@@ -1291,7 +1294,7 @@ class Admin {
       research.stopLoss = stopLoss || research.stopLoss;
       research.entryReason = entryReason || research.entryReason;
       research.note = note || research.note;
-
+      research.type = type || research.type;
       // Save the updated research document
       await research.save();
 

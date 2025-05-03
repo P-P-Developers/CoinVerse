@@ -40,6 +40,11 @@ const researchSchema = new mongoose.Schema({
     enum: ["Open", "Close"],
     default: "Open",
   },
+  type: {
+    type: String,
+    enum: ["buy", "sell"],
+    default: "buy",
+  },
   token: {
     type: String,
     default: "",

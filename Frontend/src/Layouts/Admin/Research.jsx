@@ -25,6 +25,7 @@ const initialFormData = {
   entryReason: "",
   note: "",
   status: "Open",
+  type: "buy",
 };
 
 const formFields = [
@@ -335,6 +336,21 @@ const Research = () => {
                       </Col>
                     ))}
                     <Col md={6}>
+                      <Form.Group>
+                        <Form.Label>Type</Form.Label>
+                        <Form.Select
+                          name="type"
+                          value={formData.type}
+                          onChange={handleInputChange}
+                        >
+                          <option value="buy">Buy</option>
+                          <option value="sell">Sell</option>
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <Row className="mb-3">
+                  <Col md={6}>
                       <Form.Group>
                         <Form.Label>Status</Form.Label>
                         <Form.Select

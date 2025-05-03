@@ -81,7 +81,8 @@ const Sidebar = () => {
         return "fa fa-hand-holding-usd";
         case "research":
           return "fa-solid fa-money-bill-transfer";
-
+          case "chat-box":
+            return "fa-solid fa-comments";
       default:
         return "";
     }
