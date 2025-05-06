@@ -123,9 +123,9 @@ const AddUsers = () => {
       }
 
       // Employee validation
-      if (!values.employee_id) {
-        errors.employee_id = "Please select an Employee";
-      }
+      // if (!values.employee_id) {
+      //   errors.employee_id = "Please select an Employee";
+      // }
 
       return errors;
     },
@@ -152,17 +152,17 @@ const AddUsers = () => {
 
       setSubmitting(false);
 
-      if (dollarPrice == 0 || dollarPrice == null || dollarPrice === Infinity || isNaN(dollarPrice)) {
-        Swal.fire({
-          title: "Alert",
-          text: "Please update Dollar price",
-          icon: "warning",
-          timer: 1000,
-          timerProgressBar: true,
-        });
-        setSubmitting(false);
-        return;
-      }
+      // if (dollarPrice == 0 || dollarPrice == null || dollarPrice === Infinity || isNaN(dollarPrice)) {
+      //   Swal.fire({
+      //     title: "Alert",
+      //     text: "Please update Dollar price",
+      //     icon: "warning",
+      //     timer: 1000,
+      //     timerProgressBar: true,
+      //   });
+      //   setSubmitting(false);
+      //   return;
+      // }
 
       if (parseInt(checkLicence.CountLicence) < parseInt(values.Licence)) {
         Swal.fire({
@@ -403,11 +403,11 @@ const AddUsers = () => {
         formik={formik}
         btn_name1_route={"/admin/users"}
       />
-      {formik.values.Balance && (
+      {/* {formik.values.Balance && (
         <div>
           <p>Dollar Price: ${dollarPrice}</p>
         </div>
-      )}
+      )} */}
       ,
     </div>
   );
