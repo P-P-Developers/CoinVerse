@@ -93,7 +93,7 @@ const Transection = () => {
               <div className="card transaction-table">
                 <div className="card-header border-0 flex-wrap pb-0">
                   <div className="mb-3">
-                    <h4 className="card-title">transaction History</h4>
+                    <h4 className="card-title">License History </h4>
                   </div>
                 </div>
                 <div className="card-body p-0">

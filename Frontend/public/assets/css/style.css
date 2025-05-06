@@ -20466,7 +20466,7 @@ svg.pulse-svg .third-circle {
   top: 1.375rem !important;
 }
 
-.chatbox {
+/* .chatbox {
   width: 21.25rem;
   height: 100vh;
   position: fixed;
@@ -20478,8 +20478,8 @@ svg.pulse-svg .third-circle {
   -webkit-transition: all 0.8s;
   -ms-transition: all 0.8s;
   transition: all 0.8s;
-}
-
+} */
+/* 
 .chatbox .chatbox-close {
   position: absolute;
   -webkit-transition: all 0.2s;
@@ -20838,7 +20838,7 @@ svg.pulse-svg .third-circle {
   .chatbox .chatbox-close {
     right: 17.5rem;
   }
-}
+} */
 
 .dlab-demo-panel {
   right: -100%;
