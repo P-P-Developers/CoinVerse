@@ -269,9 +269,8 @@ const AddAdmin = () => {
       }
       if (!values.Licence) {
         errors.Licence = "Please Enter Licence"
-      } else if (values.Licence < 0 || values.Licence > 12) {
-        errors.Licence = "Licence Value should be in 0 to 12"
-      }
+      } 
+   
       if (!values.ProfitMargin) {
         errors.ProfitMargin = "Please Enter Profit Margin";
       }
@@ -382,7 +381,7 @@ const AddAdmin = () => {
     },
     {
       name: "ProfitMargin",
-      label: "Profit Margin (0-100%)",
+      label: "Brokerage Sharing (0-100%)",
       type: "text4",
       label_size: 12,
       col_size: 6,

@@ -802,15 +802,13 @@ class Admin {
       ]);
 
       // Format the `brokerage` value to 5 decimal places
-      const formattedData = aggregatedData.map((item) => {
-        if (item.balance_data?.brokerage) {
-          item.balance_data.brokerage = Number(
-            item.balance_data.brokerage
-          ).toFixed(5);
-        }
+      const filteredData = aggregatedData.filter(item => item.balance_data?.brokerage != 0);
+
+      const formattedData = filteredData.map((item) => {
+        item.balance_data.brokerage = Number(item.balance_data.brokerage).toFixed(5);
         return item;
       });
-
+      
       if (!formattedData || formattedData.length === 0) {
         return res.json({
           status: true,

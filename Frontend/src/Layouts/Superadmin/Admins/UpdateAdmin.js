@@ -47,15 +47,8 @@ const UpdateAdmin = () => {
       } else if (!/^\d{10}$/.test(values.phone)) {
         errors.phone = "Please enter a valid 10-digit phone number.";
       }
-      if (!values.Licence) {
-        errors.Balance = "Please Enter Balance";
-      }
-      // Add password validation if necessary
-      // if (!values.password) {
-      //   errors.password = "Please Enter Password";
-      // } else if (values.password !== values.confirmPassword) {
-      //   errors.confirmPassword = "Passwords do not match";
-      // }
+
+   
 
       return errors;
     },
@@ -135,7 +128,7 @@ const UpdateAdmin = () => {
       type: "text",
       label_size: 12,
       col_size: 6,
-      disable: false,
+      disable: true,
     },
     {
       name: "email",
@@ -143,7 +136,7 @@ const UpdateAdmin = () => {
       type: "text",
       label_size: 12,
       col_size: 6,
-      disable: false,
+      disable: true,
     },
     {
       name: "phone",
@@ -151,41 +144,18 @@ const UpdateAdmin = () => {
       type: "text3",
       label_size: 12,
       col_size: 6,
-      disable: false,
+      disable: true,
     },
-    // {
-    //   name: "Licence",
-    //   label: "Licence",
-    //   type: "text3",
-    //   label_size: 12,
-    //   col_size: 6,
-    //   disable: false,
-    // },
+ 
     {
       name: "ProfitMargin",
-      label: "Profit Margin",
+      label: "Brokerage Sharing",
       type: "text4",
       label_size: 12,
       col_size: 6,
       disable: true,
     },
 
-    // {
-    //   name: "password",
-    //   label: "Password",
-    //   type: "password",
-    //   label_size: 12,
-    //   col_size: 6,
-    //   disable: false,
-    // },
-    // {
-    //   name: "confirmPassword",
-    //   label: "Confirm Password",
-    //   type: "password",
-    //   label_size: 12,
-    //   col_size: 6,
-    //   disable: false,
-    // },
   ];
 
   return (

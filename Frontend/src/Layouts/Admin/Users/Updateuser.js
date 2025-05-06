@@ -74,9 +74,7 @@ const Updateuser = () => {
       if (!values.inputValue) {
         errors.inputValue = "Please enter a value for the selected option";
       }
-      if (!values.employee_id) {
-        errors.employee_id = "Please select an Employee";
-      }
+     
       return errors;
     },
     onSubmit: async (values, { setSubmitting }) => {

@@ -446,12 +446,7 @@ const Users = () => {
                 <div className="mb-4">
                   <h4 className="card-title">All Users</h4>
                 </div>
-                {/* <Link
-                  to="/employee/adduser"
-                  className="float-end mb-4 btn btn-primary"
-                >
-                  Add User
-                </Link> */}
+            
 
                 {
                   getaccess && getaccess.client_add === 1 ? (<Link
