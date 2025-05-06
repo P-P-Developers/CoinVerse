@@ -1028,13 +1028,15 @@ class Admin {
 
       if (!userid || userid === "all") {
         result = await mainorder_model
-          .find({ adminid, $expr: { $eq: ["$sell_lot", "$buy_lot"] } })
+          // .find({ adminid, $expr: { $eq: ["$sell_lot", "$buy_lot"] } })
+          .find({ adminid})
+
           .sort({ createdAt: -1 });
       } else {
         result = await mainorder_model
           .find({
             userid,
-            $expr: { $eq: ["$sell_lot", "$buy_lot"] },
+            // $expr: { $eq: ["$sell_lot", "$buy_lot"] },
           })
           .sort({ createdAt: -1 });
       }
