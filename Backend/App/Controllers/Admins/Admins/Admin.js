@@ -1070,7 +1070,7 @@ class Admin {
     try {
       const { userid } = req.body;
       const result = await User_model.find({ parent_id: userid })
-        .select("UserName Start_Date End_Date Role")
+        .select("UserName Start_Date End_Date Role parent_role")
         .sort({ createdAt: -1 });
 
       
@@ -1153,7 +1153,7 @@ class Admin {
       const result = await User_model.find({
         Role: "USER",
         parent_id: admin_id,
-      }).select("FullName UserName");
+      }).select("FullName UserName parent_role");
       if (!result) {
         return res.json({ status: false, message: "User not found", data: [] });
       }

@@ -19,6 +19,7 @@ const Report = () => {
   const columns = [
     { Header: "UserName", accessor: "UserName" },
     { Header: "Role", accessor: "Role" },
+    { Header: "Created By", accessor: "parent_role" },
     {
       Header: "Start Date",
       accessor: "Start_Date",

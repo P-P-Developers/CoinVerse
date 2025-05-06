@@ -287,22 +287,78 @@ async SignIn(req, res) {
   }
 
   // get logoutUser data
+
+  // async getlogsuser(req, res) {
+  //   try {
+  //     const { userid } = req.body;
+
+  //     const result = await user_logs
+  //       .find({ admin_Id: userid })
+  //       .sort({ createdAt: -1 });
+
+  //     if (!result) {
+  //       return res.send({ status: false, message: "user not found", data: [] });
+  //     }
+  //     return res.send({ status: true, message: "user sucess", data: result });
+  //   } catch (error) {
+  //     return res.send({ status: false, message: "internal error", data: [] });
+  //   }
+  // }
+
   async getlogsuser(req, res) {
     try {
       const { userid } = req.body;
-
-      const result = await user_logs
-        .find({ admin_Id: userid })
-        .sort({ createdAt: -1 });
-
-      if (!result) {
-        return res.send({ status: false, message: "user not found", data: [] });
-      }
-      return res.send({ status: true, message: "user sucess", data: result });
+  
+      const result = await user_logs.aggregate([
+        {
+          $match: { admin_Id: new mongoose.Types.ObjectId(userid) }
+        },
+        {
+          $sort: { createdAt: -1 }
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'admin_Id',
+            foreignField: '_id',
+            as: 'userDetails'
+          }
+        },
+        {
+          $unwind: {
+            path: "$userDetails",
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $addFields: {
+            parent_role: "$userDetails.parent_role"
+          }
+        },
+        {
+          $project: {
+            userDetails: 0 // optional: exclude the entire joined object if not needed
+          }
+        }
+      ]);
+  
+      return res.send({
+        status: true,
+        message: "user success",
+        data: result
+      });
+  
     } catch (error) {
-      return res.send({ status: false, message: "internal error", data: [] });
+      console.error("Error in getlogsuser:", error);
+      return res.send({
+        status: false,
+        message: "internal error",
+        data: []
+      });
     }
   }
+  
+  
 
   // change password
 

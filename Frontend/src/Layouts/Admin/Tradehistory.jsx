@@ -31,7 +31,7 @@ const Tradehistory = () => {
       accessor: "sell_price",
       Cell: ({ cell }) => {
         const sell_price = cell.row.sell_price;
-        return sell_price ? sell_price : "-";
+        return sell_price ? sell_price.toFixed(4) : "-";
       },
     },
     {

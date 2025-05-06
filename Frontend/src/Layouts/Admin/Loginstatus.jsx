@@ -73,6 +73,7 @@ const Loginstatus = () => {
   const columns = [
     { Header: "UserName", accessor: "UserName" },
     { Header: "Role", accessor: "role" },
+    { Header: "Created By", accessor: "parent_role" },
     {
       Header: "Create Date",
       accessor: "createdAt",

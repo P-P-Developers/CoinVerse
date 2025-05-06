@@ -177,7 +177,16 @@ const DynamicForm = ({
                             </div>
                           </div>
                         </>
-                      ) : field.type === "text" ? (
+                      ) : field.type === "heading" ? (
+                        <div className={`col-lg-${field.col_size}`}>
+                          <div className="input-block mb-1">
+                            <label className={`col-form-label col-lg-${field.label_size} fw-bold fs-5`}>
+                              {field.label}
+                            </label>
+                          </div>
+                        </div>
+                      )
+                      : field.type === "text" ? (
                         <>
                           <div className={` col-lg-${field.col_size}`}>
                             <div className="input-block mb-3 flex-column">
