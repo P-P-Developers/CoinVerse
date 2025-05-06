@@ -317,7 +317,7 @@ const Tradehistory = () => {
                         </div>
                       </div>
 
-                      <h5>
+                      <h4 className="ms-3" >
                         Total Profit/Loss:{" "}
                         <span
                           style={{
@@ -329,7 +329,7 @@ const Tradehistory = () => {
                           <DollarSign />
                           {totalProfitLoss}
                         </span>
-                      </h5>
+                      </h4>
                       <Table columns={columns} data={data && data} />
                     </div>
                   </div>
