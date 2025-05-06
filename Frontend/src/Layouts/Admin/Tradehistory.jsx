@@ -74,6 +74,10 @@ const Tradehistory = () => {
         return sell_lot ? sell_lot : "-";
       },
     },
+
+   
+
+
     {
       Header: "Buy qty",
       accessor: "buy_qty",
