@@ -338,6 +338,8 @@ const Header = () => {
                   ? "Add Admin"
                   : formattedSegment === "Addmin"
                   ? "Add Admin"
+                  : formattedSegment === "Adduser"
+                  ? "Add User"
                   : formattedSegment === "Loginstatus"
                   ? "Login Status"
                   : formattedSegment === "Adminuser"
