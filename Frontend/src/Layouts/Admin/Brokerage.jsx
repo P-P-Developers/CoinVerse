@@ -182,7 +182,7 @@ const Holdoff = () => {
                   <p className="text-muted mt-3">No data available.</p>
                 )}
               </Tab>
-              <Tab eventKey="Profile" title="Profile">
+              <Tab eventKey="Bonus" title="Bonus">
                 <p className="mt-3">Bonus content will go here.</p>
               </Tab>
             </Tabs>
