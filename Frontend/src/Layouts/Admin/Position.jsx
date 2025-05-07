@@ -67,7 +67,8 @@ const Position = () => {
       const searchfilter = filterdata?.filter((item) => {
         const searchInputMatch =
           search === "" ||
-          (item.symbol && item.symbol.toLowerCase().includes(search.toLowerCase()));
+          (item.symbol && item.symbol.toLowerCase().includes(search.toLowerCase())) ||
+          (item.username && item.username.toLowerCase().includes(search.toLowerCase())); // Added username to search filter
         return searchInputMatch;
       });
 

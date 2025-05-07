@@ -38,7 +38,8 @@ const {
   conversation,
   GetReferralCode,
   UpdateReferPrice,
-  Downloadapk
+  Downloadapk,
+  GetBonusDetails
 } = require("../../Controllers/Admins/Admins/Admin");
 const {
   marginupdate,
@@ -89,6 +90,8 @@ router.get("/admin/messages/:conversationId", getMessages);
 router.post("/admin/conversations/:id", getConversations);
 router.post("/admin/getreferralcode", GetReferralCode);
 router.post("/admin/updatereferprice", UpdateReferPrice);
+router.post("/admin/getbonusdetails", GetBonusDetails); // Assuming you have a function to get bonus details
+
 router.get("/Downloadapk", Downloadapk);
 
 module.exports = router;

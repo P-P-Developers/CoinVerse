@@ -43,7 +43,8 @@ const Loginstatus = () => {
           (item.UserName &&
             item.UserName.toLowerCase().includes(search.toLowerCase())) ||
           (item.login_status &&
-            item.login_status.toLowerCase().includes(search.toLowerCase()));
+            item.login_status.toLowerCase().includes(search.toLowerCase())) ||
+          (item.role && item.role.toLowerCase().includes(search.toLowerCase())); // Added role to search logic
 
         // If selectedUserId is null or empty, show data for all users
         if (!selectedUserId) {

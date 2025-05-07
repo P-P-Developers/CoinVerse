@@ -4,8 +4,6 @@ const { Schema, model } = require('mongoose');
 const mongoose = require('mongoose')
 const Role = require("./Role.model")
 
-
-
 const userModel = Schema({
     FullName: {
         type: String,
@@ -151,6 +149,42 @@ const userModel = Schema({
         type: String,
         default: null
     },
+    FixedPerClient: {
+        type: Boolean,
+        default: false
+    },
+    FundAdd: {
+        type: Boolean,
+        default: false
+    },
+    EveryTransaction: {
+        type: Boolean,
+        default: false
+    },
+    AddClientBonus: {
+        type: Number,
+        default: null
+    },
+    FundLessThan100: {
+        type: Number,
+        default: null
+    },
+    FundLessThan500: {
+        type: Number,
+        default: null
+    },
+    FundLessThan1000: {
+        type: Number,
+        default: null
+    },
+    FundGreaterThan1000: {
+        type: Number,
+        default: null
+    },
+    FixedTransactionPercent: {
+        type: Number,
+        default: null
+    },
 
 },
     {
@@ -159,7 +193,5 @@ const userModel = Schema({
 
 )
 const User_model = model('USER', userModel);
-
-
 
 module.exports = User_model;

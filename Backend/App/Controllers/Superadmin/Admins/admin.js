@@ -37,6 +37,16 @@ class Superadmin {
         limit,
         Employee_permission,
         ProfitMargin,
+        FixedPerClient, 
+        FundAdd, 
+        EveryTransaction,
+        FixedTransactionPercent , 
+        AddClientBonus, 
+        FundLessThan100, 
+        FundLessThan500, 
+        FundLessThan1000, 
+        FundGreaterThan1000,
+
       } = req.body;
 
       if (!FullName || !UserName || !Email || !PhoneNo || !password || !Role) {
@@ -69,7 +79,7 @@ class Superadmin {
         }
       }
 
-      const referralCode = crypto.randomBytes(3).toString("hex").toUpperCase(); 
+      const referralCode = crypto.randomBytes(3).toString("hex").toUpperCase();
 
       // Current date as start date
       const startDate = new Date();
@@ -109,6 +119,16 @@ class Superadmin {
         ActiveStatus: activeStatus,
         ProfitMargin: ProfitMargin,
         ReferralCode: referralCode, // Add referral code to the user
+
+        FixedPerClient, 
+        FundAdd, 
+        EveryTransaction,
+        FixedTransactionPercent , 
+        AddClientBonus, 
+        FundLessThan100, 
+        FundLessThan500, 
+        FundLessThan1000, 
+        FundGreaterThan1000,
       });
 
       await newUser.save();
@@ -319,7 +339,7 @@ class Superadmin {
           data: result,
         });
       }
-    } catch (error) {}
+    } catch (error) { }
   }
 
   // admin history
@@ -819,7 +839,7 @@ class Superadmin {
   // ___________CompanyModel Controller________
   async createOrUpdateCompany(req, res) {
     try {
-      const { panelName, logo, favicon, loginImage ,loginUrl} = req.body;
+      const { panelName, logo, favicon, loginImage, loginUrl } = req.body;
 
       if (!panelName || !logo || !favicon || !loginImage) {
         return res.json({
