@@ -4,7 +4,7 @@ import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 
 import Table from "../../Utils/Table/Table";
-import { getbrokerageData } from "../../Services/Admin/Addmin";
+import { GetBonus, getbrokerageData } from "../../Services/Admin/Addmin";
 import {
   getAllClient,
   getProfitMarginApi,
@@ -20,6 +20,8 @@ const Holdoff = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [completed, setCompleted] = useState(0);
   const [profitBalance, setProfitBalance] = useState(0);
+  const[bonusData, setBonusData] = useState([]);
+   
 
   const columns = useMemo(
     () => [
@@ -31,6 +33,18 @@ const Holdoff = () => {
     []
   );
 
+  const columnsForBonus = useMemo(
+    () => [
+      { Header: "UserName", accessor: "username" },
+      { Header: "Bonus", accessor: "Bonus" },
+      { Header: "Type", accessor: "Type" },
+      // { Header: "Brokerage", accessor: "brokerage" },
+    ],
+    []
+  );
+
+
+  console.log("Bonus Data:", bonusData);
   const fetchBrokerageData = async () => {
     try {
       const res = await getbrokerageData({ admin_id: user_id });
@@ -57,6 +71,16 @@ const Holdoff = () => {
     } catch (error) {
       console.error("Error fetching brokerage data:", error);
       Swal.fire("Error", "Failed to fetch brokerage data.", "error");
+    }
+  };
+
+  const fetchBonusData = async () => {
+    try {
+      const res = await GetBonus({ admin_id: user_id });
+      setBonusData(res.data);
+      console.log("Bonus Data:", res.data);
+    } catch (error) {
+      console.error("Error fetching bonus data:", error);
     }
   };
 
@@ -88,6 +112,7 @@ const Holdoff = () => {
   useEffect(() => {
     if (user_id) {
       fetchBrokerageData();
+      fetchBonusData();
       fetchAdminDetails();
       fetchMarginData();
     }
@@ -183,7 +208,16 @@ const Holdoff = () => {
                 )}
               </Tab>
               <Tab eventKey="Bonus" title="Bonus">
-                <p className="mt-3">Bonus content will go here.</p>
+                
+              {bonusData.length > 0 ? ( // Updated condition
+                  <Table
+                    columns={columnsForBonus}
+                    data={bonusData}
+                    rowsPerPage={rowsPerPage}
+                  />
+                ) : (
+                  <p className="text-muted mt-3">No data available.</p>
+                )}
               </Tab>
             </Tabs>
   

@@ -625,3 +625,18 @@ export async function UpdateRefferPrice(data, token) {
 
     }
 }
+
+
+export async function GetBonus(data, token) {
+    try {
+  
+        const res = await axios.post(`${Config.base_url}admin/getbonusdetails`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+}

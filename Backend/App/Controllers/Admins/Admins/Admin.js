@@ -22,6 +22,7 @@ const Message = db.Message;
 const Sign_In = db.Sign_In;
 const crypto = require("crypto");
 const path = require('path');
+const BonusCollectioniModel = require("../../../Models/BonusCollectioni.model");
 
 const apkPath = path.join(__dirname, '..', '..', '..', '..', 'Uploads', 'application.apk');
 
@@ -54,6 +55,12 @@ class Admin {
         return res.json({ status: false, message: "Missing required fields" });
       }
 
+      const parentUser = await User_model.findOne({ _id: parent_id });
+
+      console.log("Parent User:", parentUser);
+
+
+
       // Check if user already exists
       const existingUser = await User_model.findOne({
         $or: [{ UserName }, { Email }, { PhoneNo }],
@@ -64,8 +71,8 @@ class Admin {
           existingUser.UserName === UserName
             ? "Username"
             : existingUser.Email === Email
-            ? "Email"
-            : "Phone Number";
+              ? "Email"
+              : "Phone Number";
 
         return res.json({
           status: false,
@@ -135,42 +142,42 @@ class Admin {
 
       if (referred_by) {
         console.log("Referred By:", referred_by);
-      
+
         // Activate referred user
         const updateStatus = await Sign_In.updateOne(
           { UserName },
           { $set: { isActive: true } }
         );
-      
+
         if (updateStatus.modifiedCount === 0) {
           console.warn("User not updated or already active");
           return;
         }
-      
+
         // Get the signed-in user
         const referredUserSignIn = await Sign_In.findOne({ UserName });
         if (!referredUserSignIn) {
           console.warn("Referred user not found");
           return;
         }
-      
+
         // Get referring user
         const referringUser = await User_model.findById(referred_by);
         if (!referringUser) {
           console.warn("Referring user not found");
           return;
         }
-      
+
         const creditAmount = referredUserSignIn.referral_price || 0;
         const updatedBalance = (referringUser.Balance || 0) + creditAmount;
-      
+
         // Update balance
         await User_model.updateOne(
           { _id: referred_by },
           { $set: { Balance: updatedBalance } }
         );
-      
-     
+
+
         // Log in wallet
         const walletEntry = new Wallet_model({
           user_Id: referredUserSignIn.referred_by,  // or just `referred_by`
@@ -178,24 +185,20 @@ class Admin {
           parent_Id: referringUser.parent_id || null,
           Type: "CREDIT",
         });
-      
+
         await walletEntry.save();
 
         const newStatement = new BalanceStatement({
           userid: referredUserSignIn.referred_by,
-          Amount: creditAmount ,
-          parent_Id: referringUser.parent_id ,
+          Amount: creditAmount,
+          parent_Id: referringUser.parent_id,
           type: "CREDIT",
           message: "Referral Balance Added",
         });
         await newStatement.save();
-
-
-
-
+ 
       }
-      
-
+ 
       // Create wallet and balance statement
       const userWallet = new Wallet_model({
         user_Id: newUser._id,
@@ -223,6 +226,56 @@ class Admin {
         End_Date: endDate,
       });
       await licenceRecord.save();
+
+  
+      if (parentUser.Role === "ADMIN") {
+
+        if (parentUser && parentUser.FixedPerClient) {
+          const newBonus = new BonusCollectioniModel({
+            admin_id: parentUser._id,
+            user_id: newUser._id,
+            Bonus: parentUser.FixedPerClient,
+            Type: "Fixed_PerClient",
+          });
+          await newBonus.save();
+
+        }
+
+        if (Balance > 0) {
+
+          if (parentUser && parentUser.FundAdd) {
+            let calculatedBonus;
+
+            if (Balance < 100) {
+              calculatedBonus = parentUser.FundLessThan100;
+            } else if (Balance < 500) {
+              calculatedBonus = parentUser.FundLessThan500;
+            } else if (Balance < 1000) {
+              calculatedBonus = parentUser.FundLessThan1000;
+            } else {
+              calculatedBonus = parentUser.FundGreaterThan1000;
+            }
+            const newBonus = new BonusCollectioniModel({
+              admin_id: parentUser._id,
+              user_id: parent_id,
+              Bonus: calculatedBonus,
+              Type: "Fund_Add",
+            });
+
+            await newBonus.save();
+          }
+          if (parentUser && parentUser.EveryTransaction) {
+            const newBonus = new BonusCollectioniModel({
+              admin_id: parentUser._id,
+              user_id: newUser._id,
+              Bonus: parentUser.FixedTransactionPercent,
+              Type: "Every_Transaction",
+            });
+            await newBonus.save();
+          }
+
+        }
+      }
 
       return res.json({
         status: true,
@@ -312,6 +365,7 @@ class Admin {
       });
     }
   }
+
 
   async updateLicence(req, res) {
     try {
@@ -464,7 +518,7 @@ class Admin {
       const { adminid, type, activeTab, page = 1, limit = 10 } = req.body;
 
       console.log("Request body", req.body);
-  
+
       // Validation
       if (!adminid || type === "" || !activeTab) {
         return res.status(400).json({
@@ -473,23 +527,23 @@ class Admin {
           data: [],
         });
       }
-  
+
       const statusMap = {
         "Complete": 1,
         "Reject": 2,
         "Pending": 0,
       };
-  
+
       const status = statusMap[activeTab] ?? 0;
       const skip = (parseInt(page) - 1) * parseInt(limit);
-  
+
       // Count total documents
       const totalRecords = await PaymenetHistorySchema.countDocuments({
         adminid,
         type,
         status,
       });
-  
+
       const walletData = await PaymenetHistorySchema.aggregate([
         {
           $match: {
@@ -537,7 +591,7 @@ class Admin {
         { $skip: skip },
         { $limit: parseInt(limit) },
       ]);
-  
+
       return res.json({
         status: true,
         message: "Successfully fetched data",
@@ -558,7 +612,7 @@ class Admin {
       });
     }
   }
-  
+
 
   async UpdateStatus(req, res) {
     try {
@@ -808,7 +862,7 @@ class Admin {
         item.balance_data.brokerage = Number(item.balance_data.brokerage).toFixed(5);
         return item;
       });
-      
+
       if (!formattedData || formattedData.length === 0) {
         return res.json({
           status: true,
@@ -1027,7 +1081,7 @@ class Admin {
       if (!userid || userid === "all") {
         result = await mainorder_model
           // .find({ adminid, $expr: { $eq: ["$sell_lot", "$buy_lot"] } })
-          .find({ adminid})
+          .find({ adminid })
 
           .sort({ createdAt: -1 });
       } else {
@@ -1073,7 +1127,7 @@ class Admin {
         .select("UserName Start_Date End_Date Role parent_role")
         .sort({ createdAt: -1 });
 
-      
+
 
       if (!result || result.length === 0) {
         return res.json({ status: false, message: "User not found", data: [] });
@@ -1625,16 +1679,120 @@ class Admin {
 
 
 
-  async  Downloadapk(req, res){
+  async Downloadapk(req, res) {
     res.download(apkPath, 'application.apk', (err) => {
-        if (err) {
-            res.status(500).send('Error downloading file');
-        }
+      if (err) {
+        res.status(500).send('Error downloading file');
+      }
     });
-};
+  };
 
 
+  // async GetBonusDetails(req,res) { 
+  //   try {
+  //     const {admin_id} = req.body;
+  //     if (!admin_id) {
+  //       return res.json({
+  //         status: false,
+  //         message: "Admin ID is required",
+  //         data: [],
+  //       });
+  //     }
+  //     const bonusDetails = await BonusCollectioniModel.find({ admin_id });
+  //     if (!bonusDetails || bonusDetails.length === 0) {
+  //       return res.json({
+  //         status: false,
+  //         message: "No bonus details found",
+  //         data: [],
+  //       });
+  //     }
+  //     return res.json({
+  //       status: true,
+  //       message: "Bonus details found",
+  //       data: bonusDetails,
+  //     });
 
+      
+  //   } catch (error) {
+  //     console.error("Error in GetBonusDetails:", error);
+  //     return res.json({
+  //       status: false,
+  //       message: "Internal server error",
+  //       error: error.message,
+  //     });
+      
+  //   } 
+  // }
+
+
+  async GetBonusDetails(req, res) {
+    try {
+      const { admin_id } = req.body;
+  
+      if (!admin_id) {
+        return res.json({
+          status: false,
+          message: "Admin ID is required",
+          data: [],
+        });
+      }
+  
+      const bonusDetails = await BonusCollectioniModel.aggregate([
+        {
+          $match: {
+            admin_id: new mongoose.Types.ObjectId(admin_id),
+          },
+        },
+        {
+          $lookup: {
+            from: "users",  
+            localField: "user_id",
+            foreignField: "_id",
+            as: "userDetails",
+          },
+        },
+        {
+          $unwind: "$userDetails",  
+        },
+        {
+          $project: {
+            Bonus: 1,
+            Type: 1,
+            username: "$userDetails.UserName", 
+            user_id: 1,
+            admin_id: 1,
+            createdAt: 1,
+            updatedAt: 1,
+          },
+        },
+      ]);
+  
+      if (!bonusDetails || bonusDetails.length === 0) {
+        return res.json({
+          status: false,
+          message: "No bonus details found",
+          data: [],
+        });
+      }
+
+      console.log("Bonus Details:", bonusDetails);
+  
+      return res.json({
+        status: true,
+        message: "Bonus details found",
+        data: bonusDetails,
+      });
+  
+    } catch (error) {
+      console.error("Error in GetBonusDetails:", error);
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  }
+  
 
 }
 

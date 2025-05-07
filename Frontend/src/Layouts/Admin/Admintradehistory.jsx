@@ -16,6 +16,7 @@ const Tradehistory = () => {
   const [userName, setUserName] = useState();
   const [Userid, setUserId] = useState();
   const [search, setSearch] = useState("");
+  const [signalFilter, setSignalFilter] = useState("buy_sell"); // State for signal type filter
 
   // Define columns for the table
   const columns = [
@@ -117,6 +118,16 @@ const Tradehistory = () => {
         return sell_qty ? sell_qty : "-";
       },
     },
+
+    {
+      Header: "Signal Type",
+      accessor: "signal_type",
+      Cell: ({ cell }) => {
+        const signal_type = cell.row.signal_type;
+        return signal_type ? signal_type : "-";
+      },
+    },
+    
     {
       Header: "Buy Time",
       accessor: "buy_time",
@@ -150,15 +161,16 @@ const Tradehistory = () => {
       const searchfilter = response.data?.filter((item) => {
         const searchLower = search.toLowerCase();
         return (
-          search === "" ||
-          (item.symbol && item.symbol.toLowerCase().includes(searchLower)) ||
-          (item.buy_price &&
-            item.buy_price.toString().toLowerCase().includes(searchLower)) ||
-          (item.sell_price &&
-            item.sell_price.toString().toLowerCase().includes(searchLower))
+          (item.signal_type === signalFilter) && // Filter by signal type
+          (search === "" ||
+            (item.symbol && item.symbol.toLowerCase().includes(searchLower)) ||
+            (item.buy_price &&
+              item.buy_price.toString().toLowerCase().includes(searchLower)) ||
+            (item.sell_price &&
+              item.sell_price.toString().toLowerCase().includes(searchLower)))
         );
       });
-      setData(search ? searchfilter : response.data);
+      setData(search ? searchfilter : response.data.filter((item) => item.signal_type === signalFilter));
     } catch (error) {
       console.log("error", error);
     }
@@ -184,7 +196,7 @@ const Tradehistory = () => {
 
   useEffect(() => {
     getuserallhistory();
-  }, [Userid, search]);
+  }, [Userid, search, signalFilter]);
 
   // Calculate total profit/loss
   const calculateTotalProfitLoss = () => {
@@ -218,6 +230,11 @@ const Tradehistory = () => {
     } else {
       alert("Error");
     }
+  };
+
+  // Function to toggle signal type filter
+  const toggleSignalFilter = () => {
+    setSignalFilter((prev) => (prev === "buy_sell" ? "sell_buy" : "buy_sell"));
   };
 
   return (
@@ -315,9 +332,37 @@ const Tradehistory = () => {
                               ))}
                           </select>
                         </div>
+
+                        {/* Signal Type Toggle Button */}
+                        <div style={{ flex: 1, textAlign: "center" }}>
+                          <div className="btn-group mt-4" role="group">
+                            <button
+                              type="button"
+                              className={`btn ${
+                                signalFilter === "buy_sell"
+                                  ? "btn-success"
+                                  : "btn-outline-success"
+                              }`}
+                              onClick={() => setSignalFilter("buy_sell")}
+                            >
+                              Buy-Sell
+                            </button>
+                            <button
+                              type="button"
+                              className={`btn ${
+                                signalFilter === "sell_buy"
+                                  ? "btn-danger"
+                                  : "btn-outline-danger"
+                              }`}
+                              onClick={() => setSignalFilter("sell_buy")}
+                            >
+                              Sell-Buy
+                            </button>
+                          </div>
+                        </div>
                       </div>
 
-                      <h5>
+                      <h4 className="ms-3">
                         Total Profit/Loss:{" "}
                         <span
                           style={{
@@ -329,7 +374,7 @@ const Tradehistory = () => {
                           <DollarSign />
                           {totalProfitLoss}
                         </span>
-                      </h5>
+                      </h4>
                       <Table columns={columns} data={data && data} />
                     </div>
                   </div>

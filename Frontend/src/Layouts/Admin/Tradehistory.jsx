@@ -74,6 +74,10 @@ const Tradehistory = () => {
         return sell_lot ? sell_lot : "-";
       },
     },
+
+   
+
+
     {
       Header: "Buy qty",
       accessor: "buy_qty",
@@ -180,7 +184,7 @@ const Tradehistory = () => {
                           style={{ width: "20%" }}
                         />
                       </div>
-                      <h5>
+                      <h4 className="ms-2">
                         Total Profit/Loss:{" "}
                         <span
                           style={{
@@ -190,7 +194,7 @@ const Tradehistory = () => {
                           <DollarSign />
                           {totalProfitLoss}
                         </span>
-                      </h5>
+                      </h4>
                       <Table
                         columns={columns}
                         data={data && data}
