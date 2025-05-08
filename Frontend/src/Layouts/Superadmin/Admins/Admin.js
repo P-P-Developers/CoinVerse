@@ -1,43 +1,40 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
-import { getUserdata, Addbalance, updateActivestatus, Delete_Admin } from "../../../Services/Superadmin/Superadmin";
+import {
+  getUserdata,
+  updateActivestatus,
+  Delete_Admin,
+} from "../../../Services/Superadmin/Superadmin";
 import { Link, useNavigate } from "react-router-dom";
-import { CirclePlus, Pencil, Trash2, CircleDollarSign, CircleMinus, Eye } from "lucide-react";
-import Swal from 'sweetalert2';
-import { fDateTime } from "../../../Utils/Date_format/datefromat";
+import {
+  CirclePlus,
+  Pencil,
+  Trash2,
+  Eye,
+} from "lucide-react";
+import Swal from "sweetalert2";
 import Loader from "../../../Utils/Loader/Loader";
-import { MarginpriceRequired, updateuserLicence } from "../../../Services/Admin/Addmin";
+import {
+  MarginpriceRequired,
+  updateuserLicence,
+} from "../../../Services/Admin/Addmin";
 
-import { Button, Form } from "react-bootstrap";
 import Modal from "react-modal";
 
 const Admin = () => {
-
-
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
 
   const [data, setData] = useState([]);
-  const [balance, setBalance] = useState("");
-  const [modal, setModal] = useState(false);
-  const [id, setID] = useState("");
-  const [type, setType] = useState("")
-
-
   const [license, setLicence] = useState(false);
   const [licenseid, setLicenceId] = useState("");
   const [licencevalue, setLicencevalue] = useState("");
-
-
   const [loading, setLoading] = useState(false);
-  const [rowId, setRowId] = useState('');
+  const [rowId, setRowId] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
-
-
-
-
+  const [searchTerm, setSearchTerm] = useState("");
   const [isCurrencyModalOpen, setIsCurrencyModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     crypto: "",
@@ -53,14 +50,17 @@ const Admin = () => {
     }));
   };
 
-  const handleUpdate = async () => {
+  useEffect(() => {
+    getAllAdmin();
+  }, [searchTerm]);
 
+  const handleUpdate = async () => {
     if (!formData.crypto || !formData.dollarprice || !formData.forex) {
       Swal.fire({
-        icon: 'error',
-        title: 'Error!',
-        text: 'All fields are required. Please fill in all values.',
-        confirmButtonColor: '#d33',
+        icon: "error",
+        title: "Error!",
+        text: "All fields are required. Please fill in all values.",
+        confirmButtonColor: "#d33",
       });
       return; // Stop execution if validation fails
     }
@@ -69,31 +69,26 @@ const Admin = () => {
       crypto: formData.crypto,
       dollarprice: formData.dollarprice,
       forex: formData.forex,
-    }
+    };
     const res = await MarginpriceRequired(data);
     if (res?.status) {
       Swal.fire({
-        icon: 'success',
-        title: 'Success!',
+        icon: "success",
+        title: "Success!",
         text: res.message,
-        confirmButtonColor: '#33B469',
+        confirmButtonColor: "#33B469",
       });
     }
 
-
     setIsCurrencyModalOpen(false);
   };
-
-
-
-
 
   const columns = [
     { Header: "FullName", accessor: "FullName" },
     { Header: "UserName", accessor: "UserName" },
     { Header: "Email", accessor: "Email" },
     { Header: "Phone No", accessor: "PhoneNo" },
-   
+
     {
       Header: "Status",
       accessor: "ActiveStatus",
@@ -106,8 +101,10 @@ const Admin = () => {
             onChange={(event) => updateactivestatus(event, cell.row._id)}
             defaultChecked={cell.value == 1}
           />
-          <label htmlFor={`rating_${cell.row.id}`} className="checktoggle checkbox-bg"></label>
-
+          <label
+            htmlFor={`rating_${cell.row.id}`}
+            className="checktoggle checkbox-bg"
+          ></label>
         </label>
       ),
     },
@@ -142,7 +139,7 @@ const Admin = () => {
                 verticalAlign: "middle",
               }}
             />
-            {cell.value || "0" }
+            {cell.value || "0"}
           </span>
         </div>
       ),
@@ -153,16 +150,17 @@ const Admin = () => {
       Cell: ({ cell }) => {
         return (
           <div>
-
-            <Pencil style={{ cursor: 'pointer', color: "#33B469" }}
+            <Pencil
+              style={{ cursor: "pointer", color: "#33B469" }}
               onClick={() => updateAdmin(cell.row._id, cell)}
             />
-            <Trash2 style={{
-              cursor: "pointer",
-              marginRight: "10px",
-              marginLeft: "3px",
-              color: "red",
-            }}
+            <Trash2
+              style={{
+                cursor: "pointer",
+                marginRight: "10px",
+                marginLeft: "3px",
+                color: "red",
+              }}
               onClick={() => DeleteAdmin(cell.row._id)}
             />
           </div>
@@ -241,7 +239,10 @@ const Admin = () => {
                 padding: "8px 12px",
                 borderRadius: "4px",
               }}
-              onClick={() => { setIsCurrencyModalOpen(true); setRowId(cell.row._id) }}
+              onClick={() => {
+                setIsCurrencyModalOpen(true);
+                setRowId(cell.row._id);
+              }}
             >
               Currency Setup
             </button>
@@ -249,47 +250,31 @@ const Admin = () => {
         );
       },
     },
-
   ];
 
 
-
-
-  // user 
-
   const AdminUserdetail = (_id) => {
     navigate(`adminuser/${_id}`);
-
   };
-
-
-  // admin employee
-
 
   const AdminEmployeedetail = (_id) => {
     navigate(`adminemployee/${_id}`);
-
   };
 
   const AdminBrokerageDetail = (row) => {
     navigate(`/superadmin/brokerage/${row._id}`, { state: { rowData: row } });
-
   };
-
-
-  // delete admin
 
   const DeleteAdmin = async (_id) => {
     try {
-
       const confirmResult = await Swal.fire({
-        title: 'Are you sure?',
-        text: 'You will not be able to recover this user!',
-        icon: 'warning',
+        title: "Are you sure?",
+        text: "You will not be able to recover this user!",
+        icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!'
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
       });
 
       if (confirmResult.isConfirmed) {
@@ -297,31 +282,25 @@ const Admin = () => {
         await Delete_Admin(data);
 
         Swal.fire({
-          icon: 'success',
-          title: 'User Deleted',
-          text: 'The user has been deleted successfully.',
+          icon: "success",
+          title: "User Deleted",
+          text: "The user has been deleted successfully.",
         });
 
         getAllAdmin();
       }
     } catch (error) {
       Swal.fire({
-        icon: 'error',
-        title: 'Deletion Failed',
-        text: 'There was an error deleting the user. Please try again.',
+        icon: "error",
+        title: "Deletion Failed",
+        text: "There was an error deleting the user. Please try again.",
       });
     }
   };
 
-
-
   const updateAdmin = (_id, obj) => {
     navigate(`updateadmin/${_id}`, { state: { rowData: obj.row } });
-
   };
-
-
-  // update licence
 
   const updateLicence = async () => {
     try {
@@ -347,39 +326,6 @@ const Admin = () => {
     }
   };
 
-
-
-  // // update  balance
-  // const updateBalance = async () => {
-  //   try {
-  //    await Addbalance({
-  //       id: id,
-  //       Balance: balance,
-  //       parent_Id:user_id,
-  //       Type:type
-  //     });
-
-  //     Swal.fire({
-  //       icon: 'success',
-  //       title: 'Balance Updated',
-  //       text: 'The balance has been updated successfully.',
-  //     });
-  //     getAllAdmin();
-  //     setModal(false);
-  //   } catch (error) {
-  //     Swal.fire({
-  //       icon: 'error',
-  //       title: 'Update Failed',
-  //       text: 'There was an error updating the balance. Please try again.',
-  //     });
-  //   }
-  // };
-
-
-
-  // update acctive status
-
-
   const updateactivestatus = async (event, id) => {
     const user_active_status = event.target.checked ? 1 : 0;
 
@@ -393,48 +339,51 @@ const Admin = () => {
 
     if (result.isConfirmed) {
       try {
-        const response = await updateActivestatus({ id, user_active_status })
+        const response = await updateActivestatus({ id, user_active_status });
         if (response.status) {
           Swal.fire({
             title: "Saved!",
             icon: "success",
             timer: 1000,
-            timerProgressBar: true
+            timerProgressBar: true,
           });
           setTimeout(() => {
             Swal.close(); // Close the modal
-
           }, 1000);
         }
-
       } catch (error) {
         console.log("Error", error);
-        Swal.fire("Error", "There was an error processing your request.", "error");
+        Swal.fire(
+          "Error",
+          "There was an error processing your request.",
+          "error"
+        );
       }
     } else if (result.dismiss === Swal.DismissReason.cancel) {
       window.location.reload();
     }
   };
 
-
-
-  // get all admin
   const getAllAdmin = async () => {
     setLoading(true);
     const data = { id: user_id };
     try {
       const response = await getUserdata(data);
-      setData(response.data);
+
+      const filteredData = response.data.filter(
+        (item) =>
+          item.FullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.UserName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.Email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.PhoneNo.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setData(filteredData);
+
       setLoading(false);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
 
-
-  useEffect(() => {
-    getAllAdmin();
-  }, []);
 
   return (
     <>
@@ -464,37 +413,46 @@ const Admin = () => {
                       role="tabpanel"
                       aria-labelledby="Week-tab"
                     >
-                      <div className='mb-3 ms-4'>
+                      <div className="mb-3 ms-4">
                         Search :{" "}
                         <input
                           className="ml-2 input-search form-control"
-                          defaultValue=""
                           style={{ width: "20%" }}
+                          type="text"
+                          placeholder="Search Here"
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          value={searchTerm}
                         />
                       </div>
-                        <Table columns={columns} data={data} rowsPerPage={rowsPerPage} />
-                        <div
-                          className="d-flex align-items-center"
-                          style={{
-                            marginBottom: "20px",
-                            marginLeft: "20px",
-                            marginTop: "-48px",
-                          }}>
-                          Rows per page:{" "}
-                          <select
-                            className="form-select ml-2"
-                            value={rowsPerPage}
-                            onChange={(e) =>
-                              setRowsPerPage(Number(e.target.value))
-                            }
-                            style={{ width: "auto", marginLeft: "10px" }}>
-                            <option value={5}>5</option>
-                            <option value={10}>10</option>
-                            <option value={20}>20</option>
-                            <option value={50}>50</option>
-                            <option value={50}>100</option>
-                          </select>
-                        </div>
+                      <Table
+                        columns={columns}
+                        data={data}
+                        rowsPerPage={rowsPerPage}
+                      />
+                      <div
+                        className="d-flex align-items-center"
+                        style={{
+                          marginBottom: "20px",
+                          marginLeft: "20px",
+                          marginTop: "-48px",
+                        }}
+                      >
+                        Rows per page:{" "}
+                        <select
+                          className="form-select ml-2"
+                          value={rowsPerPage}
+                          onChange={(e) =>
+                            setRowsPerPage(Number(e.target.value))
+                          }
+                          style={{ width: "auto", marginLeft: "10px" }}
+                        >
+                          <option value={5}>5</option>
+                          <option value={10}>10</option>
+                          <option value={20}>20</option>
+                          <option value={50}>50</option>
+                          <option value={50}>100</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -503,65 +461,6 @@ const Admin = () => {
           </div>
         </div>
       )}
-
-      {/* {modal && (
-        <div className="modal custom-modal d-block" id="add_vendor" role="dialog">
-          <div className="modal-dialog modal-dialog-centered modal-md">
-            <div className="modal-content">
-              <div className="modal-header border-0 pb-0">
-                <div className="form-header modal-header-title text-start mb-0">
-                  <h4 className="mb-0">Add Fund</h4>
-                </div>
-                <button
-                  type="button"
-                  className="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                  onClick={() => setModal(false)}
-                ></button>
-              </div>
-              <div>
-                <div className="modal-body">
-                  <div className="row">
-                    <div className="col-lg-12 col-sm-12">
-                      <div className="input-block mb-3">
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="Enter Fund"
-                          onChange={(e) => {
-                            const value = e.target.value.replace(/\D/g, '');
-                            setBalance(value);
-                          }}
-                          value={balance}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    data-bs-dismiss="modal"
-                    className="btn btn-back cancel-btn me-2"
-                    onClick={() => setModal(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    data-bs-dismiss="modal"
-                    className="btn btn-primary paid-continue-btn"
-                    onClick={updateBalance}
-                  >
-                    Submit
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )} */}
 
       <Modal
         isOpen={isCurrencyModalOpen}
@@ -600,7 +499,6 @@ const Admin = () => {
             marginBottom: "15px",
           }}
         >
-
           <h4 style={{ margin: "0" }}>Currency Setup</h4>
           <button
             type="button"
@@ -727,18 +625,7 @@ const Admin = () => {
                 <div className="modal-body">
                   <div className="row">
                     <div className="col-lg-12 col-sm-12">
-                      {/* <div className="input-block mb-3">
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="Enter Licence"
-                          onChange={(e) => {
-                            const value = e.target.value.replace(/\D/g, "");
-                            setLicencevalue(value);
-                          }}
-                          value={licencevalue}
-                        />
-                      </div> */}
+                     
 
                       <div className="input-block mb-3">
                         <input
@@ -746,12 +633,11 @@ const Admin = () => {
                           className="form-control"
                           placeholder="Enter Licence Here"
                           onChange={(e) => {
-                            let value = e.target.value
+                            let value = e.target.value;
                             setLicencevalue(value);
                           }}
                           value={licencevalue ? `${licencevalue}` : ""} // Display the value with no '%', since it's not applicable here
                         />
-
                       </div>
                     </div>
                   </div>

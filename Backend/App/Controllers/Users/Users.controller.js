@@ -11,13 +11,12 @@ const mainorder_model = db.mainorder_model;
 const Order = db.Order;
 const broadcasting = db.broadcasting;
 const Useraccount = db.Useraccount;
+const user_logs = db.user_logs;
 
 class Users {
-
-
   async userWithdrawalanddeposite(req, res) {
     try {
-      const { userid, Balance, type ,transactionId, ScreenShot } = req.body;
+      const { userid, Balance, type, transactionId, ScreenShot } = req.body;
 
       // Fetch user data
       const userdata = await User_model.findById({ _id: userid }).sort({
@@ -83,10 +82,13 @@ class Users {
   async getpaymenthistory(req, res) {
     try {
       const { userid } = req.body;
-      const result = await PaymenetHistorySchema.find({ userid: userid }).sort({
-        createdAt: -1,
-      }).select(
-        "adminid userid Balance type status message notification_title createdAt")
+      const result = await PaymenetHistorySchema.find({ userid: userid })
+        .sort({
+          createdAt: -1,
+        })
+        .select(
+          "adminid userid Balance type status message notification_title createdAt"
+        );
 
       if (!result) {
         return res.json({ status: false, message: "User not found", data: [] });
@@ -430,7 +432,6 @@ class Users {
     }
   }
 
-
   async tradeStatementForUser1(req, res) {
     try {
       const { userid } = req.body;
@@ -447,28 +448,29 @@ class Users {
         {
           $match: {
             userid: userid, // userid string me h
-            symbol: { $ne: null }, 
-                    },
+            symbol: { $ne: null },
+          },
         },
         {
-          $sort: { createdAt: -1 },        },
+          $sort: { createdAt: -1 },
+        },
         {
           $unwind: { path: "$orderid", preserveNullAndEmptyArrays: true }, // Unwind the orderid array
         },
         {
           $lookup: {
-            from: "orders", 
+            from: "orders",
             localField: "orderid",
-            foreignField: "_id", 
-            as: "orderDetails", 
+            foreignField: "_id",
+            as: "orderDetails",
           },
         },
         {
-          $unwind: { path: "$orderDetails", preserveNullAndEmptyArrays: true }, 
+          $unwind: { path: "$orderDetails", preserveNullAndEmptyArrays: true },
         },
         {
           $addFields: {
-            totalamount: "$orderDetails.totalamount", 
+            totalamount: "$orderDetails.totalamount",
             lot: "$orderDetails.lot",
             qty: "$orderDetails.qty",
             lotSize: "$orderDetails.lotSize",
@@ -590,16 +592,17 @@ class Users {
               },
             },
           ]);
-      
+
           // Apply toFixed(4) for Amount and totalamount in each document
           return results.map((doc) => ({
             ...doc,
             Amount: doc.Amount ? parseFloat(doc.Amount).toFixed(4) : null,
-            totalamount: doc.totalamount ? parseFloat(doc.totalamount).toFixed(4) : null,
+            totalamount: doc.totalamount
+              ? parseFloat(doc.totalamount).toFixed(4)
+              : null,
           }));
         })
       );
-      
 
       return res.json({
         status: true,
@@ -616,7 +619,6 @@ class Users {
       });
     }
   }
-
 
   async generatePin(req, res) {
     try {
@@ -670,6 +672,31 @@ class Users {
         return res.send({ status: false, message: "User not found", data: [] });
       }
 
+      if (user.ActiveStatus !== "1") {
+        return res.send({
+          status: false,
+          message: "Account is not active",
+          data: [],
+        });
+      }
+
+      if (user.Role === "USER" || user.Role === "ADMIN") {
+        const currentDate = new Date();
+        const endDate = new Date(user.End_Date);
+
+        if (
+          endDate.getDate() === currentDate.getDate() &&
+          endDate.getMonth() === currentDate.getMonth() &&
+          endDate.getFullYear() === currentDate.getFullYear()
+        ) {
+          return res.send({
+            status: false,
+            message: "Account is expired",
+            data: [],
+          });
+        }
+      }
+
       // If pin_status is false, return a message to generate the pin first
       if (!user.pin_status) {
         return res.send({
@@ -684,10 +711,34 @@ class Users {
         return res.send({ status: false, message: "Incorrect pin", data: [] });
       }
 
+      var token = jwt.sign({ id: user._id }, process.env.SECRET, {
+        expiresIn: 28800,
+      });
+
+      // Create user login log
+      const user_login = new user_logs({
+        user_Id: user._id,
+        admin_Id: user.parent_id || "",
+        UserName: user.UserName,
+        login_status: "Panel On",
+        role: user.Role,
+        DeviceToken: "",
+      });
+
+      await user_login.save();
+
       return res.send({
         status: true,
         message: "Pin matched successfully",
-        data: { user_id: user._id },
+        data: {
+          token: token,
+          Role: user.Role,
+          user_id: user._id,
+          UserName: user.UserName,
+          ReferralCode: user.ReferralCode,
+          ReferredBy: user.ReferredBy,
+          parent_id: user.parent_id,
+        },
       });
     } catch (error) {
       return res.send({
@@ -773,11 +824,10 @@ class Users {
     }
   }
 
-
   async getUserAccountDetails(req, res) {
     try {
       const { userId } = req.body;
-  
+
       if (!userId) {
         return res.json({
           status: false,
@@ -785,7 +835,7 @@ class Users {
           data: [],
         });
       }
-  
+
       if (!mongoose.Types.ObjectId.isValid(userId)) {
         return res.json({
           status: false,
@@ -793,10 +843,12 @@ class Users {
           data: [],
         });
       }
-  
+
       // ✅ Find all accounts for the given userId
-      const userAccountDetails = await Useraccount.find({ userId: new mongoose.Types.ObjectId(userId) });
-  
+      const userAccountDetails = await Useraccount.find({
+        userId: new mongoose.Types.ObjectId(userId),
+      });
+
       if (!userAccountDetails || userAccountDetails.length === 0) {
         return res.json({
           status: false,
@@ -804,7 +856,7 @@ class Users {
           data: [],
         });
       }
-  
+
       return res.json({
         status: true,
         message: "User account details retrieved successfully",
@@ -819,15 +871,20 @@ class Users {
       });
     }
   }
-  
 
-
-  async  updateUserAccountDetails(req, res) {
+  async updateUserAccountDetails(req, res) {
     try {
-      const { userId, upiId, accountHolderName, bankName, bankAccountNo, bankIfsc } = req.body;
-  
+      const {
+        userId,
+        upiId,
+        accountHolderName,
+        bankName,
+        bankAccountNo,
+        bankIfsc,
+      } = req.body;
+
       console.log("Request body:", req.body);
-  
+
       if (!userId) {
         return res.status(400).json({
           status: false,
@@ -835,7 +892,7 @@ class Users {
           data: [],
         });
       }
-  
+
       if (!mongoose.Types.ObjectId.isValid(userId)) {
         return res.status(400).json({
           status: false,
@@ -843,7 +900,7 @@ class Users {
           data: [],
         });
       }
-  
+
       // ✅ Directly Create a New Account Entry
       const newAccount = new Useraccount({
         userId: new mongoose.Types.ObjectId(userId),
@@ -851,19 +908,18 @@ class Users {
         accountHolderName,
         bankName,
         bankAccountNo,
-        bankIfsc
+        bankIfsc,
       });
-  
+
       const savedAccount = await newAccount.save();
-  
+
       console.log("savedAccount", savedAccount);
-  
+
       return res.status(201).json({
         status: true,
         message: "New user account added successfully",
         data: savedAccount,
       });
-  
     } catch (error) {
       console.error("Error in updateUserAccountDetails:", error.message);
       return res.status(500).json({
@@ -873,7 +929,6 @@ class Users {
       });
     }
   }
-  
 }
 
 module.exports = new Users();

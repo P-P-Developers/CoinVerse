@@ -118,12 +118,6 @@ class Auth {
     }
   }
 
-  // ----Original code----
-
-  // ------------------------------------------------------
-  // // My testing with the code
-
-
 async SignIn(req, res) {
   try {
     const { FullName, UserName, PhoneNo, password, ReferredBy } = req.body;
@@ -230,7 +224,6 @@ async DeleteSignIn(req, res) {
   }
 }
 
-
   async getSignIn(req, res) {
     try {
       const { admin_id } = req.body;
@@ -277,8 +270,6 @@ async DeleteSignIn(req, res) {
     }
   }
 
-  // log out user
-
   async logoutUser(req, res) {
     try {
       const { userid } = req.body;
@@ -301,25 +292,6 @@ async DeleteSignIn(req, res) {
       });
     } catch (error) {}
   }
-
-  // get logoutUser data
-
-  // async getlogsuser(req, res) {
-  //   try {
-  //     const { userid } = req.body;
-
-  //     const result = await user_logs
-  //       .find({ admin_Id: userid })
-  //       .sort({ createdAt: -1 });
-
-  //     if (!result) {
-  //       return res.send({ status: false, message: "user not found", data: [] });
-  //     }
-  //     return res.send({ status: true, message: "user sucess", data: result });
-  //   } catch (error) {
-  //     return res.send({ status: false, message: "internal error", data: [] });
-  //   }
-  // }
 
   async getlogsuser(req, res) {
     try {
@@ -374,10 +346,6 @@ async DeleteSignIn(req, res) {
     }
   }
   
-  
-
-  // change password
-
   async PasswordChanged(req, res) {
     try {
       const { userid, oldPassword, newPassword } = req.body;

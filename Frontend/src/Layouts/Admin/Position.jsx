@@ -60,8 +60,11 @@ const Position = () => {
       // Filter data based on buy_qty !== sell_qty
       const filterdata = response.data && response.data.filter((item) => item.buy_qty !== item.sell_qty);
 
+      let UniqueUsernames = filterdata.map((item) =>  item.username);
+      UniqueUsernames = [...new Set(UniqueUsernames)]; // Remove duplicates
+
       // Store original data (unfiltered)
-      setOriginalData(filterdata);
+      setOriginalData(UniqueUsernames);
 
       // Apply search filter if needed
       const searchfilter = filterdata?.filter((item) => {
@@ -133,8 +136,8 @@ const Position = () => {
                               <option value="">Select a user</option>
                               {originalData.length > 0 ? (
                                 originalData.map((user) => (
-                                  <option key={user._id} value={user.username}>
-                                    {user.username}
+                                  <option key={user} value={user}>
+                                    {user}
                                   </option>
                                 ))
                               ) : (

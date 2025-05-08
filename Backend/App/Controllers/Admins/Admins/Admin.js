@@ -856,6 +856,9 @@ class Admin {
             balance_data: 1,
           },
         },
+        {
+          $sort: { "balance_data.createdAt": -1 },
+        }
       ]);
 
       // Format the `brokerage` value to 5 decimal places

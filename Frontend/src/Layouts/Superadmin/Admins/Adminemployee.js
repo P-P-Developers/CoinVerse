@@ -47,7 +47,7 @@ const Adminemployee = () => {
         }
         ,
         { Header: "PhoneNo", accessor: "PhoneNo" },
-        { Header: "Licence", accessor: "Licence" },
+       
         {
             Header: "createdAt", accessor: "createdAt",
             Cell: ({ cell }) => {
@@ -69,23 +69,6 @@ const Adminemployee = () => {
 
             },
         },
-        // {
-        //     Header: "User",
-        //     accessor: "User",
-        //     Cell: ({ cell }) => {
-        //         return (
-        //             <div>
-        //                 <Eye
-        //                     style={{ cursor: "pointer", color: "#33B469" }}
-        //                     onClick={() => {
-        //                         setModal(!modal)
-        //                         Employee_user(cell.row._id);
-        //                       }}
-        //                 />
-        //             </div>
-        //         );
-        //     },
-        // },
     
 
 
@@ -93,21 +76,7 @@ const Adminemployee = () => {
 
 
 
-    // employee user
-
-    // const Employee_user = (_id) => {
-    //   try {
-    //       // navigate(`employeeuser/${_id}`);
-   
-    //     //   const data = {userid:_id}
-    //     //   const response = await getEmployeeuserdetail(data)
-
-        
-    //   } catch (error) {
-        
-    //   }
-
-    // };
+  
 
 
 
