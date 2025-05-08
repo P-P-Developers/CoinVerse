@@ -25,10 +25,7 @@ const BonusSchema = new Schema(
         enum: ["Fixed_PerClient", "Fund_Add", "Every_Transaction"],  
         required: true,
       },
-      username: {
-        type: String,
-        required: true,
-      },
+       
 
       
     },
