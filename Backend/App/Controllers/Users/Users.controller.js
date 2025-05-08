@@ -12,6 +12,7 @@ const Order = db.Order;
 const broadcasting = db.broadcasting;
 const Useraccount = db.Useraccount;
 const user_logs = db.user_logs;
+const jwt = require("jsonwebtoken");
 
 class Users {
   async userWithdrawalanddeposite(req, res) {

@@ -833,7 +833,7 @@ class Superadmin {
 
       const profitMarginData = await ProfitmarginData.find({
         adminid: admin_id,
-      });
+      }).sort({ createdAt: -1 });
       if (!profitMarginData || profitMarginData.length === 0) {
         return res.json({
           status: false,

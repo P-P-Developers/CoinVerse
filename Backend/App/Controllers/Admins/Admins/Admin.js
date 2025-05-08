@@ -149,23 +149,20 @@ class Admin {
           { $set: { isActive: true } }
         );
 
-        if (updateStatus.modifiedCount === 0) {
-          console.warn("User not updated or already active");
-          return;
-        }
 
         // Get the signed-in user
-        const referredUserSignIn = await Sign_In.findOne({ UserName });
+        const referredUserSignIn = await Sign_In.findOne({referred_by: referred_by });
         if (!referredUserSignIn) {
-          console.warn("Referred user not found");
-          return;
+          console.log("Referred user not found");
+         
         }
+        console.log("Referred User Sign In:", referredUserSignIn);  
 
         // Get referring user
         const referringUser = await User_model.findById(referred_by);
         if (!referringUser) {
-          console.warn("Referring user not found");
-          return;
+          console.log("Referring user not found");
+       
         }
 
         const creditAmount = referredUserSignIn.referral_price || 0;
