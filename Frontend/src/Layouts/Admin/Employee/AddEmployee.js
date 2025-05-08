@@ -245,14 +245,14 @@ const AddEmployee = () => {
       col_size: 12,
       disable: true,
     },
-    {
-      name: "all",
-      label: "Select All",
-      type: "checkbox",
-      label_size: 12,
-      col_size: 12,
-      check_box_true: formik.values.all,
-    },
+    // {
+    //   name: "all",
+    //   label: "Select All",
+    //   type: "checkbox",
+    //   label_size: 12,
+    //   col_size: 12,
+    //   check_box_true: formik.values.all,
+    // },
     {
       name: "addclient",
       label: "Add Client",
