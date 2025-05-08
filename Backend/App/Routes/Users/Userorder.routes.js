@@ -16,6 +16,7 @@ const { userWithdrawalanddeposite, getpaymenthistory, getUserDetail, getmarginpr
     tradeStatementForUser,
     generatePin,
     matchPin,
+    FingerAuth,
     changePin,
     tradeStatementForOrder,
     tradeStatementForUser1,
@@ -56,6 +57,8 @@ router.post('/tradeStatementForOrder', tradeStatementForOrder);
 router.post('/todaysBroadcastMessage', todaysBroadcastMessage);
 router.post('/user/generateMPin', generatePin)
 router.post('/user/matchPin', matchPin);
+router.post('/user/fingerauth', FingerAuth);
+
 router.post('/user/changePin', changePin);
 
 router.post('/switchOrderType', switchOrderType);

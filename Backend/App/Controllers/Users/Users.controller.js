@@ -658,96 +658,184 @@ class Users {
     }
   }
 
-  async matchPin(req, res) {
-    try {
-      const { user_id, pin } = req.body;
-
-      if (pin && !/^\d{4}$/.test(pin)) {
-        return res.send({ status: false, message: "Invalid PIN", data: [] });
-      }
-
-      const user = await User_model.findById(user_id);
-
-      if (!user) {
-        return res.send({ status: false, message: "User not found", data: [] });
-      }
-
-      if (user.ActiveStatus !== "1") {
-        return res.send({
-          status: false,
-          message: "Account is not active",
-          data: [],
-        });
-      }
-
-      if (user.Role === "USER" || user.Role === "ADMIN") {
-        const currentDate = new Date();
-        const endDate = new Date(user.End_Date);
-
-        if (
-          endDate.getDate() === currentDate.getDate() &&
-          endDate.getMonth() === currentDate.getMonth() &&
-          endDate.getFullYear() === currentDate.getFullYear()
-        ) {
+   async matchPin(req, res) {
+      try {
+        const { user_id, pin } = req.body;
+  
+        if (pin && !/^\d{4}$/.test(pin)) {
+          return res.send({ status: false, message: "Invalid PIN", data: [] });
+        }
+  
+        const user = await User_model.findById(user_id);
+  
+        if (!user) {
+          return res.send({ status: false, message: "User not found", data: [] });
+        }
+  
+        if (user.ActiveStatus !== "1") {
           return res.send({
             status: false,
-            message: "Account is expired",
+            message: "Account is not active",
             data: [],
           });
         }
-      }
-
-      // If pin_status is false, return a message to generate the pin first
-      if (!user.pin_status) {
+  
+        if (user.Role === "USER" || user.Role === "ADMIN") {
+          const currentDate = new Date();
+          const endDate = new Date(user.End_Date);
+  
+          if (
+            endDate.getDate() === currentDate.getDate() &&
+            endDate.getMonth() === currentDate.getMonth() &&
+            endDate.getFullYear() === currentDate.getFullYear()
+          ) {
+            return res.send({
+              status: false,
+              message: "Account is expired",
+              data: [],
+            });
+          }
+        }
+  
+        // If pin_status is false, return a message to generate the pin first
+        if (!user.pin_status) {
+          return res.send({
+            status: false,
+            message: "Please generate your PIN first",
+            data: [],
+          });
+        }
+  
+        // Compare the entered pin with the stored pin
+        if (user.pin !== pin) {
+          return res.send({ status: false, message: "Incorrect pin", data: [] });
+        }
+  
+        var token = jwt.sign({ id: user._id }, process.env.SECRET, {
+          expiresIn: 28800,
+        });
+  
+        // Create user login log
+        const user_login = new user_logs({
+          user_Id: user._id,
+          admin_Id: user.parent_id || "",
+          UserName: user.UserName,
+          login_status: "Panel On",
+          role: user.Role,
+          DeviceToken: "",
+        });
+  
+        await user_login.save();
+  
+        return res.send({
+          status: true,
+          message: "Pin matched successfully",
+          data: {
+            token: token,
+            Role: user.Role,
+            user_id: user._id,
+            UserName: user.UserName,
+            ReferralCode: user.ReferralCode,
+            ReferredBy: user.ReferredBy,
+            parent_id: user.parent_id,
+          },
+        });
+      } catch (error) {
+        console.error("Error in matchPin:", error);
         return res.send({
           status: false,
-          message: "Please generate your PIN first",
-          data: [],
+          message: "Server side error",
+          data: error,
         });
       }
-
-      // Compare the entered pin with the stored pin
-      if (user.pin !== pin) {
-        return res.send({ status: false, message: "Incorrect pin", data: [] });
-      }
-
-      var token = jwt.sign({ id: user._id }, process.env.SECRET, {
-        expiresIn: 28800,
-      });
-
-      // Create user login log
-      const user_login = new user_logs({
-        user_Id: user._id,
-        admin_Id: user.parent_id || "",
-        UserName: user.UserName,
-        login_status: "Panel On",
-        role: user.Role,
-        DeviceToken: "",
-      });
-
-      await user_login.save();
-
-      return res.send({
-        status: true,
-        message: "Pin matched successfully",
-        data: {
-          token: token,
-          Role: user.Role,
-          user_id: user._id,
-          UserName: user.UserName,
-          ReferralCode: user.ReferralCode,
-          ReferredBy: user.ReferredBy,
-          parent_id: user.parent_id,
-        },
-      });
-    } catch (error) {
-      return res.send({
-        status: false,
-        message: "Server side error",
-        data: error,
-      });
     }
-  }
+
+
+    async FingerAuth(req, res) {
+      try {
+        const { user_id } = req.body;
+  
+  
+        const user = await User_model.findById(user_id);
+  
+        if (!user) {
+          return res.send({ status: false, message: "User not found", data: [] });
+        }
+  
+        if (user.ActiveStatus !== "1") {
+          return res.send({
+            status: false,
+            message: "Account is not active",
+            data: [],
+          });
+        }
+  
+        if (user.Role === "USER" || user.Role === "ADMIN") {
+          const currentDate = new Date();
+          const endDate = new Date(user.End_Date);
+  
+          if (
+            endDate.getDate() === currentDate.getDate() &&
+            endDate.getMonth() === currentDate.getMonth() &&
+            endDate.getFullYear() === currentDate.getFullYear()
+          ) {
+            return res.send({
+              status: false,
+              message: "Account is expired",
+              data: [],
+            });
+          }
+        }
+  
+        // If pin_status is false, return a message to generate the pin first
+        if (!user.pin_status) {
+          return res.send({
+            status: false,
+            message: "Please generate your PIN first",
+            data: [],
+          });
+        }
+  
+        
+  
+        var token = jwt.sign({ id: user._id }, process.env.SECRET, {
+          expiresIn: 28800,
+        });
+  
+        // Create user login log
+        const user_login = new user_logs({
+          user_Id: user._id,
+          admin_Id: user.parent_id || "",
+          UserName: user.UserName,
+          login_status: "Panel On",
+          role: user.Role,
+          DeviceToken: "",
+        });
+  
+        await user_login.save();
+  
+        return res.send({
+          status: true,
+          message: "Pin matched successfully",
+          data: {
+            token: token,
+            Role: user.Role,
+            user_id: user._id,
+            UserName: user.UserName,
+            ReferralCode: user.ReferralCode,
+            ReferredBy: user.ReferredBy,
+            parent_id: user.parent_id,
+          },
+        });
+      } catch (error) {
+        console.error("Error in matchPin:", error);
+        return res.send({
+          status: false,
+          message: "Server side error",
+          data: error,
+        });
+      }
+    }
 
   async changePin(req, res) {
     try {
