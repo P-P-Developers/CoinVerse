@@ -1,32 +1,44 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../Utils/Table/Table";
-import { fDateTime } from "../../Utils/Date_format/datefromat";
-import { getSignIn } from "../../Services/Admin/Addmin";
-import { Pencil } from "lucide-react";
+import { fDateTimesec } from "../../Utils/Date_format/datefromat";
+import { getSignIn,DeleteSignIn } from "../../Services/Admin/Addmin";
+import { Pencil, Trash2 } from "lucide-react";
 import { Navigate, useNavigate } from "react-router-dom";
+import SweetAlert from "sweetalert2";
 
 const Signup = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
   const referralCode = userDetails?.ReferralCode;
-  const referralLink = `${window.location.origin}/#/register?ref=${referralCode}`;
-  
+  const referralLink = `${window.location.origin}/#/register/${referralCode}`;
+
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [currentClient, setCurrentClient] = useState(null);
   const [search, setSearch] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-
   const columns = [
     { Header: "FullName", accessor: "FullName" },
     { Header: "UserName", accessor: "UserName" },
     { Header: "Password", accessor: "password" },
     {
+      Header: "Referred By",
+      accessor: "referred_by",
+      Cell: ({ cell }) => {
+        return cell.value
+          ? cell.value === userDetails.user_id
+            ? "ADMIN"
+            : "USER"
+          : "N/A";
+      },
+    },
+
+    {
       Header: "Create Date",
       accessor: "createdAt",
       Cell: ({ cell }) => {
-        return fDateTime(cell.value);
+        return fDateTimesec(cell.value);
       },
     },
     {
@@ -39,11 +51,52 @@ const Signup = () => {
               style={{ cursor: "pointer", color: "#33B469" }}
               onClick={() => EditClient(cell.row._id)}
             />
+            {/* add delete button  */}
+            <Trash2
+              style={{
+                cursor: "pointer",
+                marginRight: "10px",
+                marginLeft: "3px",
+                color: "red",
+              }}
+              onClick={() => DeleteUser(cell.row._id)}
+            />
           </div>
         );
       },
     },
   ];
+
+  const DeleteUser = async (rowId) => {
+    console.log("DeleteUser", rowId);
+  
+    const ConfirmDelete = await SweetAlert.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+  
+    if (ConfirmDelete.isConfirmed) {
+      try {
+        const response = await DeleteSignIn({ id: rowId });
+        if (response.status) {
+          SweetAlert.fire("Deleted!", "Your file has been deleted.", "success");
+          getsignupuser();
+        } else {
+          SweetAlert.fire("Error!", "Failed to delete the user.", "error");
+        }
+      } catch (error) {
+        console.log("error", error);
+      }
+    } else {
+      SweetAlert.fire("Cancelled", "Your imaginary file is safe :)", "error");
+    }
+  };
+  
 
   const EditClient = (rowId) => {
     const clientData = data.find((item) => item._id === rowId);
@@ -53,11 +106,12 @@ const Signup = () => {
   const getsignupuser = async () => {
     try {
       const admin_id = userDetails?.user_id;
-      const response = await getSignIn({admin_id});
+      const response = await getSignIn({ admin_id });
       const searchfilter = response.data?.filter((item) => {
         const searchInputMatch =
           search === "" ||
-          (item.UserName && item.UserName.toLowerCase().includes(search.toLowerCase()));
+          (item.UserName &&
+            item.UserName.toLowerCase().includes(search.toLowerCase()));
         return searchInputMatch;
       });
       setData(search ? searchfilter : response.data);
@@ -88,7 +142,8 @@ const Signup = () => {
                       className="tab-pane fade show active"
                       id="Week"
                       role="tabpanel"
-                      aria-labelledby="Week-tab">
+                      aria-labelledby="Week-tab"
+                    >
                       <div className="d-flex align-items-center mb-3 ms-4">
                         <div className="me-4">
                           Search:{" "}
@@ -117,7 +172,8 @@ const Signup = () => {
                               onClick={() => {
                                 navigator.clipboard.writeText(referralLink);
                                 alert("Referral link copied to clipboard!");
-                              }}>
+                              }}
+                            >
                               Copy Link
                             </button>
                           </div>
@@ -134,7 +190,8 @@ const Signup = () => {
                           marginBottom: "20px",
                           marginLeft: "20px",
                           marginTop: "-48px",
-                        }}>
+                        }}
+                      >
                         Rows per page:{" "}
                         <select
                           className="form-select ml-2"
@@ -142,7 +199,8 @@ const Signup = () => {
                           onChange={(e) =>
                             setRowsPerPage(Number(e.target.value))
                           }
-                          style={{ width: "auto", marginLeft: "10px" }}>
+                          style={{ width: "auto", marginLeft: "10px" }}
+                        >
                           <option value={5}>5</option>
                           <option value={10}>10</option>
                           <option value={20}>20</option>

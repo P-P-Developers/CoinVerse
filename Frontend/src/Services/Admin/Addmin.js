@@ -327,6 +327,22 @@ export async function getSignIn(data, token) {
 
 }
 
+// Delete sign in user detail
+export async function DeleteSignIn(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}DeleteSignIn`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+
 
 // walletBalance
 

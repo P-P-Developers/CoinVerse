@@ -28,7 +28,9 @@ const Holdoff = () => {
       { Header: "Symbol", accessor: "symbol" },
       { Header: "Amount", accessor: "Amount" },
       { Header: "Brokerage", accessor: "brokerage" },
-      { Header: "Created At", accessor: "createdAt"}
+      { Header: "Created At", accessor: "createdAt" ,  Cell: ({ cell }) => {
+        return fDateTimesec(cell.value);
+      }},
     ]
     
 
@@ -65,6 +67,7 @@ const Holdoff = () => {
           symbol: item.symbol,
           Amount: item.Amount,
           brokerage: item.brokerage,
+          createdAt: item.createdAt,
         }))
         .filter(
           (item) =>

@@ -10,7 +10,7 @@ import Register from '../Layouts/Auth/Register';
 
 
 
-const Routing = () => {
+const   Routing = () => {
     const location = useLocation();
 
     const navigate = useNavigate();

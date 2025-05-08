@@ -184,7 +184,7 @@ async SignIn(req, res) {
       FullName,
       UserName,
       PhoneNo,
-      password: hashedPassword,
+      password: password,
       referred_by: referredUser ? referredUser._id : null,
       referral_price:referral_price ? Number(referral_price) : 0,
     });
@@ -211,6 +211,22 @@ async SignIn(req, res) {
       message: "Internal error",
       data: [],
     });
+  }
+}
+
+async DeleteSignIn(req, res) {
+  try {
+    const { id } = req.body;
+    const result = await Sign_In.findByIdAndDelete(id);
+
+    if (!result) {
+      return res.json({ status: false, message: "Unable to delete", data: [] });
+    }
+
+    return res.json({ status: true, message: "Deleted successfully", data: [] });
+  } catch (error) {
+    console.error("Error in DeleteSignIn:", error);
+    return res.json({ status: false, message: "Internal error", data: [] });
   }
 }
 

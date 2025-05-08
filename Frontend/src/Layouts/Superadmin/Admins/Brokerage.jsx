@@ -33,6 +33,9 @@ const Brokerage = () => {
     { Header: "Symbol", accessor: "symbol" },
     { Header: "Amount", accessor: "Amount" },
     { Header: "Brokerage", accessor: "brokerage" },
+    { Header: "Created At", accessor: "createdAt" ,  Cell: ({ cell }) => {
+      return fDateTimesec(cell.value);
+    }},
   ];
 
   const columnsForBonus = [
@@ -69,6 +72,7 @@ const Brokerage = () => {
           symbol: item.symbol,
           Amount: item.Amount,
           brokerage: item.brokerage,
+          createdAt: item.createdAt,
         }))
         .filter(
           (item) =>
@@ -123,11 +127,20 @@ const Brokerage = () => {
     }
 
     try {
-      Swal.fire({
-        title: "Clearing Brokerage...",
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading(),
+    
+      // ADD CONFIRM BOX HERE SWaL
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: `You are about to clear ${amountToClear} brokerage. Do you want to proceed?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, clear it!",
+        cancelButtonText: "No, cancel!",
       });
+      if (!result.isConfirmed) {
+        return; // User clicked "No", exit the function
+      }
+
 
       const res = await AddProfitMarginApi({
         adminid: id,

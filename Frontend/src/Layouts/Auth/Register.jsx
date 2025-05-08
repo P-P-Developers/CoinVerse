@@ -17,8 +17,12 @@ const Register = () => {
   const { search } = useLocation();
   const [logo, setLogo] = useState('');
 
+  var ReferalCode = location.pathname.split('/');
+
+  console.log(ReferalCode);
+
   const query = new URLSearchParams(search);
-  const refCode = query.get("id");
+  const refCode = ReferalCode[2]
 
 
 
