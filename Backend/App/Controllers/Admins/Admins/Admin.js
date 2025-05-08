@@ -16,13 +16,14 @@ const mainorder_model = db.mainorder_model;
 const employee_permission = db.employee_permission;
 const ResearchModel = db.ResearchModel;
 const UpiDetails = db.UpiDetails;
-// const nodemailer = require('nodemailer');
 const Conversation = db.Conversation;
 const Message = db.Message;
 const Sign_In = db.Sign_In;
 const crypto = require("crypto");
 const path = require('path');
 const BonusCollectioniModel = require("../../../Models/BonusCollectioni.model");
+
+const Company = db.Company;
 
 const apkPath = path.join(__dirname, '..', '..', '..', '..', 'Uploads', 'application.apk');
 
@@ -1633,11 +1634,14 @@ class Admin {
         referred_by: user._id,
       });
 
+      let GetCompany = await Company.find()
+      console.log("GetCompany",GetCompany)
       return res.json({
         status: true,
         message: "Referral code found",
         referralCode: referralCode,
         data: GerReferUser,
+        url : GetCompany[0]?.loginUrl+"/"+referralCode,
       });
     } catch (error) {
       console.error("Error in GetReferralCode:", error);
