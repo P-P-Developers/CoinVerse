@@ -48,7 +48,8 @@ const Report = () => {
           search === "" ||
           (item.UserName &&
             item.UserName.toLowerCase().includes(search.toLowerCase())) ||
-          (item.Type && item.Type.toLowerCase().includes(search.toLowerCase()));
+          (item.Type && item.Type.toLowerCase().includes(search.toLowerCase())) || 
+          (item.Role && item.Role.toLowerCase().includes(search.toLowerCase()));
 
         return searchInputMatch;
       }) || [];
@@ -72,6 +73,9 @@ const Report = () => {
 
         return searchInputMatch;
       }) || [];
+
+
+
 
       setAlllivedata(search ? searchfilter : response?.data?.allData || []);
       setActivedata(search ? searchfilter1 : response?.data?.liveData || []);
