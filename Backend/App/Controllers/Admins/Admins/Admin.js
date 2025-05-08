@@ -264,11 +264,14 @@ class Admin {
 
             await newBonus.save();
           }
+          let BonusForFixedTransaction = Balance * (parentUser.FixedTransactionPercent / 100);
+          console.log("BonusForFixedTransaction:", BonusForFixedTransaction);
+          
           if (parentUser && parentUser.EveryTransaction) {
             const newBonus = new BonusCollectioniModel({
               admin_id: parentUser._id,
               user_id: newUser._id,
-              Bonus: parentUser.FixedTransactionPercent,
+              Bonus: BonusForFixedTransaction,
               Type: "Every_Transaction",
             });
             await newBonus.save();

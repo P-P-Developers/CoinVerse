@@ -26,7 +26,16 @@ const UpdateAdmin = () => {
       phone: rowData?.PhoneNo || "",
       Licence: rowData?.Licence || "",
       password: "",
-      confirmPassword: ""
+      confirmPassword: "",
+      FixedPerClient: false,
+      FundAdd: false,
+      EveryTransaction: false,
+      AddClientBonus: "",
+      FundLessThan100: "",
+      FundLessThan500: "",
+      FundLessThan1000: "",
+      FundGreaterThan1000: "",
+      FixedTransactionPercent: "",
     },
     
     validate: (values) => {
@@ -109,7 +118,18 @@ const UpdateAdmin = () => {
       Licence: rowData?.Licence || "",
       ProfitMargin: rowData?.ProfitMargin || "",
       password: "",
-      confirmPassword: ""
+      confirmPassword: "",
+      FixedPerClient: rowData?.FixedPerClient || false,
+      FundAdd: rowData?.FundAdd || false,
+      EveryTransaction: rowData?.EveryTransaction || false,
+      AddClientBonus: rowData?.AddClientBonus || "",
+      FundLessThan100: rowData?.FundLessThan100 || "",
+      FundLessThan500: rowData?.FundLessThan500 || "",
+      FundLessThan1000: rowData?.FundLessThan1000 || "",
+      FundGreaterThan1000: rowData?.FundGreaterThan1000 || "",
+      FixedTransactionPercent: rowData?.FixedTransactionPercent || "",
+      
+
     });
   }, [rowData]);
 
@@ -154,6 +174,87 @@ const UpdateAdmin = () => {
       label_size: 12,
       col_size: 6,
       disable: true,
+    },
+
+    {
+      name: "FixedPerClient",
+      label: "Fixed (Per Client)",
+      type: "checkbox",
+      label_size: 12,
+      col_size: 12,
+      disable: true,
+    },
+    {
+      name: "AddClientBonus",
+      label: "Add Client Bonus",
+      type: "text",
+      label_size: 12,
+      col_size: 6,
+      disable: true,
+      showWhen: (values) => values.FixedPerClient,
+    },
+    {
+      name: "FundAdd",
+      label: "Fund Add",
+      type: "checkbox",
+      label_size: 12,
+      col_size:  12,
+      disable: true,
+    },
+    {
+      name: "FundLessThan100",
+      label: "Fund < 100",
+      type: "text",
+      label_size: 12,
+      col_size: 6,
+      disable: true,
+      showWhen: (values) => values.FundAdd,
+    },
+    {
+      name: "FundLessThan500",
+      label: "Fund < 500",
+      type: "text",
+      label_size: 12,
+      col_size: 6,
+      disable: true,
+      showWhen: (values) => values.FundAdd,
+    },
+    {
+      name: "FundLessThan1000",
+      label: "Fund < 1000",
+      type: "text",
+      label_size: 12,
+      col_size: 6,
+      disable: true,
+      showWhen: (values) => values.FundAdd,
+    },
+    {
+      name: "FundGreaterThan1000",
+      label: "Fund > 1000",
+      type: "text",
+      label_size: 12,
+      col_size: 6,
+      disable: true,
+
+      showWhen: (values) => values.FundAdd,
+    },
+    {
+      name: "EveryTransaction",
+      label: "Every Transaction %",
+      type: "checkbox",
+      label_size: 12,
+      col_size: 12,
+      disable: true,
+
+    },
+    {
+      name: "FixedTransactionPercent",
+      label: "Fixed Transaction %",
+      type: "text",
+      label_size: 12,
+      col_size: 6,
+      disable: true,
+      showWhen: (values) => values.EveryTransaction,
     },
 
   ];

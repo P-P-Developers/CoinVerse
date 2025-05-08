@@ -444,78 +444,34 @@ const DynamicForm = ({
                             </div>
                           </>
                         ) : field.type === "checkbox" ? (
-                          <>
-                            {field.options && field.options.length > 0 ? (
-                              <>
-                                {field.options &&
-                                  field.options.map((option, index) => (
-                                    <>
-                                      <div
-                                        className={`col-lg-${field.col_size}`}
-                                        key={option.id}
-                                      >
-                                        <div className="row d-flex">
-                                          <div
-                                            className={`col-lg-${field.col_size}`}
-                                          >
-                                            <div className="form-check custom-checkbox input-block  ">
-                                              <input
-                                                type={field.type}
-                                                className="form-check-input"
-                                                id={option.label}
-                                                {...formik.getFieldProps(
-                                                  option.name
-                                                )}
-                                              />
-                                              <label
-                                                className="form-check-label "
-                                                for={option.label}
-                                              >
-                                                {option.label}
-                                              </label>
-                                              {formik.errors[field.name] && (
-                                                <div style={{ color: "red" }}>
-                                                  {formik.errors[field.name]}
-                                                </div>
-                                              )}
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </>
-                                  ))}
-                              </>
-                            ) : (
-                              <>
-                                <div className={`col-lg-${field.col_size}`}>
-                                  <div className="row d-flex justify-content-start">
-                                    <div className="mb-4">
-                                      <div className="form-check custom-checkbox ">
-                                        <input
-                                          type={field.type}
-                                          className="form-check-input"
-                                          id={field.label}
-                                          {...formik.getFieldProps(field.name)}
-                                          checked={field.check_box_true}
-                                        />
-                                        <label
-                                          className="form-check-label"
-                                          for={field.label}
-                                        >
-                                          {field.label}
-                                        </label>
-                                      </div>
-                                      {formik.errors[field.name] && (
-                                        <div style={{ color: "red" }}>
-                                          {formik.errors[field.name]}
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
+                          <div className={`col-lg-${field.col_size}`}>
+                            <div className="row d-flex justify-content-start">
+                              <div className="mb-4">
+                                <div className="form-check custom-checkbox">
+                                  <input
+                                    type="checkbox"
+                                    className="form-check-input"
+                                    id={field.label}
+                                    checked={formik.values[field.name]} // Bind the checkbox state to Formik's value
+                                    disabled={field.disable}
+
+                                    onChange={(e) => {
+                                      formik.setFieldValue(field.name, e.target.checked); // Update Formik's state
+                                      if (field.onChange) {
+                                        field.onChange(e); // Call the custom onChange handler if provided
+                                      }
+                                    }}
+                                  />
+                                  <label className="form-check-label" htmlFor={field.label}>
+                                    {field.label}
+                                  </label>
                                 </div>
-                              </>
-                            )}
-                          </>
+                                {formik.errors[field.name] && (
+                                  <div style={{ color: "red" }}>{formik.errors[field.name]}</div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
                         ) : field.type === "radio" ? (
                           <>
                             <label
