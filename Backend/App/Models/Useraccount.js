@@ -25,10 +25,15 @@ const UseraccountSchema = new mongoose.Schema({
   qrCodeBase64: {
     type: String, 
   },
+  isPrimary: {
+    type: Boolean,
+    default: false,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
   },
+  
 });
 
 module.exports = mongoose.model("Useraccount", UseraccountSchema);

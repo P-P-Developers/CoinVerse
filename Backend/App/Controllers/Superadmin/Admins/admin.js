@@ -15,6 +15,7 @@ const mainorder_model = db.mainorder_model;
 const ProfitmarginData = db.Profitmargin;
 const crypto = require("crypto");
 const Company = require("../../../Models/Company.model");
+const BonusCollectioniModel = require("../../../Models/BonusCollectioni.model");
 
 class Superadmin {
   async AddAdmin(req, res) {
@@ -37,14 +38,14 @@ class Superadmin {
         limit,
         Employee_permission,
         ProfitMargin,
-        FixedPerClient, 
-        FundAdd, 
+        FixedPerClient,
+        FundAdd,
         EveryTransaction,
-        FixedTransactionPercent , 
-        AddClientBonus, 
-        FundLessThan100, 
-        FundLessThan500, 
-        FundLessThan1000, 
+        FixedTransactionPercent,
+        AddClientBonus,
+        FundLessThan100,
+        FundLessThan500,
+        FundLessThan1000,
         FundGreaterThan1000,
 
       } = req.body;
@@ -120,14 +121,14 @@ class Superadmin {
         ProfitMargin: ProfitMargin,
         ReferralCode: referralCode, // Add referral code to the user
 
-        FixedPerClient, 
-        FundAdd, 
+        FixedPerClient,
+        FundAdd,
         EveryTransaction,
-        FixedTransactionPercent , 
-        AddClientBonus, 
-        FundLessThan100, 
-        FundLessThan500, 
-        FundLessThan1000, 
+        FixedTransactionPercent,
+        AddClientBonus,
+        FundLessThan100,
+        FundLessThan500,
+        FundLessThan1000,
         FundGreaterThan1000,
       });
 
@@ -260,11 +261,27 @@ class Superadmin {
       });
       await newStatement.save();
 
+      const parentUser = await User_model.findOne({ _id: parent_Id });
+      console.log("Parent User:", parentUser);
+
+      if (parentUser && parentUser.EveryTransaction && Type === "CREDIT") {
+        let BonusForFixedTransaction = dollarcount * (parentUser.FixedTransactionPercent / 100);
+
+        const newBonus = new BonusCollectioniModel({
+          admin_id: parentUser._id,
+          user_id: id,
+          Bonus: BonusForFixedTransaction,
+          Type: "Every_Transaction",
+        });
+        await newBonus.save();
+      }
+
       return res.json({
         status: true,
         message: "Balance is updated",
         data: { newBalance },
       });
+      
     } catch (error) {
       console.error("Error in walletRecharge:", error);
       return res.json({
