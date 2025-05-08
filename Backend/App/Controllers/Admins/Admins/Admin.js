@@ -1767,6 +1767,11 @@ class Admin {
         },
       ]);
   
+      const ProfitBalanceTotal = await User_model.findOne({_id: admin_id})
+        .select("ProfitBalance")
+
+     
+
       if (!bonusDetails || bonusDetails.length === 0) {
         return res.json({
           status: false,
@@ -1775,12 +1780,12 @@ class Admin {
         });
       }
 
-      console.log("Bonus Details:", bonusDetails);
   
       return res.json({
         status: true,
         message: "Bonus details found",
         data: bonusDetails,
+        CompletedBrokrageandBonus: ProfitBalanceTotal?.ProfitBalance || 0,
       });
   
     } catch (error) {

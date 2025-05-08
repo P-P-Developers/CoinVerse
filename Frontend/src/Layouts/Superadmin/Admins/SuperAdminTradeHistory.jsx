@@ -21,8 +21,43 @@ const SuperAdminTradeHistory = () => {
   const [userName, setUserName] = useState();
   const [Userid, setUserId] = useState();
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [Search, setSearch] = useState("");
 
 
+  useEffect(() => {
+    GetUserName();
+  }, []);
+
+  useEffect(() => {
+    getuserallhistory();
+  }, [Userid,Search]);
+
+  
+  const getuserallhistory = async () => {
+    try {
+      const data = { adminid: Userid };
+      const response = await Clienthistory(data);
+
+      let filteredData = response.data;
+      if (Search) {
+        filteredData = response.data.filter((item) => {
+          const userNameMatch = item.userName
+            .toLowerCase()
+            .includes(Search.toLowerCase());
+          const symbolMatch = item.symbol
+            .toLowerCase()
+            .includes(Search.toLowerCase());
+          return userNameMatch || symbolMatch;
+        }
+        );
+      }
+      setData(filteredData);
+
+  
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
 
   // Define columns for the table
   const columns = [
@@ -153,20 +188,11 @@ const SuperAdminTradeHistory = () => {
   ];
 
   // Function to get user history
-  const getuserallhistory = async () => {
-    try {
-      const data = { adminid: Userid };
-      const response = await Clienthistory(data);
-  
-      setData(response.data);
-    } catch (error) {
-      console.log("error", error);
-    }
-  };
+
 
   const GetUserName = async () => {
     try {
-      // Trade History 1
+      
       const admin_id = user_id;
       const response = await getAdminName();
       if (response.status) {
@@ -177,13 +203,7 @@ const SuperAdminTradeHistory = () => {
     }
   };
 
-  useEffect(() => {
-    GetUserName();
-  }, []);
 
-  useEffect(() => {
-    getuserallhistory();
-  }, [Userid]);
 
   // Calculate total profit/loss
   const calculateTotalProfitLoss = () => {
@@ -264,6 +284,8 @@ const SuperAdminTradeHistory = () => {
                             type="text"
                             placeholder="Search..."
                             className="form-control"
+                            onChange={(e) => setSearch(e.target.value)}
+                            value={Search}
                             style={{
                               width: "100%",
                               padding: "10px",

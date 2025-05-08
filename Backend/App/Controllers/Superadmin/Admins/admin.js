@@ -665,6 +665,10 @@ class Superadmin {
           userName: userUsernameMap[item.userid] || "Unknown", // Default to "Unknown" if not found
         };
       });
+      result = result.filter(
+        (item) => item.adminName !== "Unknown" && item.userName !== "Unknown"
+      );
+
 
       return res.json({ status: true, message: "Data found", data: result });
     } catch (error) {

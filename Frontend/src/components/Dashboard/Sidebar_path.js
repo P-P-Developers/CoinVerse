@@ -14,9 +14,9 @@ export const superadmin_header = [
     },
     {
         id: 3,
-        name: 'Transaction',
+        name: 'License History',
         icon: "fe fe-dollar-sign",
-        route: "/superadmin/transaction",
+        route: "/superadmin/license-history",
     },
     {
         id: 4,
