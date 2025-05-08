@@ -55,6 +55,8 @@ const Sidebar = () => {
         return "fa fa-id-badge";
       case "transaction":
         return "fa-solid fa-money-bill-transfer";
+        case "license history":
+          return "fa-solid fa-money-bill-transfer";
       case "withdrawal":
         return "fa-solid fa-money-simple-from-bracket";
       case "deposit":

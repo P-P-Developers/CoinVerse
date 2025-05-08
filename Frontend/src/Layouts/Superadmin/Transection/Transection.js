@@ -31,20 +31,7 @@ const Transection = () => {
 
       },
     },
-    {
-      Header: "Start_Date", accessor: "Start_Date",
-      Cell: ({ cell }) => {
-        return fDateTimesec(cell.value)
-
-      },
-    },
-    {
-      Header: "End_Date", accessor: "End_Date",
-      Cell: ({ cell }) => {
-        return fDateTimesec(cell.value)
-
-      },
-    },
+   
   ];
 
 
@@ -93,7 +80,7 @@ const Transection = () => {
               <div className="card transaction-table">
                 <div className="card-header border-0 flex-wrap pb-0">
                   <div className="mb-3">
-                    <h4 className="card-title">transaction History</h4>
+                    <h4 className="card-title">License History </h4>
                   </div>
                 </div>
                 <div className="card-body p-0">
@@ -106,7 +93,7 @@ const Transection = () => {
                     >
                       <div className="row mb-3 ms-3 align-items-center">
                         {/* Search Input */}
-                        <div className="col-md-6 col-lg-3">
+                        {/* <div className="col-md-6 col-lg-3">
                           <label className="form-label">Search:</label>
                           <input
                             className="form-control"
@@ -116,7 +103,7 @@ const Transection = () => {
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                           />
-                        </div>
+                        </div> */}
 
                         {/* Dropdown */}
                         <div className="col-md-6 col-lg-3 ">

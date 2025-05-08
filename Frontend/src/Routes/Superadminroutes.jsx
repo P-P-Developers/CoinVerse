@@ -32,11 +32,10 @@ const SuperadminRoutes = () => {
           <Route path="/admin" element={<Admin />} />
           <Route path="/position" element={<Position />} />
           <Route path="/addmin" element={<AddAdmin />} />
-          <Route path="/transaction" element={<Transection />} />
+          <Route path="/license-history" element={<Transection />} />
           <Route path="/admin/updateadmin/:id" element={<UpdateAdmin />} />
           <Route path="/broadcast" element={<Broadcast />} />
           <Route path="/holdoff" element={<Holdoff />} />
-          {/* <Route path="/currency" element={<Currency />} /> */}
           <Route path="/admin/adminuser/:id" element={<AdminUser />} />
           <Route path="/admin/adminemployee/:id" element={<Adminemployee />} />
           <Route path="/brokerage" element={<Brokerage />} />

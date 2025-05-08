@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../Utils/Table/Table";
-import { fDateTime } from "../../Utils/Date_format/datefromat";
+import { fDateTimesec } from "../../Utils/Date_format/datefromat";
 import { getlogoutuser, GetUsersName } from "../../Services/Admin/Addmin";
 
 const Loginstatus = () => {
@@ -79,7 +79,7 @@ const Loginstatus = () => {
       Header: "Create Date",
       accessor: "createdAt",
       Cell: ({ cell }) => {
-        return fDateTime(cell.value);
+        return fDateTimesec(cell.value);
       },
     },
     {

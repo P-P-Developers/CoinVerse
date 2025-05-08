@@ -2,11 +2,11 @@ import React, { useEffect, useState, useMemo } from "react";
 import Swal from "sweetalert2";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
+import { fDateTimesec } from "../../Utils/Date_format/datefromat";
 
 import Table from "../../Utils/Table/Table";
 import { GetBonus, getbrokerageData } from "../../Services/Admin/Addmin";
 import {
-  getAllClient,
   getProfitMarginApi,
 } from "../../Services/Superadmin/Superadmin";
 
@@ -16,45 +16,50 @@ const Holdoff = () => {
 
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
-  const [adminData, setAdminData] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [completed, setCompleted] = useState(0);
   const [profitBalance, setProfitBalance] = useState(0);
   const [bonusData, setBonusData] = useState([]);
 
+  const [totalBrokerage, setTotalBrokerage] = useState(0);
 
-  const columns = useMemo(
-    () => [
+  const columns =  [
       { Header: "UserName", accessor: "UserName" },
       { Header: "Symbol", accessor: "symbol" },
       { Header: "Amount", accessor: "Amount" },
       { Header: "Brokerage", accessor: "brokerage" },
-    ],
-    []
-  );
+      { Header: "Created At", accessor: "createdAt"}
+    ]
+    
 
-  const columnsForBonus = useMemo(
-    () => [
+  const columnsForBonus =  [
       { Header: "UserName", accessor: "username" },
       { Header: "Bonus", accessor: "Bonus" },
       { Header: "Type", accessor: "Type" },
-      // { Header: "Brokerage", accessor: "brokerage" },
-    ],
-    []
-  );
+      { Header: "Created At", accessor: "createdAt" ,  Cell: ({ cell }) => {
+        return fDateTimesec(cell.value);
+      }},
+    ]
 
-  console.log("Bonus Data:", bonusData);
-  const fetchBrokerageData = async () => {
+
+  useEffect(() => {
+    fetchAllData();
+  }, [search]); // Include search if you want it to refilter
+  
+  const fetchAllData = async () => {
     try {
-      const res = await getbrokerageData({ admin_id: user_id });
-
-      const rawData =
-        res?.data?.map((entry) => ({
-          UserName: entry.UserName,
-          ...entry.balance_data,
-        })) || [];
-
-      const filtered = rawData
+      const [brokerageRes, bonusRes] = await Promise.all([
+        getbrokerageData({ admin_id: user_id }),
+        GetBonus({ admin_id: user_id }),
+      ]);
+  
+      // ---- Handle Brokerage Data ----
+      const structuredData = brokerageRes.data?.map((item) => ({
+        UserName: item.UserName,
+        ...item.balance_data,
+      })) || [];
+  
+      const filteredData = structuredData
         .map((item) => ({
           UserName: item.UserName,
           symbol: item.symbol,
@@ -65,35 +70,34 @@ const Holdoff = () => {
           (item) =>
             !search || item.symbol?.toLowerCase().includes(search.toLowerCase())
         );
-
-      setData(filtered);
-    } catch (error) {
-      console.error("Error fetching brokerage data:", error);
-      Swal.fire("Error", "Failed to fetch brokerage data.", "error");
+  
+      const brokerageTotal = structuredData.reduce(
+        (acc, item) => acc + Number(item.brokerage || 0),
+        0
+      );
+  
+      setData(filteredData);
+  
+      // ---- Handle Bonus Data ----
+      const bonusList = bonusRes.data || [];
+      const bonusTotal = bonusList.reduce(
+        (acc, item) => acc + Number(item.Bonus || 0),
+        0
+      );
+  
+      setBonusData(bonusList);
+      setProfitBalance(Number(bonusRes.CompletedBrokrageandBonus || 0));
+  
+      // ---- Set Total Brokerage Once ----
+      setTotalBrokerage(brokerageTotal + bonusTotal);
+  
+    } catch (err) {
+      Swal.fire("Error", "Failed to fetch data. Please try again.", "error");
     }
   };
+  
 
-  const fetchBonusData = async () => {
-    try {
-      const res = await GetBonus({ admin_id: user_id });
-      setBonusData(res.data);
-      console.log("Bonus Data:", res.data);
-    } catch (error) {
-      console.error("Error fetching bonus data:", error);
-    }
-  };
 
-  const fetchAdminDetails = async () => {
-    try {
-      const res = await getAllClient({ userid: user_id });
-      if (res?.status) {
-        setAdminData(res.data);
-        setProfitBalance(Number(res.data.ProfitBalance || 0));
-      }
-    } catch (error) {
-      console.error("Error fetching admin details:", error);
-    }
-  };
 
   const fetchMarginData = async () => {
     try {
@@ -102,7 +106,9 @@ const Holdoff = () => {
         (acc, item) => acc + Number(item.balance || 0),
         0
       );
-      setCompleted(total);
+  
+      setProfitBalance(Number(res.ProfitBalanceTotal || 0));
+
     } catch (error) {
       console.error("Error fetching margin data:", error);
     }
@@ -110,17 +116,11 @@ const Holdoff = () => {
 
   useEffect(() => {
     if (user_id) {
-      fetchBrokerageData();
-      fetchBonusData();
-      fetchAdminDetails();
       fetchMarginData();
     }
   }, [user_id, search]);
 
-  const totalBrokerage = useMemo(
-    () => data.reduce((acc, item) => acc + Number(item.brokerage || 0), 0),
-    [data]
-  );
+
 
   return (
     <div className="container-fluid">
@@ -147,7 +147,6 @@ const Holdoff = () => {
 
               {/* Summary Cards */}
               <div className="row g-3">
-                {/* Total Brokerage Card */}
                 <div className="col-md-4">
                   <div className="card shadow-sm border-0 h-100">
                     <div className="card-body">
@@ -155,14 +154,13 @@ const Holdoff = () => {
                       <input
                         type="text"
                         className="form-control"
-                        value={totalBrokerage.toFixed(5)}
+                        value={totalBrokerage}
                         disabled
                       />
                     </div>
                   </div>
                 </div>
 
-                {/* Remaining Card */}
                 <div className="col-md-4">
                   <div className="card shadow-sm border-0 h-100">
                     <div className="card-body">
@@ -170,14 +168,13 @@ const Holdoff = () => {
                       <input
                         type="text"
                         className="form-control"
-                        value={(completed - profitBalance).toFixed(2)}
+                        value={(totalBrokerage - completed)}
                         disabled
                       />
                     </div>
                   </div>
                 </div>
 
-                {/* Completed Card */}
                 <div className="col-md-4">
                   <div className="card shadow-sm border-0 h-100">
                     <div className="card-body">
@@ -185,7 +182,7 @@ const Holdoff = () => {
                       <input
                         type="text"
                         className="form-control"
-                        value={completed.toFixed(2)}
+                        value={completed}
                         disabled
                       />
                     </div>
@@ -197,23 +194,15 @@ const Holdoff = () => {
               <Tabs defaultActiveKey="Brokerage" className="my-4" justify>
                 <Tab eventKey="Brokerage" title="Brokerage">
                   {data.length > 0 ? (
-                    <Table
-                      columns={columns}
-                      data={data}
-                      rowsPerPage={rowsPerPage}
-                    />
+                    <Table columns={columns} data={data} rowsPerPage={rowsPerPage} />
                   ) : (
                     <p className="text-muted mt-3">No data available.</p>
                   )}
                 </Tab>
-                <Tab eventKey="Bonus" title="Bonus">
 
-                  {bonusData.length > 0 ? ( // Updated condition
-                    <Table
-                      columns={columnsForBonus}
-                      data={bonusData}
-                      rowsPerPage={rowsPerPage}
-                    />
+                <Tab eventKey="Bonus" title="Bonus">
+                  {bonusData.length > 0 ? (
+                    <Table columns={columnsForBonus} data={bonusData} rowsPerPage={rowsPerPage} />
                   ) : (
                     <p className="text-muted mt-3">No data available.</p>
                   )}
@@ -241,7 +230,6 @@ const Holdoff = () => {
         </div>
       </div>
     </div>
-
   );
 };
 
