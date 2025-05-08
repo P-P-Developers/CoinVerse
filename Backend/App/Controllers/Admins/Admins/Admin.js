@@ -1553,12 +1553,12 @@ class Admin {
   
       await Useraccount.updateMany(
         { userId: bankDetail.userId },  
-        { $set: { isPrimaryBank: false } }
+        { $set: { isPrimary: false } }
       );
   
       const updatedPrimaryBank = await Useraccount.findByIdAndUpdate(
         id,
-        { isPrimaryBank: true },
+        { isPrimary: true },
         { new: true }
       );
   
@@ -1570,6 +1570,98 @@ class Admin {
   
     } catch (error) {
       console.error("Error in setPrimaryBank:", error);
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  }
+
+  async deleteBankDetails(req, res) {
+    try {
+      const { id } = req.body;
+      const bankDetail = await Useraccount.findById(id);
+      if (!bankDetail) {
+        return res.json({ status: false, message: "Bank detail not found" });
+      }
+      await Useraccount.findByIdAndDelete(id);
+      return res.json({
+        status: true,
+        message: "Bank detail deleted successfully",
+        data: bankDetail,
+      });
+    } catch (error) {
+      console.error("Error in deleteBankDetails:", error);
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  }
+
+  async updateBankDetails(req, res) {
+    try {
+      const { id, accountHolderName, bankName, bankAccountNo, bankIfsc, upiId } =
+        req.body;
+
+      const bankDetail = await Useraccount.findById(id);
+      if (!bankDetail) {
+        return res.json({ status: false, message: "Bank detail not found" });
+      }
+
+      if (!accountHolderName) {
+        return res.json({
+          status: false,
+          message: "Account Holder Name is required",
+        });
+      }
+      if (!bankName) {
+        return res.json({ status: false, message: "Bank Name is required" });
+      }
+      if (!bankAccountNo) {
+        return res.json({
+          status: false,
+          message: "Bank Account Number is required",
+        });
+      }
+      if (!bankIfsc) {
+        return res.json({ status: false, message: "Bank IFSC is required" });
+      }
+      if (!upiId) {
+        return res.json({ status: false, message: "UPI ID is required" });
+      }
+
+
+      // Update the bank details
+      const updatedBankDetails = await Useraccount.findByIdAndUpdate(
+        id,
+        {
+          accountHolderName,
+          bankName,
+          bankAccountNo,
+          bankIfsc,
+          upiId,
+        },
+        { new: true }
+      );
+       
+      if (!updatedBankDetails) {
+        return res.json({
+          status: false,
+          message: "Failed to update bank details",
+        });
+      }
+      return res.json({
+        status: true,
+        message: "Bank details updated successfully",
+        data: updatedBankDetails,
+      });
+
+
+    } catch (error) {
+      console.error("Error in updateBankDetails:", error);
       return res.json({
         status: false,
         message: "Internal server error",
