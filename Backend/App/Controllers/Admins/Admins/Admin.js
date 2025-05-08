@@ -1676,9 +1676,7 @@ class Admin {
       });
     }
   }
-
-
-
+ 
   async Downloadapk(req, res) {
     res.download(apkPath, 'application.apk', (err) => {
       if (err) {
@@ -1686,8 +1684,7 @@ class Admin {
       }
     });
   };
-
-
+ 
   // async GetBonusDetails(req,res) { 
   //   try {
   //     const {admin_id} = req.body;
@@ -1723,8 +1720,7 @@ class Admin {
       
   //   } 
   // }
-
-
+ 
   async GetBonusDetails(req, res) {
     try {
       const { admin_id } = req.body;
@@ -1774,8 +1770,7 @@ class Admin {
           data: [],
         });
       }
-
-      console.log("Bonus Details:", bonusDetails);
+ 
   
       return res.json({
         status: true,
