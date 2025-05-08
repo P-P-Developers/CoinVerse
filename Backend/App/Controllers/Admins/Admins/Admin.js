@@ -151,7 +151,7 @@ class Admin {
 
 
         // Get the signed-in user
-        const referredUserSignIn = await Sign_In.findOne({referred_by: referred_by });
+        const referredUserSignIn = await Sign_In.findOne({UserName: UserName });
         if (!referredUserSignIn) {
           console.log("Referred user not found");
          
