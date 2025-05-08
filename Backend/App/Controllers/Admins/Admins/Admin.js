@@ -16,6 +16,9 @@ const mainorder_model = db.mainorder_model;
 const employee_permission = db.employee_permission;
 const ResearchModel = db.ResearchModel;
 const UpiDetails = db.UpiDetails;
+const Useraccount = db.Useraccount;
+
+// const nodemailer = require('nodemailer');
 const Conversation = db.Conversation;
 const Message = db.Message;
 const Sign_In = db.Sign_In;
@@ -57,11 +60,7 @@ class Admin {
       }
 
       const parentUser = await User_model.findOne({ _id: parent_id });
-
-      console.log("Parent User:", parentUser);
-
-
-
+  
       // Check if user already exists
       const existingUser = await User_model.findOne({
         $or: [{ UserName }, { Email }, { PhoneNo }],
@@ -266,8 +265,8 @@ class Admin {
             await newBonus.save();
           }
           let BonusForFixedTransaction = Balance * (parentUser.FixedTransactionPercent / 100);
-          console.log("BonusForFixedTransaction:", BonusForFixedTransaction);
-          
+         
+
           if (parentUser && parentUser.EveryTransaction) {
             const newBonus = new BonusCollectioniModel({
               admin_id: parentUser._id,
@@ -709,6 +708,23 @@ class Admin {
             Type: "CREDIT",
           });
           await walletUpdateResult.save();
+
+          const parentUser = await User_model.findOne({
+            _id: admin_id,
+          });
+
+          if(parentUser && parentUser.EveryTransaction) {
+            const Bonus = await BonusCollectioniModel({
+              admin_id: admin_id,
+              user_id: findUser._id,
+              Bonus: paymentHistoryFind.Balance * (parentUser.FixedTransactionPercent / 100),
+              Type: "Every_Transaction",
+            });
+            await Bonus.save();
+          }
+          
+          // findUser.Balance
+        
 
           const balanceStatement = new BalanceStatement({
             userid: findUser._id,
@@ -1529,6 +1545,42 @@ class Admin {
     }
   }
 
+  async setPrimaryBank(req, res) {
+    try {
+      const { id } = req.body;
+  
+      const bankDetail = await Useraccount.findById(id);
+      if (!bankDetail) {
+        return res.json({ status: false, message: "Bank detail not found" });
+      }
+  
+      await Useraccount.updateMany(
+        { userId: bankDetail.userId },  
+        { $set: { isPrimaryBank: false } }
+      );
+  
+      const updatedPrimaryBank = await Useraccount.findByIdAndUpdate(
+        id,
+        { isPrimaryBank: true },
+        { new: true }
+      );
+  
+      return res.json({
+        status: true,
+        message: "Primary bank updated successfully",
+        data: updatedPrimaryBank,
+      });
+  
+    } catch (error) {
+      console.error("Error in setPrimaryBank:", error);
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  }
+  
   // 🔸 Create/Get Conversation
   async conversation(req, res) {
     try {

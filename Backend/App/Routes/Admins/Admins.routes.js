@@ -39,7 +39,8 @@ const {
   GetReferralCode,
   UpdateReferPrice,
   Downloadapk,
-  GetBonusDetails
+  GetBonusDetails,
+  setPrimaryBank
 } = require("../../Controllers/Admins/Admins/Admin");
 const {
   marginupdate,
@@ -83,6 +84,7 @@ router.post("/admin/deleteresearch", DeleteResearch);
 
 router.post("/admin/updateUpiDetails", UpdateUpiDetails);
 router.post("/admin/getUpiDetails", getUpiDetails);
+router.post("/admin/setPrimaryBank", setPrimaryBank);
 
 router.post("/admin/conversation", conversation);
 router.post("/admin/message", message);
