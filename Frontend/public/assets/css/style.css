@@ -33238,7 +33238,7 @@ button:focus {
   border: 0rem solid transparent;
   border-radius: 0.5rem;
   box-shadow: 0rem 0.3125rem 0.3125rem 0rem rgba(82, 63, 105, 0.05);
-  height: calc(100% - 30px);
+  /* height: calc(100% - 30px); */
   color: inherit;
 }
 

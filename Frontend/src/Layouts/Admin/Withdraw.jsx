@@ -5,7 +5,6 @@ import { UpdatestatusForpaymenthistory } from "../../Services/Admin/Addmin";
 import Swal from "sweetalert2";
 import { fDateTime } from "../../Utils/Date_format/datefromat";
 import Modal from "react-modal"; // Import Modal if not already imported
-import "bootstrap/dist/css/bootstrap.min.css"; // Ensure Bootstrap is imported
 
 const Withdraw = () => {
   const [data, setData] = useState([]);
