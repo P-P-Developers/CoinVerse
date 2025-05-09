@@ -66,6 +66,7 @@ const Holdoff = () => {
         GetBonus({ admin_id: user_id }),
       ]);
   
+      setCompleted(bonusRes.CompletedBrokrageandBonus || 0);
       // ---- Handle Brokerage Data ----
       const structuredData = brokerageRes.data?.map((item) => ({
         UserName: item.UserName,

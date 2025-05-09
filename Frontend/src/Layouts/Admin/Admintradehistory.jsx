@@ -16,7 +16,6 @@ const Tradehistory = () => {
   const [userName, setUserName] = useState();
   const [Userid, setUserId] = useState();
   const [search, setSearch] = useState("");
-  const [signalFilter, setSignalFilter] = useState("buy_sell"); // State for signal type filter
 
   // Define columns for the table
   const columns = [
@@ -161,7 +160,7 @@ const Tradehistory = () => {
       const searchfilter = response.data?.filter((item) => {
         const searchLower = search.toLowerCase();
         return (
-          (item.signal_type === signalFilter) && // Filter by signal type
+       
           (search === "" ||
             (item.symbol && item.symbol.toLowerCase().includes(searchLower)) ||
             (item.buy_price &&
@@ -170,7 +169,7 @@ const Tradehistory = () => {
               item.sell_price.toString().toLowerCase().includes(searchLower)))
         );
       });
-      setData(search ? searchfilter : response.data.filter((item) => item.signal_type === signalFilter));
+      setData(search ? searchfilter : response.data);
     } catch (error) {
       console.log("error", error);
     }
@@ -196,7 +195,7 @@ const Tradehistory = () => {
 
   useEffect(() => {
     getuserallhistory();
-  }, [Userid, search, signalFilter]);
+  }, [Userid, search]);
 
   // Calculate total profit/loss
   const calculateTotalProfitLoss = () => {
@@ -232,10 +231,6 @@ const Tradehistory = () => {
     }
   };
 
-  // Function to toggle signal type filter
-  const toggleSignalFilter = () => {
-    setSignalFilter((prev) => (prev === "buy_sell" ? "sell_buy" : "buy_sell"));
-  };
 
   return (
     <>
@@ -333,33 +328,7 @@ const Tradehistory = () => {
                           </select>
                         </div>
 
-                        {/* Signal Type Toggle Button */}
-                        <div style={{ flex: 1, textAlign: "center" }}>
-                          <div className="btn-group mt-4" role="group">
-                            <button
-                              type="button"
-                              className={`btn ${
-                                signalFilter === "buy_sell"
-                                  ? "btn-success"
-                                  : "btn-outline-success"
-                              }`}
-                              onClick={() => setSignalFilter("buy_sell")}
-                            >
-                              Buy-Sell
-                            </button>
-                            <button
-                              type="button"
-                              className={`btn ${
-                                signalFilter === "sell_buy"
-                                  ? "btn-danger"
-                                  : "btn-outline-danger"
-                              }`}
-                              onClick={() => setSignalFilter("sell_buy")}
-                            >
-                              Sell-Buy
-                            </button>
-                          </div>
-                        </div>
+                      
                       </div>
 
                       <h4 className="ms-3">

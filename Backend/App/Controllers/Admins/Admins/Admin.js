@@ -1481,7 +1481,7 @@ class Admin {
         qrCodeBase64,
       } = req.body;
 
-      const GetData = await UpiDetails.findById(id);
+      const GetData = await UpiDetails.findOne();
       // if (!GetData) {
       //   return res.json({ status: false, message: "UPI details not found" });
       // }
@@ -1523,7 +1523,7 @@ class Admin {
         qrCodeBase64,
       };
       const updatedUpiDetails = await UpiDetails.updateOne(
-        { _id: id },
+ {},
         updatedDetails,
         {
           upsert: true,
@@ -1555,7 +1555,7 @@ class Admin {
     try {
       const { id } = req.body;
 
-      const GetData = await UpiDetails.findById(id);
+      const GetData = await UpiDetails.findOne();
       if (!GetData) {
         return res.json({ status: false, message: "UPI details not found" });
       }

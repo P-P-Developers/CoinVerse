@@ -73,16 +73,16 @@ class Auth {
       });
 
       // Create user login log
-      const user_login = new user_logs({
-        user_Id: EmailCheck._id,
-        admin_Id: EmailCheck.parent_id || "",
-        UserName: EmailCheck.UserName,
-        login_status: "Panel On",
-        role: EmailCheck.Role,
-        DeviceToken: fcm_token,
-      });
+      // const user_login = new user_logs({
+      //   user_Id: EmailCheck._id,
+      //   admin_Id: EmailCheck.parent_id || "",
+      //   UserName: EmailCheck.UserName,
+      //   login_status: "Panel On",
+      //   role: EmailCheck.Role,
+      //   DeviceToken: fcm_token,
+      // });
 
-      await user_login.save();
+      // await user_login.save();
 
       // Update FCM token if role is USER
       if (EmailCheck.Role === "USER") {
