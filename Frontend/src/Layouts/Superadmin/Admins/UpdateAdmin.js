@@ -195,7 +195,7 @@ const UpdateAdmin = () => {
     },
     {
       name: "FundAdd",
-      label: "Fund Add",
+      label: "First-Time Funding Reward",
       type: "checkbox",
       label_size: 12,
       col_size:  12,

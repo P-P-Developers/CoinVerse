@@ -231,7 +231,7 @@ class Admin {
           const newBonus = new BonusCollectioniModel({
             admin_id: parentUser._id,
             user_id: newUser._id,
-            Bonus: parentUser.FixedPerClient,
+            Bonus: parentUser.AddClientBonus,
             Type: "Fixed_PerClient",
           });
           await newBonus.save();
@@ -252,7 +252,7 @@ class Admin {
           }
           const newBonus = new BonusCollectioniModel({
             admin_id: parentUser._id,
-            user_id: parent_id,
+            user_id: newUser._id,
             Bonus: calculatedBonus,
             Type: "Fund_Add",
           });
