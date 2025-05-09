@@ -225,7 +225,7 @@ class Superadmin {
             const newBonus = new BonusCollectioniModel({
               admin_id: parentUser._id,
               user_id: userdata._id,
-              Bonus: parentUser.FixedPerClient,
+              Bonus: parentUser.AddClientBonus,
               Type: "Fixed_PerClient",
             });
             await newBonus.save();
