@@ -11,17 +11,18 @@ import Position from "../Layouts/Superadmin/Admins/Position";
 import Broadcast from "../Layouts/Superadmin/Admins/Broadcast";
 import Holdoff from "../Layouts/Superadmin/Admins/Holdoff";
 import UpdateAdmin from "../Layouts/Superadmin/Admins/UpdateAdmin";
-import Currency from "../Layouts/Superadmin/Admins/Currency";
+
 import AdminUser from "../Layouts/Superadmin/Admins/AdminUser";
 import Adminemployee from "../Layouts/Superadmin/Admins/Adminemployee";
-import Employee_user from "../Layouts/Superadmin/Admins/Employee_user";
+
 import Brokerage from "../Layouts/Superadmin/Brokerage";
 import AdminBrokerage from "../Layouts/Superadmin/Admins/Brokerage";
 import System from "../Layouts/Superadmin/Admins/System";
-import Tradehistory from "../Layouts/Admin/Admintradehistory";
 import SuperAdminTradeHistory from "../Layouts/Superadmin/Admins/SuperAdminTradeHistory";
-import Bankdetails from "../Layouts/Admin/Bankdetails"
+import Bankdetails from "../Layouts/Admin/Bankdetails";
 
+import Deposite from "../Layouts/Superadmin/withdrawalAnddeposite/Deposit";
+import Withdrawal from "../Layouts/Superadmin/withdrawalAnddeposite/Withdrawal";
 
 const SuperadminRoutes = () => {
   return (
@@ -43,9 +44,11 @@ const SuperadminRoutes = () => {
           <Route path="/brokerage" element={<Brokerage />} />
           <Route path="/brokerage/:id" element={<AdminBrokerage />} />
           <Route path="/system" element={<System />} />
-          <Route path="/tradehistory" element={<SuperAdminTradeHistory/>} />
+          <Route path="/tradehistory" element={<SuperAdminTradeHistory />} />
           <Route path="/bankdetails" element={<Bankdetails />} />
 
+          <Route path="/withdrawal" element={<Withdrawal />} />
+          <Route path="/deposit" element={<Deposite />} />
         </Routes>
       </div>
       <Footer />
