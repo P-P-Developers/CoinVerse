@@ -177,7 +177,7 @@ const Login = () => {
                 >
                   <form onSubmit={handleSubmit}>
                     <div className="text-center mb-4">
-                      <h3 className="text-center mb-2 text-dark">Sign In</h3>
+                      <h2 className="text-center mb-2 text-dark">Sign In</h2>
                      
                     </div>
 

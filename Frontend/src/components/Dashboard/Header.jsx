@@ -262,9 +262,9 @@ const Header = () => {
                           <span className="ms-2">Profile</span>
                         </Link>
                       )}
-                      {user_role === "ADMIN" && (
+                      {user_role === "SUPERADMIN" && (
                         <Link
-                          to="/admin/bankdetails"
+                          to="/superadmin/bankdetails"
                           className="dropdown-item ai-icon"
                         >
                           <i

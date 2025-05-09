@@ -20,6 +20,8 @@ import AdminBrokerage from "../Layouts/Superadmin/Admins/Brokerage";
 import System from "../Layouts/Superadmin/Admins/System";
 import Tradehistory from "../Layouts/Admin/Admintradehistory";
 import SuperAdminTradeHistory from "../Layouts/Superadmin/Admins/SuperAdminTradeHistory";
+import Bankdetails from "../Layouts/Admin/Bankdetails"
+
 
 const SuperadminRoutes = () => {
   return (
@@ -42,6 +44,8 @@ const SuperadminRoutes = () => {
           <Route path="/brokerage/:id" element={<AdminBrokerage />} />
           <Route path="/system" element={<System />} />
           <Route path="/tradehistory" element={<SuperAdminTradeHistory/>} />
+          <Route path="/bankdetails" element={<Bankdetails />} />
+
         </Routes>
       </div>
       <Footer />

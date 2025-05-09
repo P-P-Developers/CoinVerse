@@ -85,7 +85,7 @@ const AdminRoutes = () => {
           <Route path="/brokerage" element={<Brokerage />} />
 
           <Route path="/research" element={<Research />} />
-          <Route path="/bankdetails" element={<Bankdetails />} />
+          {/* <Route path="/bankdetails" element={<Bankdetails />} /> */}
           <Route path="/basicsetting" element={<Basicsetting />} />
           <Route path="/chatbox" element={<Chatbox />} />
 

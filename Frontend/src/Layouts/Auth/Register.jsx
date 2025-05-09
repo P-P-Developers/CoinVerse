@@ -157,7 +157,7 @@ const Register = () => {
                   
                 </div>
 
-                <h4 className="text-center mb-2">Sign Up</h4>
+                <h2 className="text-center mb-2">Sign Up</h2>
                 <form onSubmit={formik.handleSubmit}>
                   <div className="mb-3">
                     <label className="form-label" htmlFor="FullName">
