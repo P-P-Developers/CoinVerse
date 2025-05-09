@@ -33,7 +33,7 @@ const Dashboard = () => {
           <div class="col-xl-12">
             <div className="row main-card " style={{ marginTop: "100px" }}>
               <div className="col-md-4">
-                <div className="card card-box bg-secondary bg-secondary">
+                <div className="card card-box bg-primary bg-primary">
                   <div className="card-header border-0 pb-0">
                     <div className="chart-num">
                       <p>
@@ -255,7 +255,7 @@ const Dashboard = () => {
                 </div>
               </div>
               <div className="col-md-4">
-                <div className="card card-box bg-secondary bg-pink">
+                <div className="card card-box bg-primary bg-pink">
                   <div className="card-header border-0 pb-0">
                     <div className="chart-num">
                       <p>
@@ -480,7 +480,7 @@ const Dashboard = () => {
                 </div>
               </div>
               <div className="col-md-4">
-                <div className="card card-box bg-secondary bg-dark">
+                <div className="card card-box bg-primary bg-dark">
                   <div className="card-header border-0 pb-0">
                     <div className="chart-num">
                       <p>
@@ -707,7 +707,7 @@ const Dashboard = () => {
 								className="col-md-4"
 
 							>
-								<div className="card card-box bg-secondary bg-warning">
+								<div className="card card-box bg-primary bg-warning">
 									<div className="card-header border-0 pb-0">
 										<div className="chart-num">
 											<p>
@@ -927,7 +927,7 @@ const Dashboard = () => {
 								className="col-md-4"
 
 							>
-								<div className="card card-box bg-secondary bg-dark">
+								<div className="card card-box bg-primary bg-dark">
 									<div className="card-header border-0 pb-0">
 										<div className="chart-num">
 											<p>
@@ -1147,7 +1147,7 @@ const Dashboard = () => {
 								className="col-md-4"
 
 							>
-								<div className="card card-box bg-secondary bg-secondary">
+								<div className="card card-box bg-primary bg-primary">
 									<div className="card-header border-0 pb-0">
 										<div className="chart-num">
 											<p>
