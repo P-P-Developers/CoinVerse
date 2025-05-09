@@ -220,8 +220,8 @@ class Superadmin {
       // Update balance based on the transaction type
       if (Type === "CREDIT") {
 
-        if (newBalance === 0 ) {
-          if(parentUser.FixedPerClient && (dollarcount >= parentUser.AddClientBonus)){
+        if (newBalance === 0) {
+          if (parentUser.FixedPerClient && (dollarcount >= parentUser.AddClientBonus)) {
             const newBonus = new BonusCollectioniModel({
               admin_id: parentUser._id,
               user_id: userdata._id,
@@ -230,10 +230,10 @@ class Superadmin {
             });
             await newBonus.save();
           }
-           if(newBalance === 0){
+          if (newBalance === 0) {
             if (parentUser && parentUser.FundAdd) {
               let calculatedBonus;
-    
+
               if (dollarcount < 100) {
                 calculatedBonus = parentUser.FundLessThan100;
               } else if (dollarcount < 500) {
@@ -249,7 +249,7 @@ class Superadmin {
                 Bonus: calculatedBonus,
                 Type: "Fund_Add",
               });
-    
+
               await newBonus.save();
             }
           }
@@ -268,8 +268,9 @@ class Superadmin {
             await newBonus.save();
           }
 
-          newBalance += dollarcount;
         }
+        newBalance += dollarcount;
+
 
 
       } else if (Type === "DEBIT") {
