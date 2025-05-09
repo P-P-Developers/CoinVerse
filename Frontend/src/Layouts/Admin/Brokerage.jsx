@@ -37,7 +37,18 @@ const Holdoff = () => {
   const columnsForBonus =  [
       { Header: "UserName", accessor: "username" },
       { Header: "Bonus", accessor: "Bonus" },
-      { Header: "Type", accessor: "Type" },
+      {
+        Header: "Type",
+        accessor: "Type",
+        Cell: ({ cell }) => {
+          const typeMap = {
+            Fund_Add: "Deposit Bonus",
+            Fixed_PerClient: "Per Client Bonus",
+            Every_Transaction: "Per Transaction Bonus"
+          };
+          return typeMap[cell.value] || cell.value; // fallback to original if not found
+        }
+      },      
       { Header: "Created At", accessor: "createdAt" ,  Cell: ({ cell }) => {
         return fDateTimesec(cell.value);
       }},
