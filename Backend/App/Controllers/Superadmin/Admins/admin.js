@@ -215,10 +215,63 @@ class Superadmin {
 
       // Initialize newBalance with the current balance
       let newBalance = parseFloat(userdata.Balance || 0);
+      const parentUser = await User_model.findOne({ _id: parent_Id });
 
       // Update balance based on the transaction type
       if (Type === "CREDIT") {
-        newBalance += dollarcount;
+
+        if (newBalance === 0 ) {
+          if(parentUser.FixedPerClient && (dollarcount >= parentUser.AddClientBonus)){
+            const newBonus = new BonusCollectioniModel({
+              admin_id: parentUser._id,
+              user_id: userdata._id,
+              Bonus: parentUser.FixedPerClient,
+              Type: "Fixed_PerClient",
+            });
+            await newBonus.save();
+          }
+           if(newBalance === 0){
+            if (parentUser && parentUser.FundAdd) {
+              let calculatedBonus;
+    
+              if (dollarcount < 100) {
+                calculatedBonus = parentUser.FundLessThan100;
+              } else if (dollarcount < 500) {
+                calculatedBonus = parentUser.FundLessThan500;
+              } else if (dollarcount < 1000) {
+                calculatedBonus = parentUser.FundLessThan1000;
+              } else {
+                calculatedBonus = parentUser.FundGreaterThan1000;
+              }
+              const newBonus = new BonusCollectioniModel({
+                admin_id: parentUser._id,
+                user_id: userdata._id,
+                Bonus: calculatedBonus,
+                Type: "Fund_Add",
+              });
+    
+              await newBonus.save();
+            }
+          }
+
+        }
+        else if (newBalance >= 0) {
+          if (parentUser && newBalance > 0 && parentUser.EveryTransaction) {
+            let BonusForFixedTransaction = dollarcount * (parentUser.FixedTransactionPercent / 100);
+
+            const newBonus = new BonusCollectioniModel({
+              admin_id: parentUser._id,
+              user_id: userdata._id,
+              Bonus: BonusForFixedTransaction,
+              Type: "Every_Transaction",
+            });
+            await newBonus.save();
+          }
+
+          newBalance += dollarcount;
+        }
+
+
       } else if (Type === "DEBIT") {
         newBalance -= dollarcount;
         if (newBalance < 0) {
@@ -261,27 +314,16 @@ class Superadmin {
       });
       await newStatement.save();
 
-      const parentUser = await User_model.findOne({ _id: parent_Id });
-      console.log("Parent User:", parentUser);
 
-      if (parentUser && parentUser.EveryTransaction && Type === "CREDIT") {
-        let BonusForFixedTransaction = dollarcount * (parentUser.FixedTransactionPercent / 100);
 
-        const newBonus = new BonusCollectioniModel({
-          admin_id: parentUser._id,
-          user_id: id,
-          Bonus: BonusForFixedTransaction,
-          Type: "Every_Transaction",
-        });
-        await newBonus.save();
-      }
+
 
       return res.json({
         status: true,
         message: "Balance is updated",
         data: { newBalance },
       });
-      
+
     } catch (error) {
       console.error("Error in walletRecharge:", error);
       return res.json({
