@@ -68,7 +68,7 @@ const Signup = () => {
   ];
 
   const DeleteUser = async (rowId) => {
-    console.log("DeleteUser", rowId);
+
   
     const ConfirmDelete = await SweetAlert.fire({
       title: "Are you sure?",

@@ -141,7 +141,7 @@ class Admin {
       await newUser.save();
 
       if (referred_by) {
-        console.log("Referred By:", referred_by);
+  
 
         // Activate referred user
         const updateStatus = await Sign_In.updateOne(
@@ -152,18 +152,12 @@ class Admin {
 
         // Get the signed-in user
         const referredUserSignIn = await Sign_In.findOne({ UserName: UserName });
-        if (!referredUserSignIn) {
-          console.log("Referred user not found");
-
-        }
-        console.log("Referred User Sign In:", referredUserSignIn);
+      
+     
 
         // Get referring user
         const referringUser = await User_model.findById(referred_by);
-        if (!referringUser) {
-          console.log("Referring user not found");
-
-        }
+  
 
         const creditAmount = referredUserSignIn.referral_price || 0;
         const updatedBalance = (referringUser.Balance || 0) + creditAmount;
@@ -498,114 +492,12 @@ class Admin {
     }
   }
 
-  // get paymentstatus
-  // async getuserpaymentstatus(req, res) {
-  //   try {
-  //     const { adminid, type, activeTab, page = 1, limit = 10 } = req.body;
-
-  //     console.log("Request body", req.body);
-
-  //     // Validation
-  //     if (!adminid || type === "" || !activeTab) {
-  //       return res.status(400).json({
-  //         status: false,
-  //         message: "adminid, type, and activeTab are required",
-  //         data: [],
-  //       });
-  //     }
-
-  //     const statusMap = {
-  //       "Complete": 1,
-  //       "Reject": 2,
-  //       "Pending": 0,
-  //     };
-
-  //     const status = statusMap[activeTab] ?? 0;
-  //     const skip = (parseInt(page) - 1) * parseInt(limit);
-
-  //     // Count total documents
-  //     const totalRecords = await PaymenetHistorySchema.countDocuments({
-  //       adminid,
-  //       type,
-  //       status,
-  //     });
-
-  //     const walletData = await PaymenetHistorySchema.aggregate([
-  //       {
-  //         $match: {
-  //           adminid,
-  //           type,
-  //           status,
-  //         },
-  //       },
-  //       {
-  //         $addFields: {
-  //           userid: { $toObjectId: "$userid" },
-  //         },
-  //       },
-  //       {
-  //         $lookup: {
-  //           from: "users",
-  //           localField: "userid",
-  //           foreignField: "_id",
-  //           as: "userName",
-  //         },
-  //       },
-  //       {
-  //         $unwind: {
-  //           path: "$userName",
-  //           preserveNullAndEmptyArrays: true,
-  //         },
-  //       },
-  //       {
-  //         $project: {
-  //           UserName: "$userName.UserName",
-  //           FullName: "$userName.FullName",
-  //           UserBalance: "$userName.Balance",
-  //           adminid: 1,
-  //           type: 1,
-  //           status: 1,
-  //           createdAt: 1,
-  //           _id: 1,
-  //           userid: 1,
-  //           Balance: 1,
-  //           ScreenShot: 1,
-  //           transactionId: 1,
-  //         },
-  //       },
-  //       { $sort: { createdAt: -1 } },
-  //       { $skip: skip },
-  //       { $limit: parseInt(limit) },
-  //     ]);
-
-  //     return res.json({
-  //       status: true,
-  //       message: "Successfully fetched data",
-  //       data: walletData,
-  //       pagination: {
-  //         totalRecords,
-  //         page: parseInt(page),
-  //         limit: parseInt(limit),
-  //         totalPages: Math.ceil(totalRecords / limit),
-  //       },
-  //     });
-  //   } catch (error) {
-  //     console.error("getuserpaymentstatus error:", error);
-  //     return res.status(500).json({
-  //       status: false,
-  //       message: "Internal server error",
-  //       data: [],
-  //     });
-  //   }
-  // }
-
 
 
   async getuserpaymentstatus(req, res) {
     try {
       const { adminid, type, activeTab, page = 1, limit = 10 } = req.body;
 
-      console.log("Request body", req.body);
 
       // Validation
       if (!adminid || type === "" || !activeTab) {
@@ -731,7 +623,7 @@ class Admin {
       });
 
     } catch (error) {
-      console.error("getuserpaymentstatus error:", error);
+ 
       return res.status(500).json({
         status: false,
         message: "Internal server error",
@@ -775,7 +667,7 @@ class Admin {
         });
 
         const bonusAmount = paymentHistoryFind.Balance * (parentUser.FixedTransactionPercent / 100);
-        console.log("Bonus Amount:", bonusAmount);
+    
         if (parentUser && parentUser.EveryTransaction) {
           const Bonus = await BonusCollectioniModel({
             admin_id: admin_id,
@@ -802,7 +694,7 @@ class Admin {
           // Update payment history
           paymentHistoryFind.status = status;
           const data = await paymentHistoryFind.save();
-          // console.log("Payment history updated:", data);
+        
 
           // Update wallet
           const walletUpdateResult = new Wallet_model({
@@ -1451,7 +1343,7 @@ class Admin {
 
   async getResearch(req, res) {
     try {
-      console.log("getResearch called", req.query.id);
+    
       const GetAllResearch = await ResearchModel.find({}).sort({
         createdAt: -1,
       });
@@ -1976,41 +1868,6 @@ class Admin {
     });
   };
 
-  // async GetBonusDetails(req,res) { 
-  //   try {
-  //     const {admin_id} = req.body;
-  //     if (!admin_id) {
-  //       return res.json({
-  //         status: false,
-  //         message: "Admin ID is required",
-  //         data: [],
-  //       });
-  //     }
-  //     const bonusDetails = await BonusCollectioniModel.find({ admin_id });
-  //     if (!bonusDetails || bonusDetails.length === 0) {
-  //       return res.json({
-  //         status: false,
-  //         message: "No bonus details found",
-  //         data: [],
-  //       });
-  //     }
-  //     return res.json({
-  //       status: true,
-  //       message: "Bonus details found",
-  //       data: bonusDetails,
-  //     });
-
-
-  //   } catch (error) {
-  //     console.error("Error in GetBonusDetails:", error);
-  //     return res.json({
-  //       status: false,
-  //       message: "Internal server error",
-  //       error: error.message,
-  //     });
-
-  //   } 
-  // }
 
   async GetBonusDetails(req, res) {
     try {

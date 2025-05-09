@@ -68,7 +68,6 @@ const Users = () => {
     getAlluserdata();
   }, [search, refresh]);
 
-  console.log("selectedUser", selectedUser);
 
   const fetchMessages = async (user) => {
     try {
@@ -87,7 +86,7 @@ const Users = () => {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
       }, 100);
     } catch (error) {
-      console.error("Fetch messages failed:", error);
+    
     }
   };
 
@@ -104,7 +103,7 @@ const Users = () => {
       setInput("");
       fetchMessages(selectedUser);
     } catch (error) {
-      console.error("Send message failed:", error);
+     
     }
   };
 

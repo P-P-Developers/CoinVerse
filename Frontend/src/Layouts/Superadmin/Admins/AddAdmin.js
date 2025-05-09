@@ -122,7 +122,6 @@ const AddAdmin = () => {
       };
 
       setSubmitting(false);
-      console.log("data", data);
 
       await AddnewUsers(data)
         .then(async (response) => {

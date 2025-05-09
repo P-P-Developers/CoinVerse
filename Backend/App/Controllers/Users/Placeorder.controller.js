@@ -38,7 +38,7 @@ class Placeorder {
         data: formattedResult,
       });
     } catch (error) {
-      console.log("Error fetching order book:", error);
+
       return res.json({
         status: false,
         message: "Internal server error",
@@ -387,7 +387,7 @@ class Placeorder {
         balanceStatements: "",
       });
     } catch (error) {
-      console.log("Error:", error);
+ 
       return res
         .status(500)
         .json({ status: false, message: "An error occurred", error });
@@ -411,7 +411,7 @@ class Placeorder {
 
       return res.json({ status: true, message: "Order updated successfully" });
     } catch (error) {
-      console.log("Error:", error);
+     
       return res.json({ status: false, message: "An error occurred", error });
     }
   }
@@ -426,7 +426,6 @@ class Placeorder {
         return res.json({ status: false, message: "Order not found" });
       }
 
-      console.log("GetModifyOrder", GetModifyOrder);
 
 
       return res.json({
@@ -435,7 +434,7 @@ class Placeorder {
         data: GetModifyOrder,
       });
     } catch (error) {
-      console.log("Error:", error);
+    
       return res.json({ status: false, message: "An error occurred", error });
     }
   }
@@ -534,11 +533,11 @@ class Placeorder {
         Profitloss = tradehistory.sell_price * qtyNum - priceNum * qtyNum;
       }
 
-      console.log("sq Profitloss--", Profitloss);
+      // console.log("sq Profitloss--", Profitloss);
 
       let Totalupdateuserbalance = Profitloss - brokerage;
 
-      console.log("sq Totalupdateuserbalance--", Totalupdateuserbalance);
+      // console.log("sq Totalupdateuserbalance--", Totalupdateuserbalance);
 
       let totaladdbalance =
         parseFloat(tradehistory?.totalamount || 1) * qtyNum +
@@ -820,23 +819,23 @@ const EntryTrade = async (
     const Totalupdateuserbalance =
       parseFloat(updateuserbalance) - parseFloat(brokerage) * 2;
 
-    console.log("limitclaculation", limitclaculation);
+    // console.log("limitclaculation", limitclaculation);
 
-    console.log("lot - ", qty);
+    // console.log("lot - ", qty);
     let ActualFun = limitclaculation;
     if (qty > 1) {
       ActualFun = limitclaculation / qty;
     }
-    console.log("ActualFun - ", ActualFun);
+    // console.log("ActualFun - ", ActualFun);
     const seventyPercent = (ActualFun * 70) / 100;
 
-    console.log("seventyPercent - ", seventyPercent);
-    console.log("price - ", price);
+    // console.log("seventyPercent - ", seventyPercent);
+    // console.log("price - ", price);
 
-    console.log(
-      "price - seventyPercent",
-      parseFloat(price) - parseFloat(seventyPercent)
-    );
+    // console.log(
+    //   "price - seventyPercent",
+    //   parseFloat(price) - parseFloat(seventyPercent)
+    // );
 
     tradehistory = new mainorder_model({
       orderid: orderdata._id,
@@ -955,23 +954,23 @@ const ExitTrade = async (
     const Totalupdateuserbalance =
       parseFloat(updateuserbalance) - parseFloat(brokerage) * 2;
 
-    console.log("limitclaculation", limitclaculation);
+    // console.log("limitclaculation", limitclaculation);
 
-    console.log("lot - ", qty);
+    // console.log("lot - ", qty);
     let ActualFun = limitclaculation;
     if (qty > 1) {
       ActualFun = limitclaculation / qty;
     }
-    console.log("ActualFun - ", ActualFun);
+    // console.log("ActualFun - ", ActualFun);
     const seventyPercent = (ActualFun * 70) / 100;
 
-    console.log("seventyPercent - ", seventyPercent);
-    console.log("price - ", price);
+    // console.log("seventyPercent - ", seventyPercent);
+    // console.log("price - ", price);
 
-    console.log(
-      "sell price - seventyPercent",
-      parseFloat(price) + parseFloat(seventyPercent)
-    );
+    // console.log(
+    //   "sell price - seventyPercent",
+    //   parseFloat(price) + parseFloat(seventyPercent)
+    // );
 
     tradehistory = new mainorder_model({
       orderid: orderdata._id,

@@ -34,7 +34,7 @@ class MarginReq {
             });
     
         } catch (error) {
-            console.error(error);
+      
             return res.json({ message: "An error occurred while updating margin." });
         }
     }

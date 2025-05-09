@@ -80,7 +80,7 @@ class OpenPositions {
             },
             data: commonData,
           };
-          // console.log("config", config);
+       
           const response = await axios(config);
         }
       } else {

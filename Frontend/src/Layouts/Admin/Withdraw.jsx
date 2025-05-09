@@ -22,7 +22,6 @@ const Withdraw = () => {
 
   const handleOpenModal = (data) => {
 
-    console.log("data", data);
     setSelectedBankDetails(data);
     setShowModal(true);
   };

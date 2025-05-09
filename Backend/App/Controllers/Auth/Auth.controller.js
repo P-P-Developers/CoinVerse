@@ -165,7 +165,7 @@ async SignIn(req, res) {
             data: [],
           });
         }
-        console.log("Parent User:",  parentUser?.Refer_Price);
+    
         referral_price = parentUser?.Refer_Price || 0;
       }
     }
@@ -199,7 +199,7 @@ async SignIn(req, res) {
       data: result,
     });
   } catch (error) {
-    console.error("Error in SignIn:", error);
+  
     return res.json({
       status: false,
       message: "Internal error",
@@ -219,7 +219,7 @@ async DeleteSignIn(req, res) {
 
     return res.json({ status: true, message: "Deleted successfully", data: [] });
   } catch (error) {
-    console.error("Error in DeleteSignIn:", error);
+   
     return res.json({ status: false, message: "Internal error", data: [] });
   }
 }

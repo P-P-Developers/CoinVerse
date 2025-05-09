@@ -23,7 +23,7 @@ const sendPushNotification = async (firebaseToken, title, message) => {
     // const response = await admin.messaging().send(payload);
     return { success: true };
   } catch (error) {
-    console.error("Error sending push notification:", error);
+
     return { success: false, error };
   }
 };

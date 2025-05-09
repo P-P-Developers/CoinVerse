@@ -19,7 +19,6 @@ const Register = () => {
 
   var ReferalCode = location.pathname.split('/');
 
-  console.log(ReferalCode);
 
   const query = new URLSearchParams(search);
   const refCode = ReferalCode[2]

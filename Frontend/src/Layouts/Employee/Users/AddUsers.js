@@ -203,7 +203,6 @@ const AddUsers = () => {
     },
   });
 
-  console.log("location", location);
 
 
 

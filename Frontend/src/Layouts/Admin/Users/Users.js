@@ -311,8 +311,7 @@ const Users = () => {
   // update Licence
   const updateLicence = async () => {
     try {
-      console.log("licencevalue", licencevalue);
-      console.log("checkLicence", checkLicence.CountLicence); 
+ 
 
       if (parseInt(checkLicence.CountLicence) < parseInt(licencevalue)) {
         Swal.fire({

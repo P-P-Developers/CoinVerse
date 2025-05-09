@@ -179,7 +179,7 @@ class Superadmin {
         data: newUser,
       });
     } catch (error) {
-      console.error(error);
+    
       return res.json({
         status: false,
         message: "Failed to add user",
@@ -326,7 +326,7 @@ class Superadmin {
       });
 
     } catch (error) {
-      console.error("Error in walletRecharge:", error);
+    
       return res.json({
         status: false,
         message: "Internal error occurred",

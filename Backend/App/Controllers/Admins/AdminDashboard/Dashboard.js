@@ -172,7 +172,7 @@ class Dashboard {
             .json({ error: `Error: Received status code ${response.status}` });
         }
       } catch (error) {
-        console.log("Error fetching data:", error.message);
+   
         return res
           .status(500)
           .json({ error: "An error occurred while fetching data." });

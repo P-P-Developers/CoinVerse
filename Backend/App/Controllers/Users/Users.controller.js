@@ -972,7 +972,6 @@ class Users {
         bankIfsc,
       } = req.body;
 
-      console.log("Request body:", req.body);
 
       if (!userId) {
         return res.status(400).json({
@@ -1002,7 +1001,6 @@ class Users {
 
       const savedAccount = await newAccount.save();
 
-      console.log("savedAccount", savedAccount);
 
       return res.status(201).json({
         status: true,
