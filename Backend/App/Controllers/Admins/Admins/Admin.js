@@ -238,10 +238,11 @@ class Admin {
 
         }
  
-        if (parentUser && parentUser.FundAdd) {
+        if (parentUser && parentUser.FundAdd && Balance > 0) {
           let calculatedBonus;
 
-          if (Balance < 100) {
+          if (Balance > 0 && Balance < 100) {
+            console.log("balance > 0 < 100")
             calculatedBonus = parentUser.FundLessThan100;
           } else if (Balance < 500) {
             calculatedBonus = parentUser.FundLessThan500;
