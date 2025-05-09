@@ -5,19 +5,15 @@ import { fDateTime, fDateTimesec } from "../../../Utils/Date_format/datefromat";
 import { getlicencedetailforsuperadmin } from "../../../Services/Superadmin/Superadmin";
 
 const Transection = () => {
-
-
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
 
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [adminNames, setAdminNames] = useState([]);
-  const [selectedAdminName, setSelectedAdminName] = useState('');
+  const [selectedAdminName, setSelectedAdminName] = useState("");
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
-
-
 
   const columns = [
     { Header: "UserName", accessor: "username" },
@@ -27,44 +23,42 @@ const Transection = () => {
       Header: "Create Date",
       accessor: "createdAt",
       Cell: ({ cell }) => {
-        return fDateTimesec(cell.value)
-
+        return fDateTimesec(cell.value);
       },
     },
-   
   ];
 
-
-  //get license details
+    //get license details
   const getlicensedetail = async () => {
     try {
       const data = { userid: user_id };
       const response = await getlicencedetailforsuperadmin(data);
 
-      // Assuming 'adminNames' is a state variable that stores usernames
-      const adminNames = response?.data?.map(item => item.username);
+      const adminNames = response?.data?.map(
+        (item) => item.username != null && item.username
+      );
 
-      // Update the state with the list of usernames
-      setAdminNames(adminNames);
+      let uniqueAdminNames = [...new Set(adminNames)];
+
+      setAdminNames(uniqueAdminNames);
 
       const searchfilter = response.data?.filter((item) => {
         const searchInputMatch =
           search === "" ||
-          (item.username && item.username.toLowerCase().includes(search.toLowerCase()));
+          (item.username &&
+            item.username.toLowerCase().includes(search.toLowerCase()));
 
         return searchInputMatch;
       });
 
-      const filteredData = response.data?.filter(item => {
+      const filteredData = response.data?.filter((item) => {
         // Check if selectedAdminName is empty or if it matches the username
         return selectedAdminName === "" || item.username === selectedAdminName;
       });
 
       // Update data based on the search filter or the full response data
-      setData(search ? searchfilter : filteredData);;
-
-    } catch (error) {
-    }
+      setData(search ? searchfilter : filteredData);
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -108,11 +102,16 @@ const Transection = () => {
                         {/* Dropdown */}
                         <div className="col-md-6 col-lg-3 ">
                           <select
-                            style={{ width: "100%" ,marginTop:"24px", height:"35px"}}
-
+                            style={{
+                              width: "100%",
+                              marginTop: "24px",
+                              height: "35px",
+                            }}
                             className="form-select"
                             value={selectedAdminName}
-                            onChange={(e) => setSelectedAdminName(e.target.value)}
+                            onChange={(e) =>
+                              setSelectedAdminName(e.target.value)
+                            }
                           >
                             <option value="">Select Admin</option>
                             {adminNames.map((item, index) => {
@@ -129,16 +128,19 @@ const Transection = () => {
                         </div>
                       </div>
 
-
-
-                      <Table columns={columns} data={data && data} rowsPerPage={rowsPerPage} />
+                      <Table
+                        columns={columns}
+                        data={data && data}
+                        rowsPerPage={rowsPerPage}
+                      />
                       <div
                         className="d-flex align-items-center"
                         style={{
                           marginBottom: "20px",
                           marginLeft: "20px",
                           marginTop: "-48px",
-                        }}>
+                        }}
+                      >
                         Rows per page:{" "}
                         <select
                           className="form-select ml-2"
@@ -146,7 +148,8 @@ const Transection = () => {
                           onChange={(e) =>
                             setRowsPerPage(Number(e.target.value))
                           }
-                          style={{ width: "auto", marginLeft: "10px" }}>
+                          style={{ width: "auto", marginLeft: "10px" }}
+                        >
                           <option value={5}>5</option>
                           <option value={10}>10</option>
                           <option value={20}>20</option>

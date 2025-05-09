@@ -1776,7 +1776,7 @@ class Admin {
       });
 
       let GetCompany = await Company.find()
-      console.log("GetCompany",GetCompany)
+
       return res.json({
         status: true,
         message: "Referral code found",

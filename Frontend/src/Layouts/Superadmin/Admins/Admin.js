@@ -387,9 +387,7 @@ const Admin = () => {
 
   return (
     <>
-      {loading ? (
-        <Loader />
-      ) : (
+    
         <div className="container-fluid">
           <div className="row">
             <div className="col-lg-12">
@@ -460,7 +458,7 @@ const Admin = () => {
             </div>
           </div>
         </div>
-      )}
+      
 
       <Modal
         isOpen={isCurrencyModalOpen}

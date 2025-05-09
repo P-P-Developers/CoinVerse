@@ -329,7 +329,7 @@ const SuperAdminTradeHistory = () => {
                         </div>
                       </div>
 
-                      <h5 className="ms-3">
+                      <h3 className="ms-3">
                         Total Profit/Loss:{" "}
                         <span
                           style={{
@@ -339,7 +339,7 @@ const SuperAdminTradeHistory = () => {
                           <DollarSign />
                           {totalProfitLoss}
                         </span>
-                      </h5>
+                      </h3>
                       {Userid ? (
                         <div>
                           {" "}
