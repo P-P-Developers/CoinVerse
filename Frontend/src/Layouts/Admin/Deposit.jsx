@@ -21,9 +21,9 @@ const Deposit = () => {
 
   useEffect(() => {
     getAllfundsstatus();
-  }, [search, activeTab,page, rowsPerPage]);
+  }, [search, activeTab, page, rowsPerPage]);
 
-  
+
   const columns = [
     { Header: "Name", accessor: "FullName" },
     {
@@ -119,7 +119,7 @@ const Deposit = () => {
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
-  
+
   const getAllfundsstatus = async () => {
     try {
       const data = {
@@ -131,7 +131,7 @@ const Deposit = () => {
         search
       };
       const response = await getFundstatus(data);
-  
+
       if (response.status) {
         const filtertype = response.data || [];
         setData(filtertype);
@@ -145,7 +145,7 @@ const Deposit = () => {
   const handlePageChange = (newPage) => {
     setPage(newPage);
   };
-  
+
   const filterDataByStatus = (status) => {
     return data.filter((item) => item.status === status);
   };
@@ -194,6 +194,28 @@ const Deposit = () => {
             <option value={100}>100</option>
           </select>
         </div>
+
+        <div className="d-flex justify-content-end gap-2 align-items-center" style={{ marginLeft: "20px" }}>
+          <button
+            className="btn btn-primary btn-sm"
+            onClick={() => handlePageChange(page - 1)}
+            disabled={page === 1}
+          >
+            Previous
+          </button>
+          <span>
+            Page {page} of {totalCount}
+          </span>
+          <button
+            className="btn btn-primary btn-sm"
+            onClick={() => handlePageChange(page + 1)}
+            disabled={page >= totalCount}
+          >
+            Next
+          </button>
+        </div>
+
+
       </div>
     );
   };
@@ -217,9 +239,8 @@ const Deposit = () => {
                         <li className="nav-item" key={tab}>
                           <a
                             href={`#navpills-${index + 1}`}
-                            className={`nav-link navlink ${
-                              activeTab === tab ? "active" : ""
-                            }`}
+                            className={`nav-link navlink ${activeTab === tab ? "active" : ""
+                              }`}
                             data-bs-toggle="tab"
                             onClick={() => handleTabClick(tab)}
                           >
@@ -235,9 +256,8 @@ const Deposit = () => {
                         <div
                           key={tab}
                           id={`navpills-${index + 1}`}
-                          className={`tab-pane ${
-                            activeTab === tab ? "active" : ""
-                          }`}
+                          className={`tab-pane ${activeTab === tab ? "active" : ""
+                            }`}
                         >
                           <div className="row">
                             <div className="col-lg-12">
