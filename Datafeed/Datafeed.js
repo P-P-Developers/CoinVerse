@@ -68,12 +68,13 @@ const formatPrices = (data) => {
 
 const updateDatabaseCrypto = async (data) => {
   try {
-    if (data[5] || data[6]) {
+    if (data[5] != null && data[5] !== 0) {
       const now = new Date();
       const curtime = `${now.getHours().toString().padStart(2, "0")}${now
         .getMinutes()
         .toString()
         .padStart(2, "0")}`;
+        
       await collection.updateOne(
         { ticker: data[1] },
         {
@@ -83,7 +84,7 @@ const updateDatabaseCrypto = async (data) => {
             curtime: curtime,
             Exchange: data[3],
             Bid_Size: data[4] || 0,
-            Bid_Price: data[5] || 0,
+            Bid_Price: data[5],
             Mid_Price: data[6] || 0,
             Ask_Size: data[7] || 0,
             Ask_Price: data[8] || 0,
@@ -97,9 +98,10 @@ const updateDatabaseCrypto = async (data) => {
   }
 };
 
+
 const updateDatabaseforex = async (data) => {
   try {
-    if (data[5] || data[6]) {
+    if (data[4] != null && data[4] !== 0) {
       const now = new Date();
       const curtime = `${now.getHours().toString().padStart(2, "0")}${now
         .getMinutes()
