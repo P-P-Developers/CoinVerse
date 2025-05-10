@@ -5,6 +5,7 @@ import { UpdatestatusForpaymenthistory } from "../../Services/Admin/Addmin";
 import Swal from "sweetalert2";
 import { fDateTime } from "../../Utils/Date_format/datefromat";
 import { Modal } from "react-bootstrap";
+import Loader from "../../Utils/Loader/Loader";
 
 const Deposit = () => {
   const [data, setData] = useState([]);
@@ -12,6 +13,7 @@ const Deposit = () => {
   const [selectedValues, setSelectedValues] = useState({});
   const [search, setSearch] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [loading, setLoading] = useState(false);
 
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
@@ -122,13 +124,15 @@ const Deposit = () => {
 
   const getAllfundsstatus = async () => {
     try {
+      setLoading(true); // Start loading
+
       const data = {
         adminid: user_id,
         type: 1,
         activeTab,
         page,
         limit: rowsPerPage,
-        search
+        search,
       };
       const response = await getFundstatus(data);
 
@@ -138,7 +142,9 @@ const Deposit = () => {
         setTotalCount(response?.pagination?.totalPages || 0); // assuming backend returns total count
       }
     } catch (error) {
-      console.log("error");
+      console.log("Error:", error);
+    } finally {
+      setLoading(false); // Stop loading in both success and error cases
     }
   };
 
@@ -165,57 +171,76 @@ const Deposit = () => {
           />
         </div>
         <h5>{activeTab}Transactions</h5>
-        <Table
-          columns={columns}
-          data={filterDataByStatus(status)}
-          rowsPerPage={rowsPerPage}
-          totalCount={totalCount}
-          isPage={false}
-        />
-        <div
-          className="d-flex align-items-center"
-          style={{
-            marginBottom: "20px",
-            marginLeft: "20px",
-            // marginTop: "-48px",
-          }}
-        >
-          Rows per page:{" "}
-          <select
-            className="form-select ml-2"
-            value={rowsPerPage}
-            onChange={(e) => setRowsPerPage(Number(e.target.value))}
-            style={{ width: "auto", marginLeft: "10px" }}
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
-          </select>
-        </div>
 
-        <div className="d-flex justify-content-end gap-2 align-items-center" style={{ marginLeft: "20px" }}>
-          <button
-            className="btn btn-primary btn-sm"
-            onClick={() => handlePageChange(page - 1)}
-            disabled={page === 1}
+        {loading ? (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "300px",
+            }}
           >
-            Previous
-          </button>
-          <span>
-            Page {page} of {totalCount}
-          </span>
-          <button
-            className="btn btn-primary btn-sm"
-            onClick={() => handlePageChange(page + 1)}
-            disabled={page >= totalCount}
-          >
-            Next
-          </button>
-        </div>
+            <Loader />
+          </div>
+        ) : (
+          <>
+            <Table
+              columns={columns}
+              data={filterDataByStatus(status)}
+              rowsPerPage={rowsPerPage}
+              totalCount={totalCount}
+              page={page}
+              isPage={false}
+            />
+            <div
+              className="d-flex align-items-center"
+              style={{
+                marginBottom: "20px",
+                marginLeft: "20px",
+                // marginTop: "-48px",
+              }}
+            >
+              Rows per page:{" "}
+              <select
+                className="form-select ml-2"
+                value={rowsPerPage}
+                onChange={(e) => setRowsPerPage(Number(e.target.value))}
+                style={{ width: "auto", marginLeft: "10px" }}
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+            </div>
 
+            <div className="d-flex justify-content-end align-items-center gap-2 px-3 py-2">
+              <button
+                className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
+                onClick={() => handlePageChange(page - 1)}
+                disabled={page === 1}
+              >
+                <i className="bi bi-chevron-left"></i>
+                <span>Prev</span>
+              </button>
 
+              <span className="fw-semibold text-secondary small">
+                Page {page} of {totalCount}
+              </span>
+
+              <button
+                className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
+                onClick={() => handlePageChange(page + 1)}
+                disabled={page >= totalCount}
+              >
+                <span>Next</span>
+                <i className="bi bi-chevron-right"></i>
+              </button>
+            </div>
+          </>
+        )}
       </div>
     );
   };

@@ -21,7 +21,7 @@ import {
   CircleDollarSign,
   CircleMinus,
   Eye,
-  MessageCircle 
+  MessageCircle
 } from "lucide-react";
 
 import Swal from "sweetalert2";
@@ -56,6 +56,8 @@ const Users = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [selectedUser, setSelectedUser] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
   const columns = [
     { Header: "FullName", accessor: "FullName" },
@@ -125,7 +127,7 @@ const Users = () => {
         </div>
       ),
     },
-   
+
     // { Header: "Employee", accessor: "employee_id" },
     {
       Header: "Status",
@@ -220,7 +222,7 @@ const Users = () => {
         return fDateTime(cell.value);
       },
     },
-   
+
     {
       Header: "Trade History",
       accessor: "Trade History",
@@ -267,6 +269,9 @@ const Users = () => {
     navigate(`tradehistory/${_id}`);
   };
 
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+  };
 
 
   const updateuserpage = (_id, obj) => {
@@ -312,7 +317,7 @@ const Users = () => {
   // update Licence
   const updateLicence = async () => {
     try {
- 
+
 
       if (parseInt(checkLicence.CountLicence) < parseInt(licencevalue)) {
         Swal.fire({
@@ -362,9 +367,6 @@ const Users = () => {
     }
   };
 
-
-
-
   // update  balance
   const updateBalance = async () => {
     try {
@@ -377,7 +379,7 @@ const Users = () => {
         });
         return;
       }
-  
+
       // Show confirmation popup
       const confirmation = await Swal.fire({
         title: "Confirm Update",
@@ -387,7 +389,7 @@ const Users = () => {
         confirmButtonText: "Yes, update it!",
         cancelButtonText: "Cancel",
       });
-  
+
       // Proceed only if user confirms
       if (confirmation.isConfirmed) {
         const response = await Addbalance({
@@ -396,7 +398,7 @@ const Users = () => {
           parent_Id: user_id,
           Type: type,
         });
-  
+
         // Handle API response
         if (response.status) {
           Swal.fire({
@@ -404,7 +406,7 @@ const Users = () => {
             title: "Balance Updated",
             text: response.message || "The balance has been updated successfully.",
           });
-  
+
           getAlluserdata();
           setModal(false);
           setBalance("");
@@ -424,9 +426,6 @@ const Users = () => {
       });
     }
   };
-  
-
-
 
   // update acctive status
 
@@ -469,14 +468,10 @@ const Users = () => {
     }
   };
 
-
-
-
   // get all admin
   const getAlluserdata = async () => {
     setLoading(true);
-    const data = { id: user_id };
-
+    const data = { id: user_id, page: page, limit: rowsPerPage };
 
     try {
       const response = await getUserdata(data);
@@ -502,6 +497,7 @@ const Users = () => {
 
         return searchInputMatch;
       });
+      setTotalCount(response?.pagination?.totalPages || 0); // assuming backend returns total count
 
       setEmployeename(filterusername)
       setData(search ? searchfilter : result);
@@ -523,8 +519,6 @@ const Users = () => {
 
   // check licence
 
-
-
   const getadminLicence = async () => {
     const data = { userid: user_id };
     try {
@@ -535,20 +529,13 @@ const Users = () => {
     }
   };
 
-
-
   useEffect(() => {
     getAlluserdata();
-  }, [search, refresh]);
-
-
+  }, [search, refresh, page, rowsPerPage]);
 
   useEffect(() => {
     getadminLicence();
   }, []);
-
-
-
 
   return (
     <>
@@ -567,7 +554,6 @@ const Users = () => {
                   Add User
                 </Link>
               </div>
-              
               <div className="card-body p-0">
                 <div className="tab-content" id="myTabContent1">
                   <div
@@ -591,10 +577,14 @@ const Users = () => {
                     {loading ? (
                       <Loader />
                     ) : (
-                        <Table columns={columns} data={data && data} rowsPerPage={rowsPerPage} />
+                      <Table columns={columns}
+                        data={data && data}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        isPage={false} />
                     )}
                   </div>
-                  <div className="d-flex align-items-center" style={{ marginBottom: "20px", marginLeft: "20px", marginTop: "-48px" }}>
+                  <div className="d-flex align-items-center" style={{ marginBottom: "20px", marginLeft: "20px" }}>
 
                     Rows per page:{" "}
                     <select
@@ -611,6 +601,32 @@ const Users = () => {
 
                     </select>
                   </div>
+
+                  <div className="d-flex justify-content-end align-items-center gap-2 px-3 py-2">
+                    <button
+                      className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
+                      onClick={() => handlePageChange(page - 1)}
+                      disabled={page === 1}
+                    >
+                      <i className="bi bi-chevron-left"></i>
+                      <span>Prev</span>
+                    </button>
+
+                    <span className="fw-semibold text-secondary small">
+                      Page {page} of {totalCount}
+                    </span>
+
+                    <button
+                      className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
+                      onClick={() => handlePageChange(page + 1)}
+                      disabled={page >= totalCount}
+                    >
+                      <span>Next</span>
+                      <i className="bi bi-chevron-right"></i>
+                    </button>
+                  </div>
+
+
                 </div>
               </div>
             </div>
@@ -747,14 +763,14 @@ const Users = () => {
               </div>
             </div>
           </div>
-      
+
         </div>
       )}
 
 
       {selectedUser && (
-  <ChatModal user={selectedUser} adminId={user_id} onClose={() => setSelectedUser(null)} />
-)}
+        <ChatModal user={selectedUser} adminId={user_id} onClose={() => setSelectedUser(null)} />
+      )}
     </>
   );
 };
