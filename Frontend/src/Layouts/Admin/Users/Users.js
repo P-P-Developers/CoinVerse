@@ -125,20 +125,10 @@ const Users = () => {
         </div>
       ),
     },
-    {
-      Header: "Employee Allotment",
-      accessor: "employee_id",
-      Cell: ({ cell, row }) => {
-        const employee_id = cell.row.employee_id;
-
-        const employee = employeename.find(emp => emp._id === employee_id);
-
-        return employee ? employee.UserName : 'N/A';
-      }
-    },
+   
     // { Header: "Employee", accessor: "employee_id" },
     {
-      Header: "ActiveStatus",
+      Header: "Status",
       accessor: "ActiveStatus",
       Cell: ({ cell }) => (
         <label className="form-check form-switch">
@@ -194,20 +184,6 @@ const Users = () => {
       ),
     },
     {
-      Header: "Start Date",
-      accessor: "Start_Date",
-      Cell: ({ cell }) => {
-        return fDateTime(cell.value);
-      },
-    },
-    {
-      Header: "End Date",
-      accessor: "End_Date",
-      Cell: ({ cell }) => {
-        return fDateTime(cell.value);
-      },
-    },
-    {
       Header: "Action",
       accessor: "Action",
       Cell: ({ cell }) => {
@@ -231,6 +207,21 @@ const Users = () => {
       },
     },
     {
+      Header: "Start Date",
+      accessor: "Start_Date",
+      Cell: ({ cell }) => {
+        return fDateTime(cell.value);
+      },
+    },
+    {
+      Header: "End Date",
+      accessor: "End_Date",
+      Cell: ({ cell }) => {
+        return fDateTime(cell.value);
+      },
+    },
+   
+    {
       Header: "Trade History",
       accessor: "Trade History",
       Cell: ({ cell }) => {
@@ -245,21 +236,31 @@ const Users = () => {
       },
     },
     {
-      Header: "Chat",
-      accessor: "Chat",
-      Cell: ({ cell }) => {
-        return (
-          <div>
-            <MessageCircle
-              style={{ cursor: "pointer", color: "#33B469" }}
-              onClick={() => setSelectedUser(cell.row)}
-            />
-          </div>
-        );
-      },
-    }
+      Header: "Employee Allotment",
+      accessor: "employee_id",
+      Cell: ({ cell, row }) => {
+        const employee_id = cell.row.employee_id;
 
-    ,
+        const employee = employeename.find(emp => emp._id === employee_id);
+
+        return employee ? employee.UserName : 'N/A';
+      }
+    },
+    // {
+    //   Header: "Chat",
+    //   accessor: "Chat",
+    //   Cell: ({ cell }) => {
+    //     return (
+    //       <div>
+    //         <MessageCircle
+    //           style={{ cursor: "pointer", color: "#33B469" }}
+    //           onClick={() => setSelectedUser(cell.row)}
+    //         />
+    //       </div>
+    //     );
+    //   },
+    // }
+
   ];
 
   const Clienthistory = (_id) => {

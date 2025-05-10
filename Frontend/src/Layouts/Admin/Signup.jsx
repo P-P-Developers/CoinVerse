@@ -171,7 +171,12 @@ const Signup = () => {
                               className="btn btn-primary"
                               onClick={() => {
                                 navigator.clipboard.writeText(referralLink);
-                                alert("Referral link copied to clipboard!");
+                                SweetAlert.fire({
+                                  title: "Copied!",
+                                  text: "Referral link copied to clipboard.",
+                                  icon: "success",
+                                  confirmButtonText: "OK",
+                                });
                               }}
                             >
                               Copy Link
