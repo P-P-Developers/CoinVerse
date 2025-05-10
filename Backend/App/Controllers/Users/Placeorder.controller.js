@@ -47,7 +47,7 @@ class Placeorder {
     }
   }
 
-  // get trade history
+
   async gettardehistory(req, res) {
     try {
       const { userid, Role } = req.body;
@@ -461,7 +461,7 @@ class Placeorder {
 
       let ExittypeData = Exittype ?? "SQUAREOFF";
 
-      // Fetch trade history and user details
+
       const tradehistory = await mainorder_model.findOne({ _id: id });
       const checkadmin = await User_model.findOne({ _id: userid });
 
@@ -570,14 +570,13 @@ class Placeorder {
 
       const orderdata = await newOrder.save();
 
-      // Update trade history with the new order ID
+     
       if (Array.isArray(tradehistory.orderid)) {
         tradehistory.orderid.push(orderdata._id);
       } else {
         tradehistory.orderid = [orderdata._id];
       }
 
-      // Update trade history and user balance based on the type (buy or sell)
       if (type === "buy") {
         const totalQuantity = (tradehistory.buy_lot || 0) + lotNum;
 

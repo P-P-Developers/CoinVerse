@@ -259,7 +259,6 @@ export async function updatesymbolstatus(data, token) {
 }
 
 
-// get trade history
 
 export async function getpositionhistory(data, token) {
     try {
