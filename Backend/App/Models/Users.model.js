@@ -116,6 +116,11 @@ const userModel = Schema({
         type: Number,
         default: null
     },
+    transactionwise: {
+        type: Number,
+        default: null
+    },
+    
     limit: {
         type: Number,
         default: null

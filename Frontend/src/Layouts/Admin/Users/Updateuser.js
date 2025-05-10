@@ -129,7 +129,7 @@ const Updateuser = () => {
         } else if (rowData.perlot && rowData.perlot !== 0) {
           return "perlot";
         }
-        return "pertrade"; // Default to "pertrade" if both are null, undefined, or 0.
+        return "transactionwise"; // Default to "pertrade" if both are null, undefined, or 0.
       };
       
 
@@ -147,6 +147,7 @@ const Updateuser = () => {
         inputValue:
           rowData.pertrade ||
           rowData.perlot ||
+          rowData.transactionwise ||
           "",
         limit: rowData.limit || "",
       });
@@ -261,6 +262,7 @@ const Updateuser = () => {
       options: [
         { value: "pertrade", label: "Per Trade" },
         { value: "perlot", label: "Per Lot" },
+        { value: "transactionwise", label: "Transaction Wise" },
       ],
       label_size: 12,
       col_size: 6,

@@ -5,7 +5,6 @@ import { UpdatestatusForpaymenthistory } from "../../Services/Admin/Addmin";
 import Swal from "sweetalert2";
 import { fDateTime } from "../../Utils/Date_format/datefromat";
 import { Modal } from "react-bootstrap";
-import Loader from "../../Utils/Loader/Loader";
 
 const Deposit = () => {
   const [data, setData] = useState([]);
@@ -172,8 +171,7 @@ const Deposit = () => {
         </div>
         <h5>{activeTab}Transactions</h5>
 
-        {loading ? (
-          <div
+        {loading ?  <div
             style={{
               display: "flex",
               justifyContent: "center",
@@ -181,9 +179,11 @@ const Deposit = () => {
               height: "300px",
             }}
           >
-            <Loader />
-          </div>
-        ) : (
+            <div className="spinner-border" role="status">
+              <span className="sr-only">Loading...</span>
+            </div>
+          </div> :
+
           <>
             <Table
               columns={columns}
@@ -239,8 +239,15 @@ const Deposit = () => {
                 <i className="bi bi-chevron-right"></i>
               </button>
             </div>
+
+
+
           </>
-        )}
+        }
+
+
+
+
       </div>
     );
   };
