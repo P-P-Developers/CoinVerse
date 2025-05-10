@@ -296,6 +296,7 @@ async DeleteSignIn(req, res) {
   async getlogsuser(req, res) {
     try {
       const { userid } = req.body;
+      console.log("userid", userid);
   
       const result = await user_logs.aggregate([
         {
@@ -307,7 +308,7 @@ async DeleteSignIn(req, res) {
         {
           $lookup: {
             from: 'users',
-            localField: 'admin_Id',
+            localField: 'user_Id',
             foreignField: '_id',
             as: 'userDetails'
           }

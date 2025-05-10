@@ -170,13 +170,14 @@ const Deposit = () => {
           data={filterDataByStatus(status)}
           rowsPerPage={rowsPerPage}
           totalCount={totalCount}
+          isPage={false}
         />
         <div
           className="d-flex align-items-center"
           style={{
             marginBottom: "20px",
             marginLeft: "20px",
-            marginTop: "-48px",
+            // marginTop: "-48px",
           }}
         >
           Rows per page:{" "}

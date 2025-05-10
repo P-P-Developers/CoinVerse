@@ -16,9 +16,11 @@ const Table = ({
   cellClassName = "",
   renderCustomHeader,
   renderCustomCell,
+  isPage = true
 }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const pageCount = Math.ceil(data.length / rowsPerPage);
+  console.log("pageCount", pageCount);
 
   const handlePreviousPage = () => {
     setCurrentPage((prevPage) => Math.max(prevPage - 1, 0));
@@ -58,8 +60,8 @@ const Table = ({
                   <td key={columnIndex} className={cellClassName}>
                     {column.Cell
                       ? column.Cell({
-                          cell: { value: row[column.accessor], row },
-                        })
+                        cell: { value: row[column.accessor], row },
+                      })
                       : renderCustomCell
                         ? renderCustomCell(row[column.accessor], row)
                         : row[column.accessor]}
@@ -70,23 +72,27 @@ const Table = ({
           </tbody>
         </table>
       </div>
-      <div className="pagination">
-        <button
-          onClick={handlePreviousPage}
-          disabled={currentPage === 0}
-          className="pagination-button pagination-button-left">
-          <ArrowLeft size={20} />
-        </button>
-        <span>
-          Page {currentPage + 1} of {pageCount}
-        </span>
-        <button
-          onClick={handleNextPage}
-          disabled={currentPage === pageCount - 1}
-          className="pagination-button pagination-button-right">
-          <ArrowRight size={20} />
-        </button>
-      </div>
+
+      {isPage && (
+        <div className="pagination">
+          <button
+            onClick={handlePreviousPage}
+            disabled={currentPage === 0}
+            className="pagination-button pagination-button-left">
+            <ArrowLeft size={20} />
+          </button>
+          <span>
+            Page {currentPage + 1} of {pageCount}
+          </span>
+          <button
+            onClick={handleNextPage}
+            disabled={currentPage === pageCount - 1}
+            className="pagination-button pagination-button-right">
+            <ArrowRight size={20} />
+          </button>
+        </div>
+      )}
+
     </div>
   );
 };
