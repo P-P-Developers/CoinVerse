@@ -12,17 +12,25 @@ const Withdraw = () => {
   const [selectedValues, setSelectedValues] = useState({});
   const [search, setSearch] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0); // for backend total rows
+
 
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
 
   const [selectedBankDetails, setSelectedBankDetails] = useState(null);
   const [showModal, setShowModal] = useState(false);
-
+  const [loading, setLoading] = useState(false);
   const handleOpenModal = (data) => {
 
     setSelectedBankDetails(data);
     setShowModal(true);
+  };
+
+
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
   };
 
   const handleCloseModal = () => {
@@ -214,7 +222,8 @@ const Withdraw = () => {
 
   const getAllfundsstatus = async () => {
     try {
-      const data = { adminid: user_id, type: 0, activeTab };
+      setLoading(true);
+      const data = { adminid: user_id, type: 0, activeTab, page, limit: rowsPerPage };
       let response = await getFundstatus(data);
       if (response.status) {
         const filtertype =
@@ -232,15 +241,19 @@ const Withdraw = () => {
         });
 
         setData(search ? searchfilter : filtertype);
+
+        setTotalCount(response?.pagination?.totalPages || 0); // assuming backend returns total count
+        setLoading(false);
       }
     } catch (error) {
       console.log("error");
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     getAllfundsstatus();
-  }, [search, activeTab]);
+  }, [search, activeTab, page, rowsPerPage]);
 
   const filterDataByStatus = (status) => {
     return data.filter((item) => item.status === status);
@@ -261,33 +274,74 @@ const Withdraw = () => {
           />
         </div>
         <h5>{activeTab} Transactions</h5>
-        <Table
-          columns={columns}
-          data={filterDataByStatus(status)}
-          rowsPerPage={rowsPerPage}
-        />
-        <div
-          className="d-flex align-items-center"
-          style={{
-            marginBottom: "20px",
-            marginLeft: "20px",
-            marginTop: "-48px",
-          }}
-        >
-          Rows per page:{" "}
-          <select
-            className="form-select ml-2"
-            value={rowsPerPage}
-            onChange={(e) => setRowsPerPage(Number(e.target.value))}
-            style={{ width: "auto", marginLeft: "10px" }}
+        {loading ? (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "300px",
+            }}
           >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
-          </select>
-        </div>
+            <div className="spinner-border" role="status">
+              <span className="sr-only">Loading...</span>
+            </div>
+          </div>
+        ) : (
+          <>
+            <Table
+              columns={columns}
+              data={filterDataByStatus(status)}
+              rowsPerPage={rowsPerPage}
+              totalCount={totalCount}
+              page={page}
+              isPage={false} // to remove default pagination --aadi
+            />
+            <div
+              className="d-flex align-items-center"
+              style={{
+                marginBottom: "20px",
+                marginLeft: "20px",
+                // marginTop: "-48px",
+              }}
+            >
+              Rows per page:{" "}
+              <select
+                className="form-select ml-2"
+                value={rowsPerPage}
+                onChange={(e) => setRowsPerPage(Number(e.target.value))}
+                style={{ width: "auto", marginLeft: "10px" }}
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+            </div>
+            <div className="d-flex justify-content-end align-items-center gap-2 px-3 py-2">
+              <button
+                className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
+                onClick={() => handlePageChange(page - 1)}
+                disabled={page === 1}
+              >
+                <i className="bi bi-chevron-left"></i>
+                <span>Prev</span>
+              </button>
+              <span className="fw-semibold text-secondary small">
+                Page {page} of {totalCount}
+              </span>
+              <button
+                className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
+                onClick={() => handlePageChange(page + 1)}
+                disabled={page >= totalCount}
+              >
+                <span>Next</span>
+                <i className="bi bi-chevron-right"></i>
+              </button>
+            </div>
+          </>
+        )}
       </div>
     );
   };

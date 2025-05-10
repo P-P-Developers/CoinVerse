@@ -12,6 +12,7 @@ const Deposit = () => {
   const [selectedValues, setSelectedValues] = useState({});
   const [search, setSearch] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [loading, setLoading] = useState(false);
 
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
@@ -21,9 +22,9 @@ const Deposit = () => {
 
   useEffect(() => {
     getAllfundsstatus();
-  }, [search, activeTab,page, rowsPerPage]);
+  }, [search, activeTab, page, rowsPerPage]);
 
-  
+
   const columns = [
     { Header: "Name", accessor: "FullName" },
     {
@@ -119,33 +120,37 @@ const Deposit = () => {
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
-  
+
   const getAllfundsstatus = async () => {
     try {
+      setLoading(true); // Start loading
+
       const data = {
         adminid: user_id,
         type: 1,
         activeTab,
         page,
         limit: rowsPerPage,
-        search
+        search,
       };
       const response = await getFundstatus(data);
-  
+
       if (response.status) {
         const filtertype = response.data || [];
         setData(filtertype);
         setTotalCount(response?.pagination?.totalPages || 0); // assuming backend returns total count
       }
     } catch (error) {
-      console.log("error");
+      console.log("Error:", error);
+    } finally {
+      setLoading(false); // Stop loading in both success and error cases
     }
   };
 
   const handlePageChange = (newPage) => {
     setPage(newPage);
   };
-  
+
   const filterDataByStatus = (status) => {
     return data.filter((item) => item.status === status);
   };
@@ -165,35 +170,84 @@ const Deposit = () => {
           />
         </div>
         <h5>{activeTab}Transactions</h5>
-        <Table
-          columns={columns}
-          data={filterDataByStatus(status)}
-          rowsPerPage={rowsPerPage}
-          totalCount={totalCount}
-          isPage={false}
-        />
-        <div
-          className="d-flex align-items-center"
-          style={{
-            marginBottom: "20px",
-            marginLeft: "20px",
-            // marginTop: "-48px",
-          }}
-        >
-          Rows per page:{" "}
-          <select
-            className="form-select ml-2"
-            value={rowsPerPage}
-            onChange={(e) => setRowsPerPage(Number(e.target.value))}
-            style={{ width: "auto", marginLeft: "10px" }}
+
+        {loading ?  <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "300px",
+            }}
           >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
-          </select>
-        </div>
+            <div className="spinner-border" role="status">
+              <span className="sr-only">Loading...</span>
+            </div>
+          </div> :
+
+          <>
+            <Table
+              columns={columns}
+              data={filterDataByStatus(status)}
+              rowsPerPage={rowsPerPage}
+              totalCount={totalCount}
+              page={page}
+              isPage={false}
+            />
+            <div
+              className="d-flex align-items-center"
+              style={{
+                marginBottom: "20px",
+                marginLeft: "20px",
+                // marginTop: "-48px",
+              }}
+            >
+              Rows per page:{" "}
+              <select
+                className="form-select ml-2"
+                value={rowsPerPage}
+                onChange={(e) => setRowsPerPage(Number(e.target.value))}
+                style={{ width: "auto", marginLeft: "10px" }}
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+            </div>
+
+            <div className="d-flex justify-content-end align-items-center gap-2 px-3 py-2">
+              <button
+                className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
+                onClick={() => handlePageChange(page - 1)}
+                disabled={page === 1}
+              >
+                <i className="bi bi-chevron-left"></i>
+                <span>Prev</span>
+              </button>
+
+              <span className="fw-semibold text-secondary small">
+                Page {page} of {totalCount}
+              </span>
+
+              <button
+                className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
+                onClick={() => handlePageChange(page + 1)}
+                disabled={page >= totalCount}
+              >
+                <span>Next</span>
+                <i className="bi bi-chevron-right"></i>
+              </button>
+            </div>
+
+
+
+          </>
+        }
+
+
+
+
       </div>
     );
   };
@@ -217,9 +271,8 @@ const Deposit = () => {
                         <li className="nav-item" key={tab}>
                           <a
                             href={`#navpills-${index + 1}`}
-                            className={`nav-link navlink ${
-                              activeTab === tab ? "active" : ""
-                            }`}
+                            className={`nav-link navlink ${activeTab === tab ? "active" : ""
+                              }`}
                             data-bs-toggle="tab"
                             onClick={() => handleTabClick(tab)}
                           >
@@ -235,9 +288,8 @@ const Deposit = () => {
                         <div
                           key={tab}
                           id={`navpills-${index + 1}`}
-                          className={`tab-pane ${
-                            activeTab === tab ? "active" : ""
-                          }`}
+                          className={`tab-pane ${activeTab === tab ? "active" : ""
+                            }`}
                         >
                           <div className="row">
                             <div className="col-lg-12">

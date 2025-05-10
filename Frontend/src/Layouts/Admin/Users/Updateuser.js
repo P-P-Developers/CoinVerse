@@ -74,7 +74,7 @@ const Updateuser = () => {
       if (!values.inputValue) {
         errors.inputValue = "Please enter a value for the selected option";
       }
-     
+
       return errors;
     },
     onSubmit: async (values, { setSubmitting }) => {
@@ -129,9 +129,9 @@ const Updateuser = () => {
         } else if (rowData.perlot && rowData.perlot !== 0) {
           return "perlot";
         }
-        return "pertrade"; // Default to "pertrade" if both are null, undefined, or 0.
+        return "transactionwise"; // Default to "pertrade" if both are null, undefined, or 0.
       };
-      
+
 
 
       formik.setValues({
@@ -143,10 +143,11 @@ const Updateuser = () => {
         Balance: rowData.Balance || "",
         employee_id: rowData.employee_id || "",
         Licence: rowData.Licence || "",
-        selectedOption:  determineSelectedOption(),
+        selectedOption: determineSelectedOption(),
         inputValue:
           rowData.pertrade ||
           rowData.perlot ||
+          rowData.transactionwise ||
           "",
         limit: rowData.limit || "",
       });
@@ -170,7 +171,7 @@ const Updateuser = () => {
         });
       setData(result);
     } catch (error) {
-   
+
     }
   };
 
@@ -220,7 +221,7 @@ const Updateuser = () => {
       col_size: 6,
       disable: true,
     },
-    
+
     {
       name: "employee_id",
       label: "Employee",
@@ -261,6 +262,7 @@ const Updateuser = () => {
       options: [
         { value: "pertrade", label: "Per Trade" },
         { value: "perlot", label: "Per Lot" },
+        { value: "transactionwise", label: "Transaction Wise" },
       ],
       label_size: 12,
       col_size: 6,

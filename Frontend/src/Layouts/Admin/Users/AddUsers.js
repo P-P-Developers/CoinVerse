@@ -183,10 +183,8 @@ const AddUsers = () => {
 
       try {
         const response = await AddUser(data);
-
-
         if (response.status) {
-         
+
           Swal.fire({
             title: "User Added!",
             text: "User added successfully",
@@ -227,7 +225,7 @@ const AddUsers = () => {
       setCheckprice(response.Balance);
       setCheckdolarprice(response.dollarPriceDoc.dollarprice);
     } catch (error) {
-      
+
     }
   };
 
@@ -237,7 +235,7 @@ const AddUsers = () => {
       const response = await TotalcountLicence(data);
       setCheckLicence(response.data);
     } catch (error) {
-    
+
     }
   };
 
@@ -245,7 +243,7 @@ const AddUsers = () => {
     const data = { id: user_id };
     try {
       const response = await getUserdata(data);
-     
+
       const result =
         response.data &&
         response.data.filter((item) => {
@@ -253,7 +251,7 @@ const AddUsers = () => {
         });
       setData(result);
     } catch (error) {
-   
+
     }
   };
 
@@ -322,7 +320,7 @@ const AddUsers = () => {
       label: "Employee",
       type: "select",
       options: [
-        
+
         ...(data
           ? data.map((item) => ({
 
@@ -377,6 +375,7 @@ const AddUsers = () => {
       options: [
         { value: "pertrade", label: "Per Trade" },
         { value: "perlot", label: "Per Lot" },
+        { value: "transactionwise", label: "Transaction-Wise" },
       ],
       label_size: 12,
       col_size: 6,
@@ -385,9 +384,12 @@ const AddUsers = () => {
     ...(formik.values.selectedOption ? [
       {
         name: "inputValue",
-        label: formik.values.selectedOption === "pertrade"
-          ? "Per Trade"
-          : "Per Lot",
+        label:
+          formik.values.selectedOption === "pertrade"
+            ? "Per Trade"
+            : formik.values.selectedOption === "transactionwise"
+            ? "Transaction-Wise %" 
+            : "Per Lot",      
         type: "text",
         label_size: 12,
         col_size: 6,

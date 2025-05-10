@@ -31,7 +31,7 @@ const Employee = () => {
   const [type, setType] = useState("");
   const [search, setSearch] = useState("");
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const columns = [
