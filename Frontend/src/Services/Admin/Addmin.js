@@ -326,6 +326,20 @@ export async function getSignIn(data, token) {
 
 }
 
+export async function getReferClients(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}getReferClients`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
 // Delete sign in user detail
 export async function DeleteSignIn(data, token) {
     try {

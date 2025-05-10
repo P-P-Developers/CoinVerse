@@ -31,6 +31,8 @@ const AddUsers = () => {
   const Role = userDetails?.Role;
   const user_id = userDetails?.user_id;
 
+
+
   const formik = useFormik({
     initialValues: {
       fullName: clientData.FullName || "",
@@ -148,6 +150,8 @@ const AddUsers = () => {
         Licence: values.Licence,
         [selectedOption]: values.inputValue,
         referred_by:location?.state?.clientData?.referred_by || null,
+        referral_price : location?.state?.clientData?.referral_price || 0,
+        singleUserId: location?.state?.clientData?._id || null
       };
 
       setSubmitting(false);

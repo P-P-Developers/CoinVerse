@@ -45,6 +45,10 @@ const SignInUser = Schema(
       type: Boolean,
       default: false,
     },
+    isPaymentDone: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

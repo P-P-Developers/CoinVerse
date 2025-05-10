@@ -1,8 +1,7 @@
 module.exports = function (app, io) {
   const WebSocket = require("ws");
 
-  const API_KEY = "15f8313fe4cb381f874987a362af94f8ea8f4e0b";
-
+  const API_KEY = "f63ec5fbc480c499640b7c880982fb65213326a9";
   const formatNumber = (num) => {
     if (typeof num !== "number" || isNaN(num)) {
       return num; // Return as is if not a valid number
@@ -68,6 +67,7 @@ module.exports = function (app, io) {
             "eurnzd",
             "audcad",
             "gbpchf",
+            "xauusd"
           ],
         },
       };

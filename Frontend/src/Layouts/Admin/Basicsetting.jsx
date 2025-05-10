@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { getAllClient } from "../../Services/Superadmin/Superadmin";
 import { UpdateRefferPrice } from "../../Services/Admin/Addmin";
 import Swal from "sweetalert2";
-import { getSignIn } from "../../Services/Admin/Addmin";
+import { getReferClients } from "../../Services/Admin/Addmin";
 import Table from "../../Utils/Table/Table";
 import { fDateTimesec } from "../../Utils/Date_format/datefromat";
 
@@ -16,7 +16,7 @@ const Basicsetting = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const columns = [
-    { Header: "FullName", accessor: "FullName" },
+    // { Header: "FullName", accessor: "FullName" },
     { Header: "UserName", accessor: "UserName" },
     { Header: "Password", accessor: "password" },
     {
@@ -35,6 +35,20 @@ const Basicsetting = () => {
       accessor: "referral_price",
       Cell: ({ cell }) => {
         return cell.value;
+      },
+    },
+    {
+      Header: "Created",
+      accessor: "isActive",
+      Cell: ({ cell }) => {
+        return cell.value ? "Active" : "Inactive";
+      },
+    },
+    {
+      Header: "Refferal Point",
+      accessor: "isPaymentDone",
+      Cell: ({ cell }) => {
+        return cell.value ? "Paid" : "Unpaid";
       },
     },
 
@@ -91,7 +105,7 @@ const Basicsetting = () => {
   const getsignupuser = async () => {
     try {
       const admin_id = userDetails?.user_id;
-      const response = await getSignIn({ admin_id });
+      const response = await getReferClients({ admin_id });
       const searchfilter = response.data?.filter((item) => {
         const searchInputMatch =
           search === "" ||
