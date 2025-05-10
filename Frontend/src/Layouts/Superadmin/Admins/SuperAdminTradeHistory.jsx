@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
-import { fDateTime, fDateTimesec } from "../../../Utils/Date_format/datefromat";
-import { useParams } from "react-router-dom";
+import {  fDateTimesec } from "../../../Utils/Date_format/datefromat";
 import { Clienthistory } from "../../../Services/Admin/Addmin";
 import { DollarSign } from "lucide-react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ArrowLeftRight } from "lucide-react";
 import { getAdminName, switchOrderType} from "../../../Services/Superadmin/Superadmin";
 
