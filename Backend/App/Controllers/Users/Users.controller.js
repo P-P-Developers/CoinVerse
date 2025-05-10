@@ -161,9 +161,6 @@ class Users {
         .select("parent_id pertrade perlot transactionwise")
         .sort({ createdAt: -1 });
 
-        console.log("result1", result1);
-
-      // Access the first element of result1 to avoid errors
       const user = result1[0];
 
       const result = await MarginRequired.findOne({
