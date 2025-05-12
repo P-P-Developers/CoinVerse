@@ -24,7 +24,6 @@ const Deposit = () => {
     getAllfundsstatus();
   }, [search, activeTab, page, rowsPerPage]);
 
-
   const columns = [
     { Header: "Name", accessor: "FullName" },
     {
@@ -32,8 +31,12 @@ const Deposit = () => {
       accessor: "type",
       Cell: ({ cell }) => (cell.row.type == 1 ? "Deposite" : cell),
     },
-    { Header: "Requested Balance", accessor: "Balance" },
-    { Header: "Balance", accessor: "UserBalance", Cell: ({ cell }) => cell.value?.toFixed(4) },
+    { Header: "Balance", accessor: "Balance" },
+    {
+      Header: "Balance",
+      accessor: "UserBalance",
+      Cell: ({ cell }) => cell.value?.toFixed(4),
+    },
     { Header: "Transaction Id", accessor: "transactionId" },
     {
       Header: "ScreenShot",
@@ -158,7 +161,7 @@ const Deposit = () => {
   const renderTable = (status) => {
     return (
       <div className="table-responsive">
-        <div className="mb-3 ms-4">
+        <div className="mb-3">
           Search :{" "}
           <input
             className="ml-2 input-search form-control"
@@ -169,9 +172,9 @@ const Deposit = () => {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <h5>{activeTab}Transactions</h5>
 
-        {loading ?  <div
+        {loading ? (
+          <div
             style={{
               display: "flex",
               justifyContent: "center",
@@ -182,8 +185,8 @@ const Deposit = () => {
             <div className="spinner-border" role="status">
               <span className="sr-only">Loading...</span>
             </div>
-          </div> :
-
+          </div>
+        ) : (
           <>
             <Table
               columns={columns}
@@ -239,15 +242,8 @@ const Deposit = () => {
                 <i className="bi bi-chevron-right"></i>
               </button>
             </div>
-
-
-
           </>
-        }
-
-
-
-
+        )}
       </div>
     );
   };
@@ -271,8 +267,9 @@ const Deposit = () => {
                         <li className="nav-item" key={tab}>
                           <a
                             href={`#navpills-${index + 1}`}
-                            className={`nav-link navlink ${activeTab === tab ? "active" : ""
-                              }`}
+                            className={`nav-link navlink ${
+                              activeTab === tab ? "active" : ""
+                            }`}
                             data-bs-toggle="tab"
                             onClick={() => handleTabClick(tab)}
                           >
@@ -288,8 +285,9 @@ const Deposit = () => {
                         <div
                           key={tab}
                           id={`navpills-${index + 1}`}
-                          className={`tab-pane ${activeTab === tab ? "active" : ""
-                            }`}
+                          className={`tab-pane ${
+                            activeTab === tab ? "active" : ""
+                          }`}
                         >
                           <div className="row">
                             <div className="col-lg-12">

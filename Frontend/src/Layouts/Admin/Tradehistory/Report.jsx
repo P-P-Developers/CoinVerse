@@ -136,7 +136,7 @@ const Report = () => {
                                 <div className="card transaction-table">
                                   <div className="card-body p-0">
                                     <div className="table-responsive">
-                                      <div className="mb-3 ms-4">
+                                      <div className="mb-3">
                                         Search :{" "}
                                         <input
                                           className="ml-2 input-search form-control"
