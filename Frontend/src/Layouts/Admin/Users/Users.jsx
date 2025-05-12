@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
-import ChatModal from "../ChatModal";
+
 import {
   getUserdata,
   Addbalance,
@@ -9,20 +9,11 @@ import {
 import {
   updateuserLicence,
   DeleteUserdata,
-  adminWalletBalance,
   TotalcountLicence,
 } from "../../../Services/Admin/Addmin";
 
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import {
-  CirclePlus,
-  Pencil,
-  Trash2,
-  CircleDollarSign,
-  CircleMinus,
-  Eye,
-  MessageCircle
-} from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { CirclePlus, Pencil, CircleDollarSign, Eye } from "lucide-react";
 
 import Swal from "sweetalert2";
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
@@ -34,7 +25,6 @@ const Users = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
 
-  const [filteredData, setFilteredData] = useState([]);
   const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
   const [balance, setBalance] = useState("");
@@ -42,20 +32,13 @@ const Users = () => {
   const [id, setID] = useState("");
   const [type, setType] = useState("");
   const [refresh, setrefresh] = useState(false);
-
   const [license, setLicence] = useState(false);
   const [licenseid, setLicenceId] = useState("");
   const [licencevalue, setLicencevalue] = useState("");
   const [checkLicence, setCheckLicence] = useState([]);
-
   const [loading, setLoading] = useState(false);
-
-  const [checkprice, setCheckprice] = useState("");
-
-  const [employeename, setEmployeename] = useState([])
+  const [employeename, setEmployeename] = useState([]);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-
-  const [selectedUser, setSelectedUser] = useState(null);
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
 
@@ -108,7 +91,6 @@ const Users = () => {
 
             {parseFloat(cell.value).toFixed(2)}
           </span>
-      
         </div>
       ),
     },
@@ -179,7 +161,6 @@ const Users = () => {
               style={{ cursor: "pointer", color: "#33B469" }}
               onClick={() => updateuserpage(cell.row._id, cell)}
             />
-           
           </div>
         );
       },
@@ -219,13 +200,11 @@ const Users = () => {
       Cell: ({ cell, row }) => {
         const employee_id = cell.row.employee_id;
 
-        const employee = employeename.find(emp => emp._id === employee_id);
+        const employee = employeename.find((emp) => emp._id === employee_id);
 
-        return employee ? employee.UserName : 'N/A';
-      }
+        return employee ? employee.UserName : "N/A";
+      },
     },
-    
-
   ];
 
   const Clienthistory = (_id) => {
@@ -236,12 +215,9 @@ const Users = () => {
     setPage(newPage);
   };
 
-
   const updateuserpage = (_id, obj) => {
     navigate(`updateuser/${_id}`, { state: { rowData: obj.row } });
   };
-
-
 
   //delete user
   const DeleteUser = async (_id) => {
@@ -280,8 +256,6 @@ const Users = () => {
   // update Licence
   const updateLicence = async () => {
     try {
-
-
       if (parseInt(checkLicence.CountLicence) < parseInt(licencevalue)) {
         Swal.fire({
           title: "Alert",
@@ -304,9 +278,7 @@ const Users = () => {
           title: "Licence Updated",
           text: "The Licence has been updated successfully.",
         });
-      }
-
-      else {
+      } else {
         Swal.fire({
           icon: "error",
           title: "Invalid Licence Value",
@@ -367,7 +339,8 @@ const Users = () => {
           Swal.fire({
             icon: "success",
             title: "Balance Updated",
-            text: response.message || "The balance has been updated successfully.",
+            text:
+              response.message || "The balance has been updated successfully.",
           });
 
           getAlluserdata();
@@ -377,7 +350,9 @@ const Users = () => {
           Swal.fire({
             icon: "error",
             title: "Error",
-            text: response.message || "An error occurred while updating the balance.",
+            text:
+              response.message ||
+              "An error occurred while updating the balance.",
           });
         }
       }
@@ -444,9 +419,11 @@ const Users = () => {
           return item.Role === "USER";
         });
 
-      const filterusername = response.data && response.data.filter((item) => {
-        return item._id
-      })
+      const filterusername =
+        response.data &&
+        response.data.filter((item) => {
+          return item._id;
+        });
 
       const searchfilter = result?.filter((item) => {
         const searchInputMatch =
@@ -462,24 +439,19 @@ const Users = () => {
       });
       setTotalCount(response?.pagination?.totalPages || 0); // assuming backend returns total count
 
-      setEmployeename(filterusername)
+      setEmployeename(filterusername);
       setData(search ? searchfilter : result);
-      setFilteredData(result);
+
       setLoading(false);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
-
-
 
   const getadminLicence = async () => {
     const data = { userid: user_id };
     try {
       const response = await TotalcountLicence(data);
       setCheckLicence(response.data);
-    } catch (error) {
-
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -530,15 +502,19 @@ const Users = () => {
                     {loading ? (
                       <Loader />
                     ) : (
-                      <Table columns={columns}
+                      <Table
+                        columns={columns}
                         data={data && data}
                         rowsPerPage={rowsPerPage}
                         page={page}
-                        isPage={false} />
+                        isPage={false}
+                      />
                     )}
                   </div>
-                  <div className="d-flex align-items-center" style={{ marginBottom: "20px", marginLeft: "20px" }}>
-
+                  <div
+                    className="d-flex align-items-center"
+                    style={{ marginBottom: "20px", marginLeft: "20px" }}
+                  >
                     Rows per page:{" "}
                     <select
                       className="form-select ml-2"
@@ -551,7 +527,6 @@ const Users = () => {
                       <option value={20}>20</option>
                       <option value={50}>50</option>
                       <option value={100}>100</option>
-
                     </select>
                   </div>
 
@@ -578,16 +553,12 @@ const Users = () => {
                       <i className="bi bi-chevron-right"></i>
                     </button>
                   </div>
-
-
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-
 
       {modal && (
         <div
@@ -614,24 +585,23 @@ const Users = () => {
                   <div className="row">
                     <div className="col-lg-12 col-sm-12">
                       <div className="input-block mb-3">
-                      <input
-  type="text"
-  className="form-control"
-  placeholder="Enter Fund"
-  onChange={(e) => {
-    // Remove non-digit characters
-    let value = e.target.value.replace(/\D/g, "");
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Enter Fund"
+                          onChange={(e) => {
+                            // Remove non-digit characters
+                            let value = e.target.value.replace(/\D/g, "");
 
-    // Convert to number and cap at 10000
-    if (Number(value) > 10000) {
-      value = "10000";
-    }
+                            // Convert to number and cap at 10000
+                            if (Number(value) > 10000) {
+                              value = "10000";
+                            }
 
-    setBalance(value);
-  }}
-  value={balance}
-/>
-
+                            setBalance(value);
+                          }}
+                          value={balance}
+                        />
                       </div>
                     </div>
                   </div>
@@ -659,8 +629,6 @@ const Users = () => {
           </div>
         </div>
       )}
-
-
 
       {license && (
         <div
@@ -698,7 +666,6 @@ const Users = () => {
                           }}
                           value={licencevalue ? `${licencevalue}` : ""} // Display the value with no '%', since it's not applicable here
                         />
-
                       </div>
                     </div>
                   </div>
@@ -724,13 +691,7 @@ const Users = () => {
               </div>
             </div>
           </div>
-
         </div>
-      )}
-
-
-      {selectedUser && (
-        <ChatModal user={selectedUser} adminId={user_id} onClose={() => setSelectedUser(null)} />
       )}
     </>
   );

@@ -1,19 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Admindashboarddata } from "../../Services/Admin/Addmin";
-import Table from "../../Utils/Table/Table";
-import { fDateTime, fDateTimesec } from "../../Utils/Date_format/datefromat";
-import { gethistory } from "../../Services/Superadmin/Superadmin";
+import { Admindashboarddata } from "../../../Services/Admin/Addmin";
+import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
 import LivePriceCard from "./Card";
 
 const Dashboard = () => {
   const [countdata, setCountdata] = useState([0]);
-  const [data, setData] = useState([]);
-
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
-
-
-  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const getdashboard = async () => {
     try {
@@ -32,47 +25,6 @@ const Dashboard = () => {
 
   useEffect(() => {
     getdashboard();
-  }, []);
-
-  const columns = [
-    { Header: "UserName", accessor: "UserName" },
-
-    { Header: "Balance", accessor: "Balance" },
-    {
-      Header: "Create Date",
-      accessor: "createdAt",
-      Cell: ({ cell }) => {
-        return fDateTimesec(cell.value);
-      },
-    },
-    {
-      Header: "Status",
-      accessor: "Type",
-      Cell: ({ cell }) => (
-        <span style={{ color: cell.value === "CREDIT" ? "green" : "red" }}>
-          {cell.value}
-        </span>
-      ),
-    },
-  ];
-
-  // getting data
-  const getallhistory = async () => {
-    try {
-      const response = await gethistory({});
-      const result =
-        response.data &&
-        response.data.filter((item) => {
-          return item.parent_Id == user_id;
-        });
-      setData(result);
-    } catch (error) {
-      console.log("error", error);
-    }
-  };
-
-  useEffect(() => {
-    getallhistory();
   }, []);
 
   return (
@@ -113,7 +65,8 @@ const Dashboard = () => {
                         height={45}
                         viewBox="0 0 137 137"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <path
                           d="M68.5 0C30.6686 0 0 30.6686 0 68.5C0 106.331 30.6686 137 68.5 137C106.331 137 137 106.331 137 68.5C136.958 30.6865 106.313 0.0418093 68.5 0ZM40.213 63.6068H59.7843C62.4869 63.6068 64.6774 65.7973 64.6774 68.5C64.6774 71.2027 62.4869 73.3932 59.7843 73.3932H40.213C37.5104 73.3932 35.3199 71.2027 35.3199 68.5C35.3199 65.7973 37.5119 63.6068 40.213 63.6068ZM101.393 56.6456L95.5088 86.0883C94.1231 92.9226 88.122 97.8411 81.1488 97.8576H40.213C37.5104 97.8576 35.3199 95.6671 35.3199 92.9644C35.3199 90.2617 37.5119 88.0712 40.213 88.0712H81.1488C83.4617 88.0652 85.4522 86.4347 85.9121 84.168L91.7982 54.7253C92.3208 52.0973 90.6156 49.544 87.9891 49.0214C87.677 48.9601 87.3605 48.9288 87.0439 48.9288H49.9994C47.2967 48.9288 45.1062 46.7383 45.1062 44.0356C45.1062 41.3329 47.2967 39.1424 49.9994 39.1424H87.0439C95.128 39.1454 101.679 45.699 101.677 53.7831C101.677 54.7433 101.582 55.7019 101.393 56.6456Z"
                           fill="#FFF"
@@ -127,7 +80,8 @@ const Dashboard = () => {
                         <div
                           id="apexcharts2776vne4"
                           className="apexcharts-canvas apexcharts2776vne4 apexcharts-theme-light"
-                          style={{ width: 500, height: 70 }}>
+                          style={{ width: 500, height: 70 }}
+                        >
                           <svg
                             id="SvgjsSvg2889"
                             width={500}
@@ -137,7 +91,8 @@ const Dashboard = () => {
                             xmlnsXlink="http://www.w3.org/1999/xlink"
                             className="apexcharts-svg"
                             transform="translate(0, 0)"
-                            style={{ background: "transparent" }}>
+                            style={{ background: "transparent" }}
+                          >
                             <foreignObject x={0} y={0} width={500} height={70}>
                               <div
                                 className="apexcharts-legend"
@@ -154,7 +109,8 @@ const Dashboard = () => {
                             <g
                               id="SvgjsG2891"
                               className="apexcharts-inner apexcharts-graphical"
-                              transform="translate(-1, 3)">
+                              transform="translate(-1, 3)"
+                            >
                               <defs id="SvgjsDefs2890">
                                 <clipPath id="gridRectMask2776vne4">
                                   <rect
@@ -195,7 +151,8 @@ const Dashboard = () => {
                                 <g
                                   id="SvgjsG2901"
                                   className="apexcharts-gridlines-horizontal"
-                                  style={{ display: "none" }}></g>
+                                  style={{ display: "none" }}
+                                ></g>
                                 <g
                                   id="SvgjsG2902"
                                   className="apexcharts-gridlines-vertical"
@@ -229,7 +186,8 @@ const Dashboard = () => {
                               />
                               <g
                                 id="SvgjsG2895"
-                                className="apexcharts-line-series apexcharts-plot-series">
+                                className="apexcharts-line-series apexcharts-plot-series"
+                              >
                                 <g
                                   id="SvgjsG2896"
                                   className="apexcharts-series"
@@ -237,7 +195,8 @@ const Dashboard = () => {
                                   seriesname="NetxProfit"
                                   data-longestseries="true"
                                   rel={1}
-                                  data-realindex={0}>
+                                  data-realindex={0}
+                                >
                                   <path
                                     id="SvgjsPath2899"
                                     d="M 0 36.57142857142857C 19.483333333333334 36.57142857142857 36.18333333333334 16.457142857142856 55.66666666666667 16.457142857142856C 75.15 16.457142857142856 91.85000000000001 64 111.33333333333334 64C 130.81666666666666 64 147.51666666666668 27.428571428571423 167 27.428571428571423C 186.48333333333335 27.428571428571423 203.18333333333334 64 222.66666666666669 64C 242.15000000000003 64 258.85 18.285714285714285 278.33333333333337 18.285714285714285C 297.8166666666667 18.285714285714285 314.51666666666665 54.857142857142854 334 54.857142857142854C 353.48333333333335 54.857142857142854 370.18333333333334 36.57142857142857 389.6666666666667 36.57142857142857C 409.15000000000003 36.57142857142857 425.85 54.857142857142854 445.33333333333337 54.857142857142854C 464.8166666666667 54.857142857142854 481.51666666666665 0 501 0M 501 0"
@@ -282,7 +241,8 @@ const Dashboard = () => {
                               <g
                                 id="SvgjsG2910"
                                 className="apexcharts-xaxis"
-                                transform="translate(0, 0)">
+                                transform="translate(0, 0)"
+                              >
                                 <g
                                   id="SvgjsG2911"
                                   className="apexcharts-xaxis-texts-g"
@@ -329,7 +289,8 @@ const Dashboard = () => {
                         height={45}
                         viewBox="0 0 137 137"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <path
                           d="M68.5 0C30.6686 0 0 30.6686 0 68.5C0 106.331 30.6686 137 68.5 137C106.331 137 137 106.331 137 68.5C136.958 30.6865 106.313 0.0418093 68.5 0ZM40.213 63.6068H59.7843C62.4869 63.6068 64.6774 65.7973 64.6774 68.5C64.6774 71.2027 62.4869 73.3932 59.7843 73.3932H40.213C37.5104 73.3932 35.3199 71.2027 35.3199 68.5C35.3199 65.7973 37.5119 63.6068 40.213 63.6068ZM101.393 56.6456L95.5088 86.0883C94.1231 92.9226 88.122 97.8411 81.1488 97.8576H40.213C37.5104 97.8576 35.3199 95.6671 35.3199 92.9644C35.3199 90.2617 37.5119 88.0712 40.213 88.0712H81.1488C83.4617 88.0652 85.4522 86.4347 85.9121 84.168L91.7982 54.7253C92.3208 52.0973 90.6156 49.544 87.9891 49.0214C87.677 48.9601 87.3605 48.9288 87.0439 48.9288H49.9994C47.2967 48.9288 45.1062 46.7383 45.1062 44.0356C45.1062 41.3329 47.2967 39.1424 49.9994 39.1424H87.0439C95.128 39.1454 101.679 45.699 101.677 53.7831C101.677 54.7433 101.582 55.7019 101.393 56.6456Z"
                           fill="#FFF"
@@ -343,7 +304,8 @@ const Dashboard = () => {
                         <div
                           id="apexcharts2776vne4"
                           className="apexcharts-canvas apexcharts2776vne4 apexcharts-theme-light"
-                          style={{ width: 500, height: 70 }}>
+                          style={{ width: 500, height: 70 }}
+                        >
                           <svg
                             id="SvgjsSvg2889"
                             width={500}
@@ -353,7 +315,8 @@ const Dashboard = () => {
                             xmlnsXlink="http://www.w3.org/1999/xlink"
                             className="apexcharts-svg"
                             transform="translate(0, 0)"
-                            style={{ background: "transparent" }}>
+                            style={{ background: "transparent" }}
+                          >
                             <foreignObject x={0} y={0} width={500} height={70}>
                               <div
                                 className="apexcharts-legend"
@@ -370,7 +333,8 @@ const Dashboard = () => {
                             <g
                               id="SvgjsG2891"
                               className="apexcharts-inner apexcharts-graphical"
-                              transform="translate(-1, 3)">
+                              transform="translate(-1, 3)"
+                            >
                               <defs id="SvgjsDefs2890">
                                 <clipPath id="gridRectMask2776vne4">
                                   <rect
@@ -411,7 +375,8 @@ const Dashboard = () => {
                                 <g
                                   id="SvgjsG2901"
                                   className="apexcharts-gridlines-horizontal"
-                                  style={{ display: "none" }}></g>
+                                  style={{ display: "none" }}
+                                ></g>
                                 <g
                                   id="SvgjsG2902"
                                   className="apexcharts-gridlines-vertical"
@@ -445,7 +410,8 @@ const Dashboard = () => {
                               />
                               <g
                                 id="SvgjsG2895"
-                                className="apexcharts-line-series apexcharts-plot-series">
+                                className="apexcharts-line-series apexcharts-plot-series"
+                              >
                                 <g
                                   id="SvgjsG2896"
                                   className="apexcharts-series"
@@ -453,7 +419,8 @@ const Dashboard = () => {
                                   seriesname="NetxProfit"
                                   data-longestseries="true"
                                   rel={1}
-                                  data-realindex={0}>
+                                  data-realindex={0}
+                                >
                                   <path
                                     id="SvgjsPath2899"
                                     d="M 0 36.57142857142857C 19.483333333333334 36.57142857142857 36.18333333333334 16.457142857142856 55.66666666666667 16.457142857142856C 75.15 16.457142857142856 91.85000000000001 64 111.33333333333334 64C 130.81666666666666 64 147.51666666666668 27.428571428571423 167 27.428571428571423C 186.48333333333335 27.428571428571423 203.18333333333334 64 222.66666666666669 64C 242.15000000000003 64 258.85 18.285714285714285 278.33333333333337 18.285714285714285C 297.8166666666667 18.285714285714285 314.51666666666665 54.857142857142854 334 54.857142857142854C 353.48333333333335 54.857142857142854 370.18333333333334 36.57142857142857 389.6666666666667 36.57142857142857C 409.15000000000003 36.57142857142857 425.85 54.857142857142854 445.33333333333337 54.857142857142854C 464.8166666666667 54.857142857142854 481.51666666666665 0 501 0M 501 0"
@@ -499,7 +466,8 @@ const Dashboard = () => {
                               <g
                                 id="SvgjsG2910"
                                 className="apexcharts-xaxis"
-                                transform="translate(0, 0)">
+                                transform="translate(0, 0)"
+                              >
                                 <g
                                   id="SvgjsG2911"
                                   className="apexcharts-xaxis-texts-g"
@@ -545,7 +513,8 @@ const Dashboard = () => {
                         height={45}
                         viewBox="0 0 137 137"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <path
                           d="M68.5 0C30.6686 0 0 30.6686 0 68.5C0 106.331 30.6686 137 68.5 137C106.331 137 137 106.331 137 68.5C136.958 30.6865 106.313 0.0418093 68.5 0ZM40.213 63.6068H59.7843C62.4869 63.6068 64.6774 65.7973 64.6774 68.5C64.6774 71.2027 62.4869 73.3932 59.7843 73.3932H40.213C37.5104 73.3932 35.3199 71.2027 35.3199 68.5C35.3199 65.7973 37.5119 63.6068 40.213 63.6068ZM101.393 56.6456L95.5088 86.0883C94.1231 92.9226 88.122 97.8411 81.1488 97.8576H40.213C37.5104 97.8576 35.3199 95.6671 35.3199 92.9644C35.3199 90.2617 37.5119 88.0712 40.213 88.0712H81.1488C83.4617 88.0652 85.4522 86.4347 85.9121 84.168L91.7982 54.7253C92.3208 52.0973 90.6156 49.544 87.9891 49.0214C87.677 48.9601 87.3605 48.9288 87.0439 48.9288H49.9994C47.2967 48.9288 45.1062 46.7383 45.1062 44.0356C45.1062 41.3329 47.2967 39.1424 49.9994 39.1424H87.0439C95.128 39.1454 101.679 45.699 101.677 53.7831C101.677 54.7433 101.582 55.7019 101.393 56.6456Z"
                           fill="#FFF"
@@ -559,7 +528,8 @@ const Dashboard = () => {
                         <div
                           id="apexcharts2776vne4"
                           className="apexcharts-canvas apexcharts2776vne4 apexcharts-theme-light"
-                          style={{ width: 500, height: 70 }}>
+                          style={{ width: 500, height: 70 }}
+                        >
                           <svg
                             id="SvgjsSvg2889"
                             width={500}
@@ -569,7 +539,8 @@ const Dashboard = () => {
                             xmlnsXlink="http://www.w3.org/1999/xlink"
                             className="apexcharts-svg"
                             transform="translate(0, 0)"
-                            style={{ background: "transparent" }}>
+                            style={{ background: "transparent" }}
+                          >
                             <foreignObject x={0} y={0} width={500} height={70}>
                               <div
                                 className="apexcharts-legend"
@@ -586,7 +557,8 @@ const Dashboard = () => {
                             <g
                               id="SvgjsG2891"
                               className="apexcharts-inner apexcharts-graphical"
-                              transform="translate(-1, 3)">
+                              transform="translate(-1, 3)"
+                            >
                               <defs id="SvgjsDefs2890">
                                 <clipPath id="gridRectMask2776vne4">
                                   <rect
@@ -627,7 +599,8 @@ const Dashboard = () => {
                                 <g
                                   id="SvgjsG2901"
                                   className="apexcharts-gridlines-horizontal"
-                                  style={{ display: "none" }}></g>
+                                  style={{ display: "none" }}
+                                ></g>
                                 <g
                                   id="SvgjsG2902"
                                   className="apexcharts-gridlines-vertical"
@@ -661,7 +634,8 @@ const Dashboard = () => {
                               />
                               <g
                                 id="SvgjsG2895"
-                                className="apexcharts-line-series apexcharts-plot-series">
+                                className="apexcharts-line-series apexcharts-plot-series"
+                              >
                                 <g
                                   id="SvgjsG2896"
                                   className="apexcharts-series"
@@ -669,7 +643,8 @@ const Dashboard = () => {
                                   seriesname="NetxProfit"
                                   data-longestseries="true"
                                   rel={1}
-                                  data-realindex={0}>
+                                  data-realindex={0}
+                                >
                                   <path
                                     id="SvgjsPath2899"
                                     d="M 0 36.57142857142857C 19.483333333333334 36.57142857142857 36.18333333333334 16.457142857142856 55.66666666666667 16.457142857142856C 75.15 16.457142857142856 91.85000000000001 64 111.33333333333334 64C 130.81666666666666 64 147.51666666666668 27.428571428571423 167 27.428571428571423C 186.48333333333335 27.428571428571423 203.18333333333334 64 222.66666666666669 64C 242.15000000000003 64 258.85 18.285714285714285 278.33333333333337 18.285714285714285C 297.8166666666667 18.285714285714285 314.51666666666665 54.857142857142854 334 54.857142857142854C 353.48333333333335 54.857142857142854 370.18333333333334 36.57142857142857 389.6666666666667 36.57142857142857C 409.15000000000003 36.57142857142857 425.85 54.857142857142854 445.33333333333337 54.857142857142854C 464.8166666666667 54.857142857142854 481.51666666666665 0 501 0M 501 0"
@@ -714,7 +689,8 @@ const Dashboard = () => {
                               <g
                                 id="SvgjsG2910"
                                 className="apexcharts-xaxis"
-                                transform="translate(0, 0)">
+                                transform="translate(0, 0)"
+                              >
                                 <g
                                   id="SvgjsG2911"
                                   className="apexcharts-xaxis-texts-g"
@@ -760,7 +736,8 @@ const Dashboard = () => {
                         height={45}
                         viewBox="0 0 137 137"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <path
                           d="M68.5 0C30.6686 0 0 30.6686 0 68.5C0 106.331 30.6686 137 68.5 137C106.331 137 137 106.331 137 68.5C136.958 30.6865 106.313 0.0418093 68.5 0ZM40.213 63.6068H59.7843C62.4869 63.6068 64.6774 65.7973 64.6774 68.5C64.6774 71.2027 62.4869 73.3932 59.7843 73.3932H40.213C37.5104 73.3932 35.3199 71.2027 35.3199 68.5C35.3199 65.7973 37.5119 63.6068 40.213 63.6068ZM101.393 56.6456L95.5088 86.0883C94.1231 92.9226 88.122 97.8411 81.1488 97.8576H40.213C37.5104 97.8576 35.3199 95.6671 35.3199 92.9644C35.3199 90.2617 37.5119 88.0712 40.213 88.0712H81.1488C83.4617 88.0652 85.4522 86.4347 85.9121 84.168L91.7982 54.7253C92.3208 52.0973 90.6156 49.544 87.9891 49.0214C87.677 48.9601 87.3605 48.9288 87.0439 48.9288H49.9994C47.2967 48.9288 45.1062 46.7383 45.1062 44.0356C45.1062 41.3329 47.2967 39.1424 49.9994 39.1424H87.0439C95.128 39.1454 101.679 45.699 101.677 53.7831C101.677 54.7433 101.582 55.7019 101.393 56.6456Z"
                           fill="#FFF"
@@ -774,7 +751,8 @@ const Dashboard = () => {
                         <div
                           id="apexcharts2776vne4"
                           className="apexcharts-canvas apexcharts2776vne4 apexcharts-theme-light"
-                          style={{ width: 500, height: 70 }}>
+                          style={{ width: 500, height: 70 }}
+                        >
                           <svg
                             id="SvgjsSvg2889"
                             width={500}
@@ -784,7 +762,8 @@ const Dashboard = () => {
                             xmlnsXlink="http://www.w3.org/1999/xlink"
                             className="apexcharts-svg"
                             transform="translate(0, 0)"
-                            style={{ background: "transparent" }}>
+                            style={{ background: "transparent" }}
+                          >
                             <foreignObject x={0} y={0} width={500} height={70}>
                               <div
                                 className="apexcharts-legend"
@@ -801,7 +780,8 @@ const Dashboard = () => {
                             <g
                               id="SvgjsG2891"
                               className="apexcharts-inner apexcharts-graphical"
-                              transform="translate(-1, 3)">
+                              transform="translate(-1, 3)"
+                            >
                               <defs id="SvgjsDefs2890">
                                 <clipPath id="gridRectMask2776vne4">
                                   <rect
@@ -842,7 +822,8 @@ const Dashboard = () => {
                                 <g
                                   id="SvgjsG2901"
                                   className="apexcharts-gridlines-horizontal"
-                                  style={{ display: "none" }}></g>
+                                  style={{ display: "none" }}
+                                ></g>
                                 <g
                                   id="SvgjsG2902"
                                   className="apexcharts-gridlines-vertical"
@@ -876,7 +857,8 @@ const Dashboard = () => {
                               />
                               <g
                                 id="SvgjsG2895"
-                                className="apexcharts-line-series apexcharts-plot-series">
+                                className="apexcharts-line-series apexcharts-plot-series"
+                              >
                                 <g
                                   id="SvgjsG2896"
                                   className="apexcharts-series"
@@ -884,7 +866,8 @@ const Dashboard = () => {
                                   seriesname="NetxProfit"
                                   data-longestseries="true"
                                   rel={1}
-                                  data-realindex={0}>
+                                  data-realindex={0}
+                                >
                                   <path
                                     id="SvgjsPath2899"
                                     d="M 0 36.57142857142857C 19.483333333333334 36.57142857142857 36.18333333333334 16.457142857142856 55.66666666666667 16.457142857142856C 75.15 16.457142857142856 91.85000000000001 64 111.33333333333334 64C 130.81666666666666 64 147.51666666666668 27.428571428571423 167 27.428571428571423C 186.48333333333335 27.428571428571423 203.18333333333334 64 222.66666666666669 64C 242.15000000000003 64 258.85 18.285714285714285 278.33333333333337 18.285714285714285C 297.8166666666667 18.285714285714285 314.51666666666665 54.857142857142854 334 54.857142857142854C 353.48333333333335 54.857142857142854 370.18333333333334 36.57142857142857 389.6666666666667 36.57142857142857C 409.15000000000003 36.57142857142857 425.85 54.857142857142854 445.33333333333337 54.857142857142854C 464.8166666666667 54.857142857142854 481.51666666666665 0 501 0M 501 0"
@@ -929,7 +912,8 @@ const Dashboard = () => {
                               <g
                                 id="SvgjsG2910"
                                 className="apexcharts-xaxis"
-                                transform="translate(0, 0)">
+                                transform="translate(0, 0)"
+                              >
                                 <g
                                   id="SvgjsG2911"
                                   className="apexcharts-xaxis-texts-g"
@@ -975,7 +959,8 @@ const Dashboard = () => {
                         height={45}
                         viewBox="0 0 137 137"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <path
                           d="M68.5 0C30.6686 0 0 30.6686 0 68.5C0 106.331 30.6686 137 68.5 137C106.331 137 137 106.331 137 68.5C136.958 30.6865 106.313 0.0418093 68.5 0ZM40.213 63.6068H59.7843C62.4869 63.6068 64.6774 65.7973 64.6774 68.5C64.6774 71.2027 62.4869 73.3932 59.7843 73.3932H40.213C37.5104 73.3932 35.3199 71.2027 35.3199 68.5C35.3199 65.7973 37.5119 63.6068 40.213 63.6068ZM101.393 56.6456L95.5088 86.0883C94.1231 92.9226 88.122 97.8411 81.1488 97.8576H40.213C37.5104 97.8576 35.3199 95.6671 35.3199 92.9644C35.3199 90.2617 37.5119 88.0712 40.213 88.0712H81.1488C83.4617 88.0652 85.4522 86.4347 85.9121 84.168L91.7982 54.7253C92.3208 52.0973 90.6156 49.544 87.9891 49.0214C87.677 48.9601 87.3605 48.9288 87.0439 48.9288H49.9994C47.2967 48.9288 45.1062 46.7383 45.1062 44.0356C45.1062 41.3329 47.2967 39.1424 49.9994 39.1424H87.0439C95.128 39.1454 101.679 45.699 101.677 53.7831C101.677 54.7433 101.582 55.7019 101.393 56.6456Z"
                           fill="#FFF"
@@ -989,7 +974,8 @@ const Dashboard = () => {
                         <div
                           id="apexcharts2776vne4"
                           className="apexcharts-canvas apexcharts2776vne4 apexcharts-theme-light"
-                          style={{ width: 500, height: 70 }}>
+                          style={{ width: 500, height: 70 }}
+                        >
                           <svg
                             id="SvgjsSvg2889"
                             width={500}
@@ -999,7 +985,8 @@ const Dashboard = () => {
                             xmlnsXlink="http://www.w3.org/1999/xlink"
                             className="apexcharts-svg"
                             transform="translate(0, 0)"
-                            style={{ background: "transparent" }}>
+                            style={{ background: "transparent" }}
+                          >
                             <foreignObject x={0} y={0} width={500} height={70}>
                               <div
                                 className="apexcharts-legend"
@@ -1016,7 +1003,8 @@ const Dashboard = () => {
                             <g
                               id="SvgjsG2891"
                               className="apexcharts-inner apexcharts-graphical"
-                              transform="translate(-1, 3)">
+                              transform="translate(-1, 3)"
+                            >
                               <defs id="SvgjsDefs2890">
                                 <clipPath id="gridRectMask2776vne4">
                                   <rect
@@ -1057,7 +1045,8 @@ const Dashboard = () => {
                                 <g
                                   id="SvgjsG2901"
                                   className="apexcharts-gridlines-horizontal"
-                                  style={{ display: "none" }}></g>
+                                  style={{ display: "none" }}
+                                ></g>
                                 <g
                                   id="SvgjsG2902"
                                   className="apexcharts-gridlines-vertical"
@@ -1091,7 +1080,8 @@ const Dashboard = () => {
                               />
                               <g
                                 id="SvgjsG2895"
-                                className="apexcharts-line-series apexcharts-plot-series">
+                                className="apexcharts-line-series apexcharts-plot-series"
+                              >
                                 <g
                                   id="SvgjsG2896"
                                   className="apexcharts-series"
@@ -1099,7 +1089,8 @@ const Dashboard = () => {
                                   seriesname="NetxProfit"
                                   data-longestseries="true"
                                   rel={1}
-                                  data-realindex={0}>
+                                  data-realindex={0}
+                                >
                                   <path
                                     id="SvgjsPath2899"
                                     d="M 0 36.57142857142857C 19.483333333333334 36.57142857142857 36.18333333333334 16.457142857142856 55.66666666666667 16.457142857142856C 75.15 16.457142857142856 91.85000000000001 64 111.33333333333334 64C 130.81666666666666 64 147.51666666666668 27.428571428571423 167 27.428571428571423C 186.48333333333335 27.428571428571423 203.18333333333334 64 222.66666666666669 64C 242.15000000000003 64 258.85 18.285714285714285 278.33333333333337 18.285714285714285C 297.8166666666667 18.285714285714285 314.51666666666665 54.857142857142854 334 54.857142857142854C 353.48333333333335 54.857142857142854 370.18333333333334 36.57142857142857 389.6666666666667 36.57142857142857C 409.15000000000003 36.57142857142857 425.85 54.857142857142854 445.33333333333337 54.857142857142854C 464.8166666666667 54.857142857142854 481.51666666666665 0 501 0M 501 0"
@@ -1144,7 +1135,8 @@ const Dashboard = () => {
                               <g
                                 id="SvgjsG2910"
                                 className="apexcharts-xaxis"
-                                transform="translate(0, 0)">
+                                transform="translate(0, 0)"
+                              >
                                 <g
                                   id="SvgjsG2911"
                                   className="apexcharts-xaxis-texts-g"
@@ -1190,7 +1182,8 @@ const Dashboard = () => {
                         height={45}
                         viewBox="0 0 137 137"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <path
                           d="M68.5 0C30.6686 0 0 30.6686 0 68.5C0 106.331 30.6686 137 68.5 137C106.331 137 137 106.331 137 68.5C136.958 30.6865 106.313 0.0418093 68.5 0ZM40.213 63.6068H59.7843C62.4869 63.6068 64.6774 65.7973 64.6774 68.5C64.6774 71.2027 62.4869 73.3932 59.7843 73.3932H40.213C37.5104 73.3932 35.3199 71.2027 35.3199 68.5C35.3199 65.7973 37.5119 63.6068 40.213 63.6068ZM101.393 56.6456L95.5088 86.0883C94.1231 92.9226 88.122 97.8411 81.1488 97.8576H40.213C37.5104 97.8576 35.3199 95.6671 35.3199 92.9644C35.3199 90.2617 37.5119 88.0712 40.213 88.0712H81.1488C83.4617 88.0652 85.4522 86.4347 85.9121 84.168L91.7982 54.7253C92.3208 52.0973 90.6156 49.544 87.9891 49.0214C87.677 48.9601 87.3605 48.9288 87.0439 48.9288H49.9994C47.2967 48.9288 45.1062 46.7383 45.1062 44.0356C45.1062 41.3329 47.2967 39.1424 49.9994 39.1424H87.0439C95.128 39.1454 101.679 45.699 101.677 53.7831C101.677 54.7433 101.582 55.7019 101.393 56.6456Z"
                           fill="#FFF"
@@ -1204,7 +1197,8 @@ const Dashboard = () => {
                         <div
                           id="apexcharts2776vne4"
                           className="apexcharts-canvas apexcharts2776vne4 apexcharts-theme-light"
-                          style={{ width: 500, height: 70 }}>
+                          style={{ width: 500, height: 70 }}
+                        >
                           <svg
                             id="SvgjsSvg2889"
                             width={500}
@@ -1214,7 +1208,8 @@ const Dashboard = () => {
                             xmlnsXlink="http://www.w3.org/1999/xlink"
                             className="apexcharts-svg"
                             transform="translate(0, 0)"
-                            style={{ background: "transparent" }}>
+                            style={{ background: "transparent" }}
+                          >
                             <foreignObject x={0} y={0} width={500} height={70}>
                               <div
                                 className="apexcharts-legend"
@@ -1231,7 +1226,8 @@ const Dashboard = () => {
                             <g
                               id="SvgjsG2891"
                               className="apexcharts-inner apexcharts-graphical"
-                              transform="translate(-1, 3)">
+                              transform="translate(-1, 3)"
+                            >
                               <defs id="SvgjsDefs2890">
                                 <clipPath id="gridRectMask2776vne4">
                                   <rect
@@ -1272,7 +1268,8 @@ const Dashboard = () => {
                                 <g
                                   id="SvgjsG2901"
                                   className="apexcharts-gridlines-horizontal"
-                                  style={{ display: "none" }}></g>
+                                  style={{ display: "none" }}
+                                ></g>
                                 <g
                                   id="SvgjsG2902"
                                   className="apexcharts-gridlines-vertical"
@@ -1306,7 +1303,8 @@ const Dashboard = () => {
                               />
                               <g
                                 id="SvgjsG2895"
-                                className="apexcharts-line-series apexcharts-plot-series">
+                                className="apexcharts-line-series apexcharts-plot-series"
+                              >
                                 <g
                                   id="SvgjsG2896"
                                   className="apexcharts-series"
@@ -1314,7 +1312,8 @@ const Dashboard = () => {
                                   seriesname="NetxProfit"
                                   data-longestseries="true"
                                   rel={1}
-                                  data-realindex={0}>
+                                  data-realindex={0}
+                                >
                                   <path
                                     id="SvgjsPath2899"
                                     d="M 0 36.57142857142857C 19.483333333333334 36.57142857142857 36.18333333333334 16.457142857142856 55.66666666666667 16.457142857142856C 75.15 16.457142857142856 91.85000000000001 64 111.33333333333334 64C 130.81666666666666 64 147.51666666666668 27.428571428571423 167 27.428571428571423C 186.48333333333335 27.428571428571423 203.18333333333334 64 222.66666666666669 64C 242.15000000000003 64 258.85 18.285714285714285 278.33333333333337 18.285714285714285C 297.8166666666667 18.285714285714285 314.51666666666665 54.857142857142854 334 54.857142857142854C 353.48333333333335 54.857142857142854 370.18333333333334 36.57142857142857 389.6666666666667 36.57142857142857C 409.15000000000003 36.57142857142857 425.85 54.857142857142854 445.33333333333337 54.857142857142854C 464.8166666666667 54.857142857142854 481.51666666666665 0 501 0M 501 0"
@@ -1359,7 +1358,8 @@ const Dashboard = () => {
                               <g
                                 id="SvgjsG2910"
                                 className="apexcharts-xaxis"
-                                transform="translate(0, 0)">
+                                transform="translate(0, 0)"
+                              >
                                 <g
                                   id="SvgjsG2911"
                                   className="apexcharts-xaxis-texts-g"
@@ -1407,7 +1407,8 @@ const Dashboard = () => {
                         height={45}
                         viewBox="0 0 137 137"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <path
                           d="M68.5 0C30.6686 0 0 30.6686 0 68.5C0 106.331 30.6686 137 68.5 137C106.331 137 137 106.331 137 68.5C136.958 30.6865 106.313 0.0418093 68.5 0ZM40.213 63.6068H59.7843C62.4869 63.6068 64.6774 65.7973 64.6774 68.5C64.6774 71.2027 62.4869 73.3932 59.7843 73.3932H40.213C37.5104 73.3932 35.3199 71.2027 35.3199 68.5C35.3199 65.7973 37.5119 63.6068 40.213 63.6068ZM101.393 56.6456L95.5088 86.0883C94.1231 92.9226 88.122 97.8411 81.1488 97.8576H40.213C37.5104 97.8576 35.3199 95.6671 35.3199 92.9644C35.3199 90.2617 37.5119 88.0712 40.213 88.0712H81.1488C83.4617 88.0652 85.4522 86.4347 85.9121 84.168L91.7982 54.7253C92.3208 52.0973 90.6156 49.544 87.9891 49.0214C87.677 48.9601 87.3605 48.9288 87.0439 48.9288H49.9994C47.2967 48.9288 45.1062 46.7383 45.1062 44.0356C45.1062 41.3329 47.2967 39.1424 49.9994 39.1424H87.0439C95.128 39.1454 101.679 45.699 101.677 53.7831C101.677 54.7433 101.582 55.7019 101.393 56.6456Z"
                           fill="#FFF"
@@ -1421,7 +1422,8 @@ const Dashboard = () => {
                         <div
                           id="apexcharts2776vne4"
                           className="apexcharts-canvas apexcharts2776vne4 apexcharts-theme-light"
-                          style={{ width: 500, height: 70 }}>
+                          style={{ width: 500, height: 70 }}
+                        >
                           <svg
                             id="SvgjsSvg2889"
                             width={500}
@@ -1431,7 +1433,8 @@ const Dashboard = () => {
                             xmlnsXlink="http://www.w3.org/1999/xlink"
                             className="apexcharts-svg"
                             transform="translate(0, 0)"
-                            style={{ background: "transparent" }}>
+                            style={{ background: "transparent" }}
+                          >
                             <foreignObject x={0} y={0} width={500} height={70}>
                               <div
                                 className="apexcharts-legend"
@@ -1448,7 +1451,8 @@ const Dashboard = () => {
                             <g
                               id="SvgjsG2891"
                               className="apexcharts-inner apexcharts-graphical"
-                              transform="translate(-1, 3)">
+                              transform="translate(-1, 3)"
+                            >
                               <defs id="SvgjsDefs2890">
                                 <clipPath id="gridRectMask2776vne4">
                                   <rect
@@ -1489,7 +1493,8 @@ const Dashboard = () => {
                                 <g
                                   id="SvgjsG2901"
                                   className="apexcharts-gridlines-horizontal"
-                                  style={{ display: "none" }}></g>
+                                  style={{ display: "none" }}
+                                ></g>
                                 <g
                                   id="SvgjsG2902"
                                   className="apexcharts-gridlines-vertical"
@@ -1523,7 +1528,8 @@ const Dashboard = () => {
                               />
                               <g
                                 id="SvgjsG2895"
-                                className="apexcharts-line-series apexcharts-plot-series">
+                                className="apexcharts-line-series apexcharts-plot-series"
+                              >
                                 <g
                                   id="SvgjsG2896"
                                   className="apexcharts-series"
@@ -1531,7 +1537,8 @@ const Dashboard = () => {
                                   seriesname="NetxProfit"
                                   data-longestseries="true"
                                   rel={1}
-                                  data-realindex={0}>
+                                  data-realindex={0}
+                                >
                                   <path
                                     id="SvgjsPath2899"
                                     d="M 0 36.57142857142857C 19.483333333333334 36.57142857142857 36.18333333333334 16.457142857142856 55.66666666666667 16.457142857142856C 75.15 16.457142857142856 91.85000000000001 64 111.33333333333334 64C 130.81666666666666 64 147.51666666666668 27.428571428571423 167 27.428571428571423C 186.48333333333335 27.428571428571423 203.18333333333334 64 222.66666666666669 64C 242.15000000000003 64 258.85 18.285714285714285 278.33333333333337 18.285714285714285C 297.8166666666667 18.285714285714285 314.51666666666665 54.857142857142854 334 54.857142857142854C 353.48333333333335 54.857142857142854 370.18333333333334 36.57142857142857 389.6666666666667 36.57142857142857C 409.15000000000003 36.57142857142857 425.85 54.857142857142854 445.33333333333337 54.857142857142854C 464.8166666666667 54.857142857142854 481.51666666666665 0 501 0M 501 0"
@@ -1576,7 +1583,8 @@ const Dashboard = () => {
                               <g
                                 id="SvgjsG2910"
                                 className="apexcharts-xaxis"
-                                transform="translate(0, 0)">
+                                transform="translate(0, 0)"
+                              >
                                 <g
                                   id="SvgjsG2911"
                                   className="apexcharts-xaxis-texts-g"
@@ -1623,7 +1631,8 @@ const Dashboard = () => {
                         height={45}
                         viewBox="0 0 137 137"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <path
                           d="M68.5 0C30.6686 0 0 30.6686 0 68.5C0 106.331 30.6686 137 68.5 137C106.331 137 137 106.331 137 68.5C136.958 30.6865 106.313 0.0418093 68.5 0ZM40.213 63.6068H59.7843C62.4869 63.6068 64.6774 65.7973 64.6774 68.5C64.6774 71.2027 62.4869 73.3932 59.7843 73.3932H40.213C37.5104 73.3932 35.3199 71.2027 35.3199 68.5C35.3199 65.7973 37.5119 63.6068 40.213 63.6068ZM101.393 56.6456L95.5088 86.0883C94.1231 92.9226 88.122 97.8411 81.1488 97.8576H40.213C37.5104 97.8576 35.3199 95.6671 35.3199 92.9644C35.3199 90.2617 37.5119 88.0712 40.213 88.0712H81.1488C83.4617 88.0652 85.4522 86.4347 85.9121 84.168L91.7982 54.7253C92.3208 52.0973 90.6156 49.544 87.9891 49.0214C87.677 48.9601 87.3605 48.9288 87.0439 48.9288H49.9994C47.2967 48.9288 45.1062 46.7383 45.1062 44.0356C45.1062 41.3329 47.2967 39.1424 49.9994 39.1424H87.0439C95.128 39.1454 101.679 45.699 101.677 53.7831C101.677 54.7433 101.582 55.7019 101.393 56.6456Z"
                           fill="#FFF"
@@ -1637,7 +1646,8 @@ const Dashboard = () => {
                         <div
                           id="apexcharts2776vne4"
                           className="apexcharts-canvas apexcharts2776vne4 apexcharts-theme-light"
-                          style={{ width: 500, height: 70 }}>
+                          style={{ width: 500, height: 70 }}
+                        >
                           <svg
                             id="SvgjsSvg2889"
                             width={500}
@@ -1647,7 +1657,8 @@ const Dashboard = () => {
                             xmlnsXlink="http://www.w3.org/1999/xlink"
                             className="apexcharts-svg"
                             transform="translate(0, 0)"
-                            style={{ background: "transparent" }}>
+                            style={{ background: "transparent" }}
+                          >
                             <foreignObject x={0} y={0} width={500} height={70}>
                               <div
                                 className="apexcharts-legend"
@@ -1664,7 +1675,8 @@ const Dashboard = () => {
                             <g
                               id="SvgjsG2891"
                               className="apexcharts-inner apexcharts-graphical"
-                              transform="translate(-1, 3)">
+                              transform="translate(-1, 3)"
+                            >
                               <defs id="SvgjsDefs2890">
                                 <clipPath id="gridRectMask2776vne4">
                                   <rect
@@ -1705,7 +1717,8 @@ const Dashboard = () => {
                                 <g
                                   id="SvgjsG2901"
                                   className="apexcharts-gridlines-horizontal"
-                                  style={{ display: "none" }}></g>
+                                  style={{ display: "none" }}
+                                ></g>
                                 <g
                                   id="SvgjsG2902"
                                   className="apexcharts-gridlines-vertical"
@@ -1739,7 +1752,8 @@ const Dashboard = () => {
                               />
                               <g
                                 id="SvgjsG2895"
-                                className="apexcharts-line-series apexcharts-plot-series">
+                                className="apexcharts-line-series apexcharts-plot-series"
+                              >
                                 <g
                                   id="SvgjsG2896"
                                   className="apexcharts-series"
@@ -1747,7 +1761,8 @@ const Dashboard = () => {
                                   seriesname="NetxProfit"
                                   data-longestseries="true"
                                   rel={1}
-                                  data-realindex={0}>
+                                  data-realindex={0}
+                                >
                                   <path
                                     id="SvgjsPath2899"
                                     d="M 0 36.57142857142857C 19.483333333333334 36.57142857142857 36.18333333333334 16.457142857142856 55.66666666666667 16.457142857142856C 75.15 16.457142857142856 91.85000000000001 64 111.33333333333334 64C 130.81666666666666 64 147.51666666666668 27.428571428571423 167 27.428571428571423C 186.48333333333335 27.428571428571423 203.18333333333334 64 222.66666666666669 64C 242.15000000000003 64 258.85 18.285714285714285 278.33333333333337 18.285714285714285C 297.8166666666667 18.285714285714285 314.51666666666665 54.857142857142854 334 54.857142857142854C 353.48333333333335 54.857142857142854 370.18333333333334 36.57142857142857 389.6666666666667 36.57142857142857C 409.15000000000003 36.57142857142857 425.85 54.857142857142854 445.33333333333337 54.857142857142854C 464.8166666666667 54.857142857142854 481.51666666666665 0 501 0M 501 0"
@@ -1792,7 +1807,8 @@ const Dashboard = () => {
                               <g
                                 id="SvgjsG2910"
                                 className="apexcharts-xaxis"
-                                transform="translate(0, 0)">
+                                transform="translate(0, 0)"
+                              >
                                 <g
                                   id="SvgjsG2911"
                                   className="apexcharts-xaxis-texts-g"
@@ -1840,7 +1856,8 @@ const Dashboard = () => {
                         height={45}
                         viewBox="0 0 137 137"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <path
                           d="M68.5 0C30.6686 0 0 30.6686 0 68.5C0 106.331 30.6686 137 68.5 137C106.331 137 137 106.331 137 68.5C136.958 30.6865 106.313 0.0418093 68.5 0ZM40.213 63.6068H59.7843C62.4869 63.6068 64.6774 65.7973 64.6774 68.5C64.6774 71.2027 62.4869 73.3932 59.7843 73.3932H40.213C37.5104 73.3932 35.3199 71.2027 35.3199 68.5C35.3199 65.7973 37.5119 63.6068 40.213 63.6068ZM101.393 56.6456L95.5088 86.0883C94.1231 92.9226 88.122 97.8411 81.1488 97.8576H40.213C37.5104 97.8576 35.3199 95.6671 35.3199 92.9644C35.3199 90.2617 37.5119 88.0712 40.213 88.0712H81.1488C83.4617 88.0652 85.4522 86.4347 85.9121 84.168L91.7982 54.7253C92.3208 52.0973 90.6156 49.544 87.9891 49.0214C87.677 48.9601 87.3605 48.9288 87.0439 48.9288H49.9994C47.2967 48.9288 45.1062 46.7383 45.1062 44.0356C45.1062 41.3329 47.2967 39.1424 49.9994 39.1424H87.0439C95.128 39.1454 101.679 45.699 101.677 53.7831C101.677 54.7433 101.582 55.7019 101.393 56.6456Z"
                           fill="#FFF"
@@ -1854,7 +1871,8 @@ const Dashboard = () => {
                         <div
                           id="apexcharts2776vne4"
                           className="apexcharts-canvas apexcharts2776vne4 apexcharts-theme-light"
-                          style={{ width: 500, height: 70 }}>
+                          style={{ width: 500, height: 70 }}
+                        >
                           <svg
                             id="SvgjsSvg2889"
                             width={500}
@@ -1864,7 +1882,8 @@ const Dashboard = () => {
                             xmlnsXlink="http://www.w3.org/1999/xlink"
                             className="apexcharts-svg"
                             transform="translate(0, 0)"
-                            style={{ background: "transparent" }}>
+                            style={{ background: "transparent" }}
+                          >
                             <foreignObject x={0} y={0} width={500} height={70}>
                               <div
                                 className="apexcharts-legend"
@@ -1881,7 +1900,8 @@ const Dashboard = () => {
                             <g
                               id="SvgjsG2891"
                               className="apexcharts-inner apexcharts-graphical"
-                              transform="translate(-1, 3)">
+                              transform="translate(-1, 3)"
+                            >
                               <defs id="SvgjsDefs2890">
                                 <clipPath id="gridRectMask2776vne4">
                                   <rect
@@ -1922,7 +1942,8 @@ const Dashboard = () => {
                                 <g
                                   id="SvgjsG2901"
                                   className="apexcharts-gridlines-horizontal"
-                                  style={{ display: "none" }}></g>
+                                  style={{ display: "none" }}
+                                ></g>
                                 <g
                                   id="SvgjsG2902"
                                   className="apexcharts-gridlines-vertical"
@@ -1956,7 +1977,8 @@ const Dashboard = () => {
                               />
                               <g
                                 id="SvgjsG2895"
-                                className="apexcharts-line-series apexcharts-plot-series">
+                                className="apexcharts-line-series apexcharts-plot-series"
+                              >
                                 <g
                                   id="SvgjsG2896"
                                   className="apexcharts-series"
@@ -1964,7 +1986,8 @@ const Dashboard = () => {
                                   seriesname="NetxProfit"
                                   data-longestseries="true"
                                   rel={1}
-                                  data-realindex={0}>
+                                  data-realindex={0}
+                                >
                                   <path
                                     id="SvgjsPath2899"
                                     d="M 0 36.57142857142857C 19.483333333333334 36.57142857142857 36.18333333333334 16.457142857142856 55.66666666666667 16.457142857142856C 75.15 16.457142857142856 91.85000000000001 64 111.33333333333334 64C 130.81666666666666 64 147.51666666666668 27.428571428571423 167 27.428571428571423C 186.48333333333335 27.428571428571423 203.18333333333334 64 222.66666666666669 64C 242.15000000000003 64 258.85 18.285714285714285 278.33333333333337 18.285714285714285C 297.8166666666667 18.285714285714285 314.51666666666665 54.857142857142854 334 54.857142857142854C 353.48333333333335 54.857142857142854 370.18333333333334 36.57142857142857 389.6666666666667 36.57142857142857C 409.15000000000003 36.57142857142857 425.85 54.857142857142854 445.33333333333337 54.857142857142854C 464.8166666666667 54.857142857142854 481.51666666666665 0 501 0M 501 0"
@@ -2010,7 +2033,8 @@ const Dashboard = () => {
                               <g
                                 id="SvgjsG2910"
                                 className="apexcharts-xaxis"
-                                transform="translate(0, 0)">
+                                transform="translate(0, 0)"
+                              >
                                 <g
                                   id="SvgjsG2911"
                                   className="apexcharts-xaxis-texts-g"
@@ -2040,53 +2064,6 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-
-        {/* <div className="row">
-          <div className="col-lg-12">
-            <div className="card transaction-table">
-              <div className="card-header border-0 flex-wrap pb-0">
-                <div className="mb-4">
-                  <h4 className="card-title">transaction History</h4>
-                </div>
-              </div>
-              <div className="card-body p-0">
-                <div className="tab-content" id="myTabContent1">
-                  <div
-                    className="tab-pane fade show active"
-                    id="Week"
-                    role="tabpanel"
-                    aria-labelledby="Week-tab">
-                    <Table
-                      columns={columns}
-                      data={data && data}
-                      rowsPerPage={rowsPerPage}
-                    />
-                  </div>
-                  <div
-                    className="d-flex align-items-center"
-                    style={{
-                      marginBottom: "20px",
-                      marginLeft: "20px",
-                      marginTop: "-48px",
-                    }}>
-                    Rows per page:{" "}
-                    <select
-                      className="form-select ml-2"
-                      value={rowsPerPage}
-                      onChange={(e) => setRowsPerPage(Number(e.target.value))}
-                      style={{ width: "auto", marginLeft: "10px" }}>
-                      <option value={5}>5</option>
-                      <option value={10}>10</option>
-                      <option value={20}>20</option>
-                      <option value={50}>50</option>
-                      <option value={100}>100</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> */}
       </div>
     </div>
   );

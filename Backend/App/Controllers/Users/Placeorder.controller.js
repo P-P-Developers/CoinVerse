@@ -851,13 +851,7 @@ const EntryTrade = async (
     // console.log("ActualFun - ", ActualFun);
     const seventyPercent = (ActualFun * 70) / 100;
 
-    // console.log("seventyPercent - ", seventyPercent);
-    // console.log("price - ", price);
-
-    // console.log(
-    //   "price - seventyPercent",
-    //   parseFloat(price) - parseFloat(seventyPercent)
-    // );
+  
 
     tradehistory = new mainorder_model({
       orderid: orderdata._id,

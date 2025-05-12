@@ -3,7 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Header from "../components/Dashboard/Header";
 import Sidebar from "../components/Dashboard/Sidebar";
 import Footer from "../components/Dashboard/Footer";
-import Dashboard from "../Layouts/Superadmin/Dashboard";
+import Dashboard from "../Layouts/Superadmin/DASHBOARD/Dashboard";
 import Admin from "../Layouts/Superadmin/Admins/Admin";
 import AddAdmin from "../Layouts/Superadmin/Admins/AddAdmin";
 import Transection from "../Layouts/Superadmin/Transection/Transection";
@@ -15,7 +15,7 @@ import UpdateAdmin from "../Layouts/Superadmin/Admins/UpdateAdmin";
 import AdminUser from "../Layouts/Superadmin/Admins/AdminUser";
 import Adminemployee from "../Layouts/Superadmin/Admins/Adminemployee";
 
-import Brokerage from "../Layouts/Superadmin/Brokerage";
+import Brokerage from "../Layouts/Superadmin/BROKERAGE/Brokerage";
 import AdminBrokerage from "../Layouts/Superadmin/Admins/Brokerage";
 import System from "../Layouts/Superadmin/Admins/System";
 import SuperAdminTradeHistory from "../Layouts/Superadmin/Admins/SuperAdminTradeHistory";

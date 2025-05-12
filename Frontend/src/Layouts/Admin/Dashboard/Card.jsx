@@ -1,11 +1,8 @@
+// "ETH/USD,USD/EUR,USD/JPY,BTC/USD,EUR/USD,ETH/BTC,ETH/XRP,ETH/USD,XAU/USD",
+// BTC/USD,EUR/USD,USD/JPY,ETH/BTC,
+// "ETH/USD,USD/EUR,ETH/XRP,ETH/USD,XAU/USD",
 
-    // "ETH/USD,USD/EUR,USD/JPY,BTC/USD,EUR/USD,ETH/BTC,ETH/XRP,ETH/USD,XAU/USD",
-    // BTC/USD,EUR/USD,USD/JPY,ETH/BTC,
-    // "ETH/USD,USD/EUR,ETH/XRP,ETH/USD,XAU/USD",
-
-
-
-    import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 
 // Styled components for styling the card
@@ -44,8 +41,8 @@ const LivePriceCard = () => {
 
     let ws = new WebSocket(url);
 
-var symbols = "ETH/USD,USD/EUR,USD/JPY,BTC/USD,EUR/USD,ETH/BTC,ETH/XRP,ETH/USD,XAU/USD";
-    
+    var symbols =
+      "ETH/USD,USD/EUR,USD/JPY,BTC/USD,EUR/USD,ETH/BTC,ETH/XRP,ETH/USD,XAU/USD";
 
     const subscribeToSymbols = () => {
       ws.send(
@@ -66,7 +63,6 @@ var symbols = "ETH/USD,USD/EUR,USD/JPY,BTC/USD,EUR/USD,ETH/BTC,ETH/XRP,ETH/USD,X
 
       ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        
 
         if (data && data.symbol && data.price) {
           setPrices((prevPrices) => {
@@ -103,34 +99,30 @@ var symbols = "ETH/USD,USD/EUR,USD/JPY,BTC/USD,EUR/USD,ETH/BTC,ETH/XRP,ETH/USD,X
       ws.close();
     };
   }, []);
-  var symbols = "ETH/USD,USD/EUR,USD/JPY,BTC/USD,EUR/USD,ETH/BTC,ETH/XRP,ETH/USD,XAU/USD";
-
+  var symbols =
+    "ETH/USD,USD/EUR,USD/JPY,BTC/USD,EUR/USD,ETH/BTC,ETH/XRP,ETH/USD,XAU/USD";
 
   const renderPriceCards = () => {
     // Split the symbols  manda pover each to render a price card
     return symbols.split(",").map((symbol) => {
       const priceData = prices[symbol];
-  
+
       if (!priceData) return null;
-  
-  
+
       return (
         <div className="price-card" key={symbol}>
           <PriceCard>
             <Symbol>{symbol}</Symbol>
-            <Price isIncreasing={priceData.isIncreasing}>{priceData.price}</Price>
+            <Price isIncreasing={priceData.isIncreasing}>
+              {priceData.price}
+            </Price>
           </PriceCard>
         </div>
       );
     });
   };
-  
-  return (
-    <CardContainer>
-      {renderPriceCards()}
 
-    </CardContainer>
-  );
+  return <CardContainer>{renderPriceCards()}</CardContainer>;
 };
 
 export default LivePriceCard;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Superadmindashboarddata } from "../../Services/Superadmin/Superadmin";
+import { Superadmindashboarddata } from "../../../Services/Superadmin/Superadmin";
 
 const Dashboard = () => {
   const [countdata, setCountdata] = useState([0]);

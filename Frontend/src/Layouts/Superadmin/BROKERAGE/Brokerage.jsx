@@ -1,8 +1,8 @@
 
 import React, { useEffect, useState } from "react";
-import Table from "../../Utils/Table/Table";
+import Table from "../../../Utils/Table/Table";
 import Swal from "sweetalert2";
-import { getAllBrokerageData } from "../../Services/Superadmin/Superadmin";
+import { getAllBrokerageData } from "../../../Services/Superadmin/Superadmin";
 
 const Brokerage = () => {
 

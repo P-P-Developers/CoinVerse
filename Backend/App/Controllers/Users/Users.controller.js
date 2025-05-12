@@ -27,6 +27,14 @@ class Users {
         return res.json({ status: false, message: "User not found", data: [] });
       }
 
+      if(Balance > 10000){
+        return res.json({
+          status: false,
+          message: "You can not "+type==1 ?"Deposite":"Withdrawal"+" more than 10000",
+          data: [],
+        });
+      }
+
       // Fetch dollar price data
       const dollarPriceData = await MarginRequired.findOne({
         adminid: userdata.parent_id,

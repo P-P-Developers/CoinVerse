@@ -67,6 +67,8 @@ const AddUsers = () => {
       } else if (isNaN(values.Balance)) {
         errors.Balance = "Balance must be a number";
       }
+
+      
       if (!values.password) {
         errors.password = "Please Enter Password";
       } else if (values.password.length < 6) {
@@ -304,7 +306,7 @@ const AddUsers = () => {
     {
       name: "Balance",
       label: "Balance",
-      type: "text",
+      type: "text1",
       label_size: 12,
       col_size: 6,
       disable: false,

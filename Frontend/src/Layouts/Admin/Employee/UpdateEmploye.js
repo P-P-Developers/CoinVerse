@@ -194,14 +194,7 @@ const UpdateEmploye = () => {
       col_size: 6,
       disable: false,
     },
-    // {
-    //   name: "Balance",
-    //   label: "Balance",
-    //   type: "text3",
-    //   label_size: 12,
-    //   col_size: 6,
-    //   disable: false,
-    // },
+
     {
       name: "Password",
       label: "Password",
@@ -211,14 +204,7 @@ const UpdateEmploye = () => {
       disable: true,
     },
 
-    // {
-    //   name: "password",
-    //   label: "Password",
-    //   type: "password",
-    //   label_size: 12,
-    //   col_size: 6,
-    //   disable: false,
-    // },
+ 
    
     {
       name: "all",

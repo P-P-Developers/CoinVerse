@@ -83,9 +83,7 @@ const AddUsers = () => {
         errors.Balance = "Balance must be a number";
       } 
 
-      if(values.Balance > 10000){
-        errors.Balance = "Balance should be less than 10000";
-      }
+    
 
       // Password validation
       if (!values.password) {
@@ -301,7 +299,7 @@ const AddUsers = () => {
     {
       name: "Balance",
       label: "Balance",
-      type: "text",
+      type: "text1",
       label_size: 12,
       col_size: 6,
       disable: false,

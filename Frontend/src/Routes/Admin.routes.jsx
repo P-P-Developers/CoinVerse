@@ -3,7 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Header from "../components/Dashboard/Header";
 import Sidebar from "../components/Dashboard/Sidebar";
 import Footer from "../components/Dashboard/Footer";
-import Dashboard from "../Layouts/Admin/Dashboard";
+import Dashboard from "../Layouts/Admin/Dashboard/Dashboard";
 import Login from "../Layouts/Auth/Login";
 import Report from "../Layouts/Admin/Report";
 import Tradehistory from "../Layouts/Admin/Tradehistory";
@@ -11,7 +11,6 @@ import Loginstatus from "../Layouts/Admin/Loginstatus";
 import Withdraw from "../Layouts/Admin/Withdraw";
 import Deposit from "../Layouts/Admin/Deposit";
 import Position from "../Layouts/Admin/Position";
-import User from "../Layouts/Admin/User";
 import Users from "../Layouts/Admin/Users/Users";
 import AddUsers from "../Layouts/Admin/Users/AddUsers";
 import Transaction from "../Layouts/Admin/Transactions/Transaction";
@@ -24,12 +23,11 @@ import Profile from "../Layouts/Admin/Profile";
 import Changedpassword from "../Layouts/Admin/Changedpassword";
 import Holdoff from "../Layouts/Admin/Holdoff";
 import Currency from "../Layouts/Admin/Currency";
-import Signup from "../Layouts/Admin/Signup";
+import Signup from "../Layouts/Auth/Signup";
 import Brokerage from "../Layouts/Admin/Brokerage";
 
 import AdminTradehistory from "../Layouts/Admin/Admintradehistory";
 import Research from "../Layouts/Admin/Research"
-import Bankdetails from "../Layouts/Admin/Bankdetails"
 import Basicsetting from "../Layouts/Admin/Basicsetting"
 import Chatbox from "../Layouts/Admin/Chatbox/Chatdash";
 
@@ -62,11 +60,6 @@ const AdminRoutes = () => {
           <Route path="/position" element={<Position />} />
           <Route path="/holdoff" element={<Holdoff />} />
           <Route path="/currency" element={<Currency />} />
-
-          {/* <Route path="/employees" element={<Employee />} /> */}
-          {/* <Route path="/users" element={<User />} /> */}
-          {/* <Route path="/transaction" element={<Transaction />} /> */}
-
           <Route path="/users" element={<Users />} />
           <Route path="/adduser" element={<AddUsers />} />
           <Route path="/transaction" element={<Transaction />} />
@@ -74,7 +67,7 @@ const AdminRoutes = () => {
           <Route path="/addemployees" element={<AddEmployee />} />
           <Route path="/broadcast" element={<Broadcast />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/changedpassword" element={<Changedpassword />} />
+          <Route path="/  " element={<Changedpassword />} />
           <Route path="/users/updateuser/:id" element={<Updateuser />} />
           <Route
             path="/employee/updateemploye/:id"
@@ -85,7 +78,6 @@ const AdminRoutes = () => {
           <Route path="/brokerage" element={<Brokerage />} />
 
           <Route path="/research" element={<Research />} />
-          {/* <Route path="/bankdetails" element={<Bankdetails />} /> */}
           <Route path="/basicsetting" element={<Basicsetting />} />
           <Route path="/chatbox" element={<Chatbox />} />
 
