@@ -196,8 +196,8 @@ const Header = () => {
                     aria-expanded="false"
                   >
                     <i
-                      className="fa fa-bell"
-                      style={{ fontSize: "32px", color: "white" }}
+                      className="fa fa-bell"  style={{  color: "white" }}
+                    
                     />
                   </a>
                   <div className="dropdown-menu dropdown-menu-end of-visible">

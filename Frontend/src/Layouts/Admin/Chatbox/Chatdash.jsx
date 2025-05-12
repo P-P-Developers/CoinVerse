@@ -117,11 +117,11 @@ const Users = () => {
       <div className="container-fluid">
         <div className="chat-container">
           <section className="message-area">
-            <div className="row">
+           
               <div className="chat-area">
                 <div className="chatlist">
-                  <div className="modal-dialog-scrollable">
-                    <div className="modal-content">
+                  <div className="">
+                    <div className="">
                       <div className="chat-header">
                         <div className="msg-search">
                           <input
@@ -133,7 +133,7 @@ const Users = () => {
                           />
                         </div>
                       </div>
-                      <div className="modal-body">
+                      <div className="">
                         {/* chat-list */}
                         <div className="chat-lists">
                           <div className="tab-content" id="myTabContent">
@@ -184,8 +184,8 @@ const Users = () => {
 
                 {selectedUser && (
                   <div className="chatbox">
-                    <div className="modal-dialog-scrollable">
-                      <div className="modal-content">
+                    <div className="">
+                      <div className="">
                         <div className="msg-head">
                           <div className="row">
                             <div className="col-8">
@@ -229,7 +229,7 @@ const Users = () => {
                             </div>
                           </div>
                         </div>
-                        <div className="modal-body">
+                        <div className="">
                           <div className="msg-body">
                             <ul>
                               {messages.map((msg, idx) => {
@@ -289,7 +289,7 @@ const Users = () => {
                   </div>
                 )}
               </div>
-            </div>
+            
           </section>
         </div>
       </div>
