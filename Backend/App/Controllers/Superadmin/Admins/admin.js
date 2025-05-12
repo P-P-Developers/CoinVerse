@@ -50,6 +50,10 @@ class Superadmin {
 
       } = req.body;
 
+
+      UserName = UserName.toString().toLowerCase();
+      Email = Email.toString().toLowerCase();
+
       if (!FullName || !UserName || !Email || !PhoneNo || !password || !Role) {
         return res
           .status(400)
@@ -335,43 +339,6 @@ class Superadmin {
     }
   }
 
-  // async getAdminDetail(req, res) {
-  //   try {
-  //     const { id  } = req.body;
-  //     const result = await User_model.find({ parent_id: id }).sort({
-  //       createdAt: -1,
-  //     });
-
-  //     const adminIds = result.map((user) => user._id);
-  //     const permissions = await employee_permission.find({
-  //       employee_id: { $in: adminIds },
-  //     });
-
-  //     if (!result || result.length === 0) {
-  //       return res.json({ status: false, message: "Data not found", data: [] });
-  //     }
-
-  //     const combinedData = result.map((user) => {
-  //       const userPermissions = permissions.filter((permission) =>
-  //         permission.employee_id.equals(user._id)
-  //       );
-
-  //       return {
-  //         ...user.toObject(),
-  //         permissions: userPermissions,
-  //       };
-  //     });
-
-  //     return res.json({
-  //       status: true,
-  //       message: "Getting data",
-  //       data: combinedData,
-  //     });
-  //   } catch (error) {
-  //     return res.json({ status: false, message: "Internal error", data: [] });
-  //   }
-  // }
-
 
   async getAdminDetail(req, res) {
     try {
@@ -423,9 +390,6 @@ class Superadmin {
     }
   }
 
-  
-
-  
   // update status
   async UpdateActiveStatusAdmin(req, res) {
     try {
