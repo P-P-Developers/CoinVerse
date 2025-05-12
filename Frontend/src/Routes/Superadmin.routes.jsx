@@ -19,7 +19,7 @@ import Brokerage from "../Layouts/Superadmin/BROKERAGE/Brokerage";
 import AdminBrokerage from "../Layouts/Superadmin/Admins/Brokerage";
 import System from "../Layouts/Superadmin/Admins/System";
 import SuperAdminTradeHistory from "../Layouts/Superadmin/Admins/SuperAdminTradeHistory";
-import Bankdetails from "../Layouts/Admin/Bankdetails";
+import Bankdetails from "../Layouts/Admin/Profile/Bankdetails";
 
 import Deposite from "../Layouts/Superadmin/withdrawalAnddeposite/Deposit";
 import Withdrawal from "../Layouts/Superadmin/withdrawalAnddeposite/Withdrawal";

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import Table from "../../Utils/Table/Table";
-import { symbolholdoff, updatesymbolstatus } from "../../Services/Admin/Addmin";
+import Table from "../../../Utils/Table/Table";
+import { symbolholdoff, updatesymbolstatus } from "../../../Services/Admin/Addmin";
 import Swal from "sweetalert2";
 
 const Holdoff = () => {

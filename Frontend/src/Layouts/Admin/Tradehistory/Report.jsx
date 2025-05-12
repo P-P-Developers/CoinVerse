@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { getlicencedata } from "../../Services/Admin/Addmin";
-import { fDateTime } from "../../Utils/Date_format/datefromat";
-import Table from "../../Utils/Table/Table";
+import { getlicencedata } from "../../../Services/Admin/Addmin";
+import { fDateTime } from "../../../Utils/Date_format/datefromat";
+import Table from "../../../Utils/Table/Table";
 
 const Report = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));

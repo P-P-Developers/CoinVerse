@@ -22,7 +22,7 @@ import Updateuser from '../Layouts/Employee/Users/Updateuser';
 import Profile from '../Layouts/Employee/Profile';
 import Setting from '../Layouts/Employee/Setting';
 import Brokerage from '../Layouts/Employee/Brokerage';
-import Changedpassword from '../Layouts/Admin/Changedpassword';
+import Changedpassword from '../Layouts/Admin/Profile/Changedpassword';
 
 
 

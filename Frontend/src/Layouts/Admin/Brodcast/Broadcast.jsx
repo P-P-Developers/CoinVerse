@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { broadcastmessage, getbroadcastmessage } from '../../Services/Admin/Addmin';
+import { broadcastmessage, getbroadcastmessage } from '../../../Services/Admin/Addmin';
 import Swal from "sweetalert2";
-import Table from '../../Utils/Table/Table';
-import { fDateTime } from '../../Utils/Date_format/datefromat';
+import Table from '../../../Utils/Table/Table';
+import { fDateTime } from '../../../Utils/Date_format/datefromat';
 
 
 const Broadcast = () => {

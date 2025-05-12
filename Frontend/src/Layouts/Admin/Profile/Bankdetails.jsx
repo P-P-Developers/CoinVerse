@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Swal from "sweetalert2";
-import { UpdateUpiDetails, getUpiDetails } from '../../Services/Admin/Addmin';
+import { UpdateUpiDetails, getUpiDetails } from '../../../Services/Admin/Addmin';
 
 const Changedpassword = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));

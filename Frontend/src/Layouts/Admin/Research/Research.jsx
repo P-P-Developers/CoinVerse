@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Modal, Button, Form, Badge, Row, Col } from "react-bootstrap";
 import { FaPlusCircle } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
-import Table from "../../Utils/Table/Table";
+import Table from "../../../Utils/Table/Table";
 
-import btcImage from "./btc.png";
-import forexImage from "./btc.png";
+import btcImage from "../btc.png";
+import forexImage from "../btc.png";
 
 import {
   AddResearch,
@@ -14,7 +14,7 @@ import {
   DeleteResearch,
   EditResearch,
   UpdatStatus,
-} from "../../Services/Admin/Addmin";
+} from "../../../Services/Admin/Addmin";
 
 const initialFormData = {
   researchType: "Crypto",

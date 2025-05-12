@@ -5,39 +5,34 @@ import Sidebar from "../components/Dashboard/Sidebar";
 import Footer from "../components/Dashboard/Footer";
 import Dashboard from "../Layouts/Admin/Dashboard/Dashboard";
 import Login from "../Layouts/Auth/Login";
-import Report from "../Layouts/Admin/Report";
-import Tradehistory from "../Layouts/Admin/Tradehistory";
-import Loginstatus from "../Layouts/Admin/Loginstatus";
-import Withdraw from "../Layouts/Admin/Withdraw";
-import Deposit from "../Layouts/Admin/Deposit";
-import Position from "../Layouts/Admin/Position";
+import Report from "../Layouts/Admin/Tradehistory/Report";
+import Tradehistory from "../Layouts/Admin/Tradehistory/Tradehistory";
+import Loginstatus from "../Layouts/Admin/Loginstatus/Loginstatus";
+import Withdraw from "../Layouts/Admin/Depositeandwithwral/Withdraw";
+import Deposit from "../Layouts/Admin/Depositeandwithwral/Deposit";
+import Position from "../Layouts/Admin/Position/Position";
 import Users from "../Layouts/Admin/Users/Users";
 import AddUsers from "../Layouts/Admin/Users/AddUsers";
 import Transaction from "../Layouts/Admin/Transactions/Transaction";
 import Employee from "../Layouts/Admin/Employee/Employee";
 import AddEmployee from "../Layouts/Admin/Employee/AddEmployee";
-import Broadcast from "../Layouts/Admin/Broadcast";
+import Broadcast from "../Layouts/Admin/Brodcast/Broadcast";
 import Updateuser from "../Layouts/Admin/Users/Updateuser";
 import UpdateEmploye from "../Layouts/Admin/Employee/UpdateEmploye";
-import Profile from "../Layouts/Admin/Profile";
-import Changedpassword from "../Layouts/Admin/Changedpassword";
-import Holdoff from "../Layouts/Admin/Holdoff";
-import Currency from "../Layouts/Admin/Currency";
+import Profile from "../Layouts/Admin/Profile/Profile";
+import Changedpassword from "../Layouts/Admin/Profile/Changedpassword";
+import Holdoff from "../Layouts/Admin/Holdoff/Holdoff";
+import Currency from "../Layouts/Admin/Profile/Currency";
 import Signup from "../Layouts/Auth/Signup";
-import Brokerage from "../Layouts/Admin/Brokerage";
-
-import AdminTradehistory from "../Layouts/Admin/Admintradehistory";
-import Research from "../Layouts/Admin/Research"
-import Basicsetting from "../Layouts/Admin/Basicsetting"
+import Brokerage from "../Layouts/Admin/Brokerage/Brokerage";
+import AdminTradehistory from "../Layouts/Admin/Tradehistory/Admintradehistory";
+import Research from "../Layouts/Admin/Research/Research";
+import Basicsetting from "../Layouts/Admin/Profile/Basicsetting";
 import Chatbox from "../Layouts/Admin/Chatbox/Chatdash";
-
 
 const AdminRoutes = () => {
   const [isMenuToggled, setIsMenuToggled] = useState(false);
 
-  const handleToggleClick = () => {
-    setIsMenuToggled(!isMenuToggled);
-  };
   return (
     <div
       id="main-wrapper"
@@ -80,8 +75,6 @@ const AdminRoutes = () => {
           <Route path="/research" element={<Research />} />
           <Route path="/basicsetting" element={<Basicsetting />} />
           <Route path="/chatbox" element={<Chatbox />} />
-
-
         </Routes>
       </div>
       <Footer />

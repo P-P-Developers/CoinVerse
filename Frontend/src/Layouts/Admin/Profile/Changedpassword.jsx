@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PasswordChanged } from '../../Services/Auth/Auth';
+import { PasswordChanged } from '../../../Services/Auth/Auth';
 import Swal from "sweetalert2";
 
 const Changedpassword = () => {

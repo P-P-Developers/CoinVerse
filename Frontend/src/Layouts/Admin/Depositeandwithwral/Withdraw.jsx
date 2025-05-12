@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import Table from "../../Utils/Table/Table";
-import { getFundstatus } from "../../Services/Admin/Addmin";
-import { UpdatestatusForpaymenthistory } from "../../Services/Admin/Addmin";
+import Table from "../../../Utils/Table/Table";
+import { getFundstatus } from "../../../Services/Admin/Addmin";
+import { UpdatestatusForpaymenthistory } from "../../../Services/Admin/Addmin";
 import Swal from "sweetalert2";
-import { fDateTime } from "../../Utils/Date_format/datefromat";
+import { fDateTime } from "../../../Utils/Date_format/datefromat";
 import Modal from "react-modal"; // Import Modal if not already imported
 
 const Withdraw = () => {

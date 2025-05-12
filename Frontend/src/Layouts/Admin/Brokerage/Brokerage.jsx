@@ -2,13 +2,13 @@ import React, { useEffect, useState, useMemo } from "react";
 import Swal from "sweetalert2";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
-import { fDateTimesec } from "../../Utils/Date_format/datefromat";
+import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
 
-import Table from "../../Utils/Table/Table";
-import { GetBonus, getbrokerageData } from "../../Services/Admin/Addmin";
+import Table from "../../../Utils/Table/Table";
+import { GetBonus, getbrokerageData } from "../../../Services/Admin/Addmin";
 import {
   getProfitMarginApi,
-} from "../../Services/Superadmin/Superadmin";
+} from "../../../Services/Superadmin/Superadmin";
 
 const Holdoff = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));

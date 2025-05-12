@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { MarginpriceRequired, getMarginpriceRequired } from "../../Services/Admin/Addmin";
+import { MarginpriceRequired, getMarginpriceRequired } from "../../../Services/Admin/Addmin";
 import Swal from 'sweetalert2';
 
 

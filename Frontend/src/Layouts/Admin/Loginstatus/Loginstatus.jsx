@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import Table from "../../Utils/Table/Table";
-import { fDateTimesec } from "../../Utils/Date_format/datefromat";
-import { getlogoutuser, GetUsersName } from "../../Services/Admin/Addmin";
+import Table from "../../../Utils/Table/Table";
+import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
+import { getlogoutuser, GetUsersName } from "../../../Services/Admin/Addmin";
 
 const Loginstatus = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { getAllClient } from '../../Services/Superadmin/Superadmin';
-import { TotalcountLicence } from '../../Services/Admin/Addmin';
+import { getAllClient } from '../../../Services/Superadmin/Superadmin';
+import { TotalcountLicence } from '../../../Services/Admin/Addmin';
 
 const Profile = () => {
 

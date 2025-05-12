@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import Table from "../../Utils/Table/Table";
-import { getpositionhistory } from "../../Services/Admin/Addmin";
-import { fDateTime, fDateTimesec } from "../../Utils/Date_format/datefromat";
+import Table from "../../../Utils/Table/Table";
+import { getpositionhistory } from "../../../Services/Admin/Addmin";
+import { fDateTime, fDateTimesec } from "../../../Utils/Date_format/datefromat";
 
 const Position = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));

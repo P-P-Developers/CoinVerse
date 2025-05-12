@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { getAllClient } from "../../Services/Superadmin/Superadmin";
-import { UpdateRefferPrice } from "../../Services/Admin/Addmin";
+import { getAllClient } from "../../../Services/Superadmin/Superadmin";
+import { UpdateRefferPrice } from "../../../Services/Admin/Addmin";
 import Swal from "sweetalert2";
-import { getReferClients } from "../../Services/Admin/Addmin";
-import Table from "../../Utils/Table/Table";
-import { fDateTimesec } from "../../Utils/Date_format/datefromat";
+import { getReferClients } from "../../../Services/Admin/Addmin";
+import Table from "../../../Utils/Table/Table";
+import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
 
 const Basicsetting = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
