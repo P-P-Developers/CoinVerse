@@ -4,7 +4,7 @@ import {
   getUserdata,
   Addbalance,
   updateActivestatus,
-  getAllClient
+  getAllClient,
 } from "../../../Services/Superadmin/Superadmin";
 import {
   updateuserLicence,
@@ -33,8 +33,6 @@ const Users = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
 
-
-
   const [filteredData, setFilteredData] = useState([]);
   const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
@@ -50,7 +48,7 @@ const Users = () => {
   const [loading, setLoading] = useState(false);
   const [getaccess, setGetaccess] = useState({});
 
-  const [getid, setGetid] = useState([])
+  const [getid, setGetid] = useState([]);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const columns = [
@@ -102,22 +100,7 @@ const Users = () => {
 
             {parseFloat(cell.value).toFixed(2)}
           </span>
-          {/* <CircleMinus
-              size={20}
-              style={{
-                marginBottom: "-4px",
-                marginRight: "5px",
-                verticalAlign: "middle",
-                marginLeft:"10px"
-  
-              }}
-              onClick={() => {
-            setModal(true);
-            setID(cell.row._id);
-            setType("DEBIT")
-
-          }}
-            /> */}
+      
         </div>
       ),
     },
@@ -127,35 +110,15 @@ const Users = () => {
       Cell: ({ cell }) => (
         <span
           style={{
-            color: cell.row.ActiveStatus == 1 ? 'green' : 'red',
-            fontWeight: 'bold',
+            color: cell.row.ActiveStatus == 1 ? "green" : "red",
+            fontWeight: "bold",
           }}
         >
-          {cell.row.ActiveStatus == 1 ? 'Approved' : 'Pending'}
+          {cell.row.ActiveStatus == 1 ? "Approved" : "Pending"}
         </span>
       ),
     },
 
-    // {
-    //   Header: "ActiveStatus",
-    //   accessor: "ActiveStatus",
-    //   Cell: ({ cell }) => (
-    //     <label className="form-check form-switch">
-    //       <input
-    //         id={`rating_${cell.row.id}`}
-    //         className="form-check-input"
-    //         type="checkbox"
-    //         role="switch"
-    //         onChange={(event) => updateactivestatus(event, cell.row._id)}
-    //         defaultChecked={cell.value == 1}
-    //       />
-    //       <label
-    //         htmlFor={`rating_${cell.row.id}`}
-    //         className="checktoggle checkbox-bg"
-    //       ></label>
-    //     </label>
-    //   ),
-    // },
 
 
     getaccess.Licence_Edit === 1 && {
@@ -247,12 +210,9 @@ const Users = () => {
     navigate(`updateuser/${_id}`, { state: { rowData: obj.row } });
   };
 
-
   const Clienthistory = (_id) => {
     navigate(`tradehistory/${_id}`);
   };
-
-
 
   //delete user
 
@@ -289,10 +249,6 @@ const Users = () => {
     }
   };
 
-
-
-
-
   // update Licence
 
   const updateLicence = async () => {
@@ -318,10 +274,6 @@ const Users = () => {
       });
     }
   };
-
-
-
-
 
   // update  balance
   const updateBalance = async () => {
@@ -360,24 +312,17 @@ const Users = () => {
     }
   };
 
-
-
-
-
-
   const getpermission = async () => {
     try {
       const data = { id: user_id };
       const response = await getEmployee_permissiondata(data);
       if (response.status) {
-
         setGetaccess(response.data[0]);
       }
     } catch (error) {
       console.log("Error fetching permissions:", error);
     }
   };
-
 
   // get all admin
   const getAlluserdata = async () => {
@@ -406,35 +351,24 @@ const Users = () => {
       setData(search ? searchfilter : result);
       setFilteredData(result);
       setLoading(false);
-    } catch (error) {
-  
-    }
+    } catch (error) {}
   };
-
 
   const getallclient = async () => {
     try {
-      const data = { userid: user_id }
-      const response = await getAllClient(data)
+      const data = { userid: user_id };
+      const response = await getAllClient(data);
       if (response.status) {
-        setGetid(response.data.parent_id)
+        setGetid(response.data.parent_id);
       }
-
-    } catch (error) {
-    }
-  }
-
-
-
-
+    } catch (error) {}
+  };
 
   useEffect(() => {
     getAlluserdata();
-    getpermission()
-    getallclient()
+    getpermission();
+    getallclient();
   }, [search]);
-
-
 
   return (
     <>
@@ -446,17 +380,17 @@ const Users = () => {
                 <div className="mb-4">
                   <h4 className="card-title">All Users</h4>
                 </div>
-            
 
-                {
-                  getaccess && getaccess.client_add === 1 ? (<Link
+                {getaccess && getaccess.client_add === 1 ? (
+                  <Link
                     to="/employee/adduser"
                     className="float-end mb-4 btn btn-primary"
                   >
                     Add User
-                  </Link>) :
+                  </Link>
+                ) : (
                   ""
-                }
+                )}
               </div>
               <div className="card-body p-0">
                 <div className="tab-content" id="myTabContent1">
@@ -481,10 +415,20 @@ const Users = () => {
                     {loading ? (
                       <Loader />
                     ) : (
-                        <Table columns={columns} data={data && data} rowsPerPage={rowsPerPage} />
+                      <Table
+                        columns={columns}
+                        data={data && data}
+                        rowsPerPage={rowsPerPage}
+                      />
                     )}
-                    <div className="d-flex align-items-center" style={{ marginBottom: "20px", marginLeft: "20px", marginTop: "-48px" }}>
-
+                    <div
+                      className="d-flex align-items-center"
+                      style={{
+                        marginBottom: "20px",
+                        marginLeft: "20px",
+                        marginTop: "-48px",
+                      }}
+                    >
                       Rows per page:{" "}
                       <select
                         className="form-select ml-2"
@@ -497,11 +441,9 @@ const Users = () => {
                         <option value={20}>20</option>
                         <option value={50}>50</option>
                         <option value={100}>100</option>
-
                       </select>
                     </div>
                   </div>
-                  
                 </div>
               </div>
             </div>
@@ -540,6 +482,9 @@ const Users = () => {
                           placeholder="Enter Fund"
                           onChange={(e) => {
                             const value = e.target.value.replace(/\D/g, "");
+                            if (Number(value) > 10000) {
+                              value = "10000";
+                            }
                             setBalance(value);
                           }}
                           value={balance}

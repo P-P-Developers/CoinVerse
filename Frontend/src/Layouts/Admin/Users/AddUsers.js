@@ -81,6 +81,10 @@ const AddUsers = () => {
         errors.Balance = "Please Enter Balance";
       } else if (isNaN(values.Balance)) {
         errors.Balance = "Balance must be a number";
+      } 
+
+      if(values.Balance > 10000){
+        errors.Balance = "Balance should be less than 10000";
       }
 
       // Password validation
@@ -124,10 +128,7 @@ const AddUsers = () => {
         errors.inputValue = "Please enter a value for the selected option";
       }
 
-      // Employee validation
-      // if (!values.employee_id) {
-      //   errors.employee_id = "Please select an Employee";
-      // }
+   
 
       return errors;
     },
@@ -156,17 +157,7 @@ const AddUsers = () => {
 
       setSubmitting(false);
 
-      // if (dollarPrice == 0 || dollarPrice == null || dollarPrice === Infinity || isNaN(dollarPrice)) {
-      //   Swal.fire({
-      //     title: "Alert",
-      //     text: "Please update Dollar price",
-      //     icon: "warning",
-      //     timer: 1000,
-      //     timerProgressBar: true,
-      //   });
-      //   setSubmitting(false);
-      //   return;
-      // }
+   
 
       if (parseInt(checkLicence.CountLicence) < parseInt(values.Licence)) {
         Swal.fire({
@@ -409,12 +400,8 @@ const AddUsers = () => {
         formik={formik}
         btn_name1_route={"/admin/users"}
       />
-      {/* {formik.values.Balance && (
-        <div>
-          <p>Dollar Price: ${dollarPrice}</p>
-        </div>
-      )} */}
-      ,
+    
+      
     </div>
   );
 };

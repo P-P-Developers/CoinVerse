@@ -108,27 +108,11 @@ const Users = () => {
 
             {parseFloat(cell.value).toFixed(2)}
           </span>
-          {/* <CircleMinus
-              size={20}
-              style={{
-                marginBottom: "-4px",
-                marginRight: "5px",
-                verticalAlign: "middle",
-                marginLeft:"10px"
-  
-              }}
-              onClick={() => {
-            setModal(true);
-            setID(cell.row._id);
-            setType("DEBIT")
-
-          }}
-            /> */}
+      
         </div>
       ),
     },
 
-    // { Header: "Employee", accessor: "employee_id" },
     {
       Header: "Status",
       accessor: "ActiveStatus",
@@ -195,15 +179,7 @@ const Users = () => {
               style={{ cursor: "pointer", color: "#33B469" }}
               onClick={() => updateuserpage(cell.row._id, cell)}
             />
-            {/* <Trash2
-              style={{
-                cursor: "pointer",
-                marginRight: "10px",
-                marginLeft: "3px",
-                color: "red",
-              }}
-              onClick={() => DeleteUser(cell.row._id)}
-            /> */}
+           
           </div>
         );
       },
@@ -248,20 +224,7 @@ const Users = () => {
         return employee ? employee.UserName : 'N/A';
       }
     },
-    // {
-    //   Header: "Chat",
-    //   accessor: "Chat",
-    //   Cell: ({ cell }) => {
-    //     return (
-    //       <div>
-    //         <MessageCircle
-    //           style={{ cursor: "pointer", color: "#33B469" }}
-    //           onClick={() => setSelectedUser(cell.row)}
-    //         />
-    //       </div>
-    //     );
-    //   },
-    // }
+    
 
   ];
 
@@ -507,17 +470,7 @@ const Users = () => {
     }
   };
 
-  // // admin blaance
-  // const getadminbalance = async () => {
-  //   const data = {userid: user_id};
-  //   try {
-  //     const response = await adminWalletBalance(data);
-  //     setCheckprice(response.Balance);
-  //   } catch (error) {
-  //   }
-  // };
 
-  // check licence
 
   const getadminLicence = async () => {
     const data = { userid: user_id };
@@ -661,16 +614,24 @@ const Users = () => {
                   <div className="row">
                     <div className="col-lg-12 col-sm-12">
                       <div className="input-block mb-3">
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="Enter Fund"
-                          onChange={(e) => {
-                            const value = e.target.value.replace(/\D/g, "");
-                            setBalance(value);
-                          }}
-                          value={balance}
-                        />
+                      <input
+  type="text"
+  className="form-control"
+  placeholder="Enter Fund"
+  onChange={(e) => {
+    // Remove non-digit characters
+    let value = e.target.value.replace(/\D/g, "");
+
+    // Convert to number and cap at 10000
+    if (Number(value) > 10000) {
+      value = "10000";
+    }
+
+    setBalance(value);
+  }}
+  value={balance}
+/>
+
                       </div>
                     </div>
                   </div>

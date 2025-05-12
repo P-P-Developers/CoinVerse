@@ -21,7 +21,6 @@ export async function Admindashboarddata(data, token) {
 }
 
 
-// Add user
 
 export async function AddUser(data, token) {
     try {
