@@ -1,7 +1,6 @@
-
 // __________backeup code above____
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
@@ -16,9 +15,19 @@ const Table = ({
   cellClassName = "",
   renderCustomHeader,
   renderCustomCell,
+  page,
+  isPage = true
 }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const pageCount = Math.ceil(data.length / rowsPerPage);
+
+
+  console.log("rowsPerPage", rowsPerPage)
+  useEffect(() => {
+    if (isPage === false && page !== undefined) {
+      setCurrentPage(page - 1); // Adjust for 0-based index
+    }
+  }, [page, isPage]);
 
   const handlePreviousPage = () => {
     setCurrentPage((prevPage) => Math.max(prevPage - 1, 0));
@@ -28,11 +37,10 @@ const Table = ({
     setCurrentPage((prevPage) => Math.min(prevPage + 1, pageCount - 1));
   };
 
-  const startRowIndex = currentPage * rowsPerPage;
-  const currentPageData = data.slice(
-    startRowIndex,
-    startRowIndex + rowsPerPage
-  );
+  const startRowIndex = isPage ? currentPage * rowsPerPage : (page - 1) * rowsPerPage;
+  const currentPageData = isPage
+    ? data.slice(startRowIndex, startRowIndex + rowsPerPage)
+    : data; // Use full data if custom pagination is used
 
   return (
     <div>
@@ -53,7 +61,11 @@ const Table = ({
           <tbody>
             {currentPageData.map((row, rowIndex) => (
               <tr key={rowIndex + startRowIndex} className={rowClassName}>
-                <td>{rowIndex + 1 + startRowIndex}</td>
+                <td>
+                  {isPage
+                    ? rowIndex + 1 + startRowIndex
+                    : rowIndex + 1 + startRowIndex}
+                </td>
                 {columns.map((column, columnIndex) => (
                   <td key={columnIndex} className={cellClassName}>
                     {column.Cell
@@ -61,8 +73,8 @@ const Table = ({
                           cell: { value: row[column.accessor], row },
                         })
                       : renderCustomCell
-                        ? renderCustomCell(row[column.accessor], row)
-                        : row[column.accessor]}
+                      ? renderCustomCell(row[column.accessor], row)
+                      : row[column.accessor]}
                   </td>
                 ))}
               </tr>
@@ -70,23 +82,26 @@ const Table = ({
           </tbody>
         </table>
       </div>
-      <div className="pagination">
-        <button
-          onClick={handlePreviousPage}
-          disabled={currentPage === 0}
-          className="pagination-button pagination-button-left">
-          <ArrowLeft size={20} />
-        </button>
-        <span>
-          Page {currentPage + 1} of {pageCount}
-        </span>
-        <button
-          onClick={handleNextPage}
-          disabled={currentPage === pageCount - 1}
-          className="pagination-button pagination-button-right">
-          <ArrowRight size={20} />
-        </button>
-      </div>
+
+      {isPage && (
+        <div className="pagination">
+          <button
+            onClick={handlePreviousPage}
+            disabled={currentPage === 0}
+            className="pagination-button pagination-button-left">
+            <ArrowLeft size={20} />
+          </button>
+          <span>
+            Page {currentPage + 1} of {pageCount}
+          </span>
+          <button
+            onClick={handleNextPage}
+            disabled={currentPage === pageCount - 1}
+            className="pagination-button pagination-button-right">
+            <ArrowRight size={20} />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

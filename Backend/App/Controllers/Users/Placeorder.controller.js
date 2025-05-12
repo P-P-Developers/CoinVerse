@@ -38,7 +38,6 @@ class Placeorder {
         data: formattedResult,
       });
     } catch (error) {
-
       return res.json({
         status: false,
         message: "Internal server error",
@@ -47,7 +46,6 @@ class Placeorder {
     }
   }
 
-  // get trade history
   async gettardehistory(req, res) {
     try {
       const { userid, Role } = req.body;
@@ -210,7 +208,7 @@ class Placeorder {
             token: 1,
             Target_price: 1,
             stoploss_price: 1,
-            Mk_type: 1, 
+            Mk_type: 1,
             Exittype: 1,
           },
         },
@@ -387,7 +385,6 @@ class Placeorder {
         balanceStatements: "",
       });
     } catch (error) {
- 
       return res
         .status(500)
         .json({ status: false, message: "An error occurred", error });
@@ -411,7 +408,6 @@ class Placeorder {
 
       return res.json({ status: true, message: "Order updated successfully" });
     } catch (error) {
-     
       return res.json({ status: false, message: "An error occurred", error });
     }
   }
@@ -426,15 +422,12 @@ class Placeorder {
         return res.json({ status: false, message: "Order not found" });
       }
 
-
-
       return res.json({
         status: true,
         message: "Order found",
         data: GetModifyOrder,
       });
     } catch (error) {
-    
       return res.json({ status: false, message: "An error occurred", error });
     }
   }
@@ -461,7 +454,6 @@ class Placeorder {
 
       let ExittypeData = Exittype ?? "SQUAREOFF";
 
-      // Fetch trade history and user details
       const tradehistory = await mainorder_model.findOne({ _id: id });
       const checkadmin = await User_model.findOne({ _id: userid });
 
@@ -502,6 +494,12 @@ class Placeorder {
       if (RemainingQty == 0 && checkadmin.pertrade) {
         brokerage = 0;
       }
+
+      if(checkadmin.transactionwise){
+        brokerage = (parseFloat(checkadmin.transactionwise) * parseFloat(requiredFund)) / 100 
+        brokerage = parseFloat(brokerage.toFixed(2))
+      }
+
 
       // Validate lot size based on type (buy or sell)
       if (
@@ -570,14 +568,12 @@ class Placeorder {
 
       const orderdata = await newOrder.save();
 
-      // Update trade history with the new order ID
       if (Array.isArray(tradehistory.orderid)) {
         tradehistory.orderid.push(orderdata._id);
       } else {
         tradehistory.orderid = [orderdata._id];
       }
 
-      // Update trade history and user balance based on the type (buy or sell)
       if (type === "buy") {
         const totalQuantity = (tradehistory.buy_lot || 0) + lotNum;
 
@@ -682,20 +678,35 @@ class Placeorder {
           order: [],
         });
       }
+      const checkbalance = checkadmin.Balance;
 
       let brokerage = 0;
       if (checkadmin.pertrade) {
         brokerage = parseFloat(checkadmin.pertrade);
       } else if (checkadmin.perlot) {
         brokerage = parseFloat(checkadmin.perlot) * parseFloat(lot);
+      } else if (checkadmin.transactionwise) {
+        brokerage =
+          (parseFloat(checkadmin.transactionwise) * parseFloat(requiredFund)) /
+          100;
+
+         brokerage = brokerage.toFixed(2) 
       }
 
-      const checkbalance = checkadmin.Balance;
+      console.log("brokerage", brokerage);
 
       const totalamount =
         parseFloat(requiredFund) / parseFloat(checkadmin.limit);
 
-      let brokerageFund = totalamount + brokerage + brokerage;
+      console.log("totalamount", totalamount);
+
+      let brokerageFund = parseFloat(totalamount) + parseFloat(brokerage);
+
+      if (checkadmin.transactionwise == null) {
+        brokerageFund = brokerageFund + parseFloat(brokerage);
+      }
+
+      console.log("brokerageFund", brokerageFund);
 
       if (parseFloat(checkbalance) < parseFloat(brokerageFund)) {
         const rejectedOrder = new Order({
@@ -729,7 +740,10 @@ class Placeorder {
         price,
         lot,
         qty,
-        totalamount: totalamount + brokerage + brokerage,
+        totalamount:
+          checkadmin.transactionwise == null
+            ? totalamount + parseFloat(brokerage) + parseFloat(brokerage)
+            : totalamount + parseFloat(brokerage),
         adminid: checkadmin.parent_id,
         pertrade: checkadmin.userdata,
         perlot: checkadmin.perlot,
@@ -771,6 +785,7 @@ class Placeorder {
         return res.json({ status: false, message: "Invalid request" });
       }
     } catch (error) {
+      console.error("Error placing order:", error);
       res.json({
         status: false,
         message: "internal error",
@@ -816,8 +831,15 @@ const EntryTrade = async (
     const updateuserbalance =
       parseFloat(checkadmin.Balance) - parseFloat(limitclaculation);
 
+      let multypl = 2;
+      if (checkadmin.transactionwise == null) {
+        multypl = 2;
+      } else {
+        multypl = 1;
+      }
+
     const Totalupdateuserbalance =
-      parseFloat(updateuserbalance) - parseFloat(brokerage) * 2;
+      parseFloat(updateuserbalance) - parseFloat(brokerage) * multypl;
 
     // console.log("limitclaculation", limitclaculation);
 
@@ -829,13 +851,7 @@ const EntryTrade = async (
     // console.log("ActualFun - ", ActualFun);
     const seventyPercent = (ActualFun * 70) / 100;
 
-    // console.log("seventyPercent - ", seventyPercent);
-    // console.log("price - ", price);
-
-    // console.log(
-    //   "price - seventyPercent",
-    //   parseFloat(price) - parseFloat(seventyPercent)
-    // );
+  
 
     tradehistory = new mainorder_model({
       orderid: orderdata._id,
@@ -876,7 +892,8 @@ const EntryTrade = async (
       type: "DEBIT",
       message: "Balanced used to buy",
       symbol: symbol,
-      brokerage: brokerage + brokerage,
+      brokerage:
+        checkadmin.transactionwise == null ? parseFloat(brokerage) + parseFloat(brokerage) : parseFloat(brokerage),
     });
     await newstatement.save();
 
@@ -951,8 +968,15 @@ const ExitTrade = async (
     const updateuserbalance =
       parseFloat(checkadmin.Balance) - parseFloat(limitclaculation);
 
+    let multypl = 2;
+    if (checkadmin.transactionwise == null) {
+      multypl = 2;
+    } else {
+      multypl = 1;
+    }
+
     const Totalupdateuserbalance =
-      parseFloat(updateuserbalance) - parseFloat(brokerage) * 2;
+      parseFloat(updateuserbalance) - parseFloat(brokerage) * multypl;
 
     // console.log("limitclaculation", limitclaculation);
 
@@ -1011,7 +1035,8 @@ const ExitTrade = async (
       type: "DEBIT",
       message: "Balanced used to buy",
       symbol: symbol,
-      brokerage: brokerage + brokerage,
+      brokerage:
+        checkadmin.transactionwise == null ? parseFloat(brokerage) + parseFloat(brokerage) : parseFloat(brokerage),
     });
     await newstatement.save();
 

@@ -27,6 +27,14 @@ class Users {
         return res.json({ status: false, message: "User not found", data: [] });
       }
 
+      if(Balance > 10000){
+        return res.json({
+          status: false,
+          message: "You can not "+type==1 ?"Deposite":"Withdrawal"+" more than 10000",
+          data: [],
+        });
+      }
+
       // Fetch dollar price data
       const dollarPriceData = await MarginRequired.findOne({
         adminid: userdata.parent_id,
@@ -158,10 +166,9 @@ class Users {
     try {
       const { userid } = req.body;
       const result1 = await User_model.find({ _id: userid })
-        .select("parent_id pertrade perlot")
+        .select("parent_id pertrade perlot transactionwise")
         .sort({ createdAt: -1 });
 
-      // Access the first element of result1 to avoid errors
       const user = result1[0];
 
       const result = await MarginRequired.findOne({
@@ -173,9 +180,9 @@ class Users {
       }
 
       let Obj = {
-        option: user.pertrade && user.pertrade !== 0 ? "pertrade" : "perlot",
+        option: user.pertrade && user.pertrade !== 0 ? "pertrade" : user.transactionwise !== 0 ?"transactionwise" :"perlot",
         value1:
-          user.pertrade && user.pertrade !== 0 ? user.pertrade : user.perlot,
+          user.pertrade && user.pertrade !== 0 ? user.pertrade :user.transactionwise !== 0 ?user.transactionwise : user.perlot,
         crypto: result.crypto || 100,
         forex: result.forex || 100,
       };

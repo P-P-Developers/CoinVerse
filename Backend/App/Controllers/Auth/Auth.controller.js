@@ -269,6 +269,51 @@ async DeleteSignIn(req, res) {
       });
     }
   }
+  async getReferClients(req, res) {
+    try {
+      const { admin_id } = req.body;
+
+      // Step 1: Get all user IDs under this admin
+      const GetAllUsers = await User_model.find({
+        parent_id: admin_id,
+        Role: "USER",
+      }).select("_id");
+
+      const AllUserId = GetAllUsers.map((item) => item._id);
+
+      // Step 2: Find sign-ins directly referred by the admin
+      const result = await Sign_In.find({
+        referred_by: admin_id,
+       
+      }).sort({ createdAt: -1 });
+
+      // Step 3: Find sign-ins referred by the admin’s users
+      const result1 = await Sign_In.find({
+        referred_by: { $in: AllUserId },
+       
+      }).sort({ createdAt: -1 });
+
+      // Step 4: Merge and check the results
+      const finalData = [...result, ...result1];
+
+      if (finalData.length === 0) {
+        return res.json({ status: false, message: "No data found", data: [] });
+      }
+
+      return res.json({
+        status: true,
+        message: "Data retrieved",
+        data: finalData,
+      });
+    } catch (error) {
+      console.error("Error in getSignIn:", error);
+      return res.json({
+        status: false,
+        message: "Internal error",
+        data: [],
+      });
+    }
+  }
 
   async logoutUser(req, res) {
     try {
@@ -296,6 +341,7 @@ async DeleteSignIn(req, res) {
   async getlogsuser(req, res) {
     try {
       const { userid } = req.body;
+      console.log("userid", userid);
   
       const result = await user_logs.aggregate([
         {
@@ -307,7 +353,7 @@ async DeleteSignIn(req, res) {
         {
           $lookup: {
             from: 'users',
-            localField: 'admin_Id',
+            localField: 'user_Id',
             foreignField: '_id',
             as: 'userDetails'
           }

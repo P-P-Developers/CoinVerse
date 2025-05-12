@@ -4,8 +4,6 @@ const User_model = db.user;
 const axios = require("axios");
 
 class Dashboard {
-
-
   async GetDashboardData(req, res) {
     try {
       const { parent_id } = req.body;
@@ -155,7 +153,7 @@ class Dashboard {
     // Function to fetch data from Tiingo API
     const fetchTiingoData = async () => {
       const url = `https://api.tiingo.com/tiingo/daily/${symbol}/prices?startDate=${formattedStartDate}&endDate=${formattedEndDate}&token=${API_TOKEN}`;
-
+      console.log(url);
       try {
         const response = await axios.get(url, {
           headers: {
@@ -172,7 +170,6 @@ class Dashboard {
             .json({ error: `Error: Received status code ${response.status}` });
         }
       } catch (error) {
-   
         return res
           .status(500)
           .json({ error: "An error occurred while fetching data." });

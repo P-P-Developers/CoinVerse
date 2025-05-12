@@ -225,7 +225,7 @@ class Superadmin {
             const newBonus = new BonusCollectioniModel({
               admin_id: parentUser._id,
               user_id: userdata._id,
-              Bonus: parentUser.FixedPerClient,
+              Bonus: parentUser.AddClientBonus,
               Type: "Fixed_PerClient",
             });
             await newBonus.save();
@@ -335,43 +335,97 @@ class Superadmin {
     }
   }
 
+  // async getAdminDetail(req, res) {
+  //   try {
+  //     const { id  } = req.body;
+  //     const result = await User_model.find({ parent_id: id }).sort({
+  //       createdAt: -1,
+  //     });
+
+  //     const adminIds = result.map((user) => user._id);
+  //     const permissions = await employee_permission.find({
+  //       employee_id: { $in: adminIds },
+  //     });
+
+  //     if (!result || result.length === 0) {
+  //       return res.json({ status: false, message: "Data not found", data: [] });
+  //     }
+
+  //     const combinedData = result.map((user) => {
+  //       const userPermissions = permissions.filter((permission) =>
+  //         permission.employee_id.equals(user._id)
+  //       );
+
+  //       return {
+  //         ...user.toObject(),
+  //         permissions: userPermissions,
+  //       };
+  //     });
+
+  //     return res.json({
+  //       status: true,
+  //       message: "Getting data",
+  //       data: combinedData,
+  //     });
+  //   } catch (error) {
+  //     return res.json({ status: false, message: "Internal error", data: [] });
+  //   }
+  // }
+
+
   async getAdminDetail(req, res) {
     try {
-      const { id } = req.body;
-      const result = await User_model.find({ parent_id: id }).sort({
-        createdAt: -1,
-      });
-
+      const { id, page = 1, limit = 10 } = req.body; // You can also take page/limit from req.query
+      const skip = (page - 1) * limit;
+  
+      // Step 1: Get paginated users
+      const result = await User_model.find({ parent_id: id })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(Number(limit));
+  
+      // Step 2: Get total count for pagination info
+      const totalCount = await User_model.countDocuments({ parent_id: id });
+  
       const adminIds = result.map((user) => user._id);
       const permissions = await employee_permission.find({
         employee_id: { $in: adminIds },
       });
-
+  
       if (!result || result.length === 0) {
         return res.json({ status: false, message: "Data not found", data: [] });
       }
-
+  
       const combinedData = result.map((user) => {
         const userPermissions = permissions.filter((permission) =>
           permission.employee_id.equals(user._id)
         );
-
+  
         return {
           ...user.toObject(),
           permissions: userPermissions,
         };
       });
-
+  
       return res.json({
         status: true,
         message: "Getting data",
         data: combinedData,
+        pagination: {
+          total: totalCount,
+          page: Number(page),
+          limit: Number(limit),
+          totalPages: Math.ceil(totalCount / limit),
+        },
       });
     } catch (error) {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
 
+  
+
+  
   // update status
   async UpdateActiveStatusAdmin(req, res) {
     try {

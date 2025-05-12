@@ -278,24 +278,7 @@ const Users = () => {
                           </form>
                           <div className="send-btns">
                             <div className="attach">
-                              {/* <div className="button-wrapper">
-                                <span className="label">
-                                  <img
-                                    className="img-fluid"
-                                    src="https://mehedihtml.com/chatbox/assets/img/upload.svg"
-                                    alt="image title"
-                                  />{" "}
-                                  attached file
-                                </span>
-                                <input
-                                  type="file"
-                                  name="upload"
-                                  id="upload"
-                                  className="upload-box"
-                                  placeholder="Upload File"
-                                  aria-label="Upload File"
-                                />
-                              </div> */}
+                         
                             
                             
                             </div>

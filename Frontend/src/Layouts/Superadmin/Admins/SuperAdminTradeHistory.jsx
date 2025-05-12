@@ -1,22 +1,16 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
-import { fDateTime, fDateTimesec } from "../../../Utils/Date_format/datefromat";
-import { useParams } from "react-router-dom";
+import {  fDateTimesec } from "../../../Utils/Date_format/datefromat";
 import { Clienthistory } from "../../../Services/Admin/Addmin";
 import { DollarSign } from "lucide-react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
-// import { switchOrderType } from "../../../Services/Admin/Addmin";
-
+import { Link } from "react-router-dom";
 import { ArrowLeftRight } from "lucide-react";
-import {
-  getAdminName,
-  switchOrderType,
-} from "../../../Services/Superadmin/Superadmin";
+import { getAdminName, switchOrderType} from "../../../Services/Superadmin/Superadmin";
 
 const SuperAdminTradeHistory = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
-  const Role = userDetails?.Role;
+
   const [data, setData] = useState([]);
   const [userName, setUserName] = useState();
   const [Userid, setUserId] = useState();
@@ -77,19 +71,31 @@ const SuperAdminTradeHistory = () => {
 
     { Header: "Symbol", accessor: "symbol" },
     {
-      Header: "Buy Price",
+      Header: "Entry Price",
       accessor: "buy_price",
       Cell: ({ cell }) => {
         const buy_price = cell.row.buy_price;
-        return buy_price ? buy_price : "-";
+        const signal_type = cell.row.signal_type;
+        if (signal_type === "buy_sell") {
+          return buy_price ? buy_price : "-";
+        } else {
+          return cell.row.sell_price ? cell.row.sell_price : "-"; 
+        }
+
       },
     },
     {
-      Header: "Sell Price",
+      Header: "Exit Price",
       accessor: "sell_price",
       Cell: ({ cell }) => {
-        const sell_price = cell.row.sell_price;
-        return sell_price ? sell_price : "-";
+        const buy_price = cell.row.buy_price;
+        const signal_type = cell.row.signal_type;
+        if (signal_type === "sell_buy") {
+          return buy_price ? buy_price : "-";
+        } else {
+          return cell.row.sell_price ? cell.row.sell_price : "-"; 
+        }
+
       },
     },
     {
@@ -113,71 +119,88 @@ const SuperAdminTradeHistory = () => {
               <DollarSign /> {formattedProfitLoss}
             </span>
           );
-          // }else{
-          //   const profitLoss = (buyPrice - sellPrice) * buyQty;
-          //   const formattedProfitLoss = profitLoss.toFixed(4);
-
-          //   const color = profitLoss > 0 ? "green" : "red";
-
-          //   return (
-          //     <span style={{ color }}>
-          //       <DollarSign /> {formattedProfitLoss}
-          //     </span>
-          //   );
-          // }
+       
         }
 
-        return "N/A";
+        return "-";
       },
     },
     {
-      Header: "Buy lot",
+      Header: "Entry lot",
       accessor: "buy_lot",
       Cell: ({ cell }) => {
-        const buy_lot = cell.row.buy_lot;
-        return buy_lot ? buy_lot : "-";
+        const signal_type = cell.row.signal_type;
+        if (signal_type === "buy_sell") {
+          return cell.row.buy_lot ? cell.row.buy_lot : "-";
+        } else {
+          return cell.row.sell_lot ? cell.row.sell_lot : "-"; 
+        }
       },
     },
     {
-      Header: "Sell lot",
+      Header: "Exit lot",
       accessor: "sell_lot",
       Cell: ({ cell }) => {
-        const sell_lot = cell.row.sell_lot;
-        return sell_lot ? sell_lot : "-";
+        const signal_type = cell.row.signal_type;
+        if (signal_type === "sell_buy") {
+          return cell.row.buy_lot ? cell.row.buy_lot : "-";
+        } else {
+          return cell.row.sell_lot ? cell.row.sell_lot : "-"; 
+        }
       },
     },
     {
-      Header: "Buy qty",
+      Header: "Entry qty",
       accessor: "buy_qty",
       Cell: ({ cell }) => {
-        const buy_qty = cell.row.buy_qty;
-        return buy_qty ? buy_qty : "-";
+        const signal_type = cell.row.signal_type;
+        if (signal_type === "buy_sell") {
+          return cell.row.buy_qty ? cell.row.buy_qty : "-";
+        } else {
+          return cell.row.sell_qty ? cell.row.sell_qty : "-"; 
+        }
       },
     },
     {
-      Header: "Sell qty",
+      Header: "Exit qty",
       accessor: "sell_qty",
       Cell: ({ cell }) => {
-        const sell_qty = cell.row.sell_qty;
-        return sell_qty ? sell_qty : "-";
+        const signal_type = cell.row.signal_type;
+        if (signal_type === "sell_buy") {
+          return cell.row.buy_qty ? cell.row.buy_qty : "-";
+        } else {
+          return cell.row.sell_qty ? cell.row.sell_qty : "-"; 
+        }
       },
     },
-    {
-      Header: "Buy Time",
-      accessor: "buy_time",
-      Cell: ({ cell }) => {
-        const buyTime = cell.row.buy_time;
-        return buyTime ? fDateTimesec(buyTime) : "-";
-      },
-    },
-    {
-      Header: "Sell time",
-      accessor: "sell_time",
-      Cell: ({ cell }) => {
-        const sell_time = cell.row.sell_time;
-        return sell_time ? fDateTimesec(sell_time) : "-";
-      },
-    },
+       {
+          Header: "Entry Time",
+          accessor: "buy_time",
+          Cell: ({ cell }) => {
+            const signal_type = cell.row.signal_type;
+    
+            if (signal_type === "buy_sell") {
+              return cell.row.buy_time ? fDateTimesec(cell.row.buy_time) : "-";
+            } else {
+              return cell.row.sell_time ? fDateTimesec(cell.row.sell_time) : "-"; 
+            }
+    
+          },
+        },
+        {
+          Header: "Exit time",
+          accessor: "sell_time",
+          Cell: ({ cell }) => {
+            const signal_type = cell.row.signal_type;
+    
+            if (signal_type === "sell_buy") {
+              return cell.row.buy_time ? fDateTimesec(cell.row.buy_time) : "-";
+            } else {
+              return cell.row.sell_time ? fDateTimesec(cell.row.sell_time) : "-"; 
+            }
+    
+          },
+        },
     {
       Header: "Create Date",
       accessor: "createdAt",

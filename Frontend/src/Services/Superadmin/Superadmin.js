@@ -272,3 +272,17 @@ export async function switchOrderType(data, token) {
 
 }
 
+
+export async function GetAdminUsername(data, token) {
+  try {
+    const res = await axios.get(`${Config.base_url}getAdminName`, data, {
+      data: {},
+    })
+    return await res?.data;
+  }
+  catch (err) {
+    return await err;
+
+  }
+
+}

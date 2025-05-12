@@ -31,12 +31,7 @@ export const superadmin_header = [
         icon: "fa fa-home",
         route: "/superadmin/position",
     },
-    // {
-    //     id: 6,
-    //     name: 'Broadcast',
-    //     icon: "fe fe-dollar-sign",
-    //     route: "/superadmin/broadcast",
-    // },
+
     {
         id: 7,
         name: 'Hold off',
@@ -55,6 +50,18 @@ export const superadmin_header = [
     //     icon: "fe fe-dollar-sign",
     //     route: "/superadmin/currency",
     // },
+    {
+        id: 9,
+        name: 'Withdrawal',
+        icon: "fe fe-arrow-down-circle",
+        route: "/superadmin/withdrawal",
+    },
+    {
+        id: 10,
+        name: 'Deposit',
+        icon: "fe fe-arrow-up-circle",
+        route: "/superadmin/deposit",
+    },
 
 ];
 

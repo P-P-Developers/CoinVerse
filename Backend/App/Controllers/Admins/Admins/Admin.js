@@ -48,11 +48,14 @@ class Admin {
         Licence,
         pertrade,
         perlot,
+        transactionwise,
         turn_over_percentage,
         brokerage,
         limit,
         employee_id,
         referred_by,
+        referral_price,
+        singleUserId
       } = req.body;
 
       if (!FullName || !UserName || !Email || !PhoneNo || !password || !Role) {
@@ -127,6 +130,7 @@ class Admin {
         Licence,
         pertrade: brokeragepertrade || "",
         perlot: brokerageperlot || "",
+        transactionwise: transactionwise || "",
         turn_over_percentage,
         brokerage,
         limit,
@@ -144,23 +148,17 @@ class Admin {
   
 
         // Activate referred user
-        const updateStatus = await Sign_In.updateOne(
-          { UserName },
+         await Sign_In.updateOne(
+          {_id: singleUserId },
           { $set: { isActive: true } }
         );
-
-
-        // Get the signed-in user
-        const referredUserSignIn = await Sign_In.findOne({ UserName: UserName });
-      
-     
-
+    
         // Get referring user
         const referringUser = await User_model.findById(referred_by);
   
 
-        const creditAmount = referredUserSignIn.referral_price || 0;
-        const updatedBalance = (referringUser.Balance || 0) + creditAmount;
+        const creditAmount =referral_price || 0;
+        const updatedBalance = (referringUser?.Balance || 0) + creditAmount;
 
         // Update balance
         await User_model.updateOne(
@@ -171,7 +169,7 @@ class Admin {
 
         // Log in wallet
         const walletEntry = new Wallet_model({
-          user_Id: referredUserSignIn.referred_by,  // or just `referred_by`
+          user_Id: referred_by,  // or just `referred_by`
           Balance: creditAmount,
           parent_Id: referringUser.parent_id || null,
           Type: "CREDIT",
@@ -179,14 +177,23 @@ class Admin {
 
         await walletEntry.save();
 
-        const newStatement = new BalanceStatement({
-          userid: referredUserSignIn.referred_by,
-          Amount: creditAmount,
-          parent_Id: referringUser.parent_id,
-          type: "CREDIT",
-          message: "Referral Balance Added",
-        });
-        await newStatement.save();
+        if(Balance > 0){
+
+          const newStatement = new BalanceStatement({
+            userid: referred_by,
+            Amount: creditAmount,
+            parent_Id: referringUser.parent_id,
+            type: "CREDIT",
+            message: "Referral Balance Added",
+          });
+          await newStatement.save();
+
+          await Sign_In.updateOne(
+            {_id: singleUserId },
+            { $set: { isPaymentDone: true } }
+          );
+        }
+
 
       }
 
@@ -236,7 +243,6 @@ class Admin {
           let calculatedBonus;
 
           if (Balance > 0 && Balance < 100) {
-            console.log("balance > 0 < 100")
             calculatedBonus = parentUser.FundLessThan100;
           } else if (Balance < 500) {
             calculatedBonus = parentUser.FundLessThan500;

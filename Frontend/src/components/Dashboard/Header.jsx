@@ -354,7 +354,7 @@ const Header = () => {
                   ? "Hold Off"
                   : formattedSegment === "Addemployees"
                   ? "Add Employee"
-                  : formattedSegment}
+                  : formattedSegment == "Basicsetting" ? "Basic Settings" :formattedSegment}
               </h2>
             </div>
           </div>
