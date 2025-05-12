@@ -32,11 +32,11 @@ const Deposit = () => {
       Cell: ({ cell }) => (cell.row.type == 1 ? "Deposite" : cell),
     },
     { Header: "Balance", accessor: "Balance" },
-    {
-      Header: "Balance",
-      accessor: "UserBalance",
-      Cell: ({ cell }) => cell.value?.toFixed(4),
-    },
+    // {
+    //   Header: "Balance",
+    //   accessor: "UserBalance",
+    //   Cell: ({ cell }) => cell.value?.toFixed(4),
+    // },
     { Header: "Transaction Id", accessor: "transactionId" },
     {
       Header: "ScreenShot",
