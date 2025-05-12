@@ -215,6 +215,38 @@ const DynamicForm = ({
                               </div>
                             </div>
                           </>
+                        ) : field.type === "percentage" ? (
+                          <div className={`col-lg-${field.col_size}`}>
+                            <div className="input-block mb-3 flex-column">
+                              <label className={`col-lg-${field.label_size}`}>
+                                {field.label}
+                                <span className="text-danger">*</span>
+                              </label>
+
+                              <input
+                                type="number"
+                                min={1}
+                                max={100}
+                                autoComplete="off"
+                                aria-describedby="basic-addon1"
+                                className="form-control"
+                                placeholder={`Enter ${field.label} (1–100)`}
+                                readOnly={field.disable}
+                                id={field.name}
+                                name={field.name}
+                                {...formik.getFieldProps(field.name)}
+                                onInput={(e) => {
+                                  const val = Math.max(1, Math.min(100, Number(e.target.value)));
+                                  e.target.value = val;
+                                  formik.setFieldValue(field.name, val);
+                                }}
+                              />
+
+                              {formik.touched[field.name] && formik.errors[field.name] ? (
+                                <div style={{ color: "red" }}>{formik.errors[field.name]}</div>
+                              ) : null}
+                            </div>
+                          </div>
                         ) : field.type === "text2" ? (
                           <>
                             <div className={` col-lg-${field.col_size}`}>
@@ -347,10 +379,10 @@ const DynamicForm = ({
                               <div className="input-block row mb-3">
                                 <label
                                   className={`col-lg-${title === "forlogin"
-                                      ? 3
-                                      : title === "update_theme"
-                                        ? 12
-                                        : 7
+                                    ? 3
+                                    : title === "update_theme"
+                                      ? 12
+                                      : 7
                                     }  col-form-label p-0 mx-3 `}
                                   htmlFor={field.name}
                                 >
@@ -400,10 +432,10 @@ const DynamicForm = ({
                               <div className="input-block row mb-3">
                                 <label
                                   className={`col-lg-${title === "forlogin"
-                                      ? 3
-                                      : title === "update_theme"
-                                        ? 12
-                                        : 7
+                                    ? 3
+                                    : title === "update_theme"
+                                      ? 12
+                                      : 7
                                     }  col-form-label p-0 mx-3 `}
                                   htmlFor={field.name}
                                 >
@@ -549,8 +581,8 @@ const DynamicForm = ({
                                   />
                                   <i
                                     className={`fa-solid ${passwordVisible[field.name]
-                                        ? "fa-eye-slash"
-                                        : "fa-eye"
+                                      ? "fa-eye-slash"
+                                      : "fa-eye"
                                       }`}
                                     style={{
                                       position: "absolute",
@@ -694,8 +726,8 @@ const DynamicForm = ({
                                           >
                                             <button
                                               className={`nav-link yes ${formik.values[field.name] == 2
-                                                  ? "active show"
-                                                  : ""
+                                                ? "active show"
+                                                : ""
                                                 }`}
                                               onClick={() => HandelChange(2)}
                                               type="button"
@@ -710,8 +742,8 @@ const DynamicForm = ({
                                           >
                                             <button
                                               className={`nav-link no ${formik.values[field.name] == 1
-                                                  ? "active show"
-                                                  : ""
+                                                ? "active show"
+                                                : ""
                                                 }`}
                                               onClick={() => HandelChange(1)}
                                               type="button"
@@ -930,9 +962,9 @@ const DynamicForm = ({
                                 {...formik.getFieldProps(field.name)}
                                 disabled={field.disable}
                                 className={`form-control ${formik.touched[field.name] &&
-                                    formik.errors[field.name]
-                                    ? "is-invalid"
-                                    : ""
+                                  formik.errors[field.name]
+                                  ? "is-invalid"
+                                  : ""
                                   }`}
                               />
                               {formik.touched[field.name] &&

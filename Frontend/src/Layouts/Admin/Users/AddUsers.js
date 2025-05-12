@@ -352,7 +352,7 @@ const AddUsers = () => {
     {
       name: "limit",
       label: "Margin(0-100%)",
-      type: "text3",
+      type: "percentage",
       label_size: 12,
       col_size: 6,
       disable: false,
@@ -381,7 +381,7 @@ const AddUsers = () => {
             : formik.values.selectedOption === "transactionwise"
             ? "Transaction-Wise %" 
             : "Per Lot",      
-        type: "text",
+        type: "percentage",
         label_size: 12,
         col_size: 6,
         disable: false,
