@@ -16,7 +16,7 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  const handleUsernameChange = (e) => setUsername(e.target.value);
+  const handleUsernameChange = (e) => setUsername(e.target.value.toString().toLowerCase() );
   const handlePasswordChange = (e) => setPassword(e.target.value);
 
   const togglePasswordVisibility = () => {
@@ -193,7 +193,7 @@ const Login = () => {
                         type="text"
                         className="form-control"
                         id="exampleFormControlInput1"
-                        value={username}
+                        value={username.toString().toLowerCase()}
                         onChange={handleUsernameChange}
                       />
                       {errors.username && (

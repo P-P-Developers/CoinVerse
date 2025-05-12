@@ -58,9 +58,6 @@ class Admin {
         singleUserId
       } = req.body;
 
-      UserName = UserName.toString().toLowerCase();
-      Email = Email.toString().toLowerCase();
-
       if (!FullName || !UserName || !Email || !PhoneNo || !password || !Role) {
         return res.json({ status: false, message: "Missing required fields" });
       }
