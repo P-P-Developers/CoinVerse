@@ -17965,7 +17965,7 @@ svg.pulse-svg .third-circle {
 }
 
 [data-sidebar-style="full"][data-layout="vertical"] .menu-toggle .nav-header .nav-control {
-  right: -5.3rem;
+  right: -15.3rem;
 }
 
 [data-sidebar-style="full"][data-layout="vertical"] .menu-toggle .nav-header .nav-control .hamburger .line {
@@ -42899,4 +42899,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   margin-left: 10px;
   margin-right: 10px;
   border: none;
+}
+ul.nav.nav-pills.mb-4.light {
+    justify-content: center;
+    border-bottom: 1px solid #ebebf7;
 }
