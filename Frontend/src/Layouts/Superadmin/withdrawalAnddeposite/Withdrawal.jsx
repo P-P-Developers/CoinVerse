@@ -284,7 +284,7 @@ const Withdraw = () => {
           {/* User Select Dropdown */}
           <div className="col-lg-4">
             <label htmlFor="userSelect" className="form-label">
-              Users:
+              Admin Name:
             </label>
             <select
               id="userSelect"
@@ -292,7 +292,7 @@ const Withdraw = () => {
               value={selectedAdminName}
               onChange={(e) => setSelectedAdminName(e.target.value)}
             >
-              <option value="">Select User</option>
+              <option value="">Select Admin</option>
               {adminNames?.map((item, index) =>
                 item ? (
                   <option value={item._id} key={index}>
@@ -304,6 +304,7 @@ const Withdraw = () => {
           </div>
         </div>
         <h5>{activeTab} Transactions</h5>
+        
         <Table
           columns={columns}
           data={filterDataByStatus(status)}

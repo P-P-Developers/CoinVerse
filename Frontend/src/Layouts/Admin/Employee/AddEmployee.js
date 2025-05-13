@@ -213,14 +213,7 @@ const AddEmployee = () => {
       col_size: 6,
       disable: false,
     },
-    // {
-    //   name: "Licence",
-    //   label: "Licence",
-    //   type: "text3",
-    //   label_size: 12,
-    //   col_size: 6,
-    //   disable: false,
-    // },
+
     {
       name: "password",
       label: "Password",

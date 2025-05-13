@@ -41,7 +41,6 @@ class UserSymbol {
   }
   
 
-  // add user symbol
   async addSymbol(req, res) {
     const condition = {
       userid: req.body.userid,

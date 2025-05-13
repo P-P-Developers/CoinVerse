@@ -20,7 +20,6 @@ const Register = () => {
   var ReferalCode = location.pathname.split('/');
 
 
-  const query = new URLSearchParams(search);
   const refCode = ReferalCode[2]
 
 
@@ -191,7 +190,7 @@ const Register = () => {
                           ? "is-invalid"
                           : ""
                       }`}
-                      {...formik.getFieldProps("UserName")}
+                      {...formik.getFieldProps("UserName").toString().toLowerCase()}
                     />
                     {formik.touched.UserName && formik.errors.UserName ? (
                       <div className="invalid-feedback">

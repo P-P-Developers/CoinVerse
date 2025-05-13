@@ -129,7 +129,9 @@ const Employee = () => {
           <div>
             <Pencil
               style={{ cursor: "pointer", color: "#33B469" }}
-              onClick={() => updateEmploye(cell.row._id, cell || cell.permissions)}
+              onClick={() =>
+                updateEmploye(cell.row._id, cell || cell.permissions)
+              }
             />
             <Trash2
               style={{
@@ -161,7 +163,7 @@ const Employee = () => {
   ];
 
   const updateEmploye = (_id, obj) => {
-    navigate(`updateemploye/${_id}`, { state: { rowData: obj.row} });
+    navigate(`updateemploye/${_id}`, { state: { rowData: obj.row } });
   };
 
   // delet employee
@@ -263,8 +265,6 @@ const Employee = () => {
     }
   };
 
-
-
   // get all admin
   const getAlluserdata = async () => {
     setLoading(true);
@@ -300,59 +300,65 @@ const Employee = () => {
     }
   };
 
-
-
   useEffect(() => {
     getAlluserdata();
   }, [search]);
 
   return (
     <>
-     
-        <div className="container-fluid">
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="card transaction-table">
-                <div className="card-header border-0 flex-wrap pb-0">
-                  <div className="mb-4">
-                    <h4 className="card-title">All Employees</h4>
-                  </div>
-                  <Link
-                    to="/admin/addemployees"
-                    className="float-end mb-4 btn btn-primary"
-                  >
-                    Add Employee
-                  </Link>
+      <div className="container-fluid">
+        <div className="row">
+          <div className="col-lg-12">
+            <div className="card transaction-table">
+              <div className="card-header border-0 flex-wrap pb-0">
+                <div className="mb-4">
+                  <h4 className="card-title">All Employees</h4>
                 </div>
-                <div className="card-body p-0">
-                  <div className="tab-content" id="myTabContent1">
-                    <div
-                      className="tab-pane fade show active"
-                      id="Week"
-                      role="tabpanel"
-                      aria-labelledby="Week-tab"
-                    >
-                      <div className="mb-3 ms-4">
-                        Search :{" "}
-                        <input
-                          className="ml-2 input-search form-control"
-                          style={{ width: "20%" }}
-                          type="text"
-                          placeholder="Search..."
-                           autoFocus
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
-                        />
-                      </div>
-                    {
-                      loading ? (
-                        <Loader />
-     
-                      ) : (<Table columns={columns} data={data} rowsPerPage={rowsPerPage} />
-                    )}
+                <Link
+                  to="/admin/addemployees"
+                  className="float-end mb-4 btn btn-primary"
+                >
+                  Add Employee
+                </Link>
+              </div>
+              <div className="card-body p-0">
+                <div className="tab-content" id="myTabContent1">
+                  <div
+                    className="tab-pane fade show active"
+                    id="Week"
+                    role="tabpanel"
+                    aria-labelledby="Week-tab"
+                  >
+                    <div className="mb-3 ms-4">
+                      Search :{" "}
+                      <input
+                        className="ml-2 input-search form-control"
+                        style={{ width: "20%" }}
+                        type="text"
+                        placeholder="Search..."
+                        autoFocus
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                      />
                     </div>
-                  <div className="d-flex align-items-center" style={{ marginBottom: "20px", marginLeft: "20px", marginTop: "-48px" }}>
-
+                    {loading ? (
+                      <Loader />
+                    ) : (
+                      <Table
+                        columns={columns}
+                        data={data}
+                        rowsPerPage={rowsPerPage}
+                      />
+                    )}
+                  </div>
+                  <div
+                    className="d-flex align-items-center"
+                    style={{
+                      marginBottom: "20px",
+                      marginLeft: "20px",
+                      marginTop: "-48px",
+                    }}
+                  >
                     Rows per page:{" "}
                     <select
                       className="form-select ml-2"
@@ -365,16 +371,14 @@ const Employee = () => {
                       <option value={20}>20</option>
                       <option value={50}>50</option>
                       <option value={100}>100</option>
-
                     </select>
-                  </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-    
+      </div>
 
       {modal && (
         <div
@@ -407,6 +411,9 @@ const Employee = () => {
                           placeholder="Enter Fund"
                           onChange={(e) => {
                             const value = e.target.value.replace(/\D/g, "");
+                            if (Number(value) > 10000) {
+                              value = "10000";
+                            }
                             setBalance(value);
                           }}
                           value={balance}

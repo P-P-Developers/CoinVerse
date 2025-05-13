@@ -21,7 +21,6 @@ export async function Admindashboarddata(data, token) {
 }
 
 
-// Add user
 
 export async function AddUser(data, token) {
     try {
@@ -315,6 +314,20 @@ export async function getbalancandLicence(data, token) {
 export async function getSignIn(data, token) {
     try {
         const res = await axios.post(`${Config.base_url}getSignIn`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
+export async function getReferClients(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}getReferClients`, data, {
             data: {},
         })
         return await res?.data;
