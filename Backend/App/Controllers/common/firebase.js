@@ -17,9 +17,10 @@ const sendPushNotification = async (firebaseToken, title, message) => {
         title: title,
         body: message,
       },
-      token: "",
+      token: firebaseToken,
     };
 
+    console.log("Payload", payload);
     const response = await admin.messaging().send(payload);
     return { success: true };
   } catch (error) {
@@ -42,7 +43,7 @@ const sendMultiplePushNotification = async (firebaseTokens, title, message) => {
                     title: title,
                     body: message,
                   },
-                  token: "",
+                  token: firebaseToken,
                 };
             
                 const response = await admin.messaging().send(payload);
