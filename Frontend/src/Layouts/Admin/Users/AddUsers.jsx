@@ -36,7 +36,7 @@ const AddUsers = () => {
   const formik = useFormik({
     initialValues: {
       fullName: clientData.FullName || "",
-      username: clientData.UserName || "",
+      username: clientData.UserName?.toString().toLowerCase() || "",
       email: "",
       phone: clientData.PhoneNo || "",
       employee_id: "",
@@ -136,8 +136,8 @@ const AddUsers = () => {
 
       const data = {
         FullName: values.fullName,
-        UserName: values.username,
-        Email: values.email,
+        UserName: values.username.toString().toLowerCase(),
+        Email: values.email.toString().toLowerCase(),
         PhoneNo: values.phone,
         employee_id: values.employee_id,
         Balance: values.Balance,

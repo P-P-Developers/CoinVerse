@@ -16,14 +16,16 @@ const userModel = Schema({
         required: true,
         trim: true,
         unique: true,
-        default: null
+        default: null,
+        lowercase: true,
     },
     Email: {
         type: String,
         required: true,
         trim: true,
         unique: true,
-        default: null
+        default: null,
+        lowercase: true,
     },
     PhoneNo: {
         type: String,

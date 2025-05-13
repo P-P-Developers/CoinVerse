@@ -12,9 +12,13 @@ const user_logs = db.user_logs;
 class Auth {
   async login(req, res) {
     try {
-      const { UserName, password, fcm_token } = req.body;
+      let { UserName, password, fcm_token } = req.body;
 
-      const EmailCheck = await User_model.findOne({ UserName: UserName });
+      UserName = UserName?.toString().toLowerCase();
+      
+
+
+      const EmailCheck = await User_model.findOne({ UserName:UserName});
 
       if (!EmailCheck) {
         return res.send({
@@ -72,17 +76,7 @@ class Auth {
         expiresIn: 28800,
       });
 
-      // Create user login log
-      // const user_login = new user_logs({
-      //   user_Id: EmailCheck._id,
-      //   admin_Id: EmailCheck.parent_id || "",
-      //   UserName: EmailCheck.UserName,
-      //   login_status: "Panel On",
-      //   role: EmailCheck.Role,
-      //   DeviceToken: fcm_token,
-      // });
-
-      // await user_login.save();
+     
 
       // Update FCM token if role is USER
       if (EmailCheck.Role === "USER") {
@@ -110,6 +104,7 @@ class Auth {
         },
       });
     } catch (error) {
+
       return res.send({
         status: false,
         message: "Server side error",
@@ -121,6 +116,9 @@ class Auth {
 async SignIn(req, res) {
   try {
     const { FullName, UserName, PhoneNo, password, ReferredBy } = req.body;
+
+    // Convert UserName to lowercase
+    UserName = UserName?.toString().toLowerCase();
 
     // Check required fields
     if (!FullName || !UserName || !PhoneNo || !password) {

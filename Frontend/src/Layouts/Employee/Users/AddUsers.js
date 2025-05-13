@@ -121,8 +121,8 @@ const AddUsers = () => {
 
       const data = {
         FullName: values.fullName,
-        UserName: values.username,
-        Email: values.email,
+        UserName: values.username.toString().toLowerCase(),
+        Email: values.email.toString().toLowerCase(),
         PhoneNo: values.phone,
         employee_id: user_id,
         Balance: values.Balance,

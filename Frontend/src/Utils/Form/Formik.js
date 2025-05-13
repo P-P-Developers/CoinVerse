@@ -8,7 +8,6 @@ const DynamicForm = ({
 
   btn_name1,
   btn_name1_route,
-
   formik,
   btn_name,
   title,
@@ -18,40 +17,8 @@ const DynamicForm = ({
   content_path,
   btn_name2,
 }) => {
-  const [previews, setPreviews] = useState([]);
+
   const [passwordVisible, setPasswordVisible] = useState({});
-  const [inputValue, setInputValue] = useState("");
-  const [selectedImage, setSelectedImage] = useState(null);
-
-  var subadmin_service_type = JSON.parse(
-    localStorage.getItem("user_details")
-  ).subadmin_service_type;
-
-  const prifix_key = JSON.parse(
-    localStorage.getItem("user_details")
-  ).prifix_key;
-
-  const handleFileChange = (event, index, name) => {
-    if (event.target.files[0].size > 420000) {
-      alert("Select file less then 420KB");
-      event.target.value = "";
-      return;
-    } else {
-      const file = event.target.files[0];
-      const newPreviews = [...previews];
-      newPreviews[index] = URL.createObjectURL(file);
-      setPreviews(newPreviews);
-      const reader = new FileReader();
-      reader.onload = () => {
-        formik.setFieldValue(name, reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const HandelChange = (value) => {
-    formik.setFieldValue("Service_Type", value);
-  };
 
   return (
     <div className="content container-fluid" data-aos="fade-left">
@@ -98,7 +65,7 @@ const DynamicForm = ({
                 <div className="row d-flex ">
                   {fields.map((field, index) => (
                     <React.Fragment key={index}>
-                      { field.type === "heading" ? (
+                      {field.type === "heading" ? (
                         <div className={`col-lg-${field.col_size}`}>
                           <div className="input-block mb-1">
                             <label
@@ -139,40 +106,42 @@ const DynamicForm = ({
                         </>
                       ) : field.type === "text1" ? (
                         <>
-  <div className={`col-lg-${field.col_size}`}>
-    <div className="input-block mb-3 flex-column">
-      <label className={`col-lg-${field.label_size}`}>
-        {field.label}
-        <span className="text-danger">*</span>
-      </label>
+                          <div className={`col-lg-${field.col_size}`}>
+                            <div className="input-block mb-3 flex-column">
+                              <label className={`col-lg-${field.label_size}`}>
+                                {field.label}
+                                <span className="text-danger">*</span>
+                              </label>
 
-      <input
-        type="text"
-        autoComplete="new-email1"
-        aria-describedby="basic-addon1"
-        className="form-control"
-        placeholder={`Enter ${field.label}`}
-        readOnly={field.disable}
-        id={field.name}
-        name={field.name}
-        value={formik.values[field.name]}
-        onChange={(e) => {
-          let value = e.target.value.replace(/\D/g, ""); // allow only numbers
-          if (Number(value) > 10000) {
-            value = "10000"; // cap value
-          }
-          formik.setFieldValue(field.name, value);
-        }}
-        onBlur={formik.handleBlur}
-      />
+                              <input
+                                type="text"
+                                autoComplete="new-email1"
+                                aria-describedby="basic-addon1"
+                                className="form-control"
+                                placeholder={`Enter ${field.label}`}
+                                readOnly={field.disable}
+                                id={field.name}
+                                name={field.name}
+                                value={formik.values[field.name]}
+                                onChange={(e) => {
+                                  let value = e.target.value.replace(/\D/g, ""); // allow only numbers
+                                  if (Number(value) > 10000) {
+                                    value = "10000"; // cap value
+                                  }
+                                  formik.setFieldValue(field.name, value);
+                                }}
+                                onBlur={formik.handleBlur}
+                              />
 
-      {formik.touched[field.name] && formik.errors[field.name] ? (
-        <div style={{ color: "red" }}>{formik.errors[field.name]}</div>
-      ) : null}
-    </div>
-  </div>
-</>
-
+                              {formik.touched[field.name] &&
+                              formik.errors[field.name] ? (
+                                <div style={{ color: "red" }}>
+                                  {formik.errors[field.name]}
+                                </div>
+                              ) : null}
+                            </div>
+                          </div>
+                        </>
                       ) : field.type === "percentage" ? (
                         <div className={`col-lg-${field.col_size}`}>
                           <div className="input-block mb-3 flex-column">
@@ -360,7 +329,7 @@ const DynamicForm = ({
                             </div>
                           </div>
                         </>
-                      ) :  field.type === "date" ? (
+                      ) : field.type === "date" ? (
                         <>
                           <div className="col-lg-3">
                             <div className="row d-flex">
