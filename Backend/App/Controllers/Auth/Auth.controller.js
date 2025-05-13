@@ -13,13 +13,9 @@ const axios = require("axios");
 class Auth {
   async login(req, res) {
     try {
-      let { UserName, password, fcm_token } = req.body;
+      const { UserName, password, fcm_token } = req.body;
 
-      UserName = UserName?.toString().toLowerCase();
-      
-
-
-      const EmailCheck = await User_model.findOne({ UserName:UserName});
+      const EmailCheck = await User_model.findOne({ UserName: UserName });
 
       if (!EmailCheck) {
         return res.send({
@@ -77,7 +73,17 @@ class Auth {
         expiresIn: 28800,
       });
 
-     
+      // Create user login log
+      // const user_login = new user_logs({
+      //   user_Id: EmailCheck._id,
+      //   admin_Id: EmailCheck.parent_id || "",
+      //   UserName: EmailCheck.UserName,
+      //   login_status: "Panel On",
+      //   role: EmailCheck.Role,
+      //   DeviceToken: fcm_token,
+      // });
+
+      // await user_login.save();
 
       // Update FCM token if role is USER
       if (EmailCheck.Role === "USER") {
@@ -105,7 +111,6 @@ class Auth {
         },
       });
     } catch (error) {
-
       return res.send({
         status: false,
         message: "Server side error",
@@ -114,9 +119,9 @@ class Auth {
     }
   }
 
-async SignIn(req, res) {
-  try {
-    const { FullName, UserName, PhoneNo, password, ReferredBy } = req.body;
+  async SignIn(req, res) {
+    try {
+      const { FullName, UserName, PhoneNo, Email, password, ReferredBy } = req.body;
 
       // Check required fields
       if (!FullName || !UserName || !PhoneNo || !password) {
@@ -272,51 +277,6 @@ async SignIn(req, res) {
       const result1 = await Sign_In.find({
         referred_by: { $in: AllUserId },
         isActive: false,
-      }).sort({ createdAt: -1 });
-
-      // Step 4: Merge and check the results
-      const finalData = [...result, ...result1];
-
-      if (finalData.length === 0) {
-        return res.json({ status: false, message: "No data found", data: [] });
-      }
-
-      return res.json({
-        status: true,
-        message: "Data retrieved",
-        data: finalData,
-      });
-    } catch (error) {
-      console.error("Error in getSignIn:", error);
-      return res.json({
-        status: false,
-        message: "Internal error",
-        data: [],
-      });
-    }
-  }
-  async getReferClients(req, res) {
-    try {
-      const { admin_id } = req.body;
-
-      // Step 1: Get all user IDs under this admin
-      const GetAllUsers = await User_model.find({
-        parent_id: admin_id,
-        Role: "USER",
-      }).select("_id");
-
-      const AllUserId = GetAllUsers.map((item) => item._id);
-
-      // Step 2: Find sign-ins directly referred by the admin
-      const result = await Sign_In.find({
-        referred_by: admin_id,
-       
-      }).sort({ createdAt: -1 });
-
-      // Step 3: Find sign-ins referred by the admin’s users
-      const result1 = await Sign_In.find({
-        referred_by: { $in: AllUserId },
-       
       }).sort({ createdAt: -1 });
 
       // Step 4: Merge and check the results
