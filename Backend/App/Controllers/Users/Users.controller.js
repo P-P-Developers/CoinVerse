@@ -96,7 +96,7 @@ class Users {
           createdAt: -1,
         })
         .select(
-          "adminid userid Balance type status message notification_title createdAt"
+          "adminid userid Balance type status message notification_title createdAt ScreenShot transactionId"
         );
 
       if (!result) {
