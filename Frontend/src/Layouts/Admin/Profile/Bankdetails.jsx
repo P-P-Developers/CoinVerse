@@ -102,28 +102,8 @@ const Changedpassword = () => {
             <form className="profile-form mt-4" onSubmit={handleBankSubmit}>
               <div className="card-body">
                 <div className="row">
-                  {[
-                    { name: "upiId", label: "UPI ID" },
-                    { name: "accountHolderName", label: "Account Holder Name" },
-                    { name: "bankName", label: "Bank Name" },
-                    { name: "bankAccountNo", label: "Bank Account Number" },
-                    { name: "bankIfsc", label: "Bank IFSC" }
-                  ].map((item, index) => (
-                    <div className="col-sm-4 mb-3" key={index}>
-                      <label className="form-label">{item.label}</label>
-                      <input
-                        type="text"
-                        className={`form-control ${errors[item.name] ? "is-invalid" : ""}`}
-                        name={item.name}
-                        value={bankDetails[item.name]}
-                        onChange={handleBankChange}
-                        required
-                      />
-                      {errors[item.name] && (
-                        <div className="invalid-feedback">{errors[item.name]}</div>
-                      )}
-                    </div>
-                  ))}
+                  
+                
 
                   <div className="col-sm-4 mb-3">
                     <label className="form-label">Upload QR Code Image</label>

@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
-import {  fDateTimesec } from "../../../Utils/Date_format/datefromat";
+import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
 import { Clienthistory } from "../../../Services/Admin/Addmin";
 import { DollarSign } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ArrowLeftRight } from "lucide-react";
-import { getAdminName, switchOrderType} from "../../../Services/Superadmin/Superadmin";
+import {
+  getAdminName,
+  switchOrderType,
+} from "../../../Services/Superadmin/Superadmin";
 
 const SuperAdminTradeHistory = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
@@ -17,6 +20,8 @@ const SuperAdminTradeHistory = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [Search, setSearch] = useState("");
 
+  const [userNameList, setUserNameList] = useState([]);
+  const [userNamed, setUserNamed] = useState("");
 
   useEffect(() => {
     GetUserName();
@@ -24,30 +29,36 @@ const SuperAdminTradeHistory = () => {
 
   useEffect(() => {
     getuserallhistory();
-  }, [Userid,Search]);
+  }, [Userid, Search, userNamed]);
 
-  
   const getuserallhistory = async () => {
     try {
       const data = { adminid: Userid };
       const response = await Clienthistory(data);
+      let UserNameListData = response.data.map((item) => {
+        return item.userName;
+      });
+
+      setUserNameList([...new Set(UserNameListData)]);
 
       let filteredData = response.data;
-      if (Search) {
+      if (Search || userNamed) {
         filteredData = response.data.filter((item) => {
-          const userNameMatch = item.userName
-            .toLowerCase()
-            .includes(Search.toLowerCase());
-          const symbolMatch = item.symbol
-            .toLowerCase()
-            .includes(Search.toLowerCase());
-          return userNameMatch || symbolMatch;
-        }
-        );
-      }
-      setData(filteredData);
+          const userNameMatch = Search
+            ? item.userName.toLowerCase().includes(Search.toLowerCase())
+            : true;
+          const symbolMatch = Search
+            ? item.symbol.toLowerCase().includes(Search.toLowerCase())
+            : true;
+          const userNameListMatch = userNamed
+            ? item.userName.toLowerCase() === userNamed.toLowerCase()
+            : true;
 
-  
+          return (userNameMatch || symbolMatch) && userNameListMatch;
+        });
+      }
+
+      setData(filteredData);
     } catch (error) {
       console.log("error", error);
     }
@@ -66,7 +77,7 @@ const SuperAdminTradeHistory = () => {
         );
       },
     },
-    
+
     { Header: "UserName", accessor: "userName" },
 
     { Header: "Symbol", accessor: "symbol" },
@@ -79,9 +90,8 @@ const SuperAdminTradeHistory = () => {
         if (signal_type === "buy_sell") {
           return buy_price ? buy_price : "-";
         } else {
-          return cell.row.sell_price ? cell.row.sell_price : "-"; 
+          return cell.row.sell_price ? cell.row.sell_price : "-";
         }
-
       },
     },
     {
@@ -93,9 +103,8 @@ const SuperAdminTradeHistory = () => {
         if (signal_type === "sell_buy") {
           return buy_price ? buy_price : "-";
         } else {
-          return cell.row.sell_price ? cell.row.sell_price : "-"; 
+          return cell.row.sell_price ? cell.row.sell_price : "-";
         }
-
       },
     },
     {
@@ -119,7 +128,6 @@ const SuperAdminTradeHistory = () => {
               <DollarSign /> {formattedProfitLoss}
             </span>
           );
-       
         }
 
         return "-";
@@ -133,7 +141,7 @@ const SuperAdminTradeHistory = () => {
         if (signal_type === "buy_sell") {
           return cell.row.buy_lot ? cell.row.buy_lot : "-";
         } else {
-          return cell.row.sell_lot ? cell.row.sell_lot : "-"; 
+          return cell.row.sell_lot ? cell.row.sell_lot : "-";
         }
       },
     },
@@ -145,7 +153,7 @@ const SuperAdminTradeHistory = () => {
         if (signal_type === "sell_buy") {
           return cell.row.buy_lot ? cell.row.buy_lot : "-";
         } else {
-          return cell.row.sell_lot ? cell.row.sell_lot : "-"; 
+          return cell.row.sell_lot ? cell.row.sell_lot : "-";
         }
       },
     },
@@ -157,7 +165,7 @@ const SuperAdminTradeHistory = () => {
         if (signal_type === "buy_sell") {
           return cell.row.buy_qty ? cell.row.buy_qty : "-";
         } else {
-          return cell.row.sell_qty ? cell.row.sell_qty : "-"; 
+          return cell.row.sell_qty ? cell.row.sell_qty : "-";
         }
       },
     },
@@ -169,38 +177,36 @@ const SuperAdminTradeHistory = () => {
         if (signal_type === "sell_buy") {
           return cell.row.buy_qty ? cell.row.buy_qty : "-";
         } else {
-          return cell.row.sell_qty ? cell.row.sell_qty : "-"; 
+          return cell.row.sell_qty ? cell.row.sell_qty : "-";
         }
       },
     },
-       {
-          Header: "Entry Time",
-          accessor: "buy_time",
-          Cell: ({ cell }) => {
-            const signal_type = cell.row.signal_type;
-    
-            if (signal_type === "buy_sell") {
-              return cell.row.buy_time ? fDateTimesec(cell.row.buy_time) : "-";
-            } else {
-              return cell.row.sell_time ? fDateTimesec(cell.row.sell_time) : "-"; 
-            }
-    
-          },
-        },
-        {
-          Header: "Exit time",
-          accessor: "sell_time",
-          Cell: ({ cell }) => {
-            const signal_type = cell.row.signal_type;
-    
-            if (signal_type === "sell_buy") {
-              return cell.row.buy_time ? fDateTimesec(cell.row.buy_time) : "-";
-            } else {
-              return cell.row.sell_time ? fDateTimesec(cell.row.sell_time) : "-"; 
-            }
-    
-          },
-        },
+    {
+      Header: "Entry Time",
+      accessor: "buy_time",
+      Cell: ({ cell }) => {
+        const signal_type = cell.row.signal_type;
+
+        if (signal_type === "buy_sell") {
+          return cell.row.buy_time ? fDateTimesec(cell.row.buy_time) : "-";
+        } else {
+          return cell.row.sell_time ? fDateTimesec(cell.row.sell_time) : "-";
+        }
+      },
+    },
+    {
+      Header: "Exit time",
+      accessor: "sell_time",
+      Cell: ({ cell }) => {
+        const signal_type = cell.row.signal_type;
+
+        if (signal_type === "sell_buy") {
+          return cell.row.buy_time ? fDateTimesec(cell.row.buy_time) : "-";
+        } else {
+          return cell.row.sell_time ? fDateTimesec(cell.row.sell_time) : "-";
+        }
+      },
+    },
     {
       Header: "Create Date",
       accessor: "createdAt",
@@ -212,10 +218,8 @@ const SuperAdminTradeHistory = () => {
 
   // Function to get user history
 
-
   const GetUserName = async () => {
     try {
-      
       const admin_id = user_id;
       const response = await getAdminName();
       if (response.status) {
@@ -225,8 +229,6 @@ const SuperAdminTradeHistory = () => {
       console.log("error", error);
     }
   };
-
-
 
   // Calculate total profit/loss
   const calculateTotalProfitLoss = () => {
@@ -261,6 +263,7 @@ const SuperAdminTradeHistory = () => {
       alert("Error");
     }
   };
+  console.log("userNameList", userNameList);
 
   return (
     <>
@@ -275,7 +278,8 @@ const SuperAdminTradeHistory = () => {
                   </div>
                   <Link
                     to="/admin/users"
-                    className="float-end mb-4 btn btn-primary">
+                    className="float-end mb-4 btn btn-primary"
+                  >
                     Back
                   </Link>
                 </div>
@@ -285,14 +289,16 @@ const SuperAdminTradeHistory = () => {
                       className="tab-pane fade show active"
                       id="Week"
                       role="tabpanel"
-                      aria-labelledby="Week-tab">
+                      aria-labelledby="Week-tab"
+                    >
                       <div
                         style={{
                           display: "flex",
                           gap: "20px",
                           alignItems: "center",
                           padding: "1rem",
-                        }}>
+                        }}
+                      >
                         {/* Search Input */}
                         <div style={{ flex: 1 }}>
                           <label
@@ -300,7 +306,8 @@ const SuperAdminTradeHistory = () => {
                               fontWeight: "bold",
                               fontSize: "16px",
                               marginRight: "0.5rem",
-                            }}>
+                            }}
+                          >
                             Search:
                           </label>
                           <input
@@ -319,14 +326,15 @@ const SuperAdminTradeHistory = () => {
                           />
                         </div>
 
-                        {/* User Dropdown */}
+                        {/* Admin Dropdown */}
                         <div style={{ flex: 1 }}>
                           <label
                             style={{
                               fontWeight: "bold",
                               fontSize: "16px",
                               marginRight: "0.5rem",
-                            }}>
+                            }}
+                          >
                             Admin:
                           </label>
                           <select
@@ -340,12 +348,47 @@ const SuperAdminTradeHistory = () => {
                               color: "#333",
                             }}
                             onChange={(e) => setUserId(e.target.value)}
-                            defaultValue="">
+                            defaultValue=""
+                          >
                             <option value="">Select a user</option>
                             {userName &&
                               userName.map((username) => (
                                 <option key={username._id} value={username._id}>
                                   {username.UserName}
+                                </option>
+                              ))}
+                          </select>
+                        </div>
+
+                        {/* User Dropdown */}
+                        <div style={{ flex: 1 }}>
+                          <label
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              marginRight: "0.5rem",
+                            }}
+                          >
+                            User:
+                          </label>
+                          <select
+                            className="form-select"
+                            style={{
+                              width: "100%",
+                              padding: "10px",
+                              borderRadius: "5px",
+                              border: "1px solid #ccc",
+                              backgroundColor: "#f8f9fa",
+                              color: "#333",
+                            }}
+                            onChange={(e) => setUserNamed(e.target.value)}
+                            value={userNamed}
+                          >
+                            <option value="">Select a user</option>
+                            {userNameList &&
+                              userNameList?.map((username, index) => (
+                                <option key={index} value={username}>
+                                  {username}
                                 </option>
                               ))}
                           </select>
@@ -357,7 +400,8 @@ const SuperAdminTradeHistory = () => {
                         <span
                           style={{
                             color: totalProfitLoss > 0 ? "green" : "red",
-                          }}>
+                          }}
+                        >
                           {" "}
                           <DollarSign />
                           {totalProfitLoss}
@@ -377,7 +421,8 @@ const SuperAdminTradeHistory = () => {
                               marginBottom: "20px",
                               marginLeft: "20px",
                               marginTop: "-48px",
-                            }}>
+                            }}
+                          >
                             Rows per page:{" "}
                             <select
                               className="form-select ml-2"
@@ -385,7 +430,8 @@ const SuperAdminTradeHistory = () => {
                               onChange={(e) =>
                                 setRowsPerPage(Number(e.target.value))
                               }
-                              style={{ width: "auto", marginLeft: "10px" }}>
+                              style={{ width: "auto", marginLeft: "10px" }}
+                            >
                               <option value={5}>5</option>
                               <option value={10}>10</option>
                               <option value={20}>20</option>
@@ -397,7 +443,8 @@ const SuperAdminTradeHistory = () => {
                       ) : (
                         <div
                           className="alert alert-warning text-center text-black"
-                          role="alert">
+                          role="alert"
+                        >
                           Please select an admin first.
                         </div>
                       )}
