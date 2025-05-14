@@ -209,6 +209,14 @@ const userModel = Schema({
         type: Number,
         default: null
     },
+    NetTransactionPercent: {
+        type: Boolean,
+        default: false
+    },
+    NetTransaction: {
+        type: Number,
+        default: null
+    },
 
 },
     {

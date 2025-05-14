@@ -38,12 +38,12 @@ export const superadmin_header = [
         icon: "fe fe-dollar-sign",
         route: "/superadmin/holdoff",
     },
-    // {
-    //     id: 8,
-    //     name: 'Brokerage',
-    //     icon: "fe fe-dollar-sign",
-    //     route: "/superadmin/brokerage",
-    // },
+    {
+        id: 8,
+        name: 'Brokerage',
+        icon: "fe fe-dollar-sign",
+        route: "/superadmin/brokerage",
+    },
     // {
     //     id: 9,
     //     name: 'Currency Setup',

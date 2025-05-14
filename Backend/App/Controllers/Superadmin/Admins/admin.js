@@ -20,7 +20,7 @@ const BonusCollectioniModel = require("../../../Models/BonusCollectioni.model");
 class Superadmin {
   async AddAdmin(req, res) {
     try {
-      const {
+      let {
         FullName,
         UserName,
         Email,
@@ -47,6 +47,8 @@ class Superadmin {
         FundLessThan500,
         FundLessThan1000,
         FundGreaterThan1000,
+        NetTransactionPercent,
+        NetTransaction,
 
       } = req.body;
 
@@ -134,6 +136,9 @@ class Superadmin {
         FundLessThan500,
         FundLessThan1000,
         FundGreaterThan1000,
+        NetTransactionPercent,
+        NetTransaction,
+
       });
 
       await newUser.save();
@@ -183,7 +188,7 @@ class Superadmin {
         data: newUser,
       });
     } catch (error) {
-
+console.error("Error at AddAdmin", error);
       return res.json({
         status: false,
         message: "Failed to add user",

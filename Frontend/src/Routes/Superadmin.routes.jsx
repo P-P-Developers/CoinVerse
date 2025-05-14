@@ -41,7 +41,7 @@ const SuperadminRoutes = () => {
           <Route path="/holdoff" element={<Holdoff />} />
           <Route path="/admin/adminuser/:id" element={<AdminUser />} />
           <Route path="/admin/adminemployee/:id" element={<Adminemployee />} />
-          <Route path="/brokerage" element={<Brokerage />} />
+          <Route path="/brokerage" element={<AdminBrokerage />} />
           <Route path="/brokerage/:id" element={<AdminBrokerage />} />
           <Route path="/system" element={<System />} />
           <Route path="/tradehistory" element={<SuperAdminTradeHistory />} />
@@ -49,6 +49,7 @@ const SuperadminRoutes = () => {
 
           <Route path="/withdrawal" element={<Withdrawal />} />
           <Route path="/deposit" element={<Deposite />} />
+
         </Routes>
       </div>
       <Footer />

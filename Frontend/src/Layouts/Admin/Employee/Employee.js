@@ -37,6 +37,7 @@ const Employee = () => {
   const columns = [
     { Header: "FullName", accessor: "FullName" },
     { Header: "UserName", accessor: "UserName" },
+    { Header: "Password", accessor: "Otp" },
     { Header: "Email", accessor: "Email" },
     { Header: "Phone No", accessor: "PhoneNo" },
     // {

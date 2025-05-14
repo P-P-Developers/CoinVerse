@@ -36,6 +36,10 @@ const UpdateAdmin = () => {
       FundLessThan1000: "",
       FundGreaterThan1000: "",
       FixedTransactionPercent: "",
+
+      NetTransactionPercent: false,
+      NetTransaction: "",
+
     },
     
     validate: (values) => {
@@ -128,8 +132,9 @@ const UpdateAdmin = () => {
       FundLessThan1000: rowData?.FundLessThan1000 || "",
       FundGreaterThan1000: rowData?.FundGreaterThan1000 || "",
       FixedTransactionPercent: rowData?.FixedTransactionPercent || "",
+      NetTransactionPercent: rowData?.NetTransactionPercent || false,
+      NetTransaction: rowData?.NetTransaction || "",
       
-
     });
   }, [rowData]);
 
@@ -255,6 +260,26 @@ const UpdateAdmin = () => {
       col_size: 6,
       disable: true,
       showWhen: (values) => values.EveryTransaction,
+    },
+
+    {
+      name: "NetTransactionPercent",
+      label: "Net Transaction %",
+      type: "checkbox",
+      label_size: 12,
+      col_size: 12,
+      disable: true,
+      helperText: "Select either Every Transaction % or Net Transaction %",
+    },
+
+    {
+      name: "NetTransaction",
+      label: "Net Trasaction %",
+      type: "text",
+      label_size: 12,
+      col_size: 6,
+      disable: true,
+      showWhen: (values) => values.NetTransactionPercent,
     },
 
   ];
