@@ -141,7 +141,6 @@ const Updateuser = () => {
           });
         }
       } catch (error) {
-        console.log("Update Error:", error); // Debugging line
         Swal.fire({
           title: "Error!",
           text: "Failed to update user. Please try again later.",

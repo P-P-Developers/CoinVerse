@@ -153,7 +153,7 @@ class Dashboard {
     // Function to fetch data from Tiingo API
     const fetchTiingoData = async () => {
       const url = `https://api.tiingo.com/tiingo/daily/${symbol}/prices?startDate=${formattedStartDate}&endDate=${formattedEndDate}&token=${API_TOKEN}`;
-      console.log(url);
+
       try {
         const response = await axios.get(url, {
           headers: {

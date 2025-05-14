@@ -95,119 +95,13 @@ class UserSymbol {
     }
   }
 
-  // user userwalist list / backup code 
-  // async userSymbollist(req, res) {
-  //   try {
-
-
-  //     const userWatchlistRecords = await Userwatchlist.find({
-  //       userid: req.body.userid,
-  //     })
-  //       .select("-createdAt -_id")
-  //       .sort({ _id: -1 });
-
-  //     const result = await Userwatchlist.aggregate([
-  //       { $match: { userid: req.body.userid } },
-  //       {
-  //         $lookup: {
-  //           from: "symbols",
-  //           localField: "symbol",
-  //           foreignField: "symbol",
-  //           as: "symbolDetails",
-  //           pipeline: [
-  //             { $match: { status: 1 } }, // Includingg status = 1
-  //           ],
-  //         },
-  //       },
-  //       { $unwind: "$symbolDetails" },
-  //       {
-  //         $project: {
-  //           symbol: 1,
-  //           userid: 1,
-  //           token: 1,
-  //           symbol_name: 1,
-  //           exch_seg: 1,
-
-  //           lotsize: "$symbolDetails.lotsize",
-  //         },
-  //       },
-  //     ]);
-
-  //     // Check if records are found and return the appropriate response
-  //     if (result.length > 0) {
-  //       return res.json({ status: true, data: result });
-  //     } else {
-  //       res.json({ status: false, message: "No data available", data: [] });
-  //     }
-  //   } catch (err) {
-  //     return res.json({
-  //       status: false,
-  //       message:
-  //         err.message ||
-  //         "An error occurred while retrieving the User Symbol List.",
-  //       data: [],
-  //     });
-  //   }
-  // }
 
 
   // Userwatchlist with favourite status new code 
   async userSymbollist(req, res) {
     try {
 
-      // const result1 = await Userwatchlist.aggregate([
-      //   { $match: { userid: req.body.userid } },
-      //   {
-      //     $lookup: {
-      //       from: "symbols",
-      //       localField: "symbol",
-      //       foreignField: "symbol",
-      //       as: "symbolDetails",
-      //       pipeline: [{ $match: { status: 1 } }],
-      //     },
-      //   },
-      //   { $unwind: "$symbolDetails" },
-      
-      //   {
-      //     $lookup: {
-      //       from: "favouritelists",
-      //       let: { userId: "$userid", token: "$token" },
-      //       pipeline: [
-      //         {
-      //           $match: {
-      //             $expr: {
-      //               $and: [
-      //                 { $eq: ["$userid", "$$userId"] },
-      //                 { $eq: ["$token", "$$token"] },
-      //                 { $eq: ["$status", 1] },
-      //               ],
-      //             },
-      //           },
-      //         },
-      //       ],
-      //       as: "favouritelists",
-      //     },
-      //   },
-      //   { $unwind: "$favouritelists" },
-      //   {
-      //     $project: {
-      //       symbol: 1,
-      //       userid: 1,
-      //       token: 1,
-      //       symbol_name: 1,
-      //       exch_seg: 1,
-      //       lotsize: "$symbolDetails.lotsize",
-      //       favourite: {
-      //         $cond: {
-      //           if: { $eq: ["$favouritelists.status", 1] },
-      //           then: true,
-      //           else: false,
-      //         },
-      //       },
-      //     },
-      //   },
-      // ]);
-      // console.log(result1);
+ 
       
       const userWatchlistRecords = await Userwatchlist.find({
         userid: req.body.userid,

@@ -21,7 +21,6 @@ const sendPushNotification = async (firebaseToken, title, message) => {
       token: firebaseToken,
     };
 
-    console.log("Payload", payload);
     const response = await admin.messaging().send(payload);
     return { success: true };
   } catch (error) {
@@ -40,7 +39,7 @@ const sendMultiplePushNotification = async (firebaseTokens, title, message) => {
         firebaseToken === undefined ||
         firebaseToken === ""
       ) {
-        console.log("Invalid firebase token");
+    
         return { success: false, error: "Invalid firebase token" };
 
       }

@@ -213,7 +213,7 @@ class Auth {
       }
 
       const response = await axios.post(process.env.base_url + "admin/AddUser", data);
-      console.log("response", response.data);
+    
       if (!response.data.status) {
         return res.json({
           status: false,

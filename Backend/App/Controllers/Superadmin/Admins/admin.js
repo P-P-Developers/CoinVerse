@@ -226,12 +226,10 @@ console.error("Error at AddAdmin", error);
       let newBalance = parseFloat(userdata.Balance || 0);
       const parentUser = await User_model.findOne({ _id: parent_Id });
 
-      console.log("userdata", userdata);
-      console.log("parentUser", parentUser);
+
 
       // Update balance based on the transaction type
       if (Type === "CREDIT") {
-        console.log("parentUser.Range1", userdata.parent_role);
 
         if (newBalance === 0) {
           if (parentUser && userdata.ReferredBy) {
@@ -257,7 +255,6 @@ console.error("Error at AddAdmin", error);
                 message: "Referral Balance Added",
               });
               await newStatement.save();
-              console.log("newStatement", newStatement);
 
             }
           }  
@@ -706,11 +703,7 @@ console.error("Error at AddAdmin", error);
     try {
         const { adminid } = req.body;
 
-        console.log("adminid", adminid);
-      
-
-
-
+    
       let result = await mainorder_model
         .find({
           adminid :   adminid,
@@ -722,8 +715,6 @@ console.error("Error at AddAdmin", error);
         return res.json({ status: false, message: "Data not found", data: [] });
       }
 
-      // Assuming you have a users collection where you store the admin and user usernames
-      // Fetch the users corresponding to adminid and userid
       const adminIds = result.map((item) => item.adminid);
       const userIds = result.map((item) => item.userid);
 

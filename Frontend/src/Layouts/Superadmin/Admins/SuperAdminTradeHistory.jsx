@@ -262,7 +262,6 @@ const SuperAdminTradeHistory = () => {
       alert("Error");
     }
   };
-  console.log("userNameList", userNameList);
 
   return (
     <>

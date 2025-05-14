@@ -32,7 +32,7 @@ const Deposit = () => {
   const getAdminNames = async () => {
     try {
       const response = await GetAdminUsername();
-      console.log("Admin Names:", response.data);
+
       setAdminNames(response.data);
     } catch (error) {
       console.error("Error fetching admin names:", error);

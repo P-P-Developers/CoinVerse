@@ -65,7 +65,6 @@ const Brokerage = () => {
      );
      setSelectedAdminId(selectedAdminObj ? selectedAdminObj._id : "");
  
-     console.log("Selected Admin Object", selectedAdminObj);
    };
  
    const fetchAllData = async () => {
@@ -124,7 +123,6 @@ const Brokerage = () => {
      try {
        const res = await GetAdminUsername();
        setAdminUsername(res?.data);
-       console.log("Admin Username", res);
      }
      catch (err) {
        console.error("Error fetching admin username", err);

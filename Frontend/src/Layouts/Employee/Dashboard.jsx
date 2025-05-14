@@ -20,7 +20,7 @@ const Dashboard = () => {
                 console.log("Error: ", response.message || "Unknown error occurred");
             }
         } catch (error) {
-            console.log("API call failed: ", error.message);
+       
         }
     };
 

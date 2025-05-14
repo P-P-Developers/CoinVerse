@@ -740,12 +740,10 @@ class Admin {
         } else if (paymentHistoryFind.type === 1) {
           // Deposit Request
           // Add balance
-          console.log("findUser.Balance", findUser.Balance);
           if (findUser.Balance === 0) {
-            console.log("inside fn", findUser);
             if (findUser && findUser.ReferredBy) {
               const ReferredByUser = await User_model.findOne({ _id: findUser.ReferredBy });
-              console.log("ReferredByUser", ReferredByUser);
+        
               if (ReferredByUser && ReferredByUser.Role === "USER") {
                 let refferalAmount = 0;
                 let balanceToAdd = paymentHistoryFind.Balance
@@ -767,7 +765,7 @@ class Admin {
                   message: "Referral Balance Added",
                 });
                 await newStatement.save();
-                console.log("newStatement", newStatement);
+        
 
               }
             }

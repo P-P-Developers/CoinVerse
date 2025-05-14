@@ -531,11 +531,9 @@ class Placeorder {
         Profitloss = tradehistory.sell_price * qtyNum - priceNum * qtyNum;
       }
 
-      // console.log("sq Profitloss--", Profitloss);
 
       let Totalupdateuserbalance = Profitloss - brokerage;
 
-      // console.log("sq Totalupdateuserbalance--", Totalupdateuserbalance);
 
       let totaladdbalance =
         parseFloat(tradehistory?.totalamount || 1) * qtyNum +
@@ -693,12 +691,10 @@ class Placeorder {
          brokerage = brokerage.toFixed(2) 
       }
 
-      console.log("brokerage", brokerage);
 
       const totalamount =
         parseFloat(requiredFund) / parseFloat(checkadmin.limit);
 
-      console.log("totalamount", totalamount);
 
       let brokerageFund = parseFloat(totalamount) + parseFloat(brokerage);
 
@@ -706,7 +702,6 @@ class Placeorder {
         brokerageFund = brokerageFund + parseFloat(brokerage);
       }
 
-      console.log("brokerageFund", brokerageFund);
 
       if (parseFloat(checkbalance) < parseFloat(brokerageFund)) {
         const rejectedOrder = new Order({
@@ -841,14 +836,11 @@ const EntryTrade = async (
     const Totalupdateuserbalance =
       parseFloat(updateuserbalance) - parseFloat(brokerage) * multypl;
 
-    // console.log("limitclaculation", limitclaculation);
 
-    // console.log("lot - ", qty);
     let ActualFun = limitclaculation;
     if (qty > 1) {
       ActualFun = limitclaculation / qty;
     }
-    // console.log("ActualFun - ", ActualFun);
     const seventyPercent = (ActualFun * 70) / 100;
 
   
@@ -978,23 +970,13 @@ const ExitTrade = async (
     const Totalupdateuserbalance =
       parseFloat(updateuserbalance) - parseFloat(brokerage) * multypl;
 
-    // console.log("limitclaculation", limitclaculation);
 
-    // console.log("lot - ", qty);
     let ActualFun = limitclaculation;
     if (qty > 1) {
       ActualFun = limitclaculation / qty;
     }
-    // console.log("ActualFun - ", ActualFun);
     const seventyPercent = (ActualFun * 70) / 100;
 
-    // console.log("seventyPercent - ", seventyPercent);
-    // console.log("price - ", price);
-
-    // console.log(
-    //   "sell price - seventyPercent",
-    //   parseFloat(price) + parseFloat(seventyPercent)
-    // );
 
     tradehistory = new mainorder_model({
       orderid: orderdata._id,
