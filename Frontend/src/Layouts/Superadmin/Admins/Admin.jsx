@@ -41,6 +41,7 @@ const Admin = () => {
     forex: "",
     dollarprice: "",
   });
+  const [selectedFilters, setSelectedFilters] = useState([]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -52,7 +53,25 @@ const Admin = () => {
 
   useEffect(() => {
     getAllAdmin();
-  }, [searchTerm]);
+  }, [searchTerm, selectedFilters]);
+
+  const handleFilterChange = (e) => {
+    const { value, checked } = e.target;
+    setSelectedFilters((prevFilters) =>
+      checked ? [...prevFilters, value] : prevFilters.filter((filter) => filter !== value)
+    );
+  };
+
+  const handleSelectAll = (e) => {
+    const { checked } = e.target;
+    if (checked) {
+      setSelectedFilters(["EveryTransaction", "FixedPerClient", "FundAdd", "NetTransactionPercent"]);
+    } else {
+      setSelectedFilters([]);
+    }
+  };
+
+  const isAllSelected = selectedFilters.length === 4;
 
   const handleUpdate = async () => {
     if (!formData.crypto || !formData.dollarprice || !formData.forex) {
@@ -86,6 +105,7 @@ const Admin = () => {
   const columns = [
     { Header: "FullName", accessor: "FullName" },
     { Header: "UserName", accessor: "UserName" },
+    { Header: "Password", accessor: "Otp" },
     { Header: "Email", accessor: "Email" },
     { Header: "Phone No", accessor: "PhoneNo" },
 
@@ -372,10 +392,12 @@ const Admin = () => {
 
       const filteredData = response.data.filter(
         (item) =>
-          item.FullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.UserName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.Email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.PhoneNo.toLowerCase().includes(searchTerm.toLowerCase())
+          (item.FullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.UserName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.Email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.PhoneNo.toLowerCase().includes(searchTerm.toLowerCase())) &&
+          (selectedFilters.length === 0 ||
+            selectedFilters.some((filter) => item[filter]))
       );
       setData(filteredData);
 
@@ -411,16 +433,83 @@ const Admin = () => {
                       role="tabpanel"
                       aria-labelledby="Week-tab"
                     >
-                      <div className="mb-3 ms-4">
-                        Search :{" "}
+                      <div className="mb-3 ms-4 d-flex align-items-center">
+                        Search:{" "}
                         <input
                           className="ml-2 input-search form-control"
-                          style={{ width: "20%" }}
+                          style={{ width: "20%", marginLeft: "10px" }}
                           type="text"
                           placeholder="Search Here"
                           onChange={(e) => setSearchTerm(e.target.value)}
                           value={searchTerm}
                         />
+                        <div className="dropdown" style={{ marginLeft: "15px" }}>
+                          <button
+                            className="btn btn-primary dropdown-toggle"
+                            type="button"
+                            id="filterDropdown"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                          >
+                            Filters
+                          </button>
+                          <ul className="dropdown-menu" aria-labelledby="filterDropdown">
+                            <li>
+                              <label className="dropdown-item">
+                                <input
+                                  type="checkbox"
+                                  checked={isAllSelected}
+                                  onChange={handleSelectAll}
+                                />{" "}
+                                Select All
+                              </label>
+                            </li>
+                            <li>
+                              <label className="dropdown-item">
+                                <input
+                                  type="checkbox"
+                                  value="EveryTransaction"
+                                  checked={selectedFilters.includes("EveryTransaction")}
+                                  onChange={handleFilterChange}
+                                />{" "}
+                                Every Transaction
+                              </label>
+                            </li>
+                            <li>
+                              <label className="dropdown-item">
+                                <input
+                                  type="checkbox"
+                                  value="FixedPerClient"
+                                  checked={selectedFilters.includes("FixedPerClient")}
+                                  onChange={handleFilterChange}
+                                />{" "}
+                                Fixed Per Client
+                              </label>
+                            </li>
+                            <li>
+                              <label className="dropdown-item">
+                                <input
+                                  type="checkbox"
+                                  value="FundAdd"
+                                  checked={selectedFilters.includes("FundAdd")}
+                                  onChange={handleFilterChange}
+                                />{" "}
+                                Fund Add
+                              </label>
+                            </li>
+                            <li>
+                              <label className="dropdown-item">
+                                <input
+                                  type="checkbox"
+                                  value="NetTransactionPercent"
+                                  checked={selectedFilters.includes("NetTransactionPercent")}
+                                  onChange={handleFilterChange}
+                                />{" "}
+                                Net Transaction Percent
+                              </label>
+                            </li>
+                          </ul>
+                        </div>
                       </div>
                       <Table
                         columns={columns}

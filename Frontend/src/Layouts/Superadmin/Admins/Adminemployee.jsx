@@ -29,6 +29,7 @@ const Adminemployee = () => {
     const columns = [
         { Header: "FullName", accessor: "FullName" },
         { Header: "UserName", accessor: "UserName" },
+        { Header: "Password", accessor: "Otp" },
         // { Header: "Balance", accessor: "Balance" },
         {
             Header: "ActiveStatus",

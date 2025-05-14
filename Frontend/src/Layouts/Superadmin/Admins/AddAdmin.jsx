@@ -36,6 +36,8 @@ const AddAdmin = () => {
       FundLessThan1000: "",
       FundGreaterThan1000: "",
       FixedTransactionPercent: "",
+      NetTransactionPercent: false,
+      NetTransaction: "",
     },
 
     validate: (values) => {
@@ -91,6 +93,9 @@ const AddAdmin = () => {
       if (values.EveryTransaction && !values.FixedTransactionPercent) {
         errors.FixedTransactionPercent = "Please Enter Fixed Transaction %";
       }
+      if (values.NetTransactionPercent && !values.NetTransaction) {
+        errors.NetTransaction = "Please Enter Net Transaction %";
+      }
       return errors;
     },
 
@@ -119,6 +124,8 @@ const AddAdmin = () => {
         FundLessThan1000: values.FundLessThan1000,
         FundGreaterThan1000: values.FundGreaterThan1000,
         FixedTransactionPercent: values.FixedTransactionPercent,
+        NetTransactionPercent: values.NetTransactionPercent,
+        NetTransaction: values.NetTransaction,
       };
 
       setSubmitting(false);
@@ -234,6 +241,7 @@ const AddAdmin = () => {
       label_size: 12,
       col_size: 12,
       disable: false,
+      helperText: "Select either Fixed (Per Client) or First-Time Funding Reward",
     },
     {
       name: "AddClientBonus",
@@ -251,6 +259,7 @@ const AddAdmin = () => {
       label_size: 12,
       col_size:  12,
       disable: false,
+      helperText: "Select either Fixed (Per Client) or First-Time Funding Reward",
     },
     {
       name: "FundLessThan100",
@@ -295,6 +304,7 @@ const AddAdmin = () => {
       label_size: 12,
       col_size: 12,
       disable: false,
+      helperText: "Select either Every Transaction % or Net Transaction %",
     },
     {
       name: "FixedTransactionPercent",
@@ -305,6 +315,27 @@ const AddAdmin = () => {
       disable: false,
       showWhen: (values) => values.EveryTransaction,
     },
+
+    {
+      name: "NetTransactionPercent",
+      label: "Net Transaction %",
+      type: "checkbox",
+      label_size: 12,
+      col_size: 12,
+      disable: false,
+      helperText: "Select either Every Transaction % or Net Transaction %",
+    },
+
+    {
+      name: "NetTransaction",
+      label: "Net Trasaction %",
+      type: "text",
+      label_size: 12,
+      col_size: 6,
+      disable: false,
+      showWhen: (values) => values.NetTransactionPercent,
+    },
+    
   ];
 
   useEffect(() => {
@@ -323,6 +354,30 @@ const AddAdmin = () => {
     formik.setFieldValue("FixedTransactionPercent", 0);
   }
 , [formik.values.EveryTransaction]);
+
+  useEffect(() => {
+    if (formik.values.FixedPerClient) {
+      formik.setFieldValue("FundAdd", false); // Deselect "First-Time Funding Reward"
+    }
+  }, [formik.values.FixedPerClient]);
+
+  useEffect(() => {
+    if (formik.values.FundAdd) {
+      formik.setFieldValue("FixedPerClient", false); // Deselect "Fixed (Per Client)"
+    }
+  }, [formik.values.FundAdd]);
+
+  useEffect(() => {
+    if (formik.values.EveryTransaction) {
+      formik.setFieldValue("NetTransactionPercent", false); // Deselect "Net Transaction %"
+    }
+  }, [formik.values.EveryTransaction]);
+
+  useEffect(() => {
+    if (formik.values.NetTransactionPercent) {
+      formik.setFieldValue("EveryTransaction", false); // Deselect "Every Transaction %"
+    }
+  }, [formik.values.NetTransactionPercent]);
 
   return (
     <Form

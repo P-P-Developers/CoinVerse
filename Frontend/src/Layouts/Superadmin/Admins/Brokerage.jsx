@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   AddProfitMarginApi,
+  GetAdminUsername,
   getAllClient,
   getProfitMarginApi,
 } from "../../../Services/Superadmin/Superadmin";
@@ -27,6 +28,10 @@ const Brokerage = () => {
   const [totalBrokerage, setTotalBrokerage] = useState(0);
   const [completed, setCompleted] = useState(0);
   const [ProfitBalance, setProfitBalance] = useState(0);
+    const [selectedAdmin, setSelectedAdmin] = useState("All");
+    const [selectedAdminId, setSelectedAdminId] = useState("");
+  const [adminUsername, setAdminUsername] = useState([]);
+  
 
   const columns = [
     { Header: "UserName", accessor: "UserName" },
@@ -51,64 +56,90 @@ const Brokerage = () => {
 
   useEffect(() => {
     fetchAllData();
-  }, [refresh, search]); // Include search if you want it to refilter
+  }, [refresh, search, selectedAdmin]); // Include search if you want it to refilter
   
-  const fetchAllData = async () => {
-    try {
-      const [brokerageRes, bonusRes] = await Promise.all([
-        getbrokerageData({ admin_id: id }),
-        GetBonus({ admin_id: id }),
-      ]);
-  
-      // ---- Handle Brokerage Data ----
-      const structuredData = brokerageRes.data?.map((item) => ({
-        UserName: item.UserName,
-        ...item.balance_data,
-      })) || [];
-  
-      const filteredData = structuredData
-        .map((item) => ({
-          UserName: item.UserName,
-          symbol: item.symbol,
-          Amount: item.Amount,
-          brokerage: item.brokerage,
-          createdAt: item.createdAt,
-        }))
-        .filter(
-          (item) =>
-            !search || item.symbol?.toLowerCase().includes(search.toLowerCase())
-        );
-  
-      const brokerageTotal = structuredData.reduce(
-        (acc, item) => acc + Number(item.brokerage || 0),
-        0
-      );
-  
-      setData(filteredData);
-  
-      // ---- Handle Bonus Data ----
-      const bonusList = bonusRes.data || [];
-      const bonusTotal = bonusList.reduce(
-        (acc, item) => acc + Number(item.Bonus || 0),
-        0
-      );
-  
-      setBonusData(bonusList);
-      setProfitBalance(Number(bonusRes.CompletedBrokrageandBonus || 0));
-  
-      // ---- Set Total Brokerage Once ----
-      setTotalBrokerage(brokerageTotal + bonusTotal);
-  
-    } catch (err) {
-      Swal.fire("Error", "Failed to fetch data. Please try again.", "error");
-    }
-  };
+  const handleAdminFilterChange = (event) => {
+     setSelectedAdmin(event.target.value);
+     const selectedAdminObj = adminUsername.find(
+       (admin) => admin.UserName === event.target.value
+     );
+     setSelectedAdminId(selectedAdminObj ? selectedAdminObj._id : "");
+ 
+     console.log("Selected Admin Object", selectedAdminObj);
+   };
+ 
+   const fetchAllData = async () => {
+     try {
+       const [brokerageRes, bonusRes] = await Promise.all([
+         getbrokerageData({ admin_id: selectedAdminId }),
+         GetBonus({ admin_id: selectedAdminId }),
+       ]);
+   
+       // ---- Handle Brokerage Data ----
+       const structuredData = brokerageRes.data?.map((item) => ({
+         UserName: item.UserName,
+         ...item.balance_data,
+       })) || [];
+   
+       const filteredData = structuredData
+         .filter(
+           (item) =>
+             (!search || item.symbol?.toLowerCase().includes(search.toLowerCase())) &&
+             (selectedAdmin === "All" || item.UserName === selectedAdmin)
+         )
+         .map((item) => ({
+           UserName: item.UserName,
+           symbol: item.symbol,
+           Amount: item.Amount,
+           brokerage: item.brokerage,
+           createdAt: item.createdAt,
+         }));
+   
+       const brokerageTotal = structuredData.reduce(
+         (acc, item) => acc + Number(item.brokerage || 0),
+         0
+       );
+   
+       setData(filteredData);
+   
+       // ---- Handle Bonus Data ----
+       const bonusList = bonusRes.data || [];
+       const bonusTotal = bonusList.reduce(
+         (acc, item) => acc + Number(item.Bonus || 0),
+         0
+       );
+   
+       setBonusData(bonusList);
+       setProfitBalance(Number(bonusRes.CompletedBrokrageandBonus || 0));
+   
+       // ---- Set Total Brokerage Once ----
+       setTotalBrokerage(brokerageTotal + bonusTotal);
+   
+     } catch (err) {
+       Swal.fire("Error", "Failed to fetch data. Please try again.", "error");
+     }
+   };
+   
+   const fetchAdminUsername = async () => {
+     try {
+       const res = await GetAdminUsername();
+       setAdminUsername(res?.data);
+       console.log("Admin Username", res);
+     }
+     catch (err) {
+       console.error("Error fetching admin username", err);
+     }
+   };
+ 
+   useEffect(() => {
+     fetchAdminUsername(); 
+   }, [])
   
 
 
   const fetchMarginLogs = async () => {
     try {
-      const res = await getProfitMarginApi({ admin_id: id });
+      const res = await getProfitMarginApi({ admin_id: selectedAdminId });
       if (res.status) {
         setMarginLogs(res.data);
       }
@@ -143,7 +174,7 @@ const Brokerage = () => {
 
 
       const res = await AddProfitMarginApi({
-        adminid: id,
+        adminid: selectedAdminId,
         balance: amountToClear,
       });
 
@@ -171,6 +202,31 @@ const Brokerage = () => {
         </div>
 
         <div className="card-body">
+
+        <div className="d-flex w-50 justify-content-between mb-3">
+              <input
+                type="text"
+                className="form-control me-2"
+                placeholder="Search by symbol"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+
+              
+              <select
+                className="form-select"
+                value={selectedAdmin}
+                onChange={handleAdminFilterChange}
+              >
+                <option value="">Select Admin</option>
+                {adminUsername.map((admin, index) => (
+                  <option key={index} value={admin.UserName}>
+                    {admin.UserName}
+                  </option>
+                ))}
+              </select>
+            </div>
+
           <div className="d-flex justify-content-between mb-3">
             <span className="fw-bold">Total Brokerage: {totalBrokerage}</span>
             <span className="fw-bold">
@@ -259,3 +315,4 @@ const Brokerage = () => {
 };
 
 export default Brokerage;
+
