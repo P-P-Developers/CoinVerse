@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -56,9 +54,10 @@ const Register = () => {
       FullName: "",
       UserName: "",
       PhoneNo: "",
+      Email: "", // Ensure Email is included
       password: "",
       confirmPassword: "",
-      ReferredBy: refCode || "", 
+      ReferredBy: refCode || "",
     },
     validationSchema: Yup.object({
       FullName: Yup.string().required("Full name is required"),
@@ -66,17 +65,20 @@ const Register = () => {
       PhoneNo: Yup.string()
         .matches(/^[0-9]+$/, "Phone number is not valid")
         .required("Phone number is required"),
+      Email: Yup.string()
+        .email("Invalid email address") // Email validation
+        .required("Email is required"), // Ensure Email validation
       password: Yup.string()
         .min(6, "Password must be at least 6 characters")
         .required("Password is required"),
       confirmPassword: Yup.string()
         .oneOf([Yup.ref("password"), null], "Passwords must match")
         .required("Confirm Password is required"),
-      ReferredBy: Yup.string().required("Referral code is required"), 
+      ReferredBy: Yup.string().required("Referral code is required"),
     }),
     onSubmit: async (values) => {
       const { confirmPassword, ...dataToSubmit } = values;
-
+      dataToSubmit.UserName = dataToSubmit.UserName.toLowerCase(); // Convert UserName to lowercase
       try {
         const response = await SignIn(dataToSubmit);
 
@@ -190,7 +192,8 @@ const Register = () => {
                           ? "is-invalid"
                           : ""
                       }`}
-                      {...formik.getFieldProps("UserName").toString().toLowerCase()}
+                      {...formik.getFieldProps("UserName")}
+                      onInput={(e) => (e.target.value = e.target.value.toLowerCase())} // Force lowercase input
                     />
                     {formik.touched.UserName && formik.errors.UserName ? (
                       <div className="invalid-feedback">
@@ -217,6 +220,23 @@ const Register = () => {
                       <div className="invalid-feedback">
                         {formik.errors.PhoneNo}
                       </div>
+                    ) : null}
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label" htmlFor="Email">
+                      Email
+                    </label>
+                    <input
+                      id="Email"
+                      type="email"
+                      className={`form-control ${
+                        formik.touched.Email && formik.errors.Email ? "is-invalid" : ""
+                      }`}
+                      {...formik.getFieldProps("Email")} // Ensure proper binding
+                    />
+                    {formik.touched.Email && formik.errors.Email ? (
+                      <div className="invalid-feedback">{formik.errors.Email}</div>
                     ) : null}
                   </div>
 
@@ -307,7 +327,8 @@ const Register = () => {
                     <button
                       className="btn btn-primary"
                       type="submit"
-                      disabled={!formik.isValid || formik.isSubmitting}>
+                      // disabled={!formik.isValid || formik.isSubmitting}>
+                      >
                       Register
                     </button>
                   </div>

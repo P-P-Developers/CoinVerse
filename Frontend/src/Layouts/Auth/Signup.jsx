@@ -41,30 +41,30 @@ const Signup = () => {
         return fDateTimesec(cell.value);
       },
     },
-    {
-      Header: "Action",
-      accessor: "Action",
-      Cell: ({ cell }) => {
-        return (
-          <div>
-            <Pencil
-              style={{ cursor: "pointer", color: "#33B469" }}
-              onClick={() => EditClient(cell.row._id)}
-            />
-            {/* add delete button  */}
-            <Trash2
-              style={{
-                cursor: "pointer",
-                marginRight: "10px",
-                marginLeft: "3px",
-                color: "red",
-              }}
-              onClick={() => DeleteUser(cell.row._id)}
-            />
-          </div>
-        );
-      },
-    },
+    // {
+    //   Header: "Action",
+    //   accessor: "Action",
+    //   Cell: ({ cell }) => {
+    //     return (
+    //       <div>
+    //         <Pencil
+    //           style={{ cursor: "pointer", color: "#33B469" }}
+    //           onClick={() => EditClient(cell.row._id)}
+    //         />
+    //         {/* add delete button  */}
+    //         <Trash2
+    //           style={{
+    //             cursor: "pointer",
+    //             marginRight: "10px",
+    //             marginLeft: "3px",
+    //             color: "red",
+    //           }}
+    //           onClick={() => DeleteUser(cell.row._id)}
+    //         />
+    //       </div>
+    //     );
+    //   },
+    // },
   ];
 
   const DeleteUser = async (rowId) => {
@@ -133,7 +133,7 @@ const Signup = () => {
               <div className="card transaction-table">
                 <div className="card-header border-0 flex-wrap pb-0">
                   <div className="mb-4">
-                    <h4 className="card-title">Sing Up Request</h4>
+                    <h4 className="card-title">Sign Up Request</h4>
                   </div>
                 </div>
                 <div className="card-body p-0">

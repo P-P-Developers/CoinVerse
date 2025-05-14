@@ -145,19 +145,19 @@ class Admin {
       await newUser.save();
 
       if (referred_by) {
-  
+
 
         // Activate referred user
-         await Sign_In.updateOne(
-          {_id: singleUserId },
+        await Sign_In.updateOne(
+          { _id: singleUserId },
           { $set: { isActive: true } }
         );
-    
+
         // Get referring user
         const referringUser = await User_model.findById(referred_by);
-  
 
-        const creditAmount =referral_price || 0;
+
+        const creditAmount = referral_price || 0;
         const updatedBalance = (referringUser?.Balance || 0) + creditAmount;
 
         // Update balance
@@ -177,7 +177,7 @@ class Admin {
 
         await walletEntry.save();
 
-        if(Balance > 0){
+        if (Balance > 0) {
 
           const newStatement = new BalanceStatement({
             userid: referred_by,
@@ -189,7 +189,7 @@ class Admin {
           await newStatement.save();
 
           await Sign_In.updateOne(
-            {_id: singleUserId },
+            { _id: singleUserId },
             { $set: { isPaymentDone: true } }
           );
         }
@@ -238,7 +238,7 @@ class Admin {
           await newBonus.save();
 
         }
- 
+
         if (parentUser && parentUser.FundAdd && Balance > 0) {
           let calculatedBonus;
 
@@ -630,7 +630,7 @@ class Admin {
       });
 
     } catch (error) {
- 
+
       return res.status(500).json({
         status: false,
         message: "Internal server error",
@@ -661,7 +661,7 @@ class Admin {
       // Find the user balance and DeviceToken
       const findUser = await User_model.findOne({
         _id: new ObjectId(paymentHistoryFind.userid),
-      }).select("Balance DeviceToken");
+      }).select("Balance DeviceToken ReferredBy");
       if (!findUser) {
         return res.json({ status: false, message: "User not found" });
       }
@@ -674,7 +674,7 @@ class Admin {
         });
 
         const bonusAmount = paymentHistoryFind.Balance * (parentUser.FixedTransactionPercent / 100);
-    
+
         if (parentUser && parentUser.EveryTransaction) {
           const Bonus = await BonusCollectioniModel({
             admin_id: admin_id,
@@ -701,7 +701,7 @@ class Admin {
           // Update payment history
           paymentHistoryFind.status = status;
           const data = await paymentHistoryFind.save();
-        
+
 
           // Update wallet
           const walletUpdateResult = new Wallet_model({
@@ -740,6 +740,39 @@ class Admin {
         } else if (paymentHistoryFind.type === 1) {
           // Deposit Request
           // Add balance
+          console.log("findUser.Balance", findUser.Balance);
+          if (findUser.Balance === 0) {
+            console.log("inside fn", findUser);
+            if (findUser && findUser.ReferredBy) {
+              const ReferredByUser = await User_model.findOne({ _id: findUser.ReferredBy });
+              console.log("ReferredByUser", ReferredByUser);
+              if (ReferredByUser && ReferredByUser.Role === "USER") {
+                let refferalAmount = 0;
+                let balanceToAdd = paymentHistoryFind.Balance
+                if (balanceToAdd > 50 && balanceToAdd <= 100) {
+                  refferalAmount = (balanceToAdd * parentUser.Range1) / 100
+                } else if (balanceToAdd > 100 && balanceToAdd <= 500) {
+                  refferalAmount = (balanceToAdd * parentUser.Range2) / 100
+                } else if (balanceToAdd > 500 && balanceToAdd <= 1000) {
+                  refferalAmount = (balanceToAdd * parentUser.Range3) / 100
+                } else if (balanceToAdd > 1000) {
+                  refferalAmount = (balanceToAdd * parentUser.Range4) / 100
+                }
+
+                const newStatement = new BalanceStatement({
+                  userid: findUser.ReferredBy,
+                  Amount: refferalAmount,
+                  parent_Id: parentUser._id,
+                  type: "CREDIT",
+                  message: "Referral Balance Added",
+                });
+                await newStatement.save();
+                console.log("newStatement", newStatement);
+
+              }
+            }
+          }
+
           findUser.Balance += paymentHistoryFind.Balance;
           await findUser.save();
 
@@ -1350,7 +1383,7 @@ class Admin {
 
   async getResearch(req, res) {
     try {
-    
+
       const GetAllResearch = await ResearchModel.find({}).sort({
         createdAt: -1,
       });
@@ -1530,7 +1563,7 @@ class Admin {
         qrCodeBase64,
       };
       const updatedUpiDetails = await UpiDetails.updateOne(
- {},
+        {},
         updatedDetails,
         {
           upsert: true,
@@ -1835,12 +1868,12 @@ class Admin {
 
   async UpdateReferPrice(req, res) {
     try {
-      const { userId, referPrice } = req.body;
+      const { userId, Range1, Range2, Range3, Range4 } = req.body;
 
-      if (!userId || !referPrice) {
+      if (!userId || !Range1 || !Range2 || !Range3 || !Range4) {
         return res.json({
           status: false,
-          message: "User ID and referral price are required",
+          message: "User ID and All Range Required",
         });
       }
 
@@ -1849,7 +1882,11 @@ class Admin {
         return res.json({ status: false, message: "User not found" });
       }
 
-      user.Refer_Price = referPrice;
+      user.Range1 = Range1;
+      user.Range2 = Range2;
+      user.Range3 = Range3;
+      user.Range4 = Range4;
+
       await user.save();
 
       return res.json({

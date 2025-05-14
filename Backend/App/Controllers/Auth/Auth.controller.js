@@ -94,8 +94,7 @@ class Auth {
           },
           { new: true }
         );
-      }
-
+      } 
       // Send successful login response with JWT and user details
       return res.send({
         status: true,
@@ -172,7 +171,6 @@ class Auth {
         }
       }
 
-     
       // Hash the password
       const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -195,7 +193,7 @@ class Auth {
           data: [],
         });
       }
- 
+
       const data = {
         FullName,
         UserName,
@@ -210,7 +208,7 @@ class Auth {
         limit: 100,
         Licence: 1,
         perlot: 1,
-        referred_by: parentUser?._id
+        referred_by: referredUser ? referredUser._id : null
       }
 
       const response = await axios.post(process.env.base_url + "admin/AddUser", data);
@@ -222,7 +220,7 @@ class Auth {
           data: [],
         });
       }
- 
+
       return res.json({
         status: true,
         message: "Signed in successfully",
@@ -418,6 +416,55 @@ class Auth {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
+
+
+  async getReferClients(req, res) {
+    try {
+      const { admin_id } = req.body;
+
+      // Step 1: Get all user IDs under this admin
+      const GetAllUsers = await User_model.find({
+        parent_id: admin_id,
+        Role: "USER",
+      }).select("_id");
+
+      const AllUserId = GetAllUsers.map((item) => item._id);
+
+      // Step 2: Find sign-ins directly referred by the admin
+      const result = await Sign_In.find({
+        referred_by: admin_id,
+
+      }).sort({ createdAt: -1 });
+
+      // Step 3: Find sign-ins referred by the admin’s users
+      const result1 = await Sign_In.find({
+        referred_by: { $in: AllUserId },
+
+      }).sort({ createdAt: -1 });
+
+      // Step 4: Merge and check the results
+      const finalData = [...result, ...result1];
+
+      if (finalData.length === 0) {
+        return res.json({ status: false, message: "No data found", data: [] });
+      }
+
+      return res.json({
+        status: true,
+        message: "Data retrieved",
+        data: finalData,
+      });
+    } catch (error) {
+      console.error("Error in getSignIn:", error);
+      return res.json({
+        status: false,
+        message: "Internal error",
+        data: [],
+      });
+    }
+  }
+
+
 }
 
 module.exports = new Auth();
