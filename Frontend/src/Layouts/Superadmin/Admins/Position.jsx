@@ -170,7 +170,6 @@ const Position = () => {
                         </div>
                       </div>
 
-                      {data && data.length > 0 ? (
                         <div>
                           {" "}
                           <Table
@@ -203,11 +202,7 @@ const Position = () => {
                             </select>
                           </div>
                         </div>
-                      ) : (
-                        <div>No data available</div>
-                      )}
-
-                      {/* <Table columns={columns} data={data && data} /> */}
+                     
                     </div>
                   </div>
                 </div>
