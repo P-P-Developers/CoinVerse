@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import { getReferClients } from "../../../Services/Admin/Addmin";
 import Table from "../../../Utils/Table/Table";
 import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
+import { useFormik } from "formik"; // Ensure Formik is imported
 
 const Basicsetting = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
@@ -14,6 +15,12 @@ const Basicsetting = () => {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [ranges, setRanges] = useState({
+    range1: "",
+    range2: "",
+    range3: "",
+    range4: "",
+  });
 
   const columns = [
     // { Header: "FullName", accessor: "FullName" },
@@ -67,6 +74,12 @@ const Basicsetting = () => {
       const response = await getAllClient(data);
       if (response.status) {
         setReferPrice(response?.data?.Refer_Price);
+        setRanges({
+          range1: response?.data?.Range1 || "",
+          range2: response?.data?.Range2 || "",
+          range3: response?.data?.Range3 || "",
+          range4: response?.data?.Range4 || "",
+        });
       }
     } catch (error) {
       console.log("error", error);
@@ -77,9 +90,9 @@ const Basicsetting = () => {
     getallclient();
   }, []);
 
-  const Update_RefferPrice = async () => {
+  const Update_RefferPrice = async (Range1, Range2, Range3, Range4) => {
     try {
-      const data = { userId: user_id, referPrice: referPrice };
+      const data = { userId: user_id, Range1, Range2, Range3, Range4 };
       const response = await UpdateRefferPrice(data);
       if (response.status) {
         Swal.fire({
@@ -87,9 +100,10 @@ const Basicsetting = () => {
           title: "Success",
           text: response.message,
         });
-        setTimeout(() => {
-          window.location.reload();
-        }, 2000);
+
+        // setTimeout(() => {
+        //   window.location.reload();
+        // }, 2000);
       } else {
         Swal.fire({
           icon: "error",
@@ -123,22 +137,122 @@ const Basicsetting = () => {
     getsignupuser();
   }, [search]);
 
+  const formik = useFormik({
+    initialValues: {
+      range1: ranges.range1, // Prefill with API data
+      range2: ranges.range2,
+      range3: ranges.range3,
+      range4: ranges.range4,
+    },
+    enableReinitialize: true, // Allow reinitialization when state changes
+    onSubmit: (values) => {
+      Update_RefferPrice(values.range1, values.range2, values.range3, values.range4);
+    },
+  });
+
   return (
     <div className="container-fluid">
       <div className="row">
         <div className="col-xl-12 col-lg-12">
           <div className="card transaction-table">
             <div className="card-header border-0 flex-wrap pb-0">
-             
-                <h4 className="card-title">Refer And Earn</h4>
-             
+              <h4 className="card-title d-flex align-items-center gap-2">
+                Refer And Earn
+                <span
+                  className="text-primary"
+                  style={{ cursor: "pointer" }}
+                  onMouseEnter={(e) => {
+                    const tooltip = document.createElement("div");
+                    tooltip.className = "custom-tooltip";
+                    tooltip.innerText =
+                      "We have a functionality to set referral bonuses. For example: if the referred user's balance is between $50–$100 and you set it to $10, then you will earn $10 as a referral bonus. Similarly, you can set bonuses for balances between $100–$500, $500–$1000, and above $1000.";
+                    tooltip.style.position = "absolute";
+                    tooltip.style.backgroundColor = "#001f3f"; // Dark/Navy Blue
+                    tooltip.style.color = "#fff"; // White text
+                    tooltip.style.border = "1px solid #ccc";
+                    tooltip.style.padding = "10px";
+                    tooltip.style.borderRadius = "5px";
+                    tooltip.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.1)";
+                    tooltip.style.zIndex = "1000";
+                    tooltip.style.top = `${e.target.getBoundingClientRect().top + window.scrollY + 20}px`;
+                    tooltip.style.left = `${e.target.getBoundingClientRect().left + window.scrollX}px`;
+                    document.body.appendChild(tooltip);
+                    e.target.tooltipElement = tooltip;
+                  }}
+                  onMouseLeave={(e) => {
+                    if (e.target.tooltipElement) {
+                      document.body.removeChild(e.target.tooltipElement);
+                      e.target.tooltipElement = null;
+                    }
+                  }}
+                >
+                  ℹ️
+                </span>
+              </h4>
             </div>
             <div className="card profile-card card-bx">
               <div className="profile-form">
                 <div className="card-body">
+                  <form onSubmit={formik.handleSubmit}>
+                    <div className="row">
+                      <div className="col-lg-6 mb-3">
+                        <label className="form-label" htmlFor="range1">
+                          50 &lt; 100
+                        </label>
+                        <input
+                          id="range1"
+                          type="number"
+                          className="form-control"
+                          placeholder="Enter value for 50 < 100"
+                          {...formik.getFieldProps("range1")}
+                        />
+                      </div>
+                      <div className="col-lg-6 mb-3">
+                        <label className="form-label" htmlFor="range2">
+                          100 &lt; 500
+                        </label>
+                        <input
+                          id="range2"
+                          type="number"
+                          className="form-control"
+                          placeholder="Enter value for 100 < 500"
+                          {...formik.getFieldProps("range2")}
+                        />
+                      </div>
+                      <div className="col-lg-6 mb-3">
+                        <label className="form-label" htmlFor="range3">
+                          500 &lt; 1000
+                        </label>
+                        <input
+                          id="range3"
+                          type="number"
+                          className="form-control"
+                          placeholder="Enter value for 500 < 1000"
+                          {...formik.getFieldProps("range3")}
+                        />
+                      </div>
+                      <div className="col-lg-6 mb-3">
+                        <label className="form-label" htmlFor="range4">
+                          &gt; 1000
+                        </label>
+                        <input
+                          id="range4"
+                          type="number"
+                          className="form-control"
+                          placeholder="Enter value for > 1000"
+                          {...formik.getFieldProps("range4")}
+                        />
+                      </div>
+                      <div className="col-lg-12">
+                        <button className="btn btn-primary w-25" type="submit">
+                          Submit
+                        </button>
+                      </div>
+                    </div>
+                  </form>
                   <div className="row">
                     <div className="col-lg-12">
-                      <div className="mb-3">
+                      {/* <div className="mb-3">
                         <label className="form-label">Refer Price </label>
                         <div className="row">
                           <div className="col-lg-6 mb-2">
@@ -159,7 +273,7 @@ const Basicsetting = () => {
                             </button>
                           </div>
                         </div>
-                      </div>
+                      </div> */}
 
                       <div className="mb-3">
                         <label className="form-label">Search : </label>

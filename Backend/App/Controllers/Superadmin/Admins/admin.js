@@ -183,7 +183,7 @@ class Superadmin {
         data: newUser,
       });
     } catch (error) {
-    
+
       return res.json({
         status: false,
         message: "Failed to add user",
@@ -221,10 +221,41 @@ class Superadmin {
       let newBalance = parseFloat(userdata.Balance || 0);
       const parentUser = await User_model.findOne({ _id: parent_Id });
 
+      console.log("userdata", userdata);
+      console.log("parentUser", parentUser);
+
       // Update balance based on the transaction type
       if (Type === "CREDIT") {
+        console.log("parentUser.Range1", userdata.parent_role);
 
         if (newBalance === 0) {
+          if (parentUser && userdata.ReferredBy) {
+
+            const ReferredByUser = await User_model.findOne({ _id: userdata.ReferredBy });
+            if (ReferredByUser && ReferredByUser.Role === "USER") {
+              let refferalAmount = 0;
+              if (dollarcount > 50 && dollarcount <= 100) {
+                refferalAmount = (dollarcount * parentUser.Range1) / 100
+              } else if (dollarcount > 100 && dollarcount <= 500) {
+                refferalAmount = (dollarcount * parentUser.Range2) / 100
+              } else if (dollarcount > 500 && dollarcount <= 1000) {
+                refferalAmount = (dollarcount * parentUser.Range3) / 100
+              } else if (dollarcount > 1000) {
+                refferalAmount = (dollarcount * parentUser.Range4) / 100
+              }
+
+              const newStatement = new BalanceStatement({
+                userid: userdata.ReferredBy,
+                Amount: refferalAmount,
+                parent_Id: parentUser._id,
+                type: "CREDIT",
+                message: "Referral Balance Added",
+              });
+              await newStatement.save();
+              console.log("newStatement", newStatement);
+
+            }
+          }  
           if (parentUser.FixedPerClient && (dollarcount >= parentUser.AddClientBonus)) {
             const newBonus = new BonusCollectioniModel({
               admin_id: parentUser._id,
@@ -330,7 +361,7 @@ class Superadmin {
       });
 
     } catch (error) {
-    
+
       return res.json({
         status: false,
         message: "Internal error occurred",
@@ -344,36 +375,36 @@ class Superadmin {
     try {
       const { id, page = 1, limit = 10 } = req.body; // You can also take page/limit from req.query
       const skip = (page - 1) * limit;
-  
+
       // Step 1: Get paginated users
       const result = await User_model.find({ parent_id: id })
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(Number(limit));
-  
+
       // Step 2: Get total count for pagination info
       const totalCount = await User_model.countDocuments({ parent_id: id });
-  
+
       const adminIds = result.map((user) => user._id);
       const permissions = await employee_permission.find({
         employee_id: { $in: adminIds },
       });
-  
+
       if (!result || result.length === 0) {
         return res.json({ status: false, message: "Data not found", data: [] });
       }
-  
+
       const combinedData = result.map((user) => {
         const userPermissions = permissions.filter((permission) =>
           permission.employee_id.equals(user._id)
         );
-  
+
         return {
           ...user.toObject(),
           permissions: userPermissions,
         };
       });
-  
+
       return res.json({
         status: true,
         message: "Getting data",

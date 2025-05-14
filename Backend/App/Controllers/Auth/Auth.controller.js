@@ -8,17 +8,14 @@ const User_model = db.user;
 const Sign_In = db.Sign_In;
 const totalLicense = db.totalLicense;
 const user_logs = db.user_logs;
+const axios = require("axios");
 
 class Auth {
   async login(req, res) {
     try {
-      let { UserName, password, fcm_token } = req.body;
+      const { UserName, password, fcm_token } = req.body;
 
-      UserName = UserName?.toString().toLowerCase();
-      
-
-
-      const EmailCheck = await User_model.findOne({ UserName:UserName});
+      const EmailCheck = await User_model.findOne({ UserName: UserName });
 
       if (!EmailCheck) {
         return res.send({
@@ -76,7 +73,17 @@ class Auth {
         expiresIn: 28800,
       });
 
-     
+      // Create user login log
+      // const user_login = new user_logs({
+      //   user_Id: EmailCheck._id,
+      //   admin_Id: EmailCheck.parent_id || "",
+      //   UserName: EmailCheck.UserName,
+      //   login_status: "Panel On",
+      //   role: EmailCheck.Role,
+      //   DeviceToken: fcm_token,
+      // });
+
+      // await user_login.save();
 
       // Update FCM token if role is USER
       if (EmailCheck.Role === "USER") {
@@ -87,8 +94,7 @@ class Auth {
           },
           { new: true }
         );
-      }
-
+      } 
       // Send successful login response with JWT and user details
       return res.send({
         status: true,
@@ -104,7 +110,6 @@ class Auth {
         },
       });
     } catch (error) {
-
       return res.send({
         status: false,
         message: "Server side error",
@@ -113,114 +118,140 @@ class Auth {
     }
   }
 
-async SignIn(req, res) {
-  try {
-    const { FullName, UserName, PhoneNo, password, ReferredBy } = req.body;
+  async SignIn(req, res) {
+    try {
+      const { FullName, UserName, PhoneNo, Email, password, ReferredBy } = req.body;
 
-    // Convert UserName to lowercase
-    UserName = UserName?.toString().toLowerCase();
-
-    // Check required fields
-    if (!FullName || !UserName || !PhoneNo || !password) {
-      return res.json({
-        status: false,
-        message: "Missing required fields",
-        data: [],
-      });
-    }
-
-    // Check if username already exists
-    const existingUser = await User_model.findOne({ UserName });
-    if (existingUser) {
-      return res.json({
-        status: false,
-        message: "Username already exists",
-        data: [],
-      });
-    }
-
-    // Validate referral code
-    let referredUser = null;
-    let referral_price = 0;
-
-    if (ReferredBy) {
-      referredUser = await User_model.findOne({ ReferralCode: ReferredBy });
-      if (!referredUser) {
+      // Check required fields
+      if (!FullName || !UserName || !PhoneNo || !password) {
         return res.json({
           status: false,
-          message: "Invalid referral code",
+          message: "Missing required fields",
           data: [],
         });
       }
 
-      // Get parent user's referral price
-      if (referredUser.parent_id) {
-        const parentUser = await User_model.findById(referredUser.parent_id);
-        if (!parentUser) {
+      // Check if username already exists
+      const existingUser = await User_model.findOne({ UserName });
+      if (existingUser) {
+        return res.json({
+          status: false,
+          message: "Username already exists",
+          data: [],
+        });
+      }
+
+      // Validate referral code
+      let referredUser = null;
+      let referral_price = 0;
+      let parentUser = null;
+
+      if (ReferredBy) {
+        referredUser = await User_model.findOne({ ReferralCode: ReferredBy });
+        if (!referredUser) {
           return res.json({
             status: false,
-            message: "Parent user not found",
+            message: "Invalid referral code",
             data: [],
           });
         }
-    
-        referral_price = parentUser?.Refer_Price || 0;
+
+        // Get parent user's referral price
+        if (referredUser.parent_id) {
+          parentUser = await User_model.findById(referredUser.parent_id);
+          if (!parentUser) {
+            return res.json({
+              status: false,
+              message: "Parent user not found",
+              data: [],
+            });
+          }
+
+          referral_price = parentUser?.Refer_Price || 0;
+        }
       }
-    }
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user record
-    const signinuser = new Sign_In({
-      FullName,
-      UserName,
-      PhoneNo,
-      password: password,
-      referred_by: referredUser ? referredUser._id : null,
-      referral_price:referral_price ? Number(referral_price) : 0,
-    });
+      // Create user record
+      const signinuser = new Sign_In({
+        FullName,
+        UserName,
+        PhoneNo,
+        password: password,
+        referred_by: referredUser ? referredUser._id : null,
+        referral_price: referral_price ? Number(referral_price) : 0,
+      });
 
-    const result = await signinuser.save();
+      const result = await signinuser.save();
 
-    if (!result) {
+      if (!result) {
+        return res.json({
+          status: false,
+          message: "Unable to sign in",
+          data: [],
+        });
+      }
+
+      const data = {
+        FullName,
+        UserName,
+        Email,
+        PhoneNo,
+        employee_id: "",
+        Balance: 0,
+        password: password,
+        parent_role: referredUser.Role === "ADMIN" ? referredUser.Role : referredUser?.parent_role,
+        parent_id: referredUser.Role === "ADMIN" ? referredUser._id : referredUser.parent_id,
+        Role: "USER",
+        limit: 100,
+        Licence: 1,
+        perlot: 1,
+        referred_by: referredUser ? referredUser._id : null
+      }
+
+      const response = await axios.post(process.env.base_url + "admin/AddUser", data);
+      console.log("response", response.data);
+      if (!response.data.status) {
+        return res.json({
+          status: false,
+          message: response.data.message,
+          data: [],
+        });
+      }
+
+      return res.json({
+        status: true,
+        message: "Signed in successfully",
+        data: result,
+      });
+    } catch (error) {
+      console.error("Error in SignIn:", error);
+
       return res.json({
         status: false,
-        message: "Unable to sign in",
+        message: "Internal error",
         data: [],
       });
     }
-
-    return res.json({
-      status: true,
-      message: "Signed in successfully",
-      data: result,
-    });
-  } catch (error) {
-  
-    return res.json({
-      status: false,
-      message: "Internal error",
-      data: [],
-    });
   }
-}
 
-async DeleteSignIn(req, res) {
-  try {
-    const { id } = req.body;
-    const result = await Sign_In.findByIdAndDelete(id);
+  async DeleteSignIn(req, res) {
+    try {
+      const { id } = req.body;
+      const result = await Sign_In.findByIdAndDelete(id);
 
-    if (!result) {
-      return res.json({ status: false, message: "Unable to delete", data: [] });
+      if (!result) {
+        return res.json({ status: false, message: "Unable to delete", data: [] });
+      }
+
+      return res.json({ status: true, message: "Deleted successfully", data: [] });
+    } catch (error) {
+
+      return res.json({ status: false, message: "Internal error", data: [] });
     }
-
-    return res.json({ status: true, message: "Deleted successfully", data: [] });
-  } catch (error) {
-   
-    return res.json({ status: false, message: "Internal error", data: [] });
   }
-}
 
   async getSignIn(req, res) {
     try {
@@ -267,51 +298,6 @@ async DeleteSignIn(req, res) {
       });
     }
   }
-  async getReferClients(req, res) {
-    try {
-      const { admin_id } = req.body;
-
-      // Step 1: Get all user IDs under this admin
-      const GetAllUsers = await User_model.find({
-        parent_id: admin_id,
-        Role: "USER",
-      }).select("_id");
-
-      const AllUserId = GetAllUsers.map((item) => item._id);
-
-      // Step 2: Find sign-ins directly referred by the admin
-      const result = await Sign_In.find({
-        referred_by: admin_id,
-       
-      }).sort({ createdAt: -1 });
-
-      // Step 3: Find sign-ins referred by the admin’s users
-      const result1 = await Sign_In.find({
-        referred_by: { $in: AllUserId },
-       
-      }).sort({ createdAt: -1 });
-
-      // Step 4: Merge and check the results
-      const finalData = [...result, ...result1];
-
-      if (finalData.length === 0) {
-        return res.json({ status: false, message: "No data found", data: [] });
-      }
-
-      return res.json({
-        status: true,
-        message: "Data retrieved",
-        data: finalData,
-      });
-    } catch (error) {
-      console.error("Error in getSignIn:", error);
-      return res.json({
-        status: false,
-        message: "Internal error",
-        data: [],
-      });
-    }
-  }
 
   async logoutUser(req, res) {
     try {
@@ -333,14 +319,14 @@ async DeleteSignIn(req, res) {
         message: "Logout Succesfully",
         data: [],
       });
-    } catch (error) {}
+    } catch (error) { }
   }
 
   async getlogsuser(req, res) {
     try {
       const { userid } = req.body;
       console.log("userid", userid);
-  
+
       const result = await user_logs.aggregate([
         {
           $match: { admin_Id: new mongoose.Types.ObjectId(userid) }
@@ -373,13 +359,13 @@ async DeleteSignIn(req, res) {
           }
         }
       ]);
-  
+
       return res.send({
         status: true,
         message: "user success",
         data: result
       });
-  
+
     } catch (error) {
       console.error("Error in getlogsuser:", error);
       return res.send({
@@ -389,7 +375,7 @@ async DeleteSignIn(req, res) {
       });
     }
   }
-  
+
   async PasswordChanged(req, res) {
     try {
       const { userid, oldPassword, newPassword } = req.body;
@@ -430,6 +416,55 @@ async DeleteSignIn(req, res) {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
+
+
+  async getReferClients(req, res) {
+    try {
+      const { admin_id } = req.body;
+
+      // Step 1: Get all user IDs under this admin
+      const GetAllUsers = await User_model.find({
+        parent_id: admin_id,
+        Role: "USER",
+      }).select("_id");
+
+      const AllUserId = GetAllUsers.map((item) => item._id);
+
+      // Step 2: Find sign-ins directly referred by the admin
+      const result = await Sign_In.find({
+        referred_by: admin_id,
+
+      }).sort({ createdAt: -1 });
+
+      // Step 3: Find sign-ins referred by the admin’s users
+      const result1 = await Sign_In.find({
+        referred_by: { $in: AllUserId },
+
+      }).sort({ createdAt: -1 });
+
+      // Step 4: Merge and check the results
+      const finalData = [...result, ...result1];
+
+      if (finalData.length === 0) {
+        return res.json({ status: false, message: "No data found", data: [] });
+      }
+
+      return res.json({
+        status: true,
+        message: "Data retrieved",
+        data: finalData,
+      });
+    } catch (error) {
+      console.error("Error in getSignIn:", error);
+      return res.json({
+        status: false,
+        message: "Internal error",
+        data: [],
+      });
+    }
+  }
+
+
 }
 
 module.exports = new Auth();
