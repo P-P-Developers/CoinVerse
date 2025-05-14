@@ -19,7 +19,6 @@ const SuperAdminTradeHistory = () => {
   const [Userid, setUserId] = useState();
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [Search, setSearch] = useState("");
-
   const [userNameList, setUserNameList] = useState([]);
   const [userNamed, setUserNamed] = useState("");
 

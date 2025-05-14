@@ -12,6 +12,14 @@
 @import url("../icons/flaticon-1/font/flaticon-1.css");
 @import url("../vendor/metismenu/css/metisMenu.min.css");
 
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f9f9f9;
+  color: #1a1a1a;
+}
+
 :root {
   --primary: #3736af;
   --secondary: #3693FF;
@@ -39496,7 +39504,7 @@ table.tb-transaction tbody td {
   position: absolute;
   right: 20px;
   /* bottom: 0.625rem   */
-  top:40px;
+  top: 40px;
 
 }
 
@@ -42900,7 +42908,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   margin-right: 10px;
   border: none;
 }
+
 ul.nav.nav-pills.mb-4.light {
-    justify-content: center;
-    border-bottom: 1px solid #ebebf7;
+  justify-content: center;
+  border-bottom: 1px solid #ebebf7;
 }
