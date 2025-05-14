@@ -1,5 +1,3 @@
-// __________backeup code above____
-
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { ArrowLeft, ArrowRight } from "lucide-react";
@@ -8,7 +6,7 @@ import NoData from "./nodata.jpg";
 const Table = ({
   columns,
   data,
-  rowsPerPage = 10, // Default rows per page
+  rowsPerPage = 10,
   tableClassName = "table table-responsive-md",
   tableContainerClassName = "table-responsive",
   rowClassName = "",
@@ -20,28 +18,43 @@ const Table = ({
   isPage = true,
 }) => {
   const [currentPage, setCurrentPage] = useState(0);
-  const pageCount = Math.ceil(data.length / rowsPerPage);
+  const [loading, setLoading] = useState(true);
 
+  const pageCount = Math.ceil(data.length / rowsPerPage);
+  const startRowIndex = isPage ? currentPage * rowsPerPage : (page - 1) * rowsPerPage;
+  const currentPageData = isPage
+    ? data.slice(startRowIndex, startRowIndex + rowsPerPage)
+    : data;
+
+  // Simulate loading
   useEffect(() => {
-    if (isPage === false && page !== undefined) {
-      setCurrentPage(page - 1); // Adjust for 0-based index
+    const timer = setTimeout(() => setLoading(false), 300); // Change to 2000 for 2 seconds
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Sync page if controlled externally
+  useEffect(() => {
+    if (!isPage && page !== undefined) {
+      setCurrentPage(page - 1);
     }
   }, [page, isPage]);
 
-  const handlePreviousPage = () => {
-    setCurrentPage((prevPage) => Math.max(prevPage - 1, 0));
+  const handlePageChange = (direction) => {
+    setCurrentPage((prev) => {
+      const next = prev + direction;
+      return Math.max(0, Math.min(next, pageCount - 1));
+    });
   };
 
-  const handleNextPage = () => {
-    setCurrentPage((prevPage) => Math.min(prevPage + 1, pageCount - 1));
-  };
-
-  const startRowIndex = isPage
-    ? currentPage * rowsPerPage
-    : (page - 1) * rowsPerPage;
-  const currentPageData = isPage
-    ? data.slice(startRowIndex, startRowIndex + rowsPerPage)
-    : data; // Use full data if custom pagination is used
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: "300px" }}>
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -50,54 +63,50 @@ const Table = ({
           <thead>
             <tr className={headerClassName}>
               <th>S.no</th>
-              {columns.map((column, index) => (
-                <th key={index}>
-                  {renderCustomHeader
-                    ? renderCustomHeader(column)
-                    : column.Header}
+              {columns.map((col, idx) => (
+                <th key={idx}>
+                  {renderCustomHeader ? renderCustomHeader(col) : col.Header}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-  {data && data.length === 0 ? (
-    <tr>
-      <td colSpan={columns.length + 1} className="text-center">
-        <div className="d-flex justify-content-center align-items-center flex-column">
-          <img
-            src={NoData}
-            alt="No Data"
-            style={{ width: "20%" }}
-          />
-          <h4 className="text-muted">No Data Available</h4>
-        </div>
-      </td>
-    </tr>
-  ) : (
-    currentPageData.map((row, rowIndex) => (
-      <tr key={rowIndex + startRowIndex} className={rowClassName}>
-        <td>{isPage ? rowIndex + 1 + startRowIndex : rowIndex + 1}</td>
-        {columns.map((column, columnIndex) => (
-          <td key={columnIndex} className={cellClassName}>
-            {column.Cell
-              ? column.Cell({ cell: { value: row[column.accessor], row } })
-              : renderCustomCell
-              ? renderCustomCell(row[column.accessor], row)
-              : row[column.accessor]}
-          </td>
-        ))}
-      </tr>
-    ))
-  )}
-</tbody>
-
+            {data.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length + 1} className="text-center">
+                  <div className="d-flex justify-content-center align-items-center flex-column">
+                    <img src={NoData} alt="No Data" style={{ width: "20%" }} />
+                    <h4 className="text-muted">No Data Available</h4>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              currentPageData.map((row, rowIndex) => (
+                <tr key={rowIndex + startRowIndex} className={rowClassName}>
+                  <td>{rowIndex + 1 + startRowIndex}</td>
+                  {columns.map((col, colIndex) => {
+                    const value = row[col.accessor];
+                    return (
+                      <td key={colIndex} className={cellClassName}>
+                        {col.Cell
+                          ? col.Cell({ cell: { value, row } })
+                          : renderCustomCell
+                          ? renderCustomCell(value, row)
+                          : value}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))
+            )}
+          </tbody>
         </table>
       </div>
 
       {isPage && (
-        <div className="pagination">
+        <div className="pagination d-flex align-items-center justify-content-center gap-3 mt-3">
           <button
-            onClick={handlePreviousPage}
+            onClick={() => handlePageChange(-1)}
             disabled={currentPage === 0}
             className="pagination-button pagination-button-left"
           >
@@ -107,7 +116,7 @@ const Table = ({
             Page {currentPage + 1} of {pageCount}
           </span>
           <button
-            onClick={handleNextPage}
+            onClick={() => handlePageChange(1)}
             disabled={currentPage === pageCount - 1}
             className="pagination-button pagination-button-right"
           >
@@ -136,6 +145,8 @@ Table.propTypes = {
   cellClassName: PropTypes.string,
   renderCustomHeader: PropTypes.func,
   renderCustomCell: PropTypes.func,
+  page: PropTypes.number,
+  isPage: PropTypes.bool,
 };
 
 export default Table;

@@ -14,6 +14,7 @@ class Auth {
   async login(req, res) {
     try {
       const { UserName, password, fcm_token } = req.body;
+      console.log("Login-",fcm_token)
 
       const EmailCheck = await User_model.findOne({ UserName: UserName });
 

@@ -249,26 +249,22 @@ const Brokerage = () => {
 
           <Tabs defaultActiveKey="Brokerage" className="my-4" justify>
             <Tab eventKey="Brokerage" title="Brokerage">
-              {data.length > 0 ? (
+           
                 <Table
                   columns={columns}
                   data={data}
                   rowsPerPage={rowsPerPage}
                 />
-              ) : (
-                <p className="text-muted mt-3">No data available.</p>
-              )}
+       
             </Tab>
             <Tab eventKey="Bonus" title="Bonus">
-              {bonusData.length > 0 ? (
+           
                 <Table
                   columns={columnsForBonus}
                   data={bonusData}
                   rowsPerPage={rowsPerPage}
                 />
-              ) : (
-                <p className="text-muted mt-3">No data available.</p>
-              )}
+           
             </Tab>
           </Tabs>
         </div>

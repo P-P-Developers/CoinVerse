@@ -406,7 +406,7 @@ const SuperAdminTradeHistory = () => {
                           {totalProfitLoss}
                         </span>
                       </h3>
-                      {Userid ? (
+                      {/* {Userid ? ( */}
                         <div>
                           {" "}
                           <Table
@@ -439,14 +439,14 @@ const SuperAdminTradeHistory = () => {
                             </select>
                           </div>
                         </div>
-                      ) : (
+                      {/* ) : (
                         <div
                           className="alert alert-warning text-center text-black"
                           role="alert"
                         >
                           Please select an admin first.
                         </div>
-                      )}
+                      )} */}
                     </div>
                   </div>
                 </div>
