@@ -187,7 +187,7 @@ export async function getlicencedetailforsuperadmin(data, token) {
 
 export async function getavailableposition(data, token) {
   try {
-    const res = await axios.get(`${Config.base_url}getPosition_detail`, data, {
+    const res = await axios.post(`${Config.base_url}getPosition_detail`, data, {
       data: {},
     });
     return await res?.data;
@@ -285,4 +285,17 @@ export async function GetAdminUsername(data, token) {
 
   }
 
+}
+
+export async function getAdminUserName(data, token) {
+  try {
+    const res = await axios.post(`${Config.base_url}getAdminUserName`, data, {
+      data: {},
+    })
+    return await res?.data;
+  }
+  catch (err) {
+    return
+      await err;
+  }
 }

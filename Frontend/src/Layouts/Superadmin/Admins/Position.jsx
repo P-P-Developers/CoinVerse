@@ -3,6 +3,7 @@ import Table from "../../../Utils/Table/Table";
 import {
   getAdminName,
   getavailableposition,
+  getAdminUserName,
 } from "../../../Services/Superadmin/Superadmin";
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 
@@ -15,8 +16,9 @@ const Position = () => {
   const [search, setSearch] = useState("");
   const [adminNames, setAdminNames] = useState([]);
   const [selectedAdmin, setSelectedAdmin] = useState("");
-
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [selectedUser, setSelectedUser] = useState([]);
+  const [selectedUserName, setSelectedUserName] = useState("");
 
   const columns = [
     { Header: "UserName", accessor: "userName" },
@@ -52,16 +54,11 @@ const Position = () => {
   // getting data
   const getuserallhistory = async () => {
     try {
-      const response = await getavailableposition({});
+      const response = await getavailableposition({ adminid: selectedAdmin });
 
-      // Get unique admin names
-      const uniqueAdminNames = [
-        ...new Set(response?.data?.map((item) => item.adminName)),
-      ];
-      const res = await getAdminName();
-      const adminNames = res.data.map((item) => item.UserName);
- 
-      setAdminNames(adminNames);
+      const userNames = response.data.map((item) => item.userName);
+
+      setSelectedUser([...new Set(userNames)]);
 
       const searchfilter = response.data?.filter((item) => {
         const searchInputMatch =
@@ -69,21 +66,36 @@ const Position = () => {
           (item.symbol &&
             item.symbol.toLowerCase().includes(search.toLowerCase()));
 
-        const adminFilterMatch =
-          selectedAdmin === "" ||
-          item.adminName.trim().toLowerCase() ===
-            selectedAdmin.trim().toLowerCase();
+        const selectedUserNameMatch =
+          selectedUserName === "" ||
+          (item.userName &&
+            item.userName
+              .toLowerCase()
+              .includes(selectedUserName.toLowerCase()));
 
-        return adminFilterMatch && searchInputMatch;
+        return selectedUserNameMatch && searchInputMatch;
       });
 
       setData(search || selectedAdmin ? searchfilter : response.data);
     } catch (error) {}
   };
 
+  const GetAdminUserName = async () => {
+    try {
+      const res = await getAdminName();
+      setAdminNames(res.data);
+    } catch (error) {
+      console.error("Error fetching admin names:", error);
+    }
+  };
+
   useEffect(() => {
     getuserallhistory();
-  }, [search, selectedAdmin]);
+  }, [search, selectedAdmin, selectedUserName]);
+
+  useEffect(() => {
+    GetAdminUserName();
+  }, []);
 
   return (
     <>
@@ -103,30 +115,53 @@ const Position = () => {
                       className="tab-pane fade show active"
                       id="Week"
                       role="tabpanel"
-                      aria-labelledby="Week-tab">
-                      <div className="mb-3 ms-4 d-flex align-items-center">
+                      aria-labelledby="Week-tab"
+                    >
+                      <div className="d-flex flex-wrap gap-3 p-3 rounded shadow-sm ">
                         {/* Search Input */}
-                        <div className="me-3">
-                          Search:{" "}
+                        <div>
+                          <label className="form-label mb-1">🔍 Search</label>
                           <input
-                            className="input-search form-control"
-                            style={{ width: "200px" }}
                             type="text"
-                            placeholder="Search..."
+                            className="form-control"
+                            placeholder="Type to search..."
+                            style={{ width: "220px" }}
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                           />
                         </div>
 
-                        {/* Dropdown */}
-                        <div className="mt-3">
+                        {/* Admin Dropdown */}
+                        <div>
+                          <label className="form-label mb-1">🛡️ Admins</label>
                           <select
                             className="form-select"
-                            style={{ width: "200px", height: "35px" }} // Adjust width if needed
-                            onChange={(e) => setSelectedAdmin(e.target.value)}>
-                            <option value={selectedAdmin}>Select Admin</option>
-                            {/* Render admin names dynamically */}
+                            style={{ width: "220px" }}
+                            value={selectedAdmin}
+                            onChange={(e) => setSelectedAdmin(e.target.value)}
+                          >
+                            <option value="">Select Admin</option>
                             {adminNames.map((item, index) => (
+                              <option key={index} value={item._id}>
+                                {item.UserName}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        {/* User Dropdown */}
+                        <div>
+                          <label className="form-label mb-1">👤 Users</label>
+                          <select
+                            className="form-select"
+                            style={{ width: "220px" }}
+                            value={selectedUserName}
+                            onChange={(e) =>
+                              setSelectedUserName(e.target.value)
+                            }
+                          >
+                            <option value="">Select User</option>
+                            {selectedUser.map((item, index) => (
                               <option key={index} value={item}>
                                 {item}
                               </option>
@@ -149,7 +184,8 @@ const Position = () => {
                               marginBottom: "20px",
                               marginLeft: "20px",
                               marginTop: "-48px",
-                            }}>
+                            }}
+                          >
                             Rows per page:{" "}
                             <select
                               className="form-select ml-2"
@@ -157,7 +193,8 @@ const Position = () => {
                               onChange={(e) =>
                                 setRowsPerPage(Number(e.target.value))
                               }
-                              style={{ width: "auto", marginLeft: "10px" }}>
+                              style={{ width: "auto", marginLeft: "10px" }}
+                            >
                               <option value={5}>5</option>
                               <option value={10}>10</option>
                               <option value={20}>20</option>

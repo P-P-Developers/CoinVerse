@@ -3,7 +3,7 @@ import Table from "../../../Utils/Table/Table";
 import { getFundstatus } from "../../../Services/Admin/Addmin";
 import { UpdatestatusForpaymenthistory } from "../../../Services/Admin/Addmin";
 import Swal from "sweetalert2";
-import { fDateTime } from "../../../Utils/Date_format/datefromat";
+import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
 import { Modal } from "react-bootstrap";
 
 const Deposit = () => {
@@ -48,31 +48,31 @@ const Deposit = () => {
     {
       Header: "Date",
       accessor: "createdAt",
-      Cell: ({ cell }) => fDateTime(cell.value),
+      Cell: ({ cell }) => fDateTimesec(cell.value),
     },
   ];
 
-  if (activeTab === "Pending") {
-    columns.push({
-      Header: "Action",
-      accessor: "Action",
-      Cell: ({ cell }) => (
-        <div>
-          <select
-            className="form-select"
-            onChange={(event) =>
-              handleSelectChange(cell.row.id, cell.row, event)
-            }
-            defaultValue={selectedValues[cell.row.id] || "0"}
-          >
-            <option value="0">Pending</option>
-            <option value="2">Reject</option>
-            <option value="1">Complete</option>
-          </select>
-        </div>
-      ),
-    });
-  }
+  // if (activeTab === "Pending") {
+  //   columns.push({
+  //     Header: "Action",
+  //     accessor: "Action",
+  //     Cell: ({ cell }) => (
+  //       <div>
+  //         <select
+  //           className="form-select"
+  //           onChange={(event) =>
+  //             handleSelectChange(cell.row.id, cell.row, event)
+  //           }
+  //           defaultValue={selectedValues[cell.row.id] || "0"}
+  //         >
+  //           <option value="0">Pending</option>
+  //           <option value="2">Reject</option>
+  //           <option value="1">Complete</option>
+  //         </select>
+  //       </div>
+  //     ),
+  //   });
+  // }
 
   const handleSelectChange = async (rowId, row, event) => {
     const newSelectedValues = {
