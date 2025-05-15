@@ -173,7 +173,7 @@ const Deposit = () => {
           {/* Search Input */}
           <div className="col-lg-4">
             <label htmlFor="searchInput" className="form-label">
-              Search:
+             🔍 Search:
             </label>
             <input
               id="searchInput"

@@ -114,7 +114,7 @@ const Position = () => {
                         <div className="d-flex align-items-center mb-3">
                           {/* Search Input */}
                           <div className="me-3">
-                            <label className="form-label">Search:</label>
+                            <label className="form-label">🔍 Search:</label>
                             <input
                               className="form-control"
                               type="text"

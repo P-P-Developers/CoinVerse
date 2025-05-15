@@ -146,7 +146,7 @@ const Signup = () => {
                     >
                       <div className="d-flex align-items-center mb-3 ms-4">
                         <div className="me-4">
-                          Search:{" "}
+                         🔍 Search:{" "}
                           <input
                             className="ml-2 input-search form-control"
                             // style={{ width: "0%" }}

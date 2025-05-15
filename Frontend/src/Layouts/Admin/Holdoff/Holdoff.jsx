@@ -124,7 +124,7 @@ const [rowsPerPage, setRowsPerPage] = useState(10);
                       role="tabpanel"
                       aria-labelledby="Week-tab">
                       <div className="mb-3 ms-4">
-                        Search :{" "}
+                       🔍 Search :{" "}
                         <input
                           className="ml-2 input-search form-control"
                           style={{ width: "20%" }}

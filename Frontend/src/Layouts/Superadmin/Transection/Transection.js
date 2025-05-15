@@ -86,25 +86,17 @@ const Transection = () => {
                       aria-labelledby="Week-tab"
                     >
                       <div className="row mb-3 ms-3 align-items-center">
-                        {/* Search Input */}
-                        {/* <div className="col-md-6 col-lg-3">
-                          <label className="form-label">Search:</label>
-                          <input
-                            className="form-control"
-                            style={{ width: "100%" }}
-                            type="text"
-                            placeholder="Search..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                          />
-                        </div> */}
+                     
 
                         {/* Dropdown */}
                         <div className="col-md-6 col-lg-3 ">
+                         <label className="form-label fw-bold d-block">
+                          Filters
+                        </label>
                           <select
                             style={{
                               width: "100%",
-                              marginTop: "24px",
+                              marginTop: "10px",
                               height: "35px",
                             }}
                             className="form-select"

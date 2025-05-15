@@ -6,12 +6,7 @@ import {
   Delete_Admin,
 } from "../../../Services/Superadmin/Superadmin";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  CirclePlus,
-  Pencil,
-  Trash2,
-  Eye,
-} from "lucide-react";
+import { CirclePlus, Pencil, Trash2, Eye } from "lucide-react";
 import Swal from "sweetalert2";
 import Loader from "../../../Utils/Loader/Loader";
 import {
@@ -58,14 +53,21 @@ const Admin = () => {
   const handleFilterChange = (e) => {
     const { value, checked } = e.target;
     setSelectedFilters((prevFilters) =>
-      checked ? [...prevFilters, value] : prevFilters.filter((filter) => filter !== value)
+      checked
+        ? [...prevFilters, value]
+        : prevFilters.filter((filter) => filter !== value)
     );
   };
 
   const handleSelectAll = (e) => {
     const { checked } = e.target;
     if (checked) {
-      setSelectedFilters(["EveryTransaction", "FixedPerClient", "FundAdd", "NetTransactionPercent"]);
+      setSelectedFilters([
+        "EveryTransaction",
+        "FixedPerClient",
+        "FundAdd",
+        "NetTransactionPercent",
+      ]);
     } else {
       setSelectedFilters([]);
     }
@@ -272,7 +274,6 @@ const Admin = () => {
     },
   ];
 
-
   const AdminUserdetail = (_id) => {
     navigate(`adminuser/${_id}`);
   };
@@ -405,141 +406,131 @@ const Admin = () => {
     } catch (error) {}
   };
 
-
-
   return (
     <>
-    
-        <div className="container-fluid">
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="card transaction-table">
-                <div className="card-header border-0 flex-wrap pb-0">
-                  <div className="mb-2">
-                    <h4 className="card-title">All Admins</h4>
-                  </div>
-                  <Link
-                    to="/superadmin/addmin"
-                    className="float-end mb-2 btn btn-primary"
-                  >
-                    Add Admin
-                  </Link>
+      <div className="container-fluid">
+        <div className="row">
+          <div className="col-lg-12">
+            <div className="card transaction-table">
+              <div className="card-header border-0 flex-wrap pb-0">
+                <div className="mb-2">
+                  <h4 className="card-title">All Admins</h4>
                 </div>
-                <div className="card-body p-0">
-                  <div className="tab-content" id="myTabContent1">
-                    <div
-                      className="tab-pane fade show active"
-                      id="Week"
-                      role="tabpanel"
-                      aria-labelledby="Week-tab"
-                    >
-                      <div className="mb-3 ms-4 d-flex align-items-center">
-                        Search:{" "}
+                <Link
+                  to="/superadmin/addmin"
+                  className="float-end mb-2 btn btn-primary"
+                >
+                  Add Admin
+                </Link>
+              </div>
+              <div className="card-body p-0">
+                <div className="tab-content" id="myTabContent1">
+                  <div
+                    className="tab-pane fade show active"
+                    id="Week"
+                    role="tabpanel"
+                    aria-labelledby="Week-tab"
+                  >
+                    <div className="row mb-3 ms-2">
+                      {/* Search Box */}
+                      <div className="col-md-4 mb-2">
+                        <label
+                          htmlFor="searchInput"
+                          className="form-label fw-bold"
+                        >
+                          🔍 Search
+                        </label>
                         <input
-                          className="ml-2 input-search form-control"
-                          style={{ width: "20%", marginLeft: "10px" }}
+                          id="searchInput"
                           type="text"
+                          className="form-control"
                           placeholder="Search Here"
-                          onChange={(e) => setSearchTerm(e.target.value)}
                           value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
                         />
-                        <div className="dropdown" style={{ marginLeft: "15px" }}>
+                      </div>
+
+                      {/* Filter Dropdown */}
+                      <div className="col-md-3 mb-2">
+                        <label className="form-label fw-bold d-block">
+                          Filters
+                        </label>
+                        <div className="dropdown">
                           <button
-                            className="btn btn-primary dropdown-toggle"
+                            className="btn btn-primary dropdown-toggle w-100"
                             type="button"
                             id="filterDropdown"
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
                           >
-                            Filters
+                            Select Filters
                           </button>
-                          <ul className="dropdown-menu" aria-labelledby="filterDropdown">
+
+                          <ul
+                            className="dropdown-menu w-100"
+                            aria-labelledby="filterDropdown"
+                          >
                             <li>
                               <label className="dropdown-item">
                                 <input
                                   type="checkbox"
                                   checked={isAllSelected}
                                   onChange={handleSelectAll}
-                                />{" "}
+                                  className="form-check-input me-2"
+                                />
                                 Select All
                               </label>
                             </li>
-                            <li>
-                              <label className="dropdown-item">
-                                <input
-                                  type="checkbox"
-                                  value="EveryTransaction"
-                                  checked={selectedFilters.includes("EveryTransaction")}
-                                  onChange={handleFilterChange}
-                                />{" "}
-                                Every Transaction
-                              </label>
-                            </li>
-                            <li>
-                              <label className="dropdown-item">
-                                <input
-                                  type="checkbox"
-                                  value="FixedPerClient"
-                                  checked={selectedFilters.includes("FixedPerClient")}
-                                  onChange={handleFilterChange}
-                                />{" "}
-                                Fixed Per Client
-                              </label>
-                            </li>
-                            <li>
-                              <label className="dropdown-item">
-                                <input
-                                  type="checkbox"
-                                  value="FundAdd"
-                                  checked={selectedFilters.includes("FundAdd")}
-                                  onChange={handleFilterChange}
-                                />{" "}
-                                Fund Add
-                              </label>
-                            </li>
-                            <li>
-                              <label className="dropdown-item">
-                                <input
-                                  type="checkbox"
-                                  value="NetTransactionPercent"
-                                  checked={selectedFilters.includes("NetTransactionPercent")}
-                                  onChange={handleFilterChange}
-                                />{" "}
-                                Net Transaction Percent
-                              </label>
-                            </li>
+                            {[
+                              "EveryTransaction",
+                              "FixedPerClient",
+                              "FundAdd",
+                              "NetTransactionPercent",
+                            ].map((filter) => (
+                              <li key={filter}>
+                                <label className="dropdown-item">
+                                  <input
+                                    type="checkbox"
+                                    value={filter}
+                                    checked={selectedFilters.includes(filter)}
+                                    onChange={handleFilterChange}
+                                    className="form-check-input me-2"
+                                  />
+                                  {filter.replace(/([A-Z])/g, " $1").trim()}
+                                </label>
+                              </li>
+                            ))}
                           </ul>
                         </div>
                       </div>
-                      <Table
-                        columns={columns}
-                        data={data}
-                        rowsPerPage={rowsPerPage}
-                      />
-                      <div
-                        className="d-flex align-items-center"
-                        style={{
-                          marginBottom: "20px",
-                          marginLeft: "20px",
-                          marginTop: "-48px",
-                        }}
+                    </div>
+
+                    <Table
+                      columns={columns}
+                      data={data}
+                      rowsPerPage={rowsPerPage}
+                    />
+                    <div
+                      className="d-flex align-items-center"
+                      style={{
+                        marginBottom: "20px",
+                        marginLeft: "20px",
+                        marginTop: "-48px",
+                      }}
+                    >
+                      Rows per page:{" "}
+                      <select
+                        className="form-select ml-2"
+                        value={rowsPerPage}
+                        onChange={(e) => setRowsPerPage(Number(e.target.value))}
+                        style={{ width: "auto", marginLeft: "10px" }}
                       >
-                        Rows per page:{" "}
-                        <select
-                          className="form-select ml-2"
-                          value={rowsPerPage}
-                          onChange={(e) =>
-                            setRowsPerPage(Number(e.target.value))
-                          }
-                          style={{ width: "auto", marginLeft: "10px" }}
-                        >
-                          <option value={5}>5</option>
-                          <option value={10}>10</option>
-                          <option value={20}>20</option>
-                          <option value={50}>50</option>
-                          <option value={50}>100</option>
-                        </select>
-                      </div>
+                        <option value={5}>5</option>
+                        <option value={10}>10</option>
+                        <option value={20}>20</option>
+                        <option value={50}>50</option>
+                        <option value={50}>100</option>
+                      </select>
                     </div>
                   </div>
                 </div>
@@ -547,7 +538,7 @@ const Admin = () => {
             </div>
           </div>
         </div>
-      
+      </div>
 
       <Modal
         isOpen={isCurrencyModalOpen}
@@ -712,8 +703,6 @@ const Admin = () => {
                 <div className="modal-body">
                   <div className="row">
                     <div className="col-lg-12 col-sm-12">
-                     
-
                       <div className="input-block mb-3">
                         <input
                           type="text"

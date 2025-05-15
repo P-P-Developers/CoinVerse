@@ -110,7 +110,7 @@ const Loginstatus = () => {
                     {/* Vertical Layout for Search and Select User */}
                     <div className="col-md-3">
                       <div className="">
-                        <label className="me-2">Search:</label>
+                        <label className="me-2">🔍 Search:</label>
                         <input
                           className="form-control"
                           style={{ width: "75%" }}
