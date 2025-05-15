@@ -278,7 +278,7 @@ const SuperAdminTradeHistory = () => {
                     to="/admin/users"
                     className="float-end mb-4 btn btn-primary"
                   >
-                    Back
+                          <i className="fa-solid fa-arrow-left"></i> Back
                   </Link>
                 </div>
                 <div className="card-body p-0">
@@ -306,7 +306,7 @@ const SuperAdminTradeHistory = () => {
                               marginRight: "0.5rem",
                             }}
                           >
-                            Search:
+                           🔍 Search:
                           </label>
                           <input
                             type="text"
@@ -333,7 +333,7 @@ const SuperAdminTradeHistory = () => {
                               marginRight: "0.5rem",
                             }}
                           >
-                            Admin:
+                          🛡️ Admin:
                           </label>
                           <select
                             className="form-select"
@@ -367,7 +367,7 @@ const SuperAdminTradeHistory = () => {
                               marginRight: "0.5rem",
                             }}
                           >
-                            User:
+                           🔍 User:
                           </label>
                           <select
                             className="form-select"

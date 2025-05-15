@@ -123,7 +123,7 @@ const Adminemployee = () => {
                                         to="/superadmin/admin"
                                         className="float-end mb-4 btn btn-primary"
                                     >
-                                        Back
+                                              <i className="fa-solid fa-arrow-left"></i> Back
                                     </Link>
                                 </div>
                                 <div className="card-body p-0">

@@ -24,6 +24,7 @@ class broadcastingmessage {
 
       const firebaseToken = await User_model.find({ parent_id: adminid ,DeviceToken:{$ne:"",$ne: null} }).select("DeviceToken");
 
+
       const firebaseTokenArray = firebaseToken.map((item) => item.DeviceToken);
 
 

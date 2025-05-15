@@ -5,7 +5,7 @@ const admin = require("firebase-admin");
 // Firebase Admin SDK Initialization (only once)
 if (!admin.apps.length) {
   const serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS);
-  console.log("Firebase Credentials", serviceAccount);
+
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });
@@ -30,36 +30,33 @@ const sendPushNotification = async (firebaseToken, title, message) => {
 
 // Multyple User
 const sendMultiplePushNotification = async (firebaseTokens, title, message) => {
-  if (firebaseTokens.length === 0) {
+  if (!firebaseTokens.length) {
     return { success: false, error: "No firebase tokens provided" };
-  } else {
-    firebaseTokens.map(async (firebaseToken) => {
-      if (
-        firebaseToken === null ||
-        firebaseToken === undefined ||
-        firebaseToken === ""
-      ) {
-    
-        return { success: false, error: "Invalid firebase token" };
+  }
 
-      }
+  
+
+  const results = await Promise.all(
+    firebaseTokens.map(async (token) => {
+      if (!token) return { success: false, error: "Invalid token" };
+
       try {
         const payload = {
-          notification: {
-            title: title,
-            body: message,
-          },
-          token: firebaseToken,
+          notification: { title, body: message },
+          token,
         };
+        console.log("Payload", payload);
 
-        const response = await admin.messaging().send(payload);
+        await admin.messaging().send(payload);
         return { success: true };
       } catch (error) {
-        console.error("Error sending push notification:", error);
+        console.error("Failed for token:", token, error);
         return { success: false, error };
       }
-    });
-  }
+    })
+  );
+
+  return results;
 };
 
 module.exports = { sendPushNotification, sendMultiplePushNotification };
