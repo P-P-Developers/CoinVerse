@@ -186,27 +186,43 @@ const Brokerage = () => {
         </div>
 
         <div className="card-body">
-          <div className="d-flex flex-wrap gap-2 mb-3">
-            <input
-              type="text"
-              className="form-control w-50"
-              placeholder="Search by symbol or user"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <select
-              className="form-select w-25"
-              value={selectedAdmin}
-              onChange={handleAdminFilterChange}
-            >
-              <option value="">Select Admin</option>
-              {adminUsername.map((admin, index) => (
-                <option key={index} value={admin.UserName}>
-                  {admin.UserName}
-                </option>
-              ))}
-            </select>
-          </div>
+<div className="row mb-3">
+  {/* Search Input */}
+  <div className="col-md-6 mb-2">
+    <label htmlFor="searchInput" className="form-label fw-bold">
+      🔍 Search
+    </label>
+    <input
+      id="searchInput"
+      type="text"
+      className="form-control"
+      placeholder="Search by symbol or user"
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+    />
+  </div>
+
+  {/* Admin Select Dropdown */}
+  <div className="col-md-4 mb-2">
+    <label htmlFor="adminSelect" className="form-label fw-bold">
+      Select Admin
+    </label>
+    <select
+      id="adminSelect"
+      className="form-select"
+      value={selectedAdmin}
+      onChange={handleAdminFilterChange}
+    >
+      <option value="">Select Admin</option>
+      {adminUsername.map((admin, index) => (
+        <option key={index} value={admin.UserName}>
+          {admin.UserName}
+        </option>
+      ))}
+    </select>
+  </div>
+</div>
+
 
           <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
             <span className="fw-bold">Total Brokerage: {totalBrokerage}</span>
