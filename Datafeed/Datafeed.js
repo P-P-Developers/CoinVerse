@@ -9,7 +9,12 @@ const WebSocket = require("ws");
 const { MongoClient } = require("mongodb");
 
 // Constants
-const API_KEY = process.env.TIINGO_API_KEY || "e533600bac1b5195c93e19a99b72720043ba3d79";
+// const API_KEY = process.env.TIINGO_API_KEY || "e533600bac1b5195c93e19a99b72720043ba3d79";
+// const API_KEY = "f63ec5fbc480c499640b7c880982fb65213326a9";
+const API_KEY = "6c89bf7d4e3c6d0e1eff47ad7c8f8b5781ee990b";
+
+
+
 const PORT = process.env.PORT || 5008;
 const databaseURLs =
 "mongodb://testing:MWQ5RP%26k5T567Gy%26Maa@185.209.75.198:27017/"
@@ -153,13 +158,13 @@ const initializeWebSocket = (url, tickers, type) => {
           if (response.data[5]) {
             const formattedData = formatPrices(response.data);
 
-            io.emit("receive_data", { data: formattedData, type });
+            io.emit("receive_data_forex", { data: formattedData, type });
             await updateDatabaseCrypto(formattedData);
           }
         } else if (response.service == "fx") {
           if (response.data[4]) {
             const formattedData = formatPrices(response.data);
-            io.emit("receive_data", { data: formattedData, type });
+            io.emit("receive_data_forex", { data: formattedData, type });
             await updateDatabaseforex(formattedData);
           }
         }
