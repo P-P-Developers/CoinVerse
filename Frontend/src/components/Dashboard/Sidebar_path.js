@@ -12,12 +12,7 @@ export const superadmin_header = [
     icon: "fe fe-users",
     route: "/superadmin/admin",
   },
-  {
-    id: 3,
-    name: "License History",
-    icon: "fe fe-dollar-sign",
-    route: "/superadmin/license-history",
-  },
+
   {
     id: 4,
     name: "Trade History",
@@ -40,9 +35,9 @@ export const superadmin_header = [
   },
   {
     id: 8,
-    name: "Brokerage",
+    name: "Bonus",
     icon: "fe fe-dollar-sign",
-    route: "/superadmin/brokerage",
+    route: "/superadmin/bonus",
   },
 
   {

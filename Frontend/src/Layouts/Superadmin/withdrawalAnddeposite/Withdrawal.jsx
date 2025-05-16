@@ -236,6 +236,11 @@ const Withdraw = () => {
 
   const getAllfundsstatus = async () => {
     try {
+      if(selectedAdminName === "") {
+        setData([]);
+        return;
+      }
+
       const data = { adminid: selectedAdminName, type: 0, activeTab };
       let response = await getFundstatus(data);
       if (response.status) {

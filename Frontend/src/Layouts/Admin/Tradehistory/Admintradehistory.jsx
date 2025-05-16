@@ -76,7 +76,8 @@ const Tradehistory = () => {
 
           return (
             <span style={{ color }}>
-              <DollarSign /> {formattedProfitLoss}
+              {/* <DollarSign /> */}
+               {formattedProfitLoss}
             </span>
           );
         
@@ -227,21 +228,11 @@ const Tradehistory = () => {
 
           return (
             <span style={{ color }}>
-              <DollarSign /> {formattedProfitLoss}
+              {/* <DollarSign /> */}
+               {formattedProfitLoss}
             </span>
           );
-          // }else{
-          //   const profitLoss = (buyPrice - sellPrice) * buyQty;
-          //   const formattedProfitLoss = profitLoss.toFixed(4);
-
-          //   const color = profitLoss > 0 ? "green" : "red";
-
-          //   return (
-          //     <span style={{ color }}>
-          //       <DollarSign /> {formattedProfitLoss}
-          //     </span>
-          //   );
-          // }
+         
         }
 
         return "-";
@@ -359,7 +350,6 @@ const Tradehistory = () => {
     getuserallhistory();
   }, [Userid, search]);
 
-  // Calculate total profit/loss
   const calculateTotalProfitLoss = () => {
     return data
       .reduce((total, row) => {
@@ -502,7 +492,7 @@ const Tradehistory = () => {
                           }}
                         >
                           {" "}
-                          <DollarSign />
+                          {/* <DollarSign /> */}
                           {totalProfitLoss}
                         </span>
                       </h3>

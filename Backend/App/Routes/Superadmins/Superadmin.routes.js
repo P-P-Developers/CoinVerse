@@ -8,8 +8,8 @@ const { AddAdmin, walletRecharge, getAdminDetail, UpdateActiveStatusAdmin, getad
     brokerageDataForSuperAdmin, AddProfitMargin, getProfitMargin,
     createOrUpdateCompany,
     getCompany,
-    updateCompany,
     deleteCompany, 
+    gettradehistory,
     getAdminName} = require("../../Controllers/Superadmin/Admins/admin")
 
     const {GetAdminUserName} = require("../../Controllers/Superadmin/Comman/commanapis")
@@ -37,6 +37,8 @@ router.post('/createOrUpdateCompany', createOrUpdateCompany)
 router.get('/getCompany', getCompany)
 router.get('/getAdminName', getAdminName)
 router.delete('/deleteCompany', deleteCompany)
+
+router.post('/gettradehistory', gettradehistory)
 
 
 

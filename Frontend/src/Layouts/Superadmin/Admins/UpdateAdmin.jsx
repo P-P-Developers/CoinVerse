@@ -120,7 +120,7 @@ const UpdateAdmin = () => {
       email: rowData?.Email || "",
       phone: rowData?.PhoneNo || "",
       Licence: rowData?.Licence || "",
-      ProfitMargin: rowData?.ProfitMargin || "",
+      ProfitMargin: rowData?.ProfitMargin || 0,
       password: "",
       confirmPassword: "",
       FixedPerClient: rowData?.FixedPerClient || false,

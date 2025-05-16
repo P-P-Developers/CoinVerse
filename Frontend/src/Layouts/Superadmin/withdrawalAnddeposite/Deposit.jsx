@@ -143,6 +143,10 @@ const Deposit = () => {
 
   const getAllfundsstatus = async () => {
     try {
+         if(selectedAdminName === "") {
+        setData([]);
+        return;
+      }
       const data = {
         adminid: selectedAdminName,
         type: 1,

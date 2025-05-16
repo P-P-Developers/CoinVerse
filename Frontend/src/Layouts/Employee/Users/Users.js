@@ -98,7 +98,7 @@ const Users = () => {
               }}
             />
 
-            {parseFloat(cell.value).toFixed(2)}
+            {parseFloat(cell.value).toFixed(4)}
           </span>
       
         </div>

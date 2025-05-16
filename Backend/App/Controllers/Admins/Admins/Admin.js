@@ -950,7 +950,7 @@ class Admin {
       const filteredData = aggregatedData.filter(item => item.balance_data?.brokerage != 0);
 
       const formattedData = filteredData.map((item) => {
-        item.balance_data.brokerage = Number(item.balance_data.brokerage).toFixed(5);
+        item.balance_data.brokerage = Number(item.balance_data.brokerage).toFixed(4);
         return item;
       });
 
@@ -1166,7 +1166,7 @@ class Admin {
 
   async getclienttradehistory(req, res) {
     try {
-      const { userid, adminid } = req.body;
+      const { userid, adminid  } = req.body;
       let result;
 
       if (!userid || userid === "all") {

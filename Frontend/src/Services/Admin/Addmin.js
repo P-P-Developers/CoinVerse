@@ -442,6 +442,21 @@ export async function Clienthistory(data, token) {
 
 }
 
+
+export async function gettradehistory(data, token) {
+    try {
+        const res = await axios.post(`${Config.base_url}gettradehistory`, data, {
+            data: {},
+        })
+        return await res?.data;
+    }
+    catch (err) {
+        return await err;
+
+    }
+
+}
+
 // get licence data 
 export async function getlicencedata(data, token) {
     try {

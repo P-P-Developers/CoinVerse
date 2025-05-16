@@ -16,7 +16,7 @@ const Brokerage = () => {
       Header: "Amount",
       accessor: "Amount",
       Cell: ({ cell }) => {
-        return cell.value ? cell.value.toFixed(2) : "-";
+        return cell.value ? cell.value.toFixed(4) : "-";
       },
     },
     { Header: "Brokerage", accessor: "brokerage" },

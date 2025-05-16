@@ -159,7 +159,11 @@ const DynamicForm = ({
                                   readOnly={field.disable}
                                   id={field.name}
                                   name={field.name}
-                                  {...formik.getFieldProps(field.name)}
+                                 value={formik.values[field.name]}
+  onChange={(e) => {
+    const lowercaseValue = e.target.value.toLowerCase();
+    formik.setFieldValue(field.name, lowercaseValue);
+  }}
                                 />
                                 {formik.touched[field.name] &&
                                   formik.errors[field.name] ? (
@@ -808,30 +812,34 @@ const DynamicForm = ({
                                     </label>
                                     <span className="text-danger">*</span>
                                     <input
-                                      type="number"
-                                      name={field.name}
-                                      readOnly={field.disable}
-                                      aria-describedby="basic-addon1"
-                                      className="form-control"
-                                      id={field.name}
-                                      placeholder={`Enter ${field.label}`}
-                                      {...formik.getFieldProps(field.name)}
-                                      min={1}
-                                      onChange={(e) => {
-                                        let value = e.target.value;
-                                        // Remove any leading zeros
-                                        value = value.replace(/^0+/, "");
-                                        // If value is empty, set it to 0
-                                        if (value === "") {
-                                          value = "";
-                                        }
-                                        // Enforce maximum value of 100
-                                        value = Math.min(parseInt(value), 100);
-                                        // Update input value
-                                        e.target.value = value;
-                                        formik.handleChange(e);
-                                      }}
-                                    />
+  type="number"
+  name={field.name}
+  readOnly={field.disable}
+  aria-describedby="basic-addon1"
+  className="form-control"
+  id={field.name}
+  placeholder={`Enter ${field.label}`}
+  value={formik.values[field.name]}
+  min={0}
+  max={100}
+  onChange={(e) => {
+    let value = e.target.value;
+
+    // Convert to number and validate range
+    let numericValue = parseInt(value, 10);
+
+    if (isNaN(numericValue)) {
+      numericValue = "";
+    } else if (numericValue > 100) {
+      numericValue = 100;
+    } else if (numericValue < 0) {
+      numericValue = 0;
+    }
+
+    formik.setFieldValue(field.name, numericValue);
+  }}
+/>
+
 
                                     {formik.touched[field.name] &&
                                       formik.errors[field.name] ? (

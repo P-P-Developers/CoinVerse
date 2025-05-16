@@ -350,6 +350,13 @@ class Placeorder {
       order.buy_price = order.sell_price;
       order.sell_price = temp;
 
+      cosnole.log("order.buy_price", order.buy_price);
+      cosnole.log("order.sell_price", order.sell_price);
+
+      const temp1 = order.buy_time;
+      order.buy_time = order.sell_time;
+      order.sell_time = temp1;
+
       await order.save();
 
       const firstHalf = order.orderid.slice(
@@ -377,7 +384,10 @@ class Placeorder {
       await balanceStatementData[0].save();
       await balanceStatementData1[0].save();
 
-      // Return success response with the updated order and matched BalanceStatement data
+
+console.log("order", order.orderid);
+
+
       return res.json({
         status: true,
         message: "Order type switched",

@@ -30,7 +30,6 @@ class Superadmin {
         password,
         Otp,
         Role,
-        Licence,
         pertrade,
         perlot,
         turn_over_percentage,
@@ -91,7 +90,6 @@ class Superadmin {
       // Current date as start date
       const startDate = new Date();
       let endDate = new Date(startDate);
-      // endDate.setMonth(endDate.getMonth() + Number(Licence));
       endDate.setMonth(endDate.getMonth() + Number(12));
 
       if (endDate.getDate() < startDate.getDate()) {
@@ -119,7 +117,7 @@ class Superadmin {
         turn_over_percentage,
         brokerage,
         limit,
-        Licence,
+    
         password: hashedPassword,
         Start_Date: startDate,
         End_Date: endDate,
@@ -143,15 +141,6 @@ class Superadmin {
 
       await newUser.save();
 
-      let licence = new totalLicense({
-        user_Id: newUser._id,
-        Licence: Licence,
-        parent_Id: parent_id,
-        Start_Date: startDate,
-        End_Date: endDate,
-      });
-
-      await licence.save();
 
       if (Employee_permission) {
         const {
@@ -1032,19 +1021,102 @@ console.error("Error at AddAdmin", error);
     }
   }
 
-  async getAdminName(req, res) {
-    try {
-      const result = await User_model.find({
-        Role: "ADMIN",
-      }).select("FullName UserName _id");
-      if (!result) {
-        return res.json({ status: false, message: "User not found", data: [] });
-      }
-      return res.json({ status: true, message: "User found", data: result });
-    } catch (error) {
-      return res.json({ status: false, message: "internal error", data: [] });
+async getAdminName(req, res) {
+  try {
+    const result = await User_model.find({
+      Role: "ADMIN",
+    }).select("FullName UserName _id ProfitMargin FixedPerClient FundAdd EveryTransaction NetTransactionPercent").sort({ createdAt: -1 });
+
+    if (!result) {
+      return res.json({ status: false, message: "User not found", data: [] });
     }
+
+    // Add computed keys
+    const updatedResult = result.map((user) => {
+      const {
+        ProfitMargin,
+        FixedPerClient,
+        FundAdd,
+        EveryTransaction,
+        NetTransactionPercent,
+      } = user;
+
+      const brokerage = ProfitMargin && ProfitMargin !== 0 ? true : false;
+
+      const bonus =
+        !!FixedPerClient ||
+        !!FundAdd ||
+        !!EveryTransaction ||
+        !!NetTransactionPercent;
+
+      return {
+        // ...user._doc, // include existing fields
+        brokerage,
+        bonus,
+        UserName: user.UserName,
+        _id: user._id,
+      };
+    });
+
+    return res.json({ status: true, message: "User found", data: updatedResult });
+  } catch (error) {
+    console.error("Error in getAdminName:", error);
+    return res.json({ status: false, message: "internal error", data: [] });
   }
+}
+
+
+
+async gettradehistory(req, res) {
+  try {
+    const { adminid, fromDate, toDate } = req.body;
+
+    // Build query filter object
+    const query = { adminid };
+
+    // Add date filter if fromDate or toDate exists
+    if (fromDate || toDate) {
+      query.createdAt = {};
+      if (fromDate) {
+        query.createdAt.$gte = new Date(fromDate); // greater or equal fromDate
+      }
+      if (toDate) {
+        // To include the entire toDate day, set time to end of day
+        const toDateObj = new Date(toDate);
+        toDateObj.setHours(23, 59, 59, 999);
+        query.createdAt.$lte = toDateObj; // less or equal to toDate
+      }
+    }
+
+    const result = await mainorder_model
+      .find(query)
+      .sort({ createdAt: -1 });
+
+    if (!result || result.length === 0) {
+      return res.json({ status: false, message: "user not found", data: [] });
+    }
+
+    const userIds = result.map((item) => item.userid);
+
+    const users = await User_model.find({ _id: { $in: userIds } });
+
+    const userNameMap = users.reduce((acc, user) => {
+      acc[user._id] = user.UserName;
+      return acc;
+    }, {});
+
+    const mappedResult = result.map((item) => ({
+      ...item.toObject(),
+      userName: userNameMap[item.userid] || "Unknown",
+    }));
+
+    return res.json({ status: true, message: "user found", data: mappedResult });
+  } catch (error) {
+    console.error(error);
+    return res.json({ status: false, message: "internal error", data: [] });
+  }
+}
+
 }
 
 module.exports = new Superadmin();

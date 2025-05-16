@@ -81,6 +81,8 @@ const Sidebar = () => {
         return "fa-solid fa-right-to-bracket";
       case "brokerage":
         return "fa fa-hand-holding-usd";
+           case "bonus":
+        return "fa fa-hand-holding-usd";
         case "research":
           return "fa-solid fa-money-bill-transfer";
           case "chat-box":

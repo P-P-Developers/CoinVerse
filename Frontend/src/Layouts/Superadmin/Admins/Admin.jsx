@@ -8,13 +8,12 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { CirclePlus, Pencil, Trash2, Eye } from "lucide-react";
 import Swal from "sweetalert2";
-import Loader from "../../../Utils/Loader/Loader";
 import {
   MarginpriceRequired,
   updateuserLicence,
 } from "../../../Services/Admin/Addmin";
+import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
 
-import Modal from "react-modal";
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -30,7 +29,6 @@ const Admin = () => {
   const [rowId, setRowId] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isCurrencyModalOpen, setIsCurrencyModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     crypto: "",
     forex: "",
@@ -75,37 +73,10 @@ const Admin = () => {
 
   const isAllSelected = selectedFilters.length === 4;
 
-  const handleUpdate = async () => {
-    if (!formData.crypto || !formData.dollarprice || !formData.forex) {
-      Swal.fire({
-        icon: "error",
-        title: "Error!",
-        text: "All fields are required. Please fill in all values.",
-        confirmButtonColor: "#d33",
-      });
-      return; // Stop execution if validation fails
-    }
-    const data = {
-      adminid: rowId,
-      crypto: formData.crypto,
-      dollarprice: formData.dollarprice,
-      forex: formData.forex,
-    };
-    const res = await MarginpriceRequired(data);
-    if (res?.status) {
-      Swal.fire({
-        icon: "success",
-        title: "Success!",
-        text: res.message,
-        confirmButtonColor: "#33B469",
-      });
-    }
-
-    setIsCurrencyModalOpen(false);
-  };
+ 
 
   const columns = [
-    { Header: "FullName", accessor: "FullName" },
+    // { Header: "FullName", accessor: "FullName" },
     { Header: "UserName", accessor: "UserName" },
     { Header: "Password", accessor: "Otp" },
     { Header: "Email", accessor: "Email" },
@@ -130,42 +101,7 @@ const Admin = () => {
         </label>
       ),
     },
-    {
-      Header: "Licence",
-      accessor: "Licence",
-      Cell: ({ cell }) => (
-        <div
-          style={{
-            backgroundColor: "#E1FFED",
-            border: "none",
-            color: "#33B469",
-            padding: "6px 10px",
-            textAlign: "center",
-            textDecoration: "none",
-            display: "inline-block",
-            fontSize: "13px",
-            cursor: "pointer",
-            borderRadius: "10px",
-            transition: "background-color 0.3s ease",
-          }}
-          onClick={() => {
-            setLicence(true);
-            setLicenceId(cell.row._id);
-          }}
-        >
-          <span style={{ fontWeight: "bold", verticalAlign: "middle" }}>
-            <CirclePlus
-              size={20}
-              style={{
-                marginRight: "5px",
-                verticalAlign: "middle",
-              }}
-            />
-            {cell.value || "0"}
-          </span>
-        </div>
-      ),
-    },
+    
     {
       Header: "Action",
       accessor: "Action",
@@ -176,34 +112,13 @@ const Admin = () => {
               style={{ cursor: "pointer", color: "#33B469" }}
               onClick={() => updateAdmin(cell.row._id, cell)}
             />
-            <Trash2
-              style={{
-                cursor: "pointer",
-                marginRight: "10px",
-                marginLeft: "3px",
-                color: "red",
-              }}
-              onClick={() => DeleteAdmin(cell.row._id)}
-            />
+          
           </div>
         );
       },
     },
 
-    // {
-    //   Header: "Start Date", accessor: "Start_Date",
-    //   Cell: ({ cell }) => {
-    //     return fDateTime(cell.value)
-
-    //   },
-    // },
-    // {
-    //   Header: "End Date", accessor: "End_Date",
-    //   Cell: ({ cell }) => {
-    //     return fDateTime(cell.value)
-
-    //   },
-    // },
+ 
     {
       Header: "User",
       accessor: "Admin_User",
@@ -232,46 +147,14 @@ const Admin = () => {
         );
       },
     },
-    {
-      Header: "Brokerage",
-      accessor: "Employee",
-      Cell: ({ cell }) => {
-        return (
-          <div>
-            <Eye
-              style={{ cursor: "pointer", color: "#33B469" }}
-              onClick={() => AdminBrokerageDetail(cell.row)}
-            />
-          </div>
-        );
-      },
-    },
-    {
-      Header: "Currency Setup",
-      accessor: "Currency Setup",
-      Cell: ({ cell }) => {
-        return (
-          <div>
-            <button
-              style={{
-                cursor: "pointer",
-                backgroundColor: "#33B469",
-                color: "#fff",
-                border: "none",
-                padding: "8px 12px",
-                borderRadius: "4px",
-              }}
-              onClick={() => {
-                setIsCurrencyModalOpen(true);
-                setRowId(cell.row._id);
-              }}
-            >
-              Currency Setup
-            </button>
-          </div>
-        );
-      },
-    },
+   
+      {
+            Header: "Create Date",
+            accessor: "createdAt",
+            Cell: ({ cell }) => {
+              return cell.value ? fDateTimesec(cell.value): "";
+            },
+          },
   ];
 
   const AdminUserdetail = (_id) => {
@@ -540,207 +423,9 @@ const Admin = () => {
         </div>
       </div>
 
-      <Modal
-        isOpen={isCurrencyModalOpen}
-        onRequestClose={() => setIsCurrencyModalOpen(false)}
-        contentLabel="currencyConfigModal"
-        ariaHideApp={false}
-        style={{
-          content: {
-            width: "500px",
-            margin: "auto",
-            padding: "20px",
-            borderRadius: "8px",
-            backgroundColor: "#fff",
-            position: "relative",
-            display: "flex",
-            flexDirection: "column",
-            zIndex: 1050, // Ensure modal content is above overlay
-          },
-          overlay: {
-            backgroundColor: "rgba(0, 0, 0, 0.5)", // Dimmed background
-            position: "fixed",
-            top: "0",
-            left: "0",
-            right: "0",
-            bottom: "0",
-            zIndex: 1040, // Ensure overlay is beneath modal content
-          },
-        }}
-      >
-        {/* Modal Header */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "15px",
-          }}
-        >
-          <h4 style={{ margin: "0" }}>Currency Setup</h4>
-          <button
-            type="button"
-            style={{
-              background: "none",
-              border: "none",
-              fontSize: "20px",
-              cursor: "pointer",
-            }}
-            onClick={() => setIsCurrencyModalOpen(false)} // Ensure this closes the modal
-          >
-            ×
-          </button>
-        </div>
+ 
 
-        {/* Modal Body */}
-        <div style={{ marginBottom: "20px" }}>
-          <div style={{ display: "flex", gap: "15px" }}>
-            <div style={{ flex: "1" }}>
-              <label>Forex Margin</label>
-              <input
-                type="number"
-                name="forex"
-                value={formData.forex}
-                onChange={handleInputChange}
-                style={{
-                  width: "100%",
-                  padding: "8px",
-                  borderRadius: "5px",
-                  border: "1px solid #ccc",
-                }}
-              />
-            </div>
-            <div style={{ flex: "1" }}>
-              <label>Crypto Margin</label>
-              <input
-                type="number"
-                name="crypto"
-                value={formData.crypto}
-                onChange={handleInputChange}
-                style={{
-                  width: "100%",
-                  padding: "8px",
-                  borderRadius: "5px",
-                  border: "1px solid #ccc",
-                }}
-              />
-            </div>
-            <div style={{ flex: "1" }}>
-              <label>Dollar Price</label>
-              <input
-                type="number"
-                name="dollarprice"
-                value={formData.dollarprice}
-                onChange={handleInputChange}
-                style={{
-                  width: "100%",
-                  padding: "8px",
-                  borderRadius: "5px",
-                  border: "1px solid #ccc",
-                }}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Modal Footer */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            gap: "10px",
-          }}
-        >
-          <button
-            style={{
-              backgroundColor: "#ccc",
-              border: "none",
-              padding: "10px 20px",
-              borderRadius: "5px",
-              cursor: "pointer",
-            }}
-            onClick={() => setIsCurrencyModalOpen(false)}
-          >
-            Cancel
-          </button>
-          <button
-            style={{
-              backgroundColor: "#33B469",
-              color: "#fff",
-              border: "none",
-              padding: "10px 20px",
-              borderRadius: "5px",
-              cursor: "pointer",
-            }}
-            onClick={handleUpdate}
-          >
-            Update
-          </button>
-        </div>
-      </Modal>
-
-      {license && (
-        <div
-          className="modal custom-modal d-block"
-          id="add_vendor"
-          role="dialog"
-        >
-          <div className="modal-dialog modal-dialog-centered modal-md">
-            <div className="modal-content">
-              <div className="modal-header border-0 pb-0">
-                <div className="form-header modal-header-title text-start mb-0">
-                  <h4 className="mb-0">Add Licence</h4>
-                </div>
-                <button
-                  type="button"
-                  className="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                  onClick={() => setLicence(false)}
-                ></button>
-              </div>
-              <div>
-                <div className="modal-body">
-                  <div className="row">
-                    <div className="col-lg-12 col-sm-12">
-                      <div className="input-block mb-3">
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="Enter Licence Here"
-                          onChange={(e) => {
-                            let value = e.target.value;
-                            setLicencevalue(value);
-                          }}
-                          value={licencevalue ? `${licencevalue}` : ""} // Display the value with no '%', since it's not applicable here
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    data-bs-dismiss="modal"
-                    className="btn btn-back cancel-btn me-2"
-                    onClick={() => setLicence(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    data-bs-dismiss="modal"
-                    className="btn btn-primary paid-continue-btn"
-                    onClick={updateLicence}
-                  >
-                    Submit
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+ 
     </>
   );
 };

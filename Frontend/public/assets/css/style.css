@@ -42913,3 +42913,8 @@ ul.nav.nav-pills.mb-4.light {
   justify-content: center;
   border-bottom: 1px solid #ebebf7;
 }
+
+.nav-tabs .nav-link.active {
+  color: #0d6efd !important;
+  font-weight: 800;
+}
