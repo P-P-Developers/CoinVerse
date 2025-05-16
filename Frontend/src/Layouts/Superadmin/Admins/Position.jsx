@@ -5,7 +5,7 @@ import {
   getavailableposition,
   getAdminUserName,
 } from "../../../Services/Superadmin/Superadmin";
-import { fDateTime } from "../../../Utils/Date_format/datefromat";
+import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
 
 const Position = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
@@ -49,6 +49,13 @@ const Position = () => {
         return <span>{availablePosition}</span>;
       },
     },
+      {
+          Header: "Create Date",
+          accessor: "createdAt",
+          Cell: ({ cell }) => {
+            return fDateTimesec(cell.value);
+          },
+        },
   ];
 
   // getting data

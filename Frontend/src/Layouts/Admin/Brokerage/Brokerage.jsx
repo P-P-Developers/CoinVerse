@@ -26,7 +26,9 @@ const Holdoff = () => {
   const columns =  [
       { Header: "UserName", accessor: "UserName" },
       { Header: "Symbol", accessor: "symbol" },
-      { Header: "Amount", accessor: "Amount" },
+        { Header: "Amount", accessor: "Amount" ,  Cell: ({ cell }) => {
+        return cell.value ? cell.value.toFixed(3) : "-"
+      }},
       { Header: "Brokerage", accessor: "brokerage" },
       { Header: "Created At", accessor: "createdAt" ,  Cell: ({ cell }) => {
         return fDateTimesec(cell.value);
@@ -36,7 +38,10 @@ const Holdoff = () => {
 
   const columnsForBonus =  [
       { Header: "UserName", accessor: "username" },
-      { Header: "Bonus", accessor: "Bonus" },
+      // { Header: "Bonus", accessor: "Bonus" },
+       { Header: "Bonus", accessor: "Bonus" ,  Cell: ({ cell }) => {
+        return cell.value ? cell.value.toFixed(3) : "-"
+      }},
       {
         Header: "Type",
         accessor: "Type",

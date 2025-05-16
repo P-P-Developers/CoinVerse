@@ -44,7 +44,14 @@ const Brokerage = () => {
   const columns = [
     { Header: "UserName", accessor: "UserName" },
     { Header: "Symbol", accessor: "symbol" },
-    { Header: "Amount", accessor: "Amount" },
+    // { Header: "Amount", accessor: "Amount" },
+   {
+      Header: "Amount",
+      accessor: "Amount",
+      Cell: ({ cell }) => {
+        return cell.value ? cell.value.toFixed(2) : "-";
+      },
+    },
     { Header: "Brokerage", accessor: "brokerage" },
     {
       Header: "Created At",
@@ -216,7 +223,7 @@ const Brokerage = () => {
       <option value="">Select Admin</option>
       {adminUsername.map((admin, index) => (
         <option key={index} value={admin.UserName}>
-          {admin.UserName}
+          {admin.UserName}cd
         </option>
       ))}
     </select>
@@ -291,7 +298,7 @@ const Brokerage = () => {
                     {MarginLogs.map((log, index) => (
                       <tr key={index}>
                         <td>{index + 1}</td>
-                        <td>{log.balance}</td>
+                        <td>{log.balance ? log.balance.toFixed(2) :"-" }</td>
                         <td>{fDateTimesec(log.createdAt)}</td>
                       </tr>
                     ))}

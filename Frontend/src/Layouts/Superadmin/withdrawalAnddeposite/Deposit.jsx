@@ -46,7 +46,9 @@ const Deposit = () => {
       accessor: "type",
       Cell: ({ cell }) => (cell.row.type == 1 ? "Deposite" : cell),
     },
-    { Header: "Requested Balance", accessor: "Balance" },
+    // { Header: "Requested Balance", accessor: "Balance" },
+    { Header: "Balance", accessor: "Balance" },
+
     {
       Header: "Balance",
       accessor: "UserBalance",

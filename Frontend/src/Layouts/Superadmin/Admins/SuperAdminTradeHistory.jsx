@@ -87,9 +87,9 @@ const SuperAdminTradeHistory = () => {
         const buy_price = cell.row.buy_price;
         const signal_type = cell.row.signal_type;
         if (signal_type === "buy_sell") {
-          return buy_price ? buy_price : "-";
+          return buy_price ? buy_price.toFixed(2) : "-";
         } else {
-          return cell.row.sell_price ? cell.row.sell_price : "-";
+          return cell.row.sell_price ? cell.row.sell_price.toFixed(2) : "-";
         }
       },
     },
@@ -100,9 +100,9 @@ const SuperAdminTradeHistory = () => {
         const buy_price = cell.row.buy_price;
         const signal_type = cell.row.signal_type;
         if (signal_type === "sell_buy") {
-          return buy_price ? buy_price : "-";
+          return buy_price ? buy_price.toFixed(2) : "-";
         } else {
-          return cell.row.sell_price ? cell.row.sell_price : "-";
+          return cell.row.sell_price ? cell.row.sell_price.toFixed(2) : "-";
         }
       },
     },
@@ -118,7 +118,7 @@ const SuperAdminTradeHistory = () => {
         if (sellPrice && buyPrice && buyQty) {
           // if(signal_type === "buy_sell"){
           const profitLoss = (sellPrice - buyPrice) * buyQty;
-          const formattedProfitLoss = profitLoss.toFixed(4);
+          const formattedProfitLoss = profitLoss.toFixed(2);
 
           const color = profitLoss > 0 ? "green" : "red";
 

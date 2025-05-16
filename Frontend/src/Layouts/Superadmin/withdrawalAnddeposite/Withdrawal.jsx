@@ -142,7 +142,9 @@ const Withdraw = () => {
       accessor: "type",
       Cell: ({ cell }) => (cell.row.type == 0 ? "Withdrawal" : cell),
     },
-    { Header: "Requested Balance", accessor: "Balance" },
+    // { Header: "Requested Balance", accessor: "Balance" },
+    { Header: "Balance", accessor: "Balance" },
+
     {
       Header: "Balance",
       accessor: "UserBalance",

@@ -49,6 +49,13 @@ const Position = () => {
         return <span>{availablePosition}</span>;
       },
     },
+      {
+      Header: "Create Date",
+      accessor: "createdAt",
+      Cell: ({ cell }) => {
+        return fDateTimesec(cell.value);
+      },
+    },
   ];
 
   // Getting the data and storing it in both originalData and filtered data

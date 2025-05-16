@@ -75,13 +75,7 @@ const Loginstatus = () => {
     { Header: "UserName", accessor: "UserName" },
     { Header: "Role", accessor: "role" },
     { Header: "Created By", accessor: "parent_role" },
-    {
-      Header: "Create Date",
-      accessor: "createdAt",
-      Cell: ({ cell }) => {
-        return fDateTimesec(cell.value);
-      },
-    },
+  
     {
       Header: "Login Status",
       accessor: "login_status",
@@ -90,6 +84,13 @@ const Loginstatus = () => {
           {cell.value}
         </span>
       ),
+    },
+      {
+      Header: "Create Date",
+      accessor: "createdAt",
+      Cell: ({ cell }) => {
+        return fDateTimesec(cell.value);
+      },
     },
   ];
 

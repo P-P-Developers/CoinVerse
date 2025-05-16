@@ -24,12 +24,7 @@ const Transaction = () => {
         </>
       ),
     },
-    {
-      Header: "Create Date",
-      accessor: "createdAt",
-      Cell: ({ cell }) => fDateTimesec(cell.value),
-    },
-    {
+       {
       Header: "Status",
       accessor: "Type",
       Cell: ({ cell }) => (
@@ -38,6 +33,12 @@ const Transaction = () => {
         </span>
       ),
     },
+    {
+      Header: "Create Date",
+      accessor: "createdAt",
+      Cell: ({ cell }) => fDateTimesec(cell.value),
+    },
+ 
   ];
 
   const getallhistory = async () => {

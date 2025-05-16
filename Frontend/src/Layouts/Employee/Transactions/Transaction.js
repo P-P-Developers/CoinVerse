@@ -22,6 +22,7 @@ const Transaction = () => {
     { Header: "UserName", accessor: "UserName" },
 
     { Header: "Balance", accessor: "Balance" },
+    { Header: "Status", accessor: "Type" },
     {
       Header: "Create Date",
       accessor: "createdAt",
@@ -30,7 +31,6 @@ const Transaction = () => {
 
       },
     },
-    { Header: "Status", accessor: "Type" },
   ];
 
 
