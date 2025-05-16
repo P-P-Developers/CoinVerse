@@ -269,79 +269,77 @@ const Withdraw = () => {
     return data.filter((item) => item.status === status);
   };
 
-  const renderTable = (status) => {
-    return (
-      <div className="table-responsive">
-        <div className="row align-items-center gap-4">
-          {/* Search Input */}
-          <div className="col-lg-4">
-            <label htmlFor="searchInput" className="form-label">
-             🔍 Search:
-            </label>
-            <input
-              id="searchInput"
-              className="form-control"
-              type="text"
-              placeholder="Search..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-
-          {/* User Select Dropdown */}
-          <div className="col-lg-4">
-            <label htmlFor="userSelect" className="form-label">
-              Admin Name:
-            </label>
-            <select
-              id="userSelect"
-              className="form-select"
-              value={selectedAdminName}
-              onChange={(e) => setSelectedAdminName(e.target.value)}
-            >
-              <option value="">Select Admin</option>
-              {adminNames?.map((item, index) =>
-                item ? (
-                  <option value={item._id} key={index}>
-                    {item.UserName}
-                  </option>
-                ) : null
-              )}
-            </select>
-          </div>
+ const renderTable = (status) => {
+  return (
+    <div className="table-responsive">
+      {/* Controls Row */}
+      <div className="row g-3 align-items-end mb-4">
+        {/* Search Input */}
+        <div className="col-md-6 col-lg-4">
+          <label htmlFor="searchInput" className="form-label fw-semibold">
+            🔍 Search:
+          </label>
+          <input
+            id="searchInput"
+            className="form-control"
+            type="text"
+            placeholder="Search..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
-        <h5>{activeTab} Transactions</h5>
-        
-        <Table
-          columns={columns}
-          data={filterDataByStatus(status)}
-          rowsPerPage={rowsPerPage}
-        />
-        <div
-          className="d-flex align-items-center"
-          style={{
-            marginBottom: "20px",
-            marginLeft: "20px",
-            marginTop: "-48px",
-          }}
-        >
-          Rows per page:{" "}
+
+        {/* Admin Dropdown */}
+        <div className="col-md-6 col-lg-4">
+          <label htmlFor="userSelect" className="form-label fw-semibold">
+            Admin Name:
+          </label>
           <select
-            className="form-select ml-2"
-            value={rowsPerPage}
-            onChange={(e) => setRowsPerPage(Number(e.target.value))}
-            style={{ width: "auto", marginLeft: "10px" }}
+            id="userSelect"
+            className="form-select"
+            value={selectedAdminName}
+            onChange={(e) => setSelectedAdminName(e.target.value)}
           >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
+            <option value="">Select Admin</option>
+            {adminNames?.map((item, index) =>
+              item ? (
+                <option value={item._id} key={index}>
+                  {item.UserName}
+                </option>
+              ) : null
+            )}
           </select>
         </div>
       </div>
-    );
-  };
+
+      <h5 className="mb-3">{activeTab} Transactions</h5>
+
+      <Table
+        columns={columns}
+        data={filterDataByStatus(status)}
+        rowsPerPage={rowsPerPage}
+      />
+
+      {/* Rows Per Page Selector */}
+      <div className="d-flex align-items-center mt-3 ms-2">
+        <label className="me-2 fw-medium">Rows per page:</label>
+        <select
+          className="form-select"
+          value={rowsPerPage}
+          onChange={(e) => setRowsPerPage(Number(e.target.value))}
+          style={{ width: "100px" }}
+        >
+          {[5, 10, 20, 50, 100].map((num) => (
+            <option value={num} key={num}>
+              {num}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
+  );
+};
+
 
   return (
     <div>
@@ -498,58 +496,66 @@ const Withdraw = () => {
           </div>
         </div>
       </div>
-      <Modal
-        isOpen={showModal}
-        onRequestClose={handleCloseModal}
-        contentLabel="Bank Details"
-        style={{
-          content: {
-            top: "50%",
-            left: "50%",
-            right: "auto",
-            bottom: "auto",
-            marginRight: "-50%",
-            transform: "translate(-50%, -50%)",
-            width: "500px",
-            padding: "20px",
-            borderRadius: "10px",
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-          },
-          overlay: {
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-          },
-        }}
-      >
-        <h4 className="text-center mb-4">Bank Details</h4>
-        {selectedBankDetails && (
-          <div>
-            <p>
-              <strong>Account Holder Name:</strong>{" "}
-              {selectedBankDetails.accountHolderName || "N/A"}
-            </p>
-            <p>
-              <strong>Bank Account No:</strong>{" "}
-              {selectedBankDetails.bankAccountNo || "N/A"}
-            </p>
-            <p>
-              <strong>Bank IFSC:</strong>{" "}
-              {selectedBankDetails.bankIfsc || "N/A"}
-            </p>
-            <p>
-              <strong>Bank Name:</strong>{" "}
-              {selectedBankDetails.bankName || "N/A"}
-            </p>
-            <p>
-              <strong>UPI ID:</strong> {selectedBankDetails.upiId || "N/A"}
-            </p>
-          </div>
-        )}
-        <div className="text-center mt-4">
-          <button onClick={handleCloseModal} className="btn btn-danger">
-            Close
-          </button>
-        </div>
-      </Modal>
+    <Modal
+  isOpen={showModal}
+  onRequestClose={handleCloseModal}
+  contentLabel="Bank Details"
+  style={{
+    content: {
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      width: "480px",
+      padding: "30px",
+      borderRadius: "16px",
+      boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
+      backgroundColor: "#fff",
+    },
+    overlay: {
+      backgroundColor: "rgba(0, 0, 0, 0.4)",
+    },
+  }}
+>
+  <h4 className="text-center mb-4 fw-bold">Bank Details</h4>
+
+  {selectedBankDetails ? (
+    <div className="text-start">
+      <div className="mb-3">
+        <label className="form-label fw-semibold">Account Holder Name</label>
+        <div className="form-control bg-light">{selectedBankDetails.accountHolderName || "N/A"}</div>
+      </div>
+
+      <div className="mb-3">
+        <label className="form-label fw-semibold">Bank Account No</label>
+        <div className="form-control bg-light">{selectedBankDetails.bankAccountNo || "N/A"}</div>
+      </div>
+
+      <div className="mb-3">
+        <label className="form-label fw-semibold">Bank IFSC</label>
+        <div className="form-control bg-light">{selectedBankDetails.bankIfsc || "N/A"}</div>
+      </div>
+
+      <div className="mb-3">
+        <label className="form-label fw-semibold">Bank Name</label>
+        <div className="form-control bg-light">{selectedBankDetails.bankName || "N/A"}</div>
+      </div>
+
+      <div className="mb-3">
+        <label className="form-label fw-semibold">UPI ID</label>
+        <div className="form-control bg-light">{selectedBankDetails.upiId || "N/A"}</div>
+      </div>
+    </div>
+  ) : (
+    <p className="text-center">No bank details available.</p>
+  )}
+
+  <div className="text-center mt-4">
+    <button onClick={handleCloseModal} className="btn btn-outline-danger px-4 py-2">
+      Close
+    </button>
+  </div>
+</Modal>
+
       <Modal
         isOpen={showCompleteModal}
         onRequestClose={handleCancel}

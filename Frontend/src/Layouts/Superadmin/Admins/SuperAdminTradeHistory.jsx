@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
 import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
 import { gettradehistory } from "../../../Services/Admin/Addmin";
-import { DollarSign } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ArrowLeftRight } from "lucide-react";
 import {
@@ -30,15 +29,15 @@ const SuperAdminTradeHistory = () => {
 
   useEffect(() => {
     getuserallhistory();
-  }, [Userid, Search, userNamed,toDate, fromDate]);
+  }, [Userid, Search, userNamed, toDate, fromDate]);
 
   const getuserallhistory = async () => {
     try {
-      if(Userid === undefined || Userid === null){
+      if (Userid === undefined || Userid === null) {
         return;
       }
 
-      const data = { adminid: Userid ,toDate:toDate, fromDate:fromDate};
+      const data = { adminid: Userid._id, toDate: toDate, fromDate: fromDate };
       const response = await gettradehistory(data);
       let UserNameListData = response.data.map((item) => {
         return item.userName;
@@ -71,18 +70,6 @@ const SuperAdminTradeHistory = () => {
 
   // Define columns for the table
   const columns = [
-    {
-      Header: "switch",
-      accessor: "switch",
-      Cell: ({ cell }) => {
-        return (
-          <span onClick={(e) => ChangeTradeType(cell.row)}>
-            <ArrowLeftRight />
-          </span>
-        );
-      },
-    },
-
     { Header: "UserName", accessor: "userName" },
 
     { Header: "Symbol", accessor: "symbol" },
@@ -209,13 +196,17 @@ const SuperAdminTradeHistory = () => {
         }
       },
     },
-    // {
-    //   Header: "Create Date",
-    //   accessor: "createdAt",
-    //   Cell: ({ cell }) => {
-    //     return fDateTimesec(cell.value);
-    //   },
-    // },
+    {
+      Header: "switch",
+      accessor: "switch",
+      Cell: ({ cell }) => {
+        return (
+          <span onClick={(e) => ChangeTradeType(cell.row)}>
+            <ArrowLeftRight />
+          </span>
+        );
+      },
+    },
   ];
 
   // Function to get user history
@@ -226,6 +217,7 @@ const SuperAdminTradeHistory = () => {
       const response = await getAdminName();
       if (response.status) {
         setUserName(response.data);
+        setUserId(response.data[0]);
       }
     } catch (error) {
       console.log("error", error);
@@ -292,8 +284,13 @@ const SuperAdminTradeHistory = () => {
                           <label className="fw-bold mb-1">🛡️ Admin</label>
                           <select
                             className="form-select"
-                            onChange={(e) => setUserId(e.target.value)}
-                            defaultValue=""
+                            onChange={(e) => {
+                              const selectedUser = userName.find(
+                                (u) => u._id === e.target.value
+                              );
+                              setUserId(selectedUser);
+                            }}
+                            value={Userid?._id || ""}
                           >
                             <option value="">Select a user</option>
                             {userName &&
@@ -322,7 +319,7 @@ const SuperAdminTradeHistory = () => {
                           </select>
                         </div>
 
- <div className="col-md-2">
+                        <div className="col-md-2">
                           <label className="fw-bold mb-1">📅 From Date</label>
                           <input
                             type="date"
@@ -342,9 +339,6 @@ const SuperAdminTradeHistory = () => {
                           />
                         </div>
 
-                       
-
-                       
                         <div className="col-md-4">
                           <label className="fw-bold mb-1">🔍 Search</label>
                           <input
@@ -355,7 +349,7 @@ const SuperAdminTradeHistory = () => {
                             value={Search}
                           />
                         </div>
-  <div className="col-md-3 d-flex align-items-end">
+                        <div className="col-md-3 d-flex align-items-end">
                           <button
                             className="btn btn-outline-secondary w-100"
                             onClick={getuserallhistory}
@@ -364,11 +358,10 @@ const SuperAdminTradeHistory = () => {
                             Refresh
                           </button>
                         </div>
-                       
                       </div>
 
                       <div className="px-3 mb-3">
-                        <h5>
+                        <h3>
                           💰 Total Profit/Loss:{" "}
                           <span
                             style={{
@@ -377,7 +370,7 @@ const SuperAdminTradeHistory = () => {
                           >
                             {totalProfitLoss}
                           </span>
-                        </h5>
+                        </h3>
                       </div>
 
                       <div className="px-3">

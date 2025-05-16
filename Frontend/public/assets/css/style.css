@@ -42918,3 +42918,14 @@ ul.nav.nav-pills.mb-4.light {
   color: #0d6efd !important;
   font-weight: 800;
 }
+.form-label {
+  margin-bottom: 4px;
+  font-size: 0.95rem;
+}
+
+.form-control.bg-light {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  font-size: 0.95rem;
+  padding: 0.55rem 0.75rem;
+}
