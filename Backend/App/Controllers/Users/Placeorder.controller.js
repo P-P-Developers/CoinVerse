@@ -350,8 +350,6 @@ class Placeorder {
       order.buy_price = order.sell_price;
       order.sell_price = temp;
 
-      cosnole.log("order.buy_price", order.buy_price);
-      cosnole.log("order.sell_price", order.sell_price);
 
       const temp1 = order.buy_time;
       order.buy_time = order.sell_time;

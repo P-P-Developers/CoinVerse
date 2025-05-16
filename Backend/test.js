@@ -15,7 +15,7 @@ socket.on("connect", () => {
 // Listen for data
 socket.on("receive_data_forex", ({ data, type }) => {
   console.log("📥 Received Data:", type);
-  console.log(data);
+
 
   // Example: You can process or store this data
   // processCryptoOrForexData(data, type);

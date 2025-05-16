@@ -34,22 +34,7 @@ class Auth {
         });
       }
 
-      if (EmailCheck.Role === "USER" || EmailCheck.Role === "ADMIN") {
-        const currentDate = new Date();
-        const endDate = new Date(EmailCheck.End_Date);
-
-        if (
-          endDate.getDate() === currentDate.getDate() &&
-          endDate.getMonth() === currentDate.getMonth() &&
-          endDate.getFullYear() === currentDate.getFullYear()
-        ) {
-          return res.send({
-            status: false,
-            message: "Account is expired",
-            data: [],
-          });
-        }
-      }
+     
 
       const validPassword = await bcrypt.compare(password, EmailCheck.password);
       if (!validPassword) {

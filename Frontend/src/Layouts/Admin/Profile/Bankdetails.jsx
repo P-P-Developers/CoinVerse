@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
-import { UpdateUpiDetails, getUpiDetails } from '../../../Services/Admin/Addmin';
+import {
+  UpdateUpiDetails,
+  getUpiDetails,
+} from "../../../Services/Admin/Addmin";
 
 const Changedpassword = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
 
   const [bankDetails, setBankDetails] = useState({
-    upiId: "",
-    accountHolderName: "",
-    bankName: "",
-    bankAccountNo: "",
-    bankIfsc: "",
-    qrCodeBase64: ""
+    walleturl: "",
+
+    qrCodeBase64: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -39,22 +39,6 @@ const Changedpassword = () => {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!bankDetails.upiId.match(/^[\w.-]+@[\w]+$/)) {
-      newErrors.upiId = "Enter a valid UPI ID";
-    }
-    if (!bankDetails.accountHolderName.trim()) {
-      newErrors.accountHolderName = "Account holder name is required";
-    }
-    if (!bankDetails.bankName.trim()) {
-      newErrors.bankName = "Bank name is required";
-    }
-    if (!bankDetails.bankAccountNo.match(/^\d{9,18}$/)) {
-      newErrors.bankAccountNo = "Enter a valid bank account number";
-    }
-    if (!bankDetails.bankIfsc.match(/^[A-Z]{4}0[A-Z0-9]{6}$/)) {
-      newErrors.bankIfsc = "Enter a valid IFSC code";
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -65,9 +49,9 @@ const Changedpassword = () => {
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      setBankDetails(prev => ({
+      setBankDetails((prev) => ({
         ...prev,
-        qrCodeBase64: reader.result
+        qrCodeBase64: reader.result,
       }));
     };
     reader.readAsDataURL(file);
@@ -76,17 +60,25 @@ const Changedpassword = () => {
   const handleBankSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) {
-      Swal.fire({ icon: "error", title: "Invalid Form", text: "Please correct the errors" });
+      Swal.fire({
+        icon: "error",
+        title: "Invalid Form",
+        text: "Please correct the errors",
+      });
       return;
     }
 
     try {
       const res = await UpdateUpiDetails({ ...bankDetails, id: user_id });
       if (res.status) {
-        Swal.fire({ icon: 'success', title: 'Updated', text: res.message });
+        Swal.fire({ icon: "success", title: "Updated", text: res.message });
       }
     } catch {
-      Swal.fire({ icon: 'error', title: 'Failed', text: "Failed to update bank details" });
+      Swal.fire({
+        icon: "error",
+        title: "Failed",
+        text: "Failed to update bank details",
+      });
     }
   };
 
@@ -102,8 +94,22 @@ const Changedpassword = () => {
             <form className="profile-form mt-4" onSubmit={handleBankSubmit}>
               <div className="card-body">
                 <div className="row">
-                  
-                
+                  <div className="col-sm-4 mb-3">
+                    <label className="form-label">Wallet Url</label>
+                    <input
+                      type="text"
+                      name="walleturl"
+                      value={bankDetails.walleturl}
+                      onChange={handleBankChange}
+                      className={`form-control ${
+                        errors.walleturl ? "is-invalid" : ""
+                      }`}
+                      placeholder="Enter UPI ID"
+                    />
+                    {errors.walleturl && (
+                      <div className="invalid-feedback">{errors.walleturl}</div>
+                    )}
+                  </div>
 
                   <div className="col-sm-4 mb-3">
                     <label className="form-label">Upload QR Code Image</label>
@@ -119,16 +125,21 @@ const Changedpassword = () => {
                   {bankDetails.qrCodeBase64 && (
                     <div className="col-sm-4 mb-3">
                       <label className="form-label">Preview</label>
-                      <img src={bankDetails.qrCodeBase64} alt="QR Preview" className="img-fluid" />
+                      <img
+                        src={bankDetails.qrCodeBase64}
+                        alt="QR Preview"
+                        className="img-fluid"
+                      />
                     </div>
                   )}
                 </div>
               </div>
               <div className="card-footer d-flex align-items-center">
-                <button type="submit" className="btn btn-success btn-sm">Update Bank Info</button>
+                <button type="submit" className="btn btn-success btn-sm">
+                  Update Bank Info
+                </button>
               </div>
             </form>
-
           </div>
         </div>
       </div>

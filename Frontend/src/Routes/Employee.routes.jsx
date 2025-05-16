@@ -5,7 +5,6 @@ import Sidebar from '../components/Dashboard/Sidebar';
 import Footer from '../components/Dashboard/Footer';
 import Dashboard from '../Layouts/Employee/Dashboard';
 import Login from "../Layouts/Auth/Login"
-import Report from '../Layouts/Employee/Report';
 import Tradehistory from '../Layouts/Employee/Tradehistory';
 import Loginstatus from '../Layouts/Employee/Loginstatus';
 import Withdraw from '../Layouts/Employee/Withdraw';
@@ -53,7 +52,7 @@ const EmployeeRoutes = () => {
             <Route path="/header" element={<Header />} />
             <Route path="/sidebar" element={<Sidebar />} />
             <Route path="/footer" element={<Footer />} />
-            <Route path="/report" element={<Report />} />
+      
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/users/tradehistory/:id" element={<Tradehistory />} />
             <Route path="/loginstatus" element={<Loginstatus />} />

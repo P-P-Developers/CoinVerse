@@ -116,42 +116,7 @@ const Users = () => {
         </label>
       ),
     },
-    {
-      Header: "Licence",
-      accessor: "Licence",
-      Cell: ({ cell }) => (
-        <div
-          style={{
-            backgroundColor: "#E1FFED",
-            border: "none",
-            color: "#33B469",
-            padding: "6px 10px",
-            textAlign: "center",
-            textDecoration: "none",
-            display: "inline-block",
-            fontSize: "13px",
-            cursor: "pointer",
-            borderRadius: "10px",
-            transition: "background-color 0.3s ease",
-          }}
-          onClick={() => {
-            setLicence(true);
-            setLicenceId(cell.row._id);
-          }}
-        >
-          <span style={{ fontWeight: "bold", verticalAlign: "middle" }}>
-            <CirclePlus
-              size={20}
-              style={{
-                marginRight: "5px",
-                verticalAlign: "middle",
-              }}
-            />
-            {cell.value}
-          </span>
-        </div>
-      ),
-    },
+  
     {
       Header: "Action",
       accessor: "Action",
@@ -173,13 +138,7 @@ const Users = () => {
         return fDateTime(cell.value);
       },
     },
-    {
-      Header: "End Date",
-      accessor: "End_Date",
-      Cell: ({ cell }) => {
-        return fDateTime(cell.value);
-      },
-    },
+   
 
     {
       Header: "Trade History",
@@ -254,54 +213,7 @@ const Users = () => {
     }
   };
 
-  // update Licence
-  const updateLicence = async () => {
-    try {
-      if (parseInt(checkLicence.CountLicence) < parseInt(licencevalue)) {
-        Swal.fire({
-          title: "Alert",
-          text: "Licence is required",
-          icon: "warning",
-          timer: 1000,
-          timerProgressBar: true,
-        });
-        return;
-      }
 
-      await updateuserLicence({
-        id: licenseid,
-        Licence: licencevalue,
-        parent_Id: user_id,
-      });
-      if (licencevalue) {
-        Swal.fire({
-          icon: "success",
-          title: "Licence Updated",
-          text: "The Licence has been updated successfully.",
-        });
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "Invalid Licence Value",
-          text: "Please enter a valid licence value and try again.",
-        });
-      }
-
-      // setrefresh(!refresh)
-
-      getAlluserdata();
-      getadminLicence();
-      setLicence(false);
-
-      setLicencevalue("");
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Update Failed",
-        text: "There was an error updating the Licence. Please try again.",
-      });
-    }
-  };
 
   // update  balance
   const updateBalance = async () => {
@@ -631,69 +543,7 @@ const Users = () => {
         </div>
       )}
 
-      {license && (
-        <div
-          className="modal custom-modal d-block"
-          id="add_vendor"
-          role="dialog"
-        >
-          <div className="modal-dialog modal-dialog-centered modal-md">
-            <div className="modal-content">
-              <div className="modal-header border-0 pb-0">
-                <div className="form-header modal-header-title text-start mb-0">
-                  <h4 className="mb-0">Add Licence</h4>
-                </div>
-                <button
-                  type="button"
-                  className="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                  onClick={() => setLicence(false)}
-                ></button>
-              </div>
-              <div>
-                <div className="modal-body">
-                  <div className="row">
-                    <div className="col-lg-12 col-sm-12">
-                      <div className="input-block mb-3">
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="Enter Licence Here"
-                          onChange={(e) => {
-                            let value = e.target.value.replace(/\D/g, "");
-                            value = Math.max(0, Math.min(12, value));
-                            setLicencevalue(value);
-                          }}
-                          value={licencevalue ? `${licencevalue}` : ""} // Display the value with no '%', since it's not applicable here
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    data-bs-dismiss="modal"
-                    className="btn btn-back cancel-btn me-2"
-                    onClick={() => setLicence(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    data-bs-dismiss="modal"
-                    className="btn btn-primary paid-continue-btn"
-                    onClick={updateLicence}
-                  >
-                    Submit
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+ 
     </>
   );
 };

@@ -6,22 +6,10 @@ const UpiDetailsSchema = new mongoose.Schema({
     required: true,
     ref: "User", // assuming you have a User model
   },
-  upiId: {
+  walleturl: {
     type: String,
   },
-  accountHolderName: {
-    type: String,
-  },
-  bankName: {
-    type: String,
-  },
-  bankAccountNo: {
-    type: String,
-  },
-  bankIfsc :{
-    type: String,
 
-  },
   qrCodeBase64: {
     type: String, // base64 string
   },

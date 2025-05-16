@@ -175,7 +175,7 @@ const DynamicForm = ({
                             </div>
                           </>
                         ) : field.type === "percentage" ? (
-                          <div className={`col-lg-${field.col_size}`}>
+                          <div className={`mt-3 col-lg-${field.col_size}`}>
                             <div className="input-block mb-3 flex-column">
                               <label className={`col-lg-${field.label_size}`}>
                                 {field.label}
@@ -332,7 +332,7 @@ const DynamicForm = ({
                         ) : field.type === "select" ? (
                           <>
                             <div
-                              className={`col-lg-${title === "update_theme" ? 12 : 6
+                              className={`mt-3 col-lg-${title === "update_theme" ? 12 : 6
                                 }`}
                             >
                               <div className="input-block row mb-3">

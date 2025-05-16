@@ -55,12 +55,7 @@ const AdminUser = () => {
    
            },
      },
-    { Header: "End_Date", accessor: "End_Date",
-        Cell: ({ cell }) => {
-            return fDateTime(cell.value)
    
-           },
-    },
    
   ];
 

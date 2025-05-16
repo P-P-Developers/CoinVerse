@@ -27,13 +27,7 @@ const Report = () => {
         return fDateTime(cell.value);
       },
     },
-    {
-      Header: "End Date",
-      accessor: "End_Date",
-      Cell: ({ cell }) => {
-        return fDateTime(cell.value);
-      },
-    },
+   
   ];
 
   // Fetching license history
