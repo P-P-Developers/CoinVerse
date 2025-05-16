@@ -16,6 +16,7 @@ const ProfitmarginData = db.Profitmargin;
 const crypto = require("crypto");
 const Company = require("../../../Models/Company.model");
 const BonusCollectioniModel = require("../../../Models/BonusCollectioni.model");
+const { sendPushNotification } = require("../../common/firebase");
 
 class Superadmin {
   async AddAdmin(req, res) {
@@ -298,6 +299,12 @@ console.error("Error at AddAdmin", error);
         newBalance += dollarcount;
 
 
+        sendPushNotification(
+          userdata.DeviceToken,
+          "Wallet Recharge",
+          `Your wallet has been credited with ${dollarcount} USD`,
+        )
+
 
       } else if (Type === "DEBIT") {
         newBalance -= dollarcount;
@@ -432,6 +439,12 @@ console.error("Error at AddAdmin", error);
       if (result) {
         // STATUS UPDATE SUCCESSFULLY
         var status_msg = user_active_status == "0" ? "DeActivate" : "Activate";
+
+        sendPushNotification(
+          get_user[0].DeviceToken,
+          "Account Status",
+          `Your account has been ${status_msg}`,
+        );
 
         res.send({
           status: true,

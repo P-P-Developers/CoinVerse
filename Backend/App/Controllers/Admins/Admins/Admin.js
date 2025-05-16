@@ -1718,6 +1718,33 @@ class Admin {
         message,
       });
       await newMsg.save();
+
+
+
+      const GetUser = await User_model.findById(receiverId).select(
+        "DeviceToken" );
+      if (!GetUser) {
+        return res.json({
+          status: false,
+          message: "User not found",
+        });
+      }
+
+      const { DeviceToken } = GetUser;
+      if (!DeviceToken) {
+        return res.json({
+          status: false,
+          message: "DeviceToken not found",
+        });
+      }
+
+
+      sendPushNotification(
+        DeviceToken,
+        "New Message",
+        message
+      );
+
       res.json({ success: true, message: newMsg });
     } catch (error) {
       console.error("Error in message:", error);
