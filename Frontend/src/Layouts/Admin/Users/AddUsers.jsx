@@ -19,9 +19,6 @@ const AddUsers = () => {
   const location = useLocation();
   const clientData = location.state?.clientData || {};
 
-  const [checkprice, setCheckprice] = useState("");
-  const [dollarPrice, setDollarPrice] = useState(0);
-  const [checkdolarprice, setCheckdolarprice] = useState(0);
   const [checkLicence, setCheckLicence] = useState([]);
 
 
@@ -211,8 +208,7 @@ const AddUsers = () => {
     const data = { userid: user_id };
     try {
       const response = await adminWalletBalance(data);
-      setCheckprice(response.Balance);
-      setCheckdolarprice(response.dollarPriceDoc.dollarprice);
+
     } catch (error) {
 
     }
@@ -251,14 +247,7 @@ const AddUsers = () => {
     getAlluserdata();
   }, []);
 
-  useEffect(() => {
-    const exchangeRate = Number(checkdolarprice);
-    setDollarPrice(
-      formik.values.Balance
-        ? parseFloat(formik.values.Balance) / exchangeRate
-        : 0
-    );
-  }, [formik.values.Balance]);
+
 
 
 
