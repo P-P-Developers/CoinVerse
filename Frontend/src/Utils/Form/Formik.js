@@ -132,52 +132,7 @@ const DynamicForm = ({
                 <div className="row d-flex ">
                   {fields.map((field, index) => (
                     <React.Fragment key={index}>
-                      {field.type === "text1" ? (
-                        <>
-                          <div className={`col-lg-${field.col_size}`}>
-                            <div className="input-block mb-3 flex-column">
-                              <label className={`col-lg-${field.label_size}`}>
-                                {field.label}
-                                <span className="text-danger">*</span>
-                              </label>
-
-                              <input
-                                type="text"
-                                className="form-control"
-                                aria-describedby="basic-addon1"
-                                placeholder={`Enter Strategy Name (Ex: AAA_demo )`}
-                                readOnly={field.disable}
-                                autoComplete="new-email"
-                                id={field.name}
-                                name={field.name}
-                                {...formik.getFieldProps(field.name)}
-                                value={
-                                  formik.values[field.name].startsWith(
-                                    prifix_key + "_"
-                                  )
-                                    ? formik.values[field.name]
-                                    : formik.values[field.name].startsWith(
-                                      prifix_key
-                                    )
-                                      ? prifix_key +
-                                      "_" +
-                                      formik.values[field.name].substr(3)
-                                      : prifix_key +
-                                      "_" +
-                                      formik.values[field.name]
-                                }
-                              />
-
-                              {formik.touched[field.name] &&
-                                formik.errors[field.name] ? (
-                                <div style={{ color: "red" }}>
-                                  {formik.errors[field.name]}
-                                </div>
-                              ) : null}
-                            </div>
-                          </div>
-                        </>
-                      ) : field.type === "heading" ? (
+                      { field.type === "heading" ? (
                         <div className={`col-lg-${field.col_size}`}>
                           <div className="input-block mb-1">
                             <label className={`col-form-label col-lg-${field.label_size} fw-bold fs-5`}>
