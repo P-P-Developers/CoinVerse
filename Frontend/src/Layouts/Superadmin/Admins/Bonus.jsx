@@ -330,7 +330,7 @@ const Brokerage = () => {
 
           {/* Bonus Summary */}
           <div
-            className="d-flex justify-content-between flex-wrap gap-3 mb-4 p-4 bg-light rounded border"
+            className="d-flex justify-content-between flex-wrap gap-3 p-4 bg-light rounded border"
             style={{
               fontSize: "1.15rem",
               fontWeight: "600",
