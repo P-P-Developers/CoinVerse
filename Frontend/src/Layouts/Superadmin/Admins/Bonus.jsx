@@ -7,6 +7,7 @@ import {
   AddProfitMarginApi,
   GetAdminUsername,
   getProfitMarginApi,
+  GetAdminBalanceWithPosition,
 } from "../../../Services/Superadmin/Superadmin";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
@@ -29,6 +30,12 @@ const Brokerage = () => {
   const [adminUsername, setAdminUsername] = useState([]);
   const [activeTab, setActiveTab] = useState("Brokerage");
 
+  const [BalanceData, setBalanceData] = useState({
+    totalBalance: 0,
+    totalOpenPosition: 0,
+    totalUsersOpen: 0,
+  });
+
   useEffect(() => {
     fetchAdminUsername();
   }, []);
@@ -36,23 +43,50 @@ const Brokerage = () => {
   useEffect(() => {
     if (selectedAdminId && selectedAdminId._id) {
       fetchAllData();
+      // GetAdminBalanceWithPositionData();
     }
   }, [refresh, search, selectedAdminId]);
+
+  useEffect(() => {
+    if (selectedAdminId && selectedAdminId._id) {
+      GetAdminBalanceWithPositionData();
+    }
+  }, [selectedAdminId]);
+
+  const GetAdminBalanceWithPositionData = async () => {
+    try {
+      const res = await GetAdminBalanceWithPosition({
+        admin_id: selectedAdminId._id,
+      });
+      if (res.status) {
+        const { totalBalance, totalPnL, userCount } = res.data;
+        setBalanceData({
+          totalBalance: totalBalance || 0,
+          totalOpenPosition: totalPnL || 0,
+          totalUsersOpen: userCount || 0,
+        });
+      }
+    } catch (err) {
+      console.error("Error fetching admin balance with position", err);
+    }
+  };
 
   const columns = [
     { Header: "UserName", accessor: "UserName" },
     { Header: "Symbol", accessor: "symbol" },
 
-   {
-  Header: "Brokerage",
-  accessor: "brokerage",
-  Cell: ({ cell }) => {
-    const value = parseFloat(cell.value);
-    if (isNaN(value)) return "-";
+    {
+      Header: "Brokerage",
+      accessor: "brokerage",
+      Cell: ({ cell }) => {
+        const value = parseFloat(cell.value);
+        if (isNaN(value)) return "-";
 
-    return Number.isInteger(value) ? value.toString() : value.toFixed(2).replace(/\.?0+$/, "");
-  },
-},
+        return Number.isInteger(value)
+          ? value.toString()
+          : value.toFixed(2).replace(/\.?0+$/, "");
+      },
+    },
 
     {
       Header: "Created At",
@@ -305,12 +339,12 @@ const Brokerage = () => {
             }}
           >
             <div>
-              <span style={{ color: "#007bff" }}>💰 Total Bonus:</span>{" "}
+              <span style={{ color: "#007bff" }}>🎁 Total Bonus:</span>{" "}
               <span className="text-dark">{totalBrokerage.toFixed(4)}</span>
             </div>
 
             <div>
-              <span style={{ color: "#fd7e14" }}>🧮 Our Bonus:</span>{" "}
+              <span style={{ color: "#fd7e14" }}>🏆 Our Bonus:</span>{" "}
               <span className="text-dark">
                 {(totalBrokerage - ProfitBalance).toFixed(4)}
               </span>
@@ -322,59 +356,90 @@ const Brokerage = () => {
             </div>
           </div>
 
+          {/* Balance Summary */}
+          <div
+            className="d-flex justify-content-between flex-wrap gap-3 mb-4 p-4 bg-light rounded border"
+            style={{
+              fontSize: "1.15rem",
+              fontWeight: "600",
+              color: "#212529",
+              border: "1px solid #dcdcdc",
+            }}
+          >
+            <div>
+              <span style={{ color: "#007bff" }}>💰 Total Balance:</span>{" "}
+              <span className="text-dark">
+                {BalanceData.totalBalance.toFixed(4)}
+              </span>
+            </div>
+
+            <div>
+              <span style={{ color: "#fd7e14" }}>📈 Total Open Position:</span>{" "}
+              <span className="text-dark">
+                {BalanceData.totalOpenPosition.toFixed(4)}
+              </span>
+            </div>
+
+            <div>
+              <span style={{ color: "#28a745" }}>👤 Active Users:</span>{" "}
+              <span className="text-dark">
+                {BalanceData?.totalUsersOpen || 0}
+              </span>
+            </div>
+          </div>
+
           {/* Tabs and Tables */}
-        <Tabs
-  activeKey={activeTab}
-  onSelect={(k) => setActiveTab(k)}
-  className="my-4"
-  justify
-  style={{
-    fontSize: "1.3rem",             // Increased tab text size
-    fontWeight: "700",              // Bolder tab titles
-    color: "#004085",               // Professional dark blue
-    borderBottom: "2px solid #dee2e6",
-    letterSpacing: "0.3px",         // Cleaner spacing
-  }}
->
-  {selectedAdminId.brokerage && (
-    <Tab
-      eventKey="Brokerage"
-      title={
-        <span style={{ fontSize: "1.3rem", fontWeight: "700" }}>
-          📊 Brokerage
-        </span>
-      }
-    >
-      <div style={{ paddingTop: "1rem" }}>
-        <Table
-          columns={columns}
-          data={data}
-          rowsPerPage={rowsPerPage}
-        />
-      </div>
-    </Tab>
-  )}
+          <Tabs
+            activeKey={activeTab}
+            onSelect={(k) => setActiveTab(k)}
+            className="my-4"
+            justify
+            style={{
+              fontSize: "1.3rem", // Increased tab text size
+              fontWeight: "700", // Bolder tab titles
+              color: "#004085", // Professional dark blue
+              borderBottom: "2px solid #dee2e6",
+              letterSpacing: "0.3px", // Cleaner spacing
+            }}
+          >
+            {selectedAdminId.brokerage && (
+              <Tab
+                eventKey="Brokerage"
+                title={
+                  <span style={{ fontSize: "1.3rem", fontWeight: "700" }}>
+                    📊 Brokerage
+                  </span>
+                }
+              >
+                <div style={{ paddingTop: "1rem" }}>
+                  <Table
+                    columns={columns}
+                    data={data}
+                    rowsPerPage={rowsPerPage}
+                  />
+                </div>
+              </Tab>
+            )}
 
-  {selectedAdminId.bonus && (
-    <Tab
-      eventKey="Bonus"
-      title={
-        <span style={{ fontSize: "1.3rem", fontWeight: "700" }}>
-          💸 Bonus
-        </span>
-      }
-    >
-      <div style={{ paddingTop: "1rem" }}>
-        <Table
-          columns={columnsForBonus}
-          data={bonusData}
-          rowsPerPage={rowsPerPage}
-        />
-      </div>
-    </Tab>
-  )}
-</Tabs>
-
+            {selectedAdminId.bonus && (
+              <Tab
+                eventKey="Bonus"
+                title={
+                  <span style={{ fontSize: "1.3rem", fontWeight: "700" }}>
+                    💸 Bonus
+                  </span>
+                }
+              >
+                <div style={{ paddingTop: "1rem" }}>
+                  <Table
+                    columns={columnsForBonus}
+                    data={bonusData}
+                    rowsPerPage={rowsPerPage}
+                  />
+                </div>
+              </Tab>
+            )}
+          </Tabs>
         </div>
       </div>
 

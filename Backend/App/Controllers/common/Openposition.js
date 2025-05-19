@@ -42,6 +42,11 @@ class OpenPositions {
           let GetDeviceToken = await user_modal.findOne({
             _id: position?.userid,
           });
+          let  Exittype = position.checkSlPercent
+                ? "FUND_WISE"
+                : position.checkSlPercent_sl
+                ? "SL"
+                : "TARGET"
 
           if (position?.signal_type === "buy_sell") {
             commonData = {
@@ -56,11 +61,7 @@ class OpenPositions {
                 ((position?.buy_qty || 0) - (position?.sell_qty || 0)),
               lotsize: position?.lotsize,
               type: "sell",
-              Exittype: position.checkSlPercent
-                ? "FUND_WISE"
-                : position.checkSlPercent_sl
-                ? "SL"
-                : "TARGET",
+              Exittype:Exittype,
             };
           } else if (position?.signal_type == "sell_buy") {
             commonData = {
@@ -75,11 +76,7 @@ class OpenPositions {
                 ((position?.sell_qty || 0) - (position?.buy_qty || 0)),
               lotsize: position?.lotsize,
               type: "buy",
-              Exittype: position.checkSlPercent
-                ? "FUND_WISE"
-                : position.checkSlPercent_sl
-                ? "SL"
-                : "TARGET",
+              Exittype: Exittype
             };
           }
 
@@ -100,7 +97,7 @@ class OpenPositions {
             sendPushNotification(
               GetDeviceToken?.DeviceToken,
               "Open Position",
-              `Your ${position?.symbol} position is ${response.data.message}`
+              `Your ${position?.symbol} position is ${response.data.message} at ${position?.live_price} with ${Exittype}`,
             );
           }
         }

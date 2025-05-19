@@ -10,6 +10,7 @@ const { AddAdmin, walletRecharge, getAdminDetail, UpdateActiveStatusAdmin, getad
     getCompany,
     deleteCompany, 
     gettradehistory,
+    GetAdminBalanceWithPosition,
     getAdminName} = require("../../Controllers/Superadmin/Admins/admin")
 
     const {GetAdminUserName} = require("../../Controllers/Superadmin/Comman/commanapis")
@@ -45,7 +46,7 @@ router.post('/gettradehistory', gettradehistory)
 
 
 router.post('/getAdminUserName', GetAdminUserName);
-
+router.post('/GetAdminBalanceWithPosition', GetAdminBalanceWithPosition);
 
 
 
