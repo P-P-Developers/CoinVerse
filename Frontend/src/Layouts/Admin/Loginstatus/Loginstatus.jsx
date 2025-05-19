@@ -57,7 +57,6 @@ const Loginstatus = () => {
 
       setData(filteredData || response.data);
     } catch (error) {
-      console.log("Error:", error);
     }
   };
 

@@ -256,7 +256,6 @@ const Admin = () => {
           }, 1000);
         }
       } catch (error) {
-        console.log("Error", error);
         Swal.fire(
           "Error",
           "There was an error processing your request.",

@@ -45,7 +45,6 @@ const sendMultiplePushNotification = async (firebaseTokens, title, message) => {
           notification: { title, body: message },
           token,
         };
-        console.log("Payload", payload);
 
         await admin.messaging().send(payload);
         return { success: true };

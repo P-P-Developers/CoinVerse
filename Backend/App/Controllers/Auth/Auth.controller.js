@@ -311,7 +311,6 @@ class Auth {
   async getlogsuser(req, res) {
     try {
       const { userid } = req.body;
-      console.log("userid", userid);
 
       const result = await user_logs.aggregate([
         {

@@ -64,7 +64,6 @@ const SuperAdminTradeHistory = () => {
 
       setData(filteredData);
     } catch (error) {
-      console.log("error", error);
     }
   };
 
@@ -220,7 +219,6 @@ const SuperAdminTradeHistory = () => {
         setUserId(response.data[0]);
       }
     } catch (error) {
-      console.log("error", error);
     }
   };
 

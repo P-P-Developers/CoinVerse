@@ -31,7 +31,6 @@ const Sidebar = () => {
         setGetaccess(response.data[0]);
       }
     } catch (error) {
-      console.log("Error fetching permissions:", error);
     }
   };
 

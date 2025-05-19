@@ -94,7 +94,6 @@ const [rowsPerPage, setRowsPerPage] = useState(10);
       });
       setData(search ? searchfilter : response.data);
     } catch (error) {
-      console.log("error", error);
     }
   };
 

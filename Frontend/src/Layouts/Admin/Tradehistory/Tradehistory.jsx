@@ -126,7 +126,6 @@ const Tradehistory = () => {
       const response = await Clienthistory(data);
       setData(response.data);
     } catch (error) {
-      console.log("error", error);
     }
   };
 

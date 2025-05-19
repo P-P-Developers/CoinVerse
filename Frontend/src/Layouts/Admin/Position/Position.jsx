@@ -89,7 +89,6 @@ const Position = () => {
 
       setData(finalFilter || filterdata);
     } catch (error) {
-      console.log("error", error);
     }
   };
 

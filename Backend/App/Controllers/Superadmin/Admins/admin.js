@@ -1171,15 +1171,13 @@ class Superadmin {
         }
 
         totalPnL += pnl;
-        console.log("pnl:", pnl);
-        console.log("totalPnL:", totalPnL);
+
 
         return {
           ...pos,
           pnl: pnl, // round to 2 decimals
         };
       });
-      console.log("totalPnL:", totalPnL);
 
       totalPnL = totalPnL; // round total pnl
 

@@ -43,7 +43,6 @@ const System = () => {
         setCompaniesData(res.data);
       }
     } catch (error) {
-      console.log("Error fetching company data:", error);
       Swal.fire({
         icon: "error",
         title: "Error!",
@@ -83,7 +82,6 @@ const System = () => {
         });
       }
     } catch (error) {
-      console.log("Error during form submission:", error);
       Swal.fire({
         icon: "error",
         title: "Error!",

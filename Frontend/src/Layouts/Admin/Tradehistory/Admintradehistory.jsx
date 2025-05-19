@@ -324,7 +324,6 @@ const Tradehistory = () => {
       });
       setData(search ? searchfilter : response.data);
     } catch (error) {
-      console.log("error", error);
     }
   };
 
@@ -338,7 +337,6 @@ const Tradehistory = () => {
         setUserName(response.data);
       }
     } catch (error) {
-      console.log("error", error);
     }
   };
 

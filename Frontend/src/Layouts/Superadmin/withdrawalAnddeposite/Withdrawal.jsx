@@ -226,7 +226,6 @@ const Withdraw = () => {
           error.message || "An unexpected error occurred. Please try again.",
         timer: 2000,
       });
-      console.log("Error:", error);
     }
   };
 
@@ -261,7 +260,6 @@ const Withdraw = () => {
         setData(search ? searchfilter : filtertype);
       }
     } catch (error) {
-      console.log("error");
     }
   };
 

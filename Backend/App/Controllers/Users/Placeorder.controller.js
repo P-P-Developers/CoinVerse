@@ -383,7 +383,6 @@ class Placeorder {
       await balanceStatementData1[0].save();
 
 
-console.log("order", order.orderid);
 
 
       return res.json({

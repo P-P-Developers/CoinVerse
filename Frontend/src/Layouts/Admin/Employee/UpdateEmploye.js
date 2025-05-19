@@ -114,7 +114,6 @@ const UpdateEmploye = () => {
           });
         }
       } catch (error) {
-        console.log("Error:", error);
         Swal.fire({
           title: "Error!",
           text: "Failed to update employee",

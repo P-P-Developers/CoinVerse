@@ -82,7 +82,6 @@ const Basicsetting = () => {
         });
       }
     } catch (error) {
-      console.log("error", error);
     }
   };
 
@@ -112,7 +111,6 @@ const Basicsetting = () => {
         });
       }
     } catch (error) {
-      console.log("error", error);
     }
   };
 
@@ -129,7 +127,6 @@ const Basicsetting = () => {
       });
       setData(search ? searchfilter : response.data);
     } catch (error) {
-      console.log("error", error);
     }
   };
 

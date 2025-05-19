@@ -291,7 +291,6 @@ const Employee = () => {
       setData(search ? searchfilter : result);
       setLoading(false);
     } catch (error) {
-      console.log("error", error);
     }
   };
 

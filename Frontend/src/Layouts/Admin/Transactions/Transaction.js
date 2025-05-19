@@ -57,7 +57,6 @@ const Transaction = () => {
 
       setData(search ? searchfilter : result);
     } catch (error) {
-      console.log("error", error);
     }
   };
 

@@ -96,7 +96,6 @@ const Deposit = () => {
           error.message || "An unexpected error occurred. Please try again.",
         timer: 2000,
       });
-      console.log("Error:", error);
     }
   };
 
@@ -124,7 +123,6 @@ const Deposit = () => {
         setTotalCount(response?.pagination?.totalPages || 0); // assuming backend returns total count
       }
     } catch (error) {
-      console.log("Error:", error);
     } finally {
       setLoading(false); // Stop loading in both success and error cases
     }
