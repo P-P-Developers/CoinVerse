@@ -92,7 +92,6 @@ const Position = () => {
       const res = await getAdminName();
       setAdminNames(res.data);
     } catch (error) {
-      console.error("Error fetching admin names:", error);
     }
   };
 

@@ -81,7 +81,6 @@ const Research = () => {
       setEditMode(false);
       setRefresh(!refresh);
     } catch (error) {
-      console.error("Form submit error:", error);
       toast.error("Something went wrong.");
     }
   };
@@ -94,7 +93,6 @@ const Research = () => {
         const response = await getResearch(user_id);
         if (response?.data) setResearchData(response.data);
       } catch (error) {
-        console.error("Error fetching research data:", error);
       }
     };
 
@@ -103,7 +101,6 @@ const Research = () => {
         const response = await symbolholdoff(user_id);
         setSymbols(response?.data || []);
       } catch (error) {
-        console.error("Error fetching symbol hold off data:", error);
       }
     };
 

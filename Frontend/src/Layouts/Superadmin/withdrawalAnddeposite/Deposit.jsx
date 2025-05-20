@@ -35,7 +35,6 @@ const Deposit = () => {
 
       setAdminNames(response.data);
     } catch (error) {
-      console.error("Error fetching admin names:", error);
     }
   };
 

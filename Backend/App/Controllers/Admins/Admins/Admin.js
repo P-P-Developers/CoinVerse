@@ -253,7 +253,7 @@ class Admin {
         data: newUser,
       });
     } catch (error) {
-      console.error("Error adding user:", error);
+     
       return res.json({
         status: false,
         message: "Failed to add User",
@@ -328,7 +328,7 @@ class Admin {
         data: updatedUser,
       });
     } catch (error) {
-      console.error("Internal error:", error);
+    
       return res.send({
         status: false,
         message: "Internal server error",
@@ -831,7 +831,7 @@ class Admin {
         return res.json({ status: false, message: "Invalid status provided" });
       }
     } catch (error) {
-      console.error("Error in UpdateStatus:", error);
+     
       return res.json({
         status: false,
         message: "Internal server error",
@@ -938,7 +938,7 @@ class Admin {
         data: formattedData,
       });
     } catch (error) {
-      console.error("Error at brokerageData", error);
+     
       return res.json({
         status: false,
         message: "Internal error",
@@ -970,7 +970,7 @@ class Admin {
         data: result,
       });
     } catch (error) {
-      console.error(error);
+    
       return res.json({ message: "An error occurred while updating margin." });
     }
   }
@@ -1125,7 +1125,7 @@ class Admin {
         },
       });
     } catch (error) {
-      console.error(error);
+   
       return res.json({
         status: false,
         message: "Internal Server Error",
@@ -1176,7 +1176,7 @@ class Admin {
 
       return res.json({ status: true, message: "user found", data: result });
     } catch (error) {
-      console.error(error);
+     
       return res.json({ status: false, message: "internal error", data: [] });
     }
   }
@@ -1345,7 +1345,7 @@ class Admin {
         data: newResearch,
       });
     } catch (error) {
-      console.error("Error in AddResearch:", error);
+  
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1373,7 +1373,7 @@ class Admin {
         data: GetAllResearch,
       });
     } catch (error) {
-      console.error("Error in getResearch:", error);
+
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1472,7 +1472,7 @@ class Admin {
         data: result,
       });
     } catch (error) {
-      console.error("Error in UpdatStatus:", error);
+ 
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1604,7 +1604,7 @@ class Admin {
         data: bankDetail,
       });
     } catch (error) {
-      console.error("Error in deleteBankDetails:", error);
+
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1696,7 +1696,7 @@ class Admin {
       }
       res.json({ success: true, conversation: convo });
     } catch (error) {
-      console.error("Error in conversation:", error);
+   
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1747,7 +1747,7 @@ class Admin {
 
       res.json({ success: true, message: newMsg });
     } catch (error) {
-      console.error("Error in message:", error);
+
       return res.json({
         status: false,
         message: "Internal server error",

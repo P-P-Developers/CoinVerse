@@ -577,7 +577,6 @@ export async function getResearch(userId, token) {
       });
       return res?.data;
     } catch (err) {
-      console.error("Error fetching research:", err);
       return err;
     }
   }
