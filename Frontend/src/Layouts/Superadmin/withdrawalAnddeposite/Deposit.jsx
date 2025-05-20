@@ -27,7 +27,7 @@ const Deposit = () => {
   useEffect(() => {
     getAdminNames();
     getAllfundsstatus();
-  }, [search, activeTab, page, rowsPerPage, selectedAdminName]);
+  }, [ activeTab, page, rowsPerPage, selectedAdminName]);
 
   const getAdminNames = async () => {
     try {
@@ -152,7 +152,7 @@ const Deposit = () => {
         activeTab,
         page,
         limit: rowsPerPage,
-        search,
+        search:"",
       };
       const response = await getFundstatus(data);
 
@@ -165,12 +165,20 @@ const Deposit = () => {
     }
   };
 
+  const filterDataBySearch = (data) => {
+    if (!search) return data;
+    return data.filter((item) =>
+      item.FullName.toLowerCase().includes(search.toLowerCase())
+    );
+  };
 
   const filterDataByStatus = (status) => {
     return data.filter((item) => item.status === status);
   };
 
   const renderTable = (status) => {
+    // Filter by status first, then by search
+    const filteredData = filterDataBySearch(filterDataByStatus(status));
     return (
       <div className="table-responsive">
         <div className="row align-items-center gap-4">
@@ -192,7 +200,7 @@ const Deposit = () => {
           {/* User Select Dropdown */}
           <div className="col-lg-4">
             <label htmlFor="userSelect" className="form-label">
-              Users:
+              Admins:
             </label>
             <select
               id="userSelect"
@@ -213,10 +221,11 @@ const Deposit = () => {
         </div>
 
         <Table
+        className='mt-5'
           columns={columns}
-          data={filterDataByStatus(status)}
+          data={filteredData}
           rowsPerPage={rowsPerPage}
-          totalCount={totalCount}
+          totalCount={filteredData.length}
         />
         <div
           className="d-flex align-items-center"
