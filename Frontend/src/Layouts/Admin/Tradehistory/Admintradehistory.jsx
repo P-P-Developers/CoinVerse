@@ -106,8 +106,20 @@ const Tradehistory = () => {
       Header: "Signal Type",
       accessor: "signal_type",
       Cell: ({ cell }) => {
-        const signal_type = cell.row.signal_type;
-        return signal_type ? signal_type : "-";
+           const signal_type = cell.row.signal_type;
+
+        // return signal_type ? signal_type == "buy_sell" ? "BUY" :"SELL" : "-";
+        return (
+          <>
+            {signal_type === "buy_sell" ? (
+              <span style={{ color: "green" }}> BUY</span>
+            ) : signal_type === "sell_buy" ? (
+              <span style={{ color: "red" }}> SELL</span>
+            ) : (
+              <span style={{ color: "blue" }}> {signal_type}</span>
+            )}
+          </>
+        );
       },
     },
     
@@ -253,8 +265,20 @@ const Tradehistory = () => {
       Header: "Signal Type",
       accessor: "signal_type",
       Cell: ({ cell }) => {
-        const signal_type = cell.row.signal_type;
-        return signal_type ? signal_type : "-";
+      const signal_type = cell.row.signal_type;
+
+        // return signal_type ? signal_type == "buy_sell" ? "BUY" :"SELL" : "-";
+        return (
+          <>
+            {signal_type === "buy_sell" ? (
+              <span style={{ color: "green" }}> BUY</span>
+            ) : signal_type === "sell_buy" ? (
+              <span style={{ color: "red" }}> SELL</span>
+            ) : (
+              <span style={{ color: "blue" }}> {signal_type}</span>
+            )}
+          </>
+        );
       },
     },
     

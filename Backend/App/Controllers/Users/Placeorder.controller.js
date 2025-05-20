@@ -343,7 +343,6 @@ class Placeorder {
       }
 
       if (TradeHistoryData.orderid.length == 2) {
-        console.log("order", TradeHistoryData.orderid);
 
         // Toggle the signal_type
         TradeHistoryData.signal_type =
@@ -363,7 +362,6 @@ class Placeorder {
           _id: { $in: TradeHistoryData.orderid },
         }).sort({ createdAt: 1 });
 
-        console.log("OrderData", OrderData);
 
         let tempOrder = OrderData[0].createdAt;
         OrderData[0].createdAt = OrderData[1].createdAt;
@@ -376,7 +374,6 @@ class Placeorder {
           orderid: { $in: TradeHistoryData.orderid },
         }).sort({ createdAt: 1 });
 
-        console.log("balanceStatementData", balanceStatementData);
 
         let tempBalance = balanceStatementData[0].Amount;  // Change nagitive to positive
         balanceStatementData[0].Amount = -balanceStatementData[1].Amount;
