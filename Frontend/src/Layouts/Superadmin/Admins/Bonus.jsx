@@ -416,6 +416,7 @@ const Brokerage = () => {
                     columns={columns}
                     data={data}
                     rowsPerPage={rowsPerPage}
+                    search={search}
                   />
                 </div>
               </Tab>
@@ -435,6 +436,8 @@ const Brokerage = () => {
                     columns={columnsForBonus}
                     data={bonusData}
                     rowsPerPage={rowsPerPage}
+                    search={search}
+
                   />
                 </div>
               </Tab>
