@@ -381,6 +381,22 @@ class Placeorder {
         let tempBalance = balanceStatementData[0].Amount;  // Change nagitive to positive
         balanceStatementData[0].Amount = -balanceStatementData[1].Amount;
         balanceStatementData[1].Amount = Math.abs(tempBalance);
+
+        // balanceStatementData[0].orderid is array and store the orderid
+        if (Array.isArray(balanceStatementData[0].orderid)) {
+          balanceStatementData[0].orderid.push(OrderData[1]._id);
+        } else {
+          balanceStatementData[0].orderid = [OrderData[1]._id];
+        }
+        if (Array.isArray(balanceStatementData[1].orderid)) {
+          balanceStatementData[1].orderid.push(OrderData[0]._id);
+        } else {
+          balanceStatementData[1].orderid = [OrderData[0]._id];
+        }
+
+        
+
+
         await balanceStatementData[0].save();
         await balanceStatementData[1].save();
 
