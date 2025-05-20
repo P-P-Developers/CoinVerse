@@ -18,17 +18,7 @@ const Tradehistory = () => {
 
   // Define columns for the table
   const columns1 = [
-    {
-      Header: "switch",
-      accessor: "switch",
-      Cell: ({ cell }) => {
-        return (
-          <span onClick={(e) => ChangeTradeType(cell.row)}>
-            <ArrowLeftRight />
-          </span>
-        );
-      },
-    },
+  
     { Header: "Symbol", accessor: "symbol" },
     {
       Header: "Entry Price",
@@ -110,37 +100,26 @@ const Tradehistory = () => {
         }
       },
     },
-    {
-      Header: "Entry qty",
-      accessor: "buy_qty",
-      Cell: ({ cell }) => {
-        const signal_type = cell.row.signal_type;
-        if (signal_type === "buy_sell") {
-          return cell.row.buy_qty ? cell.row.buy_qty : "-";
-        } else {
-          return cell.row.sell_qty ? cell.row.sell_qty : "-"; 
-        }
-      },
-    },
-    {
-      Header: "Exit qty",
-      accessor: "sell_qty",
-      Cell: ({ cell }) => {
-        const signal_type = cell.row.signal_type;
-        if (signal_type === "sell_buy") {
-          return cell.row.buy_qty ? cell.row.buy_qty : "-";
-        } else {
-          return cell.row.sell_qty ? cell.row.sell_qty : "-"; 
-        }
-      },
-    },
+   
 
     {
       Header: "Signal Type",
       accessor: "signal_type",
       Cell: ({ cell }) => {
-        const signal_type = cell.row.signal_type;
-        return signal_type ? signal_type : "-";
+           const signal_type = cell.row.signal_type;
+
+        // return signal_type ? signal_type == "buy_sell" ? "BUY" :"SELL" : "-";
+        return (
+          <>
+            {signal_type === "buy_sell" ? (
+              <span style={{ color: "green" }}> BUY</span>
+            ) : signal_type === "sell_buy" ? (
+              <span style={{ color: "red" }}> SELL</span>
+            ) : (
+              <span style={{ color: "blue" }}> {signal_type}</span>
+            )}
+          </>
+        );
       },
     },
     
@@ -177,6 +156,17 @@ const Tradehistory = () => {
       accessor: "createdAt",
       Cell: ({ cell }) => {
         return fDateTimesec(cell.value);
+      },
+    },
+      {
+      Header: "switch",
+      accessor: "switch",
+      Cell: ({ cell }) => {
+        return (
+          <span onClick={(e) => ChangeTradeType(cell.row)}>
+            <ArrowLeftRight />
+          </span>
+        );
       },
     },
   ];
@@ -275,8 +265,20 @@ const Tradehistory = () => {
       Header: "Signal Type",
       accessor: "signal_type",
       Cell: ({ cell }) => {
-        const signal_type = cell.row.signal_type;
-        return signal_type ? signal_type : "-";
+      const signal_type = cell.row.signal_type;
+
+        // return signal_type ? signal_type == "buy_sell" ? "BUY" :"SELL" : "-";
+        return (
+          <>
+            {signal_type === "buy_sell" ? (
+              <span style={{ color: "green" }}> BUY</span>
+            ) : signal_type === "sell_buy" ? (
+              <span style={{ color: "red" }}> SELL</span>
+            ) : (
+              <span style={{ color: "blue" }}> {signal_type}</span>
+            )}
+          </>
+        );
       },
     },
     

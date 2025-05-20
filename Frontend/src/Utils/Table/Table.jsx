@@ -16,6 +16,7 @@ const Table = ({
   renderCustomCell,
   page,
   isPage = true,
+  search
 }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -45,6 +46,14 @@ const Table = ({
       return Math.max(0, Math.min(next, pageCount - 1));
     });
   };
+
+
+
+  useEffect(() => {
+    setCurrentPage(0);
+
+  }, [search]);
+
 
   if (loading) {
     return (

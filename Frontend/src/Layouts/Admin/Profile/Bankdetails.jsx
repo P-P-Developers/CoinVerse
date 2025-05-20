@@ -25,7 +25,6 @@ const Changedpassword = () => {
           setBankDetails(res.data);
         }
       } catch (err) {
-        console.error("Failed to fetch bank details", err);
       }
     };
     fetchBankDetails();

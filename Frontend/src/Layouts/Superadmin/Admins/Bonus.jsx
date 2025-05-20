@@ -67,7 +67,6 @@ const Brokerage = () => {
         });
       }
     } catch (err) {
-      console.error("Error fetching admin balance with position", err);
     }
   };
 
@@ -170,7 +169,6 @@ const Brokerage = () => {
         fetchAllData(firstAdmin._id); // modified to accept param
       }
     } catch (err) {
-      console.error("Error fetching admin username", err);
     }
   };
 
@@ -181,7 +179,6 @@ const Brokerage = () => {
         setMarginLogs(res.data);
       }
     } catch (err) {
-      console.error("Error fetching margin logs", err);
     }
   };
 
@@ -416,6 +413,7 @@ const Brokerage = () => {
                     columns={columns}
                     data={data}
                     rowsPerPage={rowsPerPage}
+                    search={search}
                   />
                 </div>
               </Tab>
@@ -435,6 +433,8 @@ const Brokerage = () => {
                     columns={columnsForBonus}
                     data={bonusData}
                     rowsPerPage={rowsPerPage}
+                    search={search}
+
                   />
                 </div>
               </Tab>

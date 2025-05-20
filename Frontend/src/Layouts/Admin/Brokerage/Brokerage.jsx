@@ -130,7 +130,6 @@ const Holdoff = () => {
       setProfitBalance(Number(res.ProfitBalanceTotal || 0));
 
     } catch (error) {
-      console.error("Error fetching margin data:", error);
     }
   };
 

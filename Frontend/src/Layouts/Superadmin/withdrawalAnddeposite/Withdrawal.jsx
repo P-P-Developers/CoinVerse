@@ -48,7 +48,6 @@ const Withdraw = () => {
  
       setAdminNames(response.data);
     } catch (error) {
-      console.error("Error fetching admin names:", error);
     }
   };
 
