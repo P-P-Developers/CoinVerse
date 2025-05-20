@@ -336,61 +336,66 @@ class Placeorder {
     try {
       const { id } = req.body;
 
-      const order = await mainorder_model.findOne({ _id: id });
+      const TradeHistoryData = await mainorder_model.findOne({ _id: id });
 
-      if (!order) {
+      if (!TradeHistoryData) {
         return res.json({ status: false, message: "Order not found" });
       }
 
-      // Toggle the signal_type
-      order.signal_type =
-        order.signal_type === "buy_sell" ? "sell_buy" : "buy_sell";
+      if (TradeHistoryData.orderid.length == 2) {
+        console.log("order", TradeHistoryData.orderid);
 
-      const temp = order.buy_price;
-      order.buy_price = order.sell_price;
-      order.sell_price = temp;
+        // Toggle the signal_type
+        TradeHistoryData.signal_type =
+          TradeHistoryData.signal_type === "buy_sell" ? "sell_buy" : "buy_sell";
 
+        const temp = TradeHistoryData.buy_price;
+        TradeHistoryData.buy_price = TradeHistoryData.sell_price;
+        TradeHistoryData.sell_price = temp;
 
-      const temp1 = order.buy_time;
-      order.buy_time = order.sell_time;
-      order.sell_time = temp1;
+        const temp1 = TradeHistoryData.buy_time;
+        TradeHistoryData.buy_time = TradeHistoryData.sell_time;
+        TradeHistoryData.sell_time = temp1;
 
-      await order.save();
+        await TradeHistoryData.save();
 
-      const firstHalf = order.orderid.slice(
-        0,
-        Math.ceil(order.orderid.length / 2)
-      );
-      const secondHalf = order.orderid.slice(
-        Math.ceil(order.orderid.length / 2)
-      );
+        let OrderData = await Order.find({
+          _id: { $in: TradeHistoryData.orderid },
+        }).sort({ createdAt: 1 });
 
-      const balanceStatementData = await BalanceStatement.find({
-        orderid: { $in: firstHalf[0] },
-      });
+        console.log("OrderData", OrderData);
 
-      const balanceStatementData1 = await BalanceStatement.find({
-        orderid: { $in: secondHalf[0] },
-      });
+        let tempOrder = OrderData[0].createdAt;
+        OrderData[0].createdAt = OrderData[1].createdAt;
+        OrderData[1].createdAt = tempOrder;
 
-      var PriceUpdate = balanceStatementData[0].Amount;
-      var PriceUpdate1 = balanceStatementData1[0].Amount;
+        await OrderData[0].save();
+        await OrderData[1].save();
 
-      balanceStatementData[0].Amount = PriceUpdate1;
-      balanceStatementData1[0].Amount = PriceUpdate;
+        const balanceStatementData = await BalanceStatement.find({
+          orderid: { $in: TradeHistoryData.orderid },
+        }).sort({ createdAt: 1 });
 
-      await balanceStatementData[0].save();
-      await balanceStatementData1[0].save();
+        console.log("balanceStatementData", balanceStatementData);
 
+        let tempBalance = balanceStatementData[0].Amount;  // Change nagitive to positive
+        balanceStatementData[0].Amount = -balanceStatementData[1].Amount;
+        balanceStatementData[1].Amount = Math.abs(tempBalance);
+        await balanceStatementData[0].save();
+        await balanceStatementData[1].save();
 
-
-
-      return res.json({
-        status: true,
-        message: "Order type switched",
-        order,
-        balanceStatements: "",
-      });
+        return res.json({
+          status: true,
+          message: "Order type switched",
+          TradeHistoryData,
+          balanceStatements: "",
+        });
+      } else {
+        return res.json({
+          status: false,
+          message: "Order not found",
+        });
+      }
     } catch (error) {
       return res
         .status(500)
@@ -502,11 +507,12 @@ class Placeorder {
         brokerage = 0;
       }
 
-      if(checkadmin.transactionwise){
-        brokerage = (parseFloat(checkadmin.transactionwise) * parseFloat(requiredFund)) / 100 
-        brokerage = parseFloat(brokerage.toFixed(2))
+      if (checkadmin.transactionwise) {
+        brokerage =
+          (parseFloat(checkadmin.transactionwise) * parseFloat(requiredFund)) /
+          100;
+        brokerage = parseFloat(brokerage.toFixed(2));
       }
-
 
       // Validate lot size based on type (buy or sell)
       if (
@@ -538,9 +544,7 @@ class Placeorder {
         Profitloss = tradehistory.sell_price * qtyNum - priceNum * qtyNum;
       }
 
-
       let Totalupdateuserbalance = Profitloss - brokerage;
-
 
       let totaladdbalance =
         parseFloat(tradehistory?.totalamount || 1) * qtyNum +
@@ -695,20 +699,17 @@ class Placeorder {
           (parseFloat(checkadmin.transactionwise) * parseFloat(requiredFund)) /
           100;
 
-         brokerage = brokerage.toFixed(2) 
+        brokerage = brokerage.toFixed(2);
       }
-
 
       const totalamount =
         parseFloat(requiredFund) / parseFloat(checkadmin.limit);
-
 
       let brokerageFund = parseFloat(totalamount) + parseFloat(brokerage);
 
       if (checkadmin.transactionwise == null) {
         brokerageFund = brokerageFund + parseFloat(brokerage);
       }
-
 
       if (parseFloat(checkbalance) < parseFloat(brokerageFund)) {
         const rejectedOrder = new Order({
@@ -833,24 +834,21 @@ const EntryTrade = async (
     const updateuserbalance =
       parseFloat(checkadmin.Balance) - parseFloat(limitclaculation);
 
-      let multypl = 2;
-      if (checkadmin.transactionwise == null) {
-        multypl = 2;
-      } else {
-        multypl = 1;
-      }
+    let multypl = 2;
+    if (checkadmin.transactionwise == null) {
+      multypl = 2;
+    } else {
+      multypl = 1;
+    }
 
     const Totalupdateuserbalance =
       parseFloat(updateuserbalance) - parseFloat(brokerage) * multypl;
-
 
     let ActualFun = limitclaculation;
     if (qty > 1) {
       ActualFun = limitclaculation / qty;
     }
     const seventyPercent = (ActualFun * 70) / 100;
-
-  
 
     tradehistory = new mainorder_model({
       orderid: orderdata._id,
@@ -892,7 +890,9 @@ const EntryTrade = async (
       message: "Balanced used to buy",
       symbol: symbol,
       brokerage:
-        checkadmin.transactionwise == null ? parseFloat(brokerage) + parseFloat(brokerage) : parseFloat(brokerage),
+        checkadmin.transactionwise == null
+          ? parseFloat(brokerage) + parseFloat(brokerage)
+          : parseFloat(brokerage),
     });
     await newstatement.save();
 
@@ -977,13 +977,11 @@ const ExitTrade = async (
     const Totalupdateuserbalance =
       parseFloat(updateuserbalance) - parseFloat(brokerage) * multypl;
 
-
     let ActualFun = limitclaculation;
     if (qty > 1) {
       ActualFun = limitclaculation / qty;
     }
     const seventyPercent = (ActualFun * 70) / 100;
-
 
     tradehistory = new mainorder_model({
       orderid: orderdata._id,
@@ -1025,7 +1023,9 @@ const ExitTrade = async (
       message: "Balanced used to buy",
       symbol: symbol,
       brokerage:
-        checkadmin.transactionwise == null ? parseFloat(brokerage) + parseFloat(brokerage) : parseFloat(brokerage),
+        checkadmin.transactionwise == null
+          ? parseFloat(brokerage) + parseFloat(brokerage)
+          : parseFloat(brokerage),
     });
     await newstatement.save();
 

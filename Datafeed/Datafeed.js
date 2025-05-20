@@ -14,7 +14,6 @@ const { MongoClient } = require("mongodb");
 const API_KEY = "6c89bf7d4e3c6d0e1eff47ad7c8f8b5781ee990b";
 
 
-
 const PORT = process.env.PORT || 5008;
 const databaseURLs =
 "mongodb://testing:MWQ5RP%26k5T567Gy%26Maa@185.209.75.198:27017/"
@@ -204,6 +203,7 @@ const startSockets = () => {
       "eurnzd",
       "audcad",
       "gbpchf",
+      "xauusd"
     ],
     "forex"
   );
@@ -223,6 +223,8 @@ const startSockets = () => {
       "xrpusd",
       "daiusd",
       "dogeusd",
+      "xauusd"
+
     ],
     "crypto"
   );
