@@ -50,7 +50,6 @@ const Brokerage = () => {
 
       setData(search ? searchfilter : CreateDaynamicData);
     } catch (error) {
-      console.log("Error fetching brokerage data:", error);
       Swal.fire("Error", "Failed to fetch data. Please try again.", "error"); // Display error message
     }
   };
@@ -79,7 +78,7 @@ const Brokerage = () => {
                       role="tabpanel"
                       aria-labelledby="Week-tab">
                       <div className="mb-3 ms-4">
-                        Search:{" "}
+                      🔍 Search:{" "}
                         <input
                           className="ml-2 input-search form-control"
                           style={{ width: "20%" }}

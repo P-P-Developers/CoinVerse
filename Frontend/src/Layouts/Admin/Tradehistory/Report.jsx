@@ -27,13 +27,7 @@ const Report = () => {
         return fDateTime(cell.value);
       },
     },
-    {
-      Header: "End Date",
-      accessor: "End_Date",
-      Cell: ({ cell }) => {
-        return fDateTime(cell.value);
-      },
-    },
+   
   ];
 
   // Fetching license history
@@ -81,7 +75,6 @@ const Report = () => {
       setActivedata(search ? searchfilter1 : response?.data?.liveData || []);
       setExpired(search ? searchfilter2 : response?.data?.expiredData || []);
     } catch (error) {
-      console.log("error", error);
     }
   };
 

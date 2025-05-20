@@ -14,6 +14,7 @@ class Auth {
   async login(req, res) {
     try {
       const { UserName, password, fcm_token } = req.body;
+      console.log("Login-",fcm_token)
 
       const EmailCheck = await User_model.findOne({ UserName: UserName });
 
@@ -33,22 +34,7 @@ class Auth {
         });
       }
 
-      if (EmailCheck.Role === "USER" || EmailCheck.Role === "ADMIN") {
-        const currentDate = new Date();
-        const endDate = new Date(EmailCheck.End_Date);
-
-        if (
-          endDate.getDate() === currentDate.getDate() &&
-          endDate.getMonth() === currentDate.getMonth() &&
-          endDate.getFullYear() === currentDate.getFullYear()
-        ) {
-          return res.send({
-            status: false,
-            message: "Account is expired",
-            data: [],
-          });
-        }
-      }
+     
 
       const validPassword = await bcrypt.compare(password, EmailCheck.password);
       if (!validPassword) {
@@ -212,7 +198,7 @@ class Auth {
       }
 
       const response = await axios.post(process.env.base_url + "admin/AddUser", data);
-      console.log("response", response.data);
+    
       if (!response.data.status) {
         return res.json({
           status: false,
@@ -325,7 +311,6 @@ class Auth {
   async getlogsuser(req, res) {
     try {
       const { userid } = req.body;
-      console.log("userid", userid);
 
       const result = await user_logs.aggregate([
         {

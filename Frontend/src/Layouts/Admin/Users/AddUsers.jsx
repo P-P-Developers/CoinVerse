@@ -43,7 +43,7 @@ const AddUsers = () => {
       Balance: "",
       password: clientData.password || "",
       confirmPassword: "",
-      Licence: "",
+
       limit: "",
       selectedOption: "",
       inputValue: "",
@@ -99,15 +99,7 @@ const AddUsers = () => {
         errors.confirmPassword = "Passwords do not match";
       }
 
-      // Licence validation (should be between 0 and 12)
-      if (!values.Licence) {
-        errors.Licence = "Please Enter Licence";
-      }
-      else if (values.Licence > checkLicence) {
-        errors.Licence = "You Don't have Enough Licence"
-      } else if (isNaN(values.Licence) || values.Licence < 1 || values.Licence > 12) {
-        errors.Licence = "Licence should be a number between 1 and 12";
-      }
+   
 
       // Limit validation (should be between 0 and 100 and in percentage format)
       if (!values.limit) {
@@ -146,7 +138,6 @@ const AddUsers = () => {
         parent_id: user_id,
         Role: "USER",
         limit: values.limit,
-        Licence: values.Licence,
         [selectedOption]: values.inputValue,
         referred_by:location?.state?.clientData?.referred_by || null,
         referral_price : location?.state?.clientData?.referral_price || 0,
@@ -157,18 +148,7 @@ const AddUsers = () => {
 
    
 
-      if (parseInt(checkLicence.CountLicence) < parseInt(values.Licence)) {
-        Swal.fire({
-          title: "Insufficient License",
-          text: "You don't have enough licenses to proceed.",
-          icon: "warning",
-          timer: 2500,
-          timerProgressBar: true,
-        });
-
-        setSubmitting(false);
-        return;
-      }
+  
 
       try {
         const response = await AddUser(data);
@@ -299,7 +279,7 @@ const AddUsers = () => {
     {
       name: "Balance",
       label: "Balance",
-      type: "text1",
+      type: "text",
       label_size: 12,
       col_size: 6,
       disable: false,
@@ -339,14 +319,7 @@ const AddUsers = () => {
       col_size: 6,
       disable: false,
     },
-    {
-      name: "Licence",
-      label: "Licence(1-12)",
-      type: "text3",
-      label_size: 12,
-      col_size: 6,
-      disable: false,
-    },
+   
     {
       name: "limit",
       label: "Margin(0-100%)",

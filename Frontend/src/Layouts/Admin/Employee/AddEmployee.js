@@ -119,7 +119,6 @@ const AddEmployee = () => {
           }
         })
         .catch((error) => {
-          console.log("Error:", error);
         });
     },
     onChange: (e) => {

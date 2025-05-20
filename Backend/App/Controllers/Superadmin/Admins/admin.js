@@ -16,7 +16,8 @@ const ProfitmarginData = db.Profitmargin;
 const crypto = require("crypto");
 const Company = require("../../../Models/Company.model");
 const BonusCollectioniModel = require("../../../Models/BonusCollectioni.model");
-
+const { sendPushNotification } = require("../../common/firebase");
+const open_position = db.open_position;
 class Superadmin {
   async AddAdmin(req, res) {
     try {
@@ -30,7 +31,6 @@ class Superadmin {
         password,
         Otp,
         Role,
-        Licence,
         pertrade,
         perlot,
         turn_over_percentage,
@@ -49,9 +49,7 @@ class Superadmin {
         FundGreaterThan1000,
         NetTransactionPercent,
         NetTransaction,
-
       } = req.body;
-
 
       UserName = UserName.toString().toLowerCase();
       Email = Email.toString().toLowerCase();
@@ -91,7 +89,6 @@ class Superadmin {
       // Current date as start date
       const startDate = new Date();
       let endDate = new Date(startDate);
-      // endDate.setMonth(endDate.getMonth() + Number(Licence));
       endDate.setMonth(endDate.getMonth() + Number(12));
 
       if (endDate.getDate() < startDate.getDate()) {
@@ -119,7 +116,7 @@ class Superadmin {
         turn_over_percentage,
         brokerage,
         limit,
-        Licence,
+
         password: hashedPassword,
         Start_Date: startDate,
         End_Date: endDate,
@@ -138,20 +135,9 @@ class Superadmin {
         FundGreaterThan1000,
         NetTransactionPercent,
         NetTransaction,
-
       });
 
       await newUser.save();
-
-      let licence = new totalLicense({
-        user_Id: newUser._id,
-        Licence: Licence,
-        parent_Id: parent_id,
-        Start_Date: startDate,
-        End_Date: endDate,
-      });
-
-      await licence.save();
 
       if (Employee_permission) {
         const {
@@ -188,7 +174,7 @@ class Superadmin {
         data: newUser,
       });
     } catch (error) {
-console.error("Error at AddAdmin", error);
+      console.error("Error at AddAdmin", error);
       return res.json({
         status: false,
         message: "Failed to add user",
@@ -226,27 +212,23 @@ console.error("Error at AddAdmin", error);
       let newBalance = parseFloat(userdata.Balance || 0);
       const parentUser = await User_model.findOne({ _id: parent_Id });
 
-      console.log("userdata", userdata);
-      console.log("parentUser", parentUser);
-
       // Update balance based on the transaction type
       if (Type === "CREDIT") {
-        console.log("parentUser.Range1", userdata.parent_role);
-
         if (newBalance === 0) {
           if (parentUser && userdata.ReferredBy) {
-
-            const ReferredByUser = await User_model.findOne({ _id: userdata.ReferredBy });
+            const ReferredByUser = await User_model.findOne({
+              _id: userdata.ReferredBy,
+            });
             if (ReferredByUser && ReferredByUser.Role === "USER") {
               let refferalAmount = 0;
               if (dollarcount > 50 && dollarcount <= 100) {
-                refferalAmount = (dollarcount * parentUser.Range1) / 100
+                refferalAmount = (dollarcount * parentUser.Range1) / 100;
               } else if (dollarcount > 100 && dollarcount <= 500) {
-                refferalAmount = (dollarcount * parentUser.Range2) / 100
+                refferalAmount = (dollarcount * parentUser.Range2) / 100;
               } else if (dollarcount > 500 && dollarcount <= 1000) {
-                refferalAmount = (dollarcount * parentUser.Range3) / 100
+                refferalAmount = (dollarcount * parentUser.Range3) / 100;
               } else if (dollarcount > 1000) {
-                refferalAmount = (dollarcount * parentUser.Range4) / 100
+                refferalAmount = (dollarcount * parentUser.Range4) / 100;
               }
 
               const newStatement = new BalanceStatement({
@@ -257,11 +239,12 @@ console.error("Error at AddAdmin", error);
                 message: "Referral Balance Added",
               });
               await newStatement.save();
-              console.log("newStatement", newStatement);
-
             }
-          }  
-          if (parentUser.FixedPerClient && (dollarcount >= parentUser.AddClientBonus)) {
+          }
+          if (
+            parentUser.FixedPerClient &&
+            dollarcount >= parentUser.AddClientBonus
+          ) {
             const newBonus = new BonusCollectioniModel({
               admin_id: parentUser._id,
               user_id: userdata._id,
@@ -293,11 +276,10 @@ console.error("Error at AddAdmin", error);
               await newBonus.save();
             }
           }
-
-        }
-        else if (newBalance >= 0) {
+        } else if (newBalance >= 0) {
           if (parentUser && newBalance > 0 && parentUser.EveryTransaction) {
-            let BonusForFixedTransaction = dollarcount * (parentUser.FixedTransactionPercent / 100);
+            let BonusForFixedTransaction =
+              dollarcount * (parentUser.FixedTransactionPercent / 100);
 
             const newBonus = new BonusCollectioniModel({
               admin_id: parentUser._id,
@@ -307,12 +289,14 @@ console.error("Error at AddAdmin", error);
             });
             await newBonus.save();
           }
-
         }
         newBalance += dollarcount;
 
-
-
+        sendPushNotification(
+          userdata.DeviceToken,
+          "Wallet Recharge",
+          `Your wallet has been credited with ${dollarcount} USD`
+        );
       } else if (Type === "DEBIT") {
         newBalance -= dollarcount;
         if (newBalance < 0) {
@@ -355,18 +339,12 @@ console.error("Error at AddAdmin", error);
       });
       await newStatement.save();
 
-
-
-
-
       return res.json({
         status: true,
         message: "Balance is updated",
         data: { newBalance },
       });
-
     } catch (error) {
-
       return res.json({
         status: false,
         message: "Internal error occurred",
@@ -374,7 +352,6 @@ console.error("Error at AddAdmin", error);
       });
     }
   }
-
 
   async getAdminDetail(req, res) {
     try {
@@ -447,13 +424,19 @@ console.error("Error at AddAdmin", error);
         // STATUS UPDATE SUCCESSFULLY
         var status_msg = user_active_status == "0" ? "DeActivate" : "Activate";
 
+        sendPushNotification(
+          get_user[0].DeviceToken,
+          "Account Status",
+          `Your account has been ${status_msg}`
+        );
+
         res.send({
           status: true,
           message: "Update Successfully",
           data: result,
         });
       }
-    } catch (error) { }
+    } catch (error) {}
   }
 
   // admin history
@@ -704,16 +687,11 @@ console.error("Error at AddAdmin", error);
 
   async getPosition_detail(req, res) {
     try {
-        const { adminid } = req.body;
-
-        console.log("adminid", adminid);
-      
-
-
+      const { adminid } = req.body;
 
       let result = await mainorder_model
         .find({
-          adminid :   adminid,
+          adminid: adminid,
           $expr: { $ne: ["$buy_lot", "$sell_lot"] },
         })
         .sort({ createdAt: -1 });
@@ -722,8 +700,6 @@ console.error("Error at AddAdmin", error);
         return res.json({ status: false, message: "Data not found", data: [] });
       }
 
-      // Assuming you have a users collection where you store the admin and user usernames
-      // Fetch the users corresponding to adminid and userid
       const adminIds = result.map((item) => item.adminid);
       const userIds = result.map((item) => item.userid);
 
@@ -753,7 +729,6 @@ console.error("Error at AddAdmin", error);
       result = result.filter(
         (item) => item.adminName !== "Unknown" && item.userName !== "Unknown"
       );
-
 
       return res.json({ status: true, message: "Data found", data: result });
     } catch (error) {
@@ -946,7 +921,7 @@ console.error("Error at AddAdmin", error);
             logo,
             favicon,
             loginImage,
-            loginUrl
+            loginUrl,
           },
         },
         { upsert: true }
@@ -960,8 +935,11 @@ console.error("Error at AddAdmin", error);
         });
       }
 
-      return res.json({ status: true, message: "Company settings updated", data: company });
-
+      return res.json({
+        status: true,
+        message: "Company settings updated",
+        data: company,
+      });
     } catch (error) {
       console.error("Error at createOrUpdateCompany", error);
       return res.json({
@@ -999,8 +977,6 @@ console.error("Error at AddAdmin", error);
       });
     }
   }
-
-
 
   // DELETE: Delete company settings
   async deleteCompany(req, res) {
@@ -1045,13 +1021,184 @@ console.error("Error at AddAdmin", error);
     try {
       const result = await User_model.find({
         Role: "ADMIN",
-      }).select("FullName UserName _id");
+      })
+        .select(
+          "FullName UserName _id ProfitMargin FixedPerClient FundAdd EveryTransaction NetTransactionPercent"
+        )
+        .sort({ createdAt: -1 });
+
       if (!result) {
         return res.json({ status: false, message: "User not found", data: [] });
       }
-      return res.json({ status: true, message: "User found", data: result });
+
+      // Add computed keys
+      const updatedResult = result.map((user) => {
+        const {
+          ProfitMargin,
+          FixedPerClient,
+          FundAdd,
+          EveryTransaction,
+          NetTransactionPercent,
+        } = user;
+
+        const brokerage = ProfitMargin && ProfitMargin !== 0 ? true : false;
+
+        const bonus =
+          !!FixedPerClient ||
+          !!FundAdd ||
+          !!EveryTransaction ||
+          !!NetTransactionPercent;
+
+        return {
+          // ...user._doc, // include existing fields
+          brokerage,
+          bonus,
+          UserName: user.UserName,
+          _id: user._id,
+        };
+      });
+
+      return res.json({
+        status: true,
+        message: "User found",
+        data: updatedResult,
+      });
     } catch (error) {
+      console.error("Error in getAdminName:", error);
       return res.json({ status: false, message: "internal error", data: [] });
+    }
+  }
+
+  async gettradehistory(req, res) {
+    try {
+      const { adminid, fromDate, toDate } = req.body;
+
+      // Build query filter object
+      const query = { adminid };
+
+      // Add date filter if fromDate or toDate exists
+      if (fromDate || toDate) {
+        query.createdAt = {};
+        if (fromDate) {
+          query.createdAt.$gte = new Date(fromDate); // greater or equal fromDate
+        }
+        if (toDate) {
+          // To include the entire toDate day, set time to end of day
+          const toDateObj = new Date(toDate);
+          toDateObj.setHours(23, 59, 59, 999);
+          query.createdAt.$lte = toDateObj; // less or equal to toDate
+        }
+      }
+
+      const result = await mainorder_model.find(query).sort({ createdAt: -1 });
+
+      if (!result || result.length === 0) {
+        return res.json({ status: false, message: "user not found", data: [] });
+      }
+
+      const userIds = result.map((item) => item.userid);
+
+      const users = await User_model.find({ _id: { $in: userIds } });
+
+      const userNameMap = users.reduce((acc, user) => {
+        acc[user._id] = user.UserName;
+        return acc;
+      }, {});
+
+      const mappedResult = result.map((item) => ({
+        ...item.toObject(),
+        userName: userNameMap[item.userid] || "Unknown",
+      }));
+
+      return res.json({
+        status: true,
+        message: "user found",
+        data: mappedResult,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.json({ status: false, message: "internal error", data: [] });
+    }
+  }
+
+  async GetAdminBalanceWithPosition(req, res) {
+    try {
+      const { admin_id } = req.body;
+
+      if (!admin_id) {
+        return res.json({
+          status: false,
+          message: "Admin ID is required",
+          data: [],
+        });
+      }
+
+      // MongoDB Aggregation for sum and count
+      const result = await User_model.aggregate([
+        { $match: { parent_id: admin_id } },
+        {
+          $group: {
+            _id: null,
+            totalBalance: { $sum: "$Balance" },
+            userCount: { $sum: 1 },
+          },
+        },
+      ]);
+
+      const openPositions = await open_position
+        .find({ adminid: admin_id })
+        .toArray();
+
+      let totalPnL = 0;
+
+      const positionsWithPnL = openPositions.map((pos) => {
+        let pnl = 0;
+
+        if (
+          pos.signal_type === "buy_sell" &&
+          pos.buy_price &&
+          pos.buy_qty &&
+          pos.live_price
+        ) {
+          pnl = (pos.live_price - pos.buy_price) * pos.buy_qty;
+        } else if (
+          pos.signal_type === "sell_buy" &&
+          pos.sell_price &&
+          pos.sell_qty &&
+          pos.live_price
+        ) {
+          pnl = (pos.sell_price - pos.live_price) * pos.sell_qty;
+        }
+
+        totalPnL += pnl;
+
+
+        return {
+          ...pos,
+          pnl: pnl, // round to 2 decimals
+        };
+      });
+
+      totalPnL = totalPnL; // round total pnl
+
+      const response = result[0] || {
+        totalBalance: 0,
+        userCount: 0,
+        data: positionsWithPnL,
+      };
+
+      return res.json({
+        status: true,
+        message: "Balance and count fetched successfully",
+        data: { ...response, data: positionsWithPnL,totalPnL:totalPnL },
+      });
+    } catch (error) {
+      console.error("Error in GetAdminBalanceWithPosition:", error);
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        error: error.message,
+      });
     }
   }
 }

@@ -49,7 +49,6 @@ const Header = () => {
         element.classList.remove("menu-toggle");
       }
     } else {
-      console.log("Element with classes .wallet-open.show.active not found");
     }
   }, [isActive]); // This effect will run every time `isActive` changes
 
@@ -60,7 +59,7 @@ const Header = () => {
     if (element) {
       element.classList.toggle("menu-toggle");
     } else {
-      console.log("Element not found");
+     
     }
   };
 
@@ -94,7 +93,7 @@ const Header = () => {
       const response = await LogoutUser({ userid: user_id });
       if (response.status) localStorage.clear();
     } catch (error) {
-      console.log("Logout error", error);
+     
     }
   };
 
@@ -103,7 +102,7 @@ const Header = () => {
       const response = await getbroadcastmessageforuser({ userid: user_id });
       if (response.status) setNotification(response.data);
     } catch (error) {
-      console.log("Error fetching notifications", error);
+    
     }
   };
 

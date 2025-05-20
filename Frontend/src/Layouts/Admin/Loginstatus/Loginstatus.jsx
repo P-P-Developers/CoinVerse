@@ -57,7 +57,6 @@ const Loginstatus = () => {
 
       setData(filteredData || response.data);
     } catch (error) {
-      console.log("Error:", error);
     }
   };
 
@@ -75,13 +74,7 @@ const Loginstatus = () => {
     { Header: "UserName", accessor: "UserName" },
     { Header: "Role", accessor: "role" },
     { Header: "Created By", accessor: "parent_role" },
-    {
-      Header: "Create Date",
-      accessor: "createdAt",
-      Cell: ({ cell }) => {
-        return fDateTimesec(cell.value);
-      },
-    },
+  
     {
       Header: "Login Status",
       accessor: "login_status",
@@ -90,6 +83,13 @@ const Loginstatus = () => {
           {cell.value}
         </span>
       ),
+    },
+      {
+      Header: "Create Date",
+      accessor: "createdAt",
+      Cell: ({ cell }) => {
+        return fDateTimesec(cell.value);
+      },
     },
   ];
 
@@ -110,7 +110,7 @@ const Loginstatus = () => {
                     {/* Vertical Layout for Search and Select User */}
                     <div className="col-md-3">
                       <div className="">
-                        <label className="me-2">Search:</label>
+                        <label className="me-2">🔍 Search:</label>
                         <input
                           className="form-control"
                           style={{ width: "75%" }}

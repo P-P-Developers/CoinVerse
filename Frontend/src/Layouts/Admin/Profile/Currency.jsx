@@ -79,7 +79,6 @@ const Setting = () => {
                 });
             }
         } catch (error) {
-            console.log("error");
         }
     };
 

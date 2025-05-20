@@ -132,52 +132,7 @@ const DynamicForm = ({
                 <div className="row d-flex ">
                   {fields.map((field, index) => (
                     <React.Fragment key={index}>
-                      {field.type === "text1" ? (
-                        <>
-                          <div className={`col-lg-${field.col_size}`}>
-                            <div className="input-block mb-3 flex-column">
-                              <label className={`col-lg-${field.label_size}`}>
-                                {field.label}
-                                <span className="text-danger">*</span>
-                              </label>
-
-                              <input
-                                type="text"
-                                className="form-control"
-                                aria-describedby="basic-addon1"
-                                placeholder={`Enter Strategy Name (Ex: AAA_demo )`}
-                                readOnly={field.disable}
-                                autoComplete="new-email"
-                                id={field.name}
-                                name={field.name}
-                                {...formik.getFieldProps(field.name)}
-                                value={
-                                  formik.values[field.name].startsWith(
-                                    prifix_key + "_"
-                                  )
-                                    ? formik.values[field.name]
-                                    : formik.values[field.name].startsWith(
-                                      prifix_key
-                                    )
-                                      ? prifix_key +
-                                      "_" +
-                                      formik.values[field.name].substr(3)
-                                      : prifix_key +
-                                      "_" +
-                                      formik.values[field.name]
-                                }
-                              />
-
-                              {formik.touched[field.name] &&
-                                formik.errors[field.name] ? (
-                                <div style={{ color: "red" }}>
-                                  {formik.errors[field.name]}
-                                </div>
-                              ) : null}
-                            </div>
-                          </div>
-                        </>
-                      ) : field.type === "heading" ? (
+                      { field.type === "heading" ? (
                         <div className={`col-lg-${field.col_size}`}>
                           <div className="input-block mb-1">
                             <label className={`col-form-label col-lg-${field.label_size} fw-bold fs-5`}>
@@ -204,7 +159,11 @@ const DynamicForm = ({
                                   readOnly={field.disable}
                                   id={field.name}
                                   name={field.name}
-                                  {...formik.getFieldProps(field.name)}
+                                 value={formik.values[field.name]}
+  onChange={(e) => {
+    const lowercaseValue = e.target.value.toLowerCase();
+    formik.setFieldValue(field.name, lowercaseValue);
+  }}
                                 />
                                 {formik.touched[field.name] &&
                                   formik.errors[field.name] ? (
@@ -216,7 +175,7 @@ const DynamicForm = ({
                             </div>
                           </>
                         ) : field.type === "percentage" ? (
-                          <div className={`col-lg-${field.col_size}`}>
+                          <div className={`mt-3 col-lg-${field.col_size}`}>
                             <div className="input-block mb-3 flex-column">
                               <label className={`col-lg-${field.label_size}`}>
                                 {field.label}
@@ -373,7 +332,7 @@ const DynamicForm = ({
                         ) : field.type === "select" ? (
                           <>
                             <div
-                              className={`col-lg-${title === "update_theme" ? 12 : 6
+                              className={`mt-3 col-lg-${title === "update_theme" ? 12 : 6
                                 }`}
                             >
                               <div className="input-block row mb-3">
@@ -853,30 +812,34 @@ const DynamicForm = ({
                                     </label>
                                     <span className="text-danger">*</span>
                                     <input
-                                      type="number"
-                                      name={field.name}
-                                      readOnly={field.disable}
-                                      aria-describedby="basic-addon1"
-                                      className="form-control"
-                                      id={field.name}
-                                      placeholder={`Enter ${field.label}`}
-                                      {...formik.getFieldProps(field.name)}
-                                      min={1}
-                                      onChange={(e) => {
-                                        let value = e.target.value;
-                                        // Remove any leading zeros
-                                        value = value.replace(/^0+/, "");
-                                        // If value is empty, set it to 0
-                                        if (value === "") {
-                                          value = "";
-                                        }
-                                        // Enforce maximum value of 100
-                                        value = Math.min(parseInt(value), 100);
-                                        // Update input value
-                                        e.target.value = value;
-                                        formik.handleChange(e);
-                                      }}
-                                    />
+  type="number"
+  name={field.name}
+  readOnly={field.disable}
+  aria-describedby="basic-addon1"
+  className="form-control"
+  id={field.name}
+  placeholder={`Enter ${field.label}`}
+  value={formik.values[field.name]}
+  min={0}
+  max={100}
+  onChange={(e) => {
+    let value = e.target.value;
+
+    // Convert to number and validate range
+    let numericValue = parseInt(value, 10);
+
+    if (isNaN(numericValue)) {
+      numericValue = "";
+    } else if (numericValue > 100) {
+      numericValue = 100;
+    } else if (numericValue < 0) {
+      numericValue = 0;
+    }
+
+    formik.setFieldValue(field.name, numericValue);
+  }}
+/>
+
 
                                     {formik.touched[field.name] &&
                                       formik.errors[field.name] ? (

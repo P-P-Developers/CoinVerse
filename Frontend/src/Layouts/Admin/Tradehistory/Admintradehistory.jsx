@@ -37,9 +37,9 @@ const Tradehistory = () => {
         const buy_price = cell.row.buy_price;
         const signal_type = cell.row.signal_type;
         if (signal_type === "buy_sell") {
-          return buy_price ? buy_price : "-";
+          return buy_price ? buy_price.toFixed(3) : "-";
         } else {
-          return cell.row.sell_price ? cell.row.sell_price : "-"; 
+          return cell.row.sell_price ? cell.row.sell_price.toFixed(3) : "-"; 
         }
 
       },
@@ -51,9 +51,9 @@ const Tradehistory = () => {
         const buy_price = cell.row.buy_price;
         const signal_type = cell.row.signal_type;
         if (signal_type === "sell_buy") {
-          return buy_price ? buy_price : "-";
+          return buy_price ? buy_price.toFixed(3) : "-";
         } else {
-          return cell.row.sell_price ? cell.row.sell_price : "-"; 
+          return cell.row.sell_price ? cell.row.sell_price.toFixed(3) : "-"; 
         }
 
       },
@@ -76,7 +76,8 @@ const Tradehistory = () => {
 
           return (
             <span style={{ color }}>
-              <DollarSign /> {formattedProfitLoss}
+              {/* <DollarSign /> */}
+               {formattedProfitLoss}
             </span>
           );
         
@@ -227,21 +228,11 @@ const Tradehistory = () => {
 
           return (
             <span style={{ color }}>
-              <DollarSign /> {formattedProfitLoss}
+              {/* <DollarSign /> */}
+               {formattedProfitLoss}
             </span>
           );
-          // }else{
-          //   const profitLoss = (buyPrice - sellPrice) * buyQty;
-          //   const formattedProfitLoss = profitLoss.toFixed(4);
-
-          //   const color = profitLoss > 0 ? "green" : "red";
-
-          //   return (
-          //     <span style={{ color }}>
-          //       <DollarSign /> {formattedProfitLoss}
-          //     </span>
-          //   );
-          // }
+         
         }
 
         return "-";
@@ -333,7 +324,6 @@ const Tradehistory = () => {
       });
       setData(search ? searchfilter : response.data);
     } catch (error) {
-      console.log("error", error);
     }
   };
 
@@ -347,7 +337,6 @@ const Tradehistory = () => {
         setUserName(response.data);
       }
     } catch (error) {
-      console.log("error", error);
     }
   };
 
@@ -359,7 +348,6 @@ const Tradehistory = () => {
     getuserallhistory();
   }, [Userid, search]);
 
-  // Calculate total profit/loss
   const calculateTotalProfitLoss = () => {
     return data
       .reduce((total, row) => {
@@ -409,7 +397,7 @@ const Tradehistory = () => {
                     to="/admin/users"
                     className="float-end mb-4 btn btn-primary"
                   >
-                    Back
+                          <i className="fa-solid fa-arrow-left"></i> Back
                   </Link>
                 </div>
                 <div className="card-body p-0">
@@ -437,7 +425,7 @@ const Tradehistory = () => {
                               marginRight: "0.5rem",
                             }}
                           >
-                            Search:
+                           🔍 Search:
                           </label>
                           <input
                             type="text"
@@ -465,7 +453,7 @@ const Tradehistory = () => {
                               marginRight: "0.5rem",
                             }}
                           >
-                            Users:
+                           👤 Users:
                           </label>
                           <select
                             className="form-select"
@@ -493,7 +481,7 @@ const Tradehistory = () => {
                       
                       </div>
 
-                      <h4 className="ms-3">
+                      <h3 className="ms-3">
                         Total Profit/Loss:{" "}
                         <span
                           style={{
@@ -502,10 +490,10 @@ const Tradehistory = () => {
                           }}
                         >
                           {" "}
-                          <DollarSign />
+                          {/* <DollarSign /> */}
                           {totalProfitLoss}
                         </span>
-                      </h4>
+                      </h3>
                       {/* <Table columns={columns} data={data && data} /> */}
                       <Table columns={columns1} data={data && data} />
 

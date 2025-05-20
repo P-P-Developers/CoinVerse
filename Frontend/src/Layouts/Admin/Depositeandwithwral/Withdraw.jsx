@@ -212,7 +212,6 @@ const Withdraw = () => {
           error.message || "An unexpected error occurred. Please try again.",
         timer: 2000,
       });
-      console.log("Error:", error);
     }
   };
 
@@ -246,7 +245,6 @@ const Withdraw = () => {
         setLoading(false);
       }
     } catch (error) {
-      console.log("error");
       setLoading(false);
     }
   };

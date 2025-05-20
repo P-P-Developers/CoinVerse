@@ -1,19 +1,24 @@
-
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
 import Swal from "sweetalert2";
 import { getAllBrokerageData } from "../../../Services/Superadmin/Superadmin";
 
 const Brokerage = () => {
-
-
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
 
   const columns = [
     { Header: "UserName", accessor: "UserName" },
     { Header: "Symbol", accessor: "symbol" },
-    { Header: "Amount", accessor: "Amount" },
+    // { Header: "Amount", accessor: "Amount" },
+
+    {
+      Header: "Amount",
+      accessor: "Amount",
+      Cell: ({ cell }) => {
+        return cell.value ? cell.value.toFixed(4) : "-";
+      },
+    },
     { Header: "Brokerage", accessor: "brokerage" },
   ];
 
@@ -21,29 +26,28 @@ const Brokerage = () => {
     try {
       const apiResponse = await getAllBrokerageData();
 
-
       const CreateDaynamicData =
         apiResponse.data?.map((data) => ({
           UserName: data.UserName,
           ...data.balance_data,
-        })) || []; 
+        })) || [];
 
       const searchfilter = CreateDaynamicData.map((item) => ({
         UserName: item.UserName,
         symbol: item.symbol,
-        exch_seg: item.symbol_id || "N/A", 
+        exch_seg: item.symbol_id || "N/A",
         lotsize: item.parent_Id || "N/A",
         Amount: item.Amount,
         brokerage: item.brokerage,
         ActiveStatus: item.Amount > 0 ? 1 : 0,
-      })).filter((item) =>
-        search === "" ||
-        item.symbol?.toLowerCase().includes(search.toLowerCase())
+      })).filter(
+        (item) =>
+          search === "" ||
+          item.symbol?.toLowerCase().includes(search.toLowerCase())
       );
 
       setData(search ? searchfilter : CreateDaynamicData);
     } catch (error) {
-      console.log("Error fetching brokerage data:", error);
       Swal.fire("Error", "Failed to fetch data. Please try again.", "error"); // Display error message
     }
   };
@@ -73,7 +77,7 @@ const Brokerage = () => {
                       aria-labelledby="Week-tab"
                     >
                       <div className="mb-3 ms-4">
-                        Search:{" "}
+                        🔍 Search:{" "}
                         <input
                           className="ml-2 input-search form-control"
                           style={{ width: "20%" }}
@@ -90,7 +94,11 @@ const Brokerage = () => {
                           <span className="fw-bold">
                             Total Brokerage:{" "}
                             {data
-                              .reduce((acc, item) => acc + Number(item.brokerage || 0), 0)
+                              .reduce(
+                                (acc, item) =>
+                                  acc + Number(item.brokerage || 0),
+                                0
+                              )
                               .toFixed(5)}
                           </span>
                         </div>
@@ -98,26 +106,34 @@ const Brokerage = () => {
                         {/* Remaining */}
                         <div>
                           <span className="fw-bold">
-                            Remaining: <input className="form-control d-inline w-auto ms-2" disabled />
+                            Remaining:{" "}
+                            <input
+                              className="form-control d-inline w-auto ms-2"
+                              disabled
+                            />
                           </span>
                         </div>
 
                         {/* Completed */}
                         <div>
                           <span className="fw-bold">
-                            Completed: <input className="form-control d-inline w-auto ms-2" disabled />
+                            Completed:{" "}
+                            <input
+                              className="form-control d-inline w-auto ms-2"
+                              disabled
+                            />
                           </span>
                         </div>
 
                         {/* Clear All Button */}
                         <div>
-                          <button className="btn btn-primary me-3">Clear All</button>
+                          <button className="btn btn-primary me-3">
+                            Clear All
+                          </button>
                         </div>
                       </div>
 
-
                       {data && <Table columns={columns} data={data} />}
-
                     </div>
                   </div>
                 </div>

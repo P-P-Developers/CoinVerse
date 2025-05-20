@@ -98,7 +98,7 @@ const Users = () => {
               }}
             />
 
-            {parseFloat(cell.value).toFixed(2)}
+            {parseFloat(cell.value).toFixed(4)}
           </span>
       
         </div>
@@ -320,7 +320,6 @@ const Users = () => {
         setGetaccess(response.data[0]);
       }
     } catch (error) {
-      console.log("Error fetching permissions:", error);
     }
   };
 

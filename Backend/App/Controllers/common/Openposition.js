@@ -1,6 +1,9 @@
 const db = require("../../Models");
 const axios = require("axios");
 const open_position = db.open_position;
+const user_modal = db.user;
+
+const { sendPushNotification } = require("../common/firebase");
 
 class OpenPositions {
   constructor() {
@@ -22,19 +25,28 @@ class OpenPositions {
   async fetchPositions() {
     try {
       const openPositions = await open_position
-      .find({
-        live_price: { $ne: null },
-        $or: [
-          { checkSlPercent: true },
-          { checkSlPercent_sl: true },
-          { checkSlPercent_target: true },
-        ],
-      })
-      .toArray();
+        .find({
+          live_price: { $ne: null },
+          $or: [
+            { checkSlPercent: true },
+            { checkSlPercent_sl: true },
+            { checkSlPercent_target: true },
+          ],
+        })
+        .toArray();
 
       if (openPositions && openPositions.length > 0) {
         for (const position of openPositions) {
           let commonData;
+
+          let GetDeviceToken = await user_modal.findOne({
+            _id: position?.userid,
+          });
+          let  Exittype = position.checkSlPercent
+                ? "FUND_WISE"
+                : position.checkSlPercent_sl
+                ? "SL"
+                : "TARGET"
 
           if (position?.signal_type === "buy_sell") {
             commonData = {
@@ -49,7 +61,7 @@ class OpenPositions {
                 ((position?.buy_qty || 0) - (position?.sell_qty || 0)),
               lotsize: position?.lotsize,
               type: "sell",
-              Exittype:position.checkSlPercent ? "FUND_WISE" : position.checkSlPercent_sl ? "SL" : "TARGET",
+              Exittype:Exittype,
             };
           } else if (position?.signal_type == "sell_buy") {
             commonData = {
@@ -64,11 +76,9 @@ class OpenPositions {
                 ((position?.sell_qty || 0) - (position?.buy_qty || 0)),
               lotsize: position?.lotsize,
               type: "buy",
-              Exittype:position.checkSlPercent ? "FUND_WISE" : position.checkSlPercent_sl ? "SL" : "TARGET"
-
+              Exittype: Exittype
             };
           }
-
 
           const config = {
             method: "post",
@@ -80,8 +90,16 @@ class OpenPositions {
             },
             data: commonData,
           };
-       
+
           const response = await axios(config);
+
+          if (GetDeviceToken?.DeviceToken) {
+            sendPushNotification(
+              GetDeviceToken?.DeviceToken,
+              "Open Position",
+              `Your ${position?.symbol} position is ${response.data.message} at ${position?.live_price} with ${Exittype}`,
+            );
+          }
         }
       } else {
       }

@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
 import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
-import { Clienthistory } from "../../../Services/Admin/Addmin";
-import { DollarSign } from "lucide-react";
+import { gettradehistory } from "../../../Services/Admin/Addmin";
 import { Link } from "react-router-dom";
 import { ArrowLeftRight } from "lucide-react";
 import {
@@ -19,9 +18,10 @@ const SuperAdminTradeHistory = () => {
   const [Userid, setUserId] = useState();
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [Search, setSearch] = useState("");
-
   const [userNameList, setUserNameList] = useState([]);
   const [userNamed, setUserNamed] = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
 
   useEffect(() => {
     GetUserName();
@@ -29,12 +29,16 @@ const SuperAdminTradeHistory = () => {
 
   useEffect(() => {
     getuserallhistory();
-  }, [Userid, Search, userNamed]);
+  }, [Userid, Search, userNamed, toDate, fromDate]);
 
   const getuserallhistory = async () => {
     try {
-      const data = { adminid: Userid };
-      const response = await Clienthistory(data);
+      if (Userid === undefined || Userid === null) {
+        return;
+      }
+
+      const data = { adminid: Userid._id, toDate: toDate, fromDate: fromDate };
+      const response = await gettradehistory(data);
       let UserNameListData = response.data.map((item) => {
         return item.userName;
       });
@@ -60,24 +64,11 @@ const SuperAdminTradeHistory = () => {
 
       setData(filteredData);
     } catch (error) {
-      console.log("error", error);
     }
   };
 
   // Define columns for the table
   const columns = [
-    {
-      Header: "switch",
-      accessor: "switch",
-      Cell: ({ cell }) => {
-        return (
-          <span onClick={(e) => ChangeTradeType(cell.row)}>
-            <ArrowLeftRight />
-          </span>
-        );
-      },
-    },
-
     { Header: "UserName", accessor: "userName" },
 
     { Header: "Symbol", accessor: "symbol" },
@@ -88,9 +79,9 @@ const SuperAdminTradeHistory = () => {
         const buy_price = cell.row.buy_price;
         const signal_type = cell.row.signal_type;
         if (signal_type === "buy_sell") {
-          return buy_price ? buy_price : "-";
+          return buy_price ? buy_price.toFixed(4) : "-";
         } else {
-          return cell.row.sell_price ? cell.row.sell_price : "-";
+          return cell.row.sell_price ? cell.row.sell_price.toFixed(4) : "-";
         }
       },
     },
@@ -101,9 +92,9 @@ const SuperAdminTradeHistory = () => {
         const buy_price = cell.row.buy_price;
         const signal_type = cell.row.signal_type;
         if (signal_type === "sell_buy") {
-          return buy_price ? buy_price : "-";
+          return buy_price ? buy_price.toFixed(4) : "-";
         } else {
-          return cell.row.sell_price ? cell.row.sell_price : "-";
+          return cell.row.sell_price ? cell.row.sell_price.toFixed(4) : "-";
         }
       },
     },
@@ -125,7 +116,8 @@ const SuperAdminTradeHistory = () => {
 
           return (
             <span style={{ color }}>
-              <DollarSign /> {formattedProfitLoss}
+              {/* <DollarSign /> */}
+              {formattedProfitLoss}
             </span>
           );
         }
@@ -158,27 +150,23 @@ const SuperAdminTradeHistory = () => {
       },
     },
     {
-      Header: "Entry qty",
-      accessor: "buy_qty",
+      Header: "Signal Type",
+      accessor: "signal_type",
       Cell: ({ cell }) => {
         const signal_type = cell.row.signal_type;
-        if (signal_type === "buy_sell") {
-          return cell.row.buy_qty ? cell.row.buy_qty : "-";
-        } else {
-          return cell.row.sell_qty ? cell.row.sell_qty : "-";
-        }
-      },
-    },
-    {
-      Header: "Exit qty",
-      accessor: "sell_qty",
-      Cell: ({ cell }) => {
-        const signal_type = cell.row.signal_type;
-        if (signal_type === "sell_buy") {
-          return cell.row.buy_qty ? cell.row.buy_qty : "-";
-        } else {
-          return cell.row.sell_qty ? cell.row.sell_qty : "-";
-        }
+
+        // return signal_type ? signal_type == "buy_sell" ? "BUY" :"SELL" : "-";
+        return (
+          <>
+            {signal_type === "buy_sell" ? (
+              <span style={{ color: "green" }}> BUY</span>
+            ) : signal_type === "sell_buy" ? (
+              <span style={{ color: "red" }}> SELL</span>
+            ) : (
+              <span style={{ color: "blue" }}> {signal_type}</span>
+            )}
+          </>
+        );
       },
     },
     {
@@ -208,10 +196,14 @@ const SuperAdminTradeHistory = () => {
       },
     },
     {
-      Header: "Create Date",
-      accessor: "createdAt",
+      Header: "switch",
+      accessor: "switch",
       Cell: ({ cell }) => {
-        return fDateTimesec(cell.value);
+        return (
+          <span onClick={(e) => ChangeTradeType(cell.row)}>
+            <ArrowLeftRight />
+          </span>
+        );
       },
     },
   ];
@@ -224,9 +216,9 @@ const SuperAdminTradeHistory = () => {
       const response = await getAdminName();
       if (response.status) {
         setUserName(response.data);
+        setUserId(response.data[0]);
       }
     } catch (error) {
-      console.log("error", error);
     }
   };
 
@@ -263,7 +255,6 @@ const SuperAdminTradeHistory = () => {
       alert("Error");
     }
   };
-  console.log("userNameList", userNameList);
 
   return (
     <>
@@ -272,15 +263,10 @@ const SuperAdminTradeHistory = () => {
           <div className="row">
             <div className="col-lg-12">
               <div className="card transaction-table">
-                <div className="card-header border-0 flex-wrap pb-0">
-                  <div className="mb-4">
-                    <h4 className="card-title">Trade History </h4>
-                  </div>
-                  <Link
-                    to="/admin/users"
-                    className="float-end mb-4 btn btn-primary"
-                  >
-                    Back
+                <div className="card-header border-0 flex-wrap pb-0 d-flex justify-content-between align-items-center">
+                  <h4 className="card-title mb-0">📊 Trade History</h4>
+                  <Link to="/admin/users" className="btn btn-primary">
+                    <i className="fa-solid fa-arrow-left me-2"></i>Back
                   </Link>
                 </div>
                 <div className="card-body p-0">
@@ -291,64 +277,18 @@ const SuperAdminTradeHistory = () => {
                       role="tabpanel"
                       aria-labelledby="Week-tab"
                     >
-                      <div
-                        style={{
-                          display: "flex",
-                          gap: "20px",
-                          alignItems: "center",
-                          padding: "1rem",
-                        }}
-                      >
-                        {/* Search Input */}
-                        <div style={{ flex: 1 }}>
-                          <label
-                            style={{
-                              fontWeight: "bold",
-                              fontSize: "16px",
-                              marginRight: "0.5rem",
-                            }}
-                          >
-                            Search:
-                          </label>
-                          <input
-                            type="text"
-                            placeholder="Search..."
-                            className="form-control"
-                            onChange={(e) => setSearch(e.target.value)}
-                            value={Search}
-                            style={{
-                              width: "100%",
-                              padding: "10px",
-                              borderRadius: "5px",
-                              border: "1px solid #ccc",
-                              backgroundColor: "#f8f9fa",
-                            }}
-                          />
-                        </div>
-
-                        {/* Admin Dropdown */}
-                        <div style={{ flex: 1 }}>
-                          <label
-                            style={{
-                              fontWeight: "bold",
-                              fontSize: "16px",
-                              marginRight: "0.5rem",
-                            }}
-                          >
-                            Admin:
-                          </label>
+                      <div className="row gx-3 gy-2 p-3">
+                        <div className="col-md-4">
+                          <label className="fw-bold mb-1">🛡️ Admin</label>
                           <select
                             className="form-select"
-                            style={{
-                              width: "100%",
-                              padding: "10px",
-                              borderRadius: "5px",
-                              border: "1px solid #ccc",
-                              backgroundColor: "#f8f9fa",
-                              color: "#333",
+                            onChange={(e) => {
+                              const selectedUser = userName.find(
+                                (u) => u._id === e.target.value
+                              );
+                              setUserId(selectedUser);
                             }}
-                            onChange={(e) => setUserId(e.target.value)}
-                            defaultValue=""
+                            value={Userid?._id || ""}
                           >
                             <option value="">Select a user</option>
                             {userName &&
@@ -360,94 +300,101 @@ const SuperAdminTradeHistory = () => {
                           </select>
                         </div>
 
-                        {/* User Dropdown */}
-                        <div style={{ flex: 1 }}>
-                          <label
-                            style={{
-                              fontWeight: "bold",
-                              fontSize: "16px",
-                              marginRight: "0.5rem",
-                            }}
-                          >
-                            User:
-                          </label>
+                        <div className="col-md-4">
+                          <label className="fw-bold mb-1">👤 User</label>
                           <select
                             className="form-select"
-                            style={{
-                              width: "100%",
-                              padding: "10px",
-                              borderRadius: "5px",
-                              border: "1px solid #ccc",
-                              backgroundColor: "#f8f9fa",
-                              color: "#333",
-                            }}
                             onChange={(e) => setUserNamed(e.target.value)}
                             value={userNamed}
                           >
                             <option value="">Select a user</option>
                             {userNameList &&
-                              userNameList?.map((username, index) => (
+                              userNameList.map((username, index) => (
                                 <option key={index} value={username}>
                                   {username}
                                 </option>
                               ))}
                           </select>
                         </div>
+
+                        <div className="col-md-2">
+                          <label className="fw-bold mb-1">📅 From Date</label>
+                          <input
+                            type="date"
+                            className="form-control"
+                            onChange={(e) => setFromDate(e.target.value)}
+                            value={fromDate}
+                          />
+                        </div>
+
+                        <div className="col-md-2">
+                          <label className="fw-bold mb-1">📅 To Date</label>
+                          <input
+                            type="date"
+                            className="form-control"
+                            onChange={(e) => setToDate(e.target.value)}
+                            value={toDate}
+                          />
+                        </div>
+
+                        <div className="col-md-4">
+                          <label className="fw-bold mb-1">🔍 Search</label>
+                          <input
+                            type="text"
+                            placeholder="Search..."
+                            className="form-control"
+                            onChange={(e) => setSearch(e.target.value)}
+                            value={Search}
+                          />
+                        </div>
+                        <div className="col-md-3 d-flex align-items-end">
+                          <button
+                            className="btn btn-outline-secondary w-100"
+                            onClick={getuserallhistory}
+                          >
+                            <i className="fa-solid fa-arrows-rotate"></i>{" "}
+                            Refresh
+                          </button>
+                        </div>
                       </div>
 
-                      <h3 className="ms-3">
-                        Total Profit/Loss:{" "}
-                        <span
-                          style={{
-                            color: totalProfitLoss > 0 ? "green" : "red",
-                          }}
-                        >
-                          {" "}
-                          <DollarSign />
-                          {totalProfitLoss}
-                        </span>
-                      </h3>
-                      {Userid ? (
-                        <div>
-                          {" "}
-                          <Table
-                            columns={columns}
-                            data={data && data}
-                            rowsPerPage={rowsPerPage}
-                          />
-                          <div
-                            className="d-flex align-items-center"
+                      <div className="px-3 mb-3">
+                        <h3>
+                          💰 Total Profit/Loss:{" "}
+                          <span
                             style={{
-                              marginBottom: "20px",
-                              marginLeft: "20px",
-                              marginTop: "-48px",
+                              color: totalProfitLoss > 0 ? "green" : "red",
                             }}
                           >
-                            Rows per page:{" "}
-                            <select
-                              className="form-select ml-2"
-                              value={rowsPerPage}
-                              onChange={(e) =>
-                                setRowsPerPage(Number(e.target.value))
-                              }
-                              style={{ width: "auto", marginLeft: "10px" }}
-                            >
-                              <option value={5}>5</option>
-                              <option value={10}>10</option>
-                              <option value={20}>20</option>
-                              <option value={50}>50</option>
-                              <option value={100}>100</option>
-                            </select>
-                          </div>
+                            {totalProfitLoss}
+                          </span>
+                        </h3>
+                      </div>
+
+                      <div className="px-3">
+                        <Table
+                          columns={columns}
+                          data={data}
+                          rowsPerPage={rowsPerPage}
+                        />
+
+                        <div className="d-flex align-items-center mt-3">
+                          <span className="me-2">Rows per page:</span>
+                          <select
+                            className="form-select w-auto"
+                            value={rowsPerPage}
+                            onChange={(e) =>
+                              setRowsPerPage(Number(e.target.value))
+                            }
+                          >
+                            <option value={5}>5</option>
+                            <option value={10}>10</option>
+                            <option value={20}>20</option>
+                            <option value={50}>50</option>
+                            <option value={100}>100</option>
+                          </select>
                         </div>
-                      ) : (
-                        <div
-                          className="alert alert-warning text-center text-black"
-                          role="alert"
-                        >
-                          Please select an admin first.
-                        </div>
-                      )}
+                      </div>
                     </div>
                   </div>
                 </div>

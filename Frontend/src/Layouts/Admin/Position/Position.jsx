@@ -49,6 +49,13 @@ const Position = () => {
         return <span>{availablePosition}</span>;
       },
     },
+      {
+      Header: "Create Date",
+      accessor: "createdAt",
+      Cell: ({ cell }) => {
+        return fDateTimesec(cell.value);
+      },
+    },
   ];
 
   // Getting the data and storing it in both originalData and filtered data
@@ -82,7 +89,6 @@ const Position = () => {
 
       setData(finalFilter || filterdata);
     } catch (error) {
-      console.log("error", error);
     }
   };
 
@@ -114,7 +120,7 @@ const Position = () => {
                         <div className="d-flex align-items-center mb-3">
                           {/* Search Input */}
                           <div className="me-3">
-                            <label className="form-label">Search:</label>
+                            <label className="form-label">🔍 Search:</label>
                             <input
                               className="form-control"
                               type="text"

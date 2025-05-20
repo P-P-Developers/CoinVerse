@@ -23,8 +23,11 @@ const AdminUser = () => {
     { Header: "FullName", accessor: "FullName" },
     { Header: "UserName", accessor: "UserName" },
     { Header: "Password", accessor: "Otp" },
-
-    { Header: "Balance", accessor: "Balance" },
+    {
+      Header: "Balance",
+      accessor: "Balance",
+      Cell: ({ cell }) => Number(cell.value).toFixed(4)
+    },
     {
       Header: "ActiveStatus",
       accessor: "ActiveStatus",
@@ -52,13 +55,6 @@ const AdminUser = () => {
     },
     {
       Header: "Start_Date", accessor: "Start_Date",
-      Cell: ({ cell }) => {
-        return fDateTime(cell.value)
-
-      },
-    },
-    {
-      Header: "End_Date", accessor: "End_Date",
       Cell: ({ cell }) => {
         return fDateTime(cell.value)
 
@@ -104,7 +100,7 @@ const AdminUser = () => {
                     to="/superadmin/admin"
                     className="float-end mb-4 btn btn-primary"
                   >
-                    Back
+                    <i className="fa-solid fa-arrow-left"></i> Back
                   </Link>
                 </div>
                 <div className="card-body p-0">

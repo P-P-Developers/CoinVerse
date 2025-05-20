@@ -15,8 +15,7 @@ import UpdateAdmin from "../Layouts/Superadmin/Admins/UpdateAdmin";
 import AdminUser from "../Layouts/Superadmin/Admins/AdminUser";
 import Adminemployee from "../Layouts/Superadmin/Admins/Adminemployee";
 
-import Brokerage from "../Layouts/Superadmin/BROKERAGE/Brokerage";
-import AdminBrokerage from "../Layouts/Superadmin/Admins/Brokerage";
+import AdminBonus from "../Layouts/Superadmin/Admins/Bonus";
 import System from "../Layouts/Superadmin/Admins/System";
 import SuperAdminTradeHistory from "../Layouts/Superadmin/Admins/SuperAdminTradeHistory";
 import Bankdetails from "../Layouts/Admin/Profile/Bankdetails";
@@ -41,15 +40,13 @@ const SuperadminRoutes = () => {
           <Route path="/holdoff" element={<Holdoff />} />
           <Route path="/admin/adminuser/:id" element={<AdminUser />} />
           <Route path="/admin/adminemployee/:id" element={<Adminemployee />} />
-          <Route path="/brokerage" element={<AdminBrokerage />} />
-          <Route path="/brokerage/:id" element={<AdminBrokerage />} />
+          <Route path="/bonus" element={<AdminBonus />} />
           <Route path="/system" element={<System />} />
           <Route path="/tradehistory" element={<SuperAdminTradeHistory />} />
           <Route path="/bankdetails" element={<Bankdetails />} />
 
           <Route path="/withdrawal" element={<Withdrawal />} />
           <Route path="/deposit" element={<Deposite />} />
-
         </Routes>
       </div>
       <Footer />

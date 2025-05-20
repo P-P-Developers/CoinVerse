@@ -90,7 +90,6 @@ const Signup = () => {
           SweetAlert.fire("Error!", "Failed to delete the user.", "error");
         }
       } catch (error) {
-        console.log("error", error);
       }
     } else {
       SweetAlert.fire("Cancelled", "Your imaginary file is safe :)", "error");
@@ -116,7 +115,6 @@ const Signup = () => {
       });
       setData(search ? searchfilter : response.data);
     } catch (error) {
-      console.log("error", error);
     }
   };
 
@@ -146,7 +144,7 @@ const Signup = () => {
                     >
                       <div className="d-flex align-items-center mb-3 ms-4">
                         <div className="me-4">
-                          Search:{" "}
+                         🔍 Search:{" "}
                           <input
                             className="ml-2 input-search form-control"
                             // style={{ width: "0%" }}

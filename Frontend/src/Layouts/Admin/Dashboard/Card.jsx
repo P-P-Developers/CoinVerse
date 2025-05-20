@@ -84,7 +84,6 @@ const LivePriceCard = () => {
       };
 
       ws.onerror = (error) => {
-        console.log("WebSocket Error:", error);
       };
 
       ws.onclose = () => {

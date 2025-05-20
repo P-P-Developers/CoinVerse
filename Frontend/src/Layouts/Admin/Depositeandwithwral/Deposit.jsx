@@ -52,27 +52,7 @@ const Deposit = () => {
     },
   ];
 
-  // if (activeTab === "Pending") {
-  //   columns.push({
-  //     Header: "Action",
-  //     accessor: "Action",
-  //     Cell: ({ cell }) => (
-  //       <div>
-  //         <select
-  //           className="form-select"
-  //           onChange={(event) =>
-  //             handleSelectChange(cell.row.id, cell.row, event)
-  //           }
-  //           defaultValue={selectedValues[cell.row.id] || "0"}
-  //         >
-  //           <option value="0">Pending</option>
-  //           <option value="2">Reject</option>
-  //           <option value="1">Complete</option>
-  //         </select>
-  //       </div>
-  //     ),
-  //   });
-  // }
+
 
   const handleSelectChange = async (rowId, row, event) => {
     const newSelectedValues = {
@@ -116,7 +96,6 @@ const Deposit = () => {
           error.message || "An unexpected error occurred. Please try again.",
         timer: 2000,
       });
-      console.log("Error:", error);
     }
   };
 
@@ -144,7 +123,6 @@ const Deposit = () => {
         setTotalCount(response?.pagination?.totalPages || 0); // assuming backend returns total count
       }
     } catch (error) {
-      console.log("Error:", error);
     } finally {
       setLoading(false); // Stop loading in both success and error cases
     }

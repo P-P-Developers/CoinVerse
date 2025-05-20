@@ -5,7 +5,7 @@ import {
   getavailableposition,
   getAdminUserName,
 } from "../../../Services/Superadmin/Superadmin";
-import { fDateTime } from "../../../Utils/Date_format/datefromat";
+import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
 
 const Position = () => {
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
@@ -49,6 +49,13 @@ const Position = () => {
         return <span>{availablePosition}</span>;
       },
     },
+      {
+          Header: "Create Date",
+          accessor: "createdAt",
+          Cell: ({ cell }) => {
+            return fDateTimesec(cell.value);
+          },
+        },
   ];
 
   // getting data
@@ -170,7 +177,6 @@ const Position = () => {
                         </div>
                       </div>
 
-                      {data && data.length > 0 ? (
                         <div>
                           {" "}
                           <Table
@@ -203,11 +209,7 @@ const Position = () => {
                             </select>
                           </div>
                         </div>
-                      ) : (
-                        <div>No data available</div>
-                      )}
-
-                      {/* <Table columns={columns} data={data && data} /> */}
+                     
                     </div>
                   </div>
                 </div>

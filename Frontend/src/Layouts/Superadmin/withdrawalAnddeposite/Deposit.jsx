@@ -27,12 +27,12 @@ const Deposit = () => {
   useEffect(() => {
     getAdminNames();
     getAllfundsstatus();
-  }, [search, activeTab, page, rowsPerPage, selectedAdminName]);
+  }, [ activeTab, page, rowsPerPage, selectedAdminName]);
 
   const getAdminNames = async () => {
     try {
       const response = await GetAdminUsername();
-      console.log("Admin Names:", response.data);
+
       setAdminNames(response.data);
     } catch (error) {
       console.error("Error fetching admin names:", error);
@@ -46,7 +46,9 @@ const Deposit = () => {
       accessor: "type",
       Cell: ({ cell }) => (cell.row.type == 1 ? "Deposite" : cell),
     },
-    { Header: "Requested Balance", accessor: "Balance" },
+    // { Header: "Requested Balance", accessor: "Balance" },
+    { Header: "Balance", accessor: "Balance" },
+
     {
       Header: "Balance",
       accessor: "UserBalance",
@@ -131,7 +133,6 @@ const Deposit = () => {
           error.message || "An unexpected error occurred. Please try again.",
         timer: 2000,
       });
-      console.log("Error:", error);
     }
   };
 
@@ -141,13 +142,17 @@ const Deposit = () => {
 
   const getAllfundsstatus = async () => {
     try {
+         if(selectedAdminName === "") {
+        setData([]);
+        return;
+      }
       const data = {
         adminid: selectedAdminName,
         type: 1,
         activeTab,
         page,
         limit: rowsPerPage,
-        search,
+        search:"",
       };
       const response = await getFundstatus(data);
 
@@ -157,23 +162,30 @@ const Deposit = () => {
         setTotalCount(response?.pagination?.totalPages || 0); // assuming backend returns total count
       }
     } catch (error) {
-      console.log("error");
     }
   };
 
+  const filterDataBySearch = (data) => {
+    if (!search) return data;
+    return data.filter((item) =>
+      item.FullName.toLowerCase().includes(search.toLowerCase())
+    );
+  };
 
   const filterDataByStatus = (status) => {
     return data.filter((item) => item.status === status);
   };
 
   const renderTable = (status) => {
+    // Filter by status first, then by search
+    const filteredData = filterDataBySearch(filterDataByStatus(status));
     return (
       <div className="table-responsive">
         <div className="row align-items-center gap-4">
           {/* Search Input */}
           <div className="col-lg-4">
             <label htmlFor="searchInput" className="form-label">
-              Search:
+             🔍 Search:
             </label>
             <input
               id="searchInput"
@@ -188,7 +200,7 @@ const Deposit = () => {
           {/* User Select Dropdown */}
           <div className="col-lg-4">
             <label htmlFor="userSelect" className="form-label">
-              Users:
+              Admins:
             </label>
             <select
               id="userSelect"
@@ -209,10 +221,11 @@ const Deposit = () => {
         </div>
 
         <Table
+        className='mt-5'
           columns={columns}
-          data={filterDataByStatus(status)}
+          data={filteredData}
           rowsPerPage={rowsPerPage}
-          totalCount={totalCount}
+          totalCount={filteredData.length}
         />
         <div
           className="d-flex align-items-center"

@@ -299,3 +299,16 @@ export async function getAdminUserName(data, token) {
       await err;
   }
 }
+
+export async function GetAdminBalanceWithPosition(data, token) {
+  try {
+    const res = await axios.post(`${Config.base_url}GetAdminBalanceWithPosition`, data, {
+      data: {},
+    })
+    return await res?.data;
+  }
+  catch (err) {
+    return
+      await err;
+  }
+}

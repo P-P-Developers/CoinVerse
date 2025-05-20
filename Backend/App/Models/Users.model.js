@@ -158,19 +158,19 @@ const userModel = Schema({
     },
     Range1: {
         type: Number,
-        default: null
+        default: 5
     },
     Range2: {
         type: Number,
-        default: null
+        default: 7
     },
     Range3: {
         type: Number,
-        default: null
+        default: 10
     },
     Range4: {
         type: Number,
-        default: null
+        default: 15
     },
     
     FixedPerClient: {

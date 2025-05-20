@@ -25,7 +25,7 @@ const AddAdmin = () => {
       parent_id: "",
       parent_role: "",
       Role: "",
-      Licence: "",
+
       ProfitMargin: "",
       FixedPerClient: false,
       FundAdd: false,
@@ -66,11 +66,9 @@ const AddAdmin = () => {
       } else if (values.password !== values.confirmPassword) {
         errors.confirmPassword = "Passwords do not match";
       }
-      if (!values.Licence) {
-        errors.Licence = "Please Enter Licence"
-      } 
    
-      if (!values.ProfitMargin) {
+   
+      if (values.ProfitMargin === "") {
         errors.ProfitMargin = "Please Enter Profit Margin";
       }
       if (values.FixedPerClient && !values.AddClientBonus) {
@@ -109,7 +107,7 @@ const AddAdmin = () => {
         Email: values.email,
         PhoneNo: values.phone,
         password: values.password,
-        Licence: values.Licence,
+        
         parent_role: Role || "SUPERADMIN",
         parent_id: user_id,
         Role: "ADMIN",
@@ -202,14 +200,7 @@ const AddAdmin = () => {
       col_size: 6,
       disable: false,
     },
-    {
-      name: "Licence",
-      label: "Licence",
-      type: "text3",
-      label_size: 12,
-      col_size: 6,
-      disable: false,
-    },
+
     {
       name: "ProfitMargin",
       label: "Brokerage Sharing (0-100%)",

@@ -23,13 +23,20 @@ const Conversation = db.Conversation;
 const Message = db.Message;
 const Sign_In = db.Sign_In;
 const crypto = require("crypto");
-const path = require('path');
+const path = require("path");
 const BonusCollectioniModel = require("../../../Models/BonusCollectioni.model");
 
 const Company = db.Company;
 
-const apkPath = path.join(__dirname, '..', '..', '..', '..', 'Uploads', 'application.apk');
-
+const apkPath = path.join(
+  __dirname,
+  "..",
+  "..",
+  "..",
+  "..",
+  "Uploads",
+  "application.apk"
+);
 
 class Admin {
   async AddUser(req, res) {
@@ -45,7 +52,6 @@ class Admin {
         Otp,
         Role,
         Balance,
-        Licence,
         pertrade,
         perlot,
         transactionwise,
@@ -55,12 +61,13 @@ class Admin {
         employee_id,
         referred_by,
         referral_price,
-        singleUserId
+        singleUserId,
       } = req.body;
 
       if (!FullName || !UserName || !Email || !PhoneNo || !password || !Role) {
         return res.json({ status: false, message: "Missing required fields" });
       }
+      let Licence = 10;
 
       const parentUser = await User_model.findOne({ _id: parent_id });
 
@@ -74,8 +81,8 @@ class Admin {
           existingUser.UserName === UserName
             ? "Username"
             : existingUser.Email === Email
-              ? "Email"
-              : "Phone Number";
+            ? "Email"
+            : "Phone Number";
 
         return res.json({
           status: false,
@@ -84,7 +91,6 @@ class Admin {
         });
       }
 
-      // Set end date based on license duration
       const startDate = new Date();
       const endDate = new Date(startDate);
       endDate.setMonth(endDate.getMonth() + Number(Licence));
@@ -127,7 +133,6 @@ class Admin {
         Balance: Balance,
         Otp: password,
         Role,
-        Licence,
         pertrade: brokeragepertrade || "",
         perlot: brokerageperlot || "",
         transactionwise: transactionwise || "",
@@ -145,8 +150,6 @@ class Admin {
       await newUser.save();
 
       if (referred_by) {
-
-
         // Activate referred user
         await Sign_In.updateOne(
           { _id: singleUserId },
@@ -155,7 +158,6 @@ class Admin {
 
         // Get referring user
         const referringUser = await User_model.findById(referred_by);
-
 
         const creditAmount = referral_price || 0;
         const updatedBalance = (referringUser?.Balance || 0) + creditAmount;
@@ -166,10 +168,9 @@ class Admin {
           { $set: { Balance: updatedBalance } }
         );
 
-
         // Log in wallet
         const walletEntry = new Wallet_model({
-          user_Id: referred_by,  // or just `referred_by`
+          user_Id: referred_by, // or just `referred_by`
           Balance: creditAmount,
           parent_Id: referringUser.parent_id || null,
           Type: "CREDIT",
@@ -178,7 +179,6 @@ class Admin {
         await walletEntry.save();
 
         if (Balance > 0) {
-
           const newStatement = new BalanceStatement({
             userid: referred_by,
             Amount: creditAmount,
@@ -193,8 +193,6 @@ class Admin {
             { $set: { isPaymentDone: true } }
           );
         }
-
-
       }
 
       // Create wallet and balance statement
@@ -215,20 +213,8 @@ class Admin {
       });
       await newStatement.save();
 
-      // Create license record
-      const licenceRecord = new totalLicense({
-        user_Id: newUser._id,
-        Licence,
-        parent_Id: parent_id,
-        Start_Date: startDate,
-        End_Date: endDate,
-      });
-      await licenceRecord.save();
-
-
       if (parentUser.Role === "ADMIN" && parentUser.FixedPerClient) {
-
-        if (parentUser && (Balance >= parentUser.AddClientBonus)) {
+        if (parentUser && Balance >= parentUser.AddClientBonus) {
           const newBonus = new BonusCollectioniModel({
             admin_id: parentUser._id,
             user_id: newUser._id,
@@ -236,7 +222,6 @@ class Admin {
             Type: "Fixed_PerClient",
           });
           await newBonus.save();
-
         }
 
         if (parentUser && parentUser.FundAdd && Balance > 0) {
@@ -260,8 +245,6 @@ class Admin {
 
           await newBonus.save();
         }
-
-
       }
 
       return res.json({
@@ -353,7 +336,6 @@ class Admin {
     }
   }
 
-
   async updateLicence(req, res) {
     try {
       const { id, Licence, parent_Id } = req.body;
@@ -374,7 +356,6 @@ class Admin {
         userdata.End_Date >= currentDate ? userdata.End_Date : currentDate
       );
 
-      // Calculate the new end date
       let newEndDate = new Date(startDate);
       newEndDate.setMonth(newEndDate.getMonth() + Number(Licence));
 
@@ -499,12 +480,9 @@ class Admin {
     }
   }
 
-
-
   async getuserpaymentstatus(req, res) {
     try {
       const { adminid, type, activeTab, page = 1, limit = 10 } = req.body;
-
 
       // Validation
       if (!adminid || type === "" || !activeTab) {
@@ -516,9 +494,9 @@ class Admin {
       }
 
       const statusMap = {
-        "Complete": 1,
-        "Reject": 2,
-        "Pending": 0,
+        Complete: 1,
+        Reject: 2,
+        Pending: 0,
       };
 
       const status = statusMap[activeTab] ?? 0;
@@ -568,26 +546,26 @@ class Admin {
               {
                 $match: {
                   $expr: {
-                    $eq: ["$userId", "$$userIdRef"]
-                  }
-                }
+                    $eq: ["$userId", "$$userIdRef"],
+                  },
+                },
               },
               {
                 $sort: {
                   isPrimary: -1, // ✅ Sort so primary appears first, fallback second
-                  createdAt: 1   // ✅ If both have same isPrimary (false), pick oldest
-                }
+                  createdAt: 1, // ✅ If both have same isPrimary (false), pick oldest
+                },
               },
-              { $limit: 1 } // ✅ Take only one: either primary or first available
+              { $limit: 1 }, // ✅ Take only one: either primary or first available
             ],
-            as: "primaryAccount"
-          }
+            as: "primaryAccount",
+          },
         },
         {
           $unwind: {
             path: "$primaryAccount",
-            preserveNullAndEmptyArrays: true
-          }
+            preserveNullAndEmptyArrays: true,
+          },
         },
         {
           $project: {
@@ -609,8 +587,8 @@ class Admin {
             accountHolderName: "$primaryAccount.accountHolderName",
             bankName: "$primaryAccount.bankName",
             bankAccountNo: "$primaryAccount.bankAccountNo",
-            bankIfsc: "$primaryAccount.bankIfsc"
-          }
+            bankIfsc: "$primaryAccount.bankIfsc",
+          },
         },
         { $sort: { createdAt: -1 } },
         { $skip: skip },
@@ -628,9 +606,7 @@ class Admin {
           totalPages: Math.ceil(totalRecords / limit),
         },
       });
-
     } catch (error) {
-
       return res.status(500).json({
         status: false,
         message: "Internal server error",
@@ -638,10 +614,6 @@ class Admin {
       });
     }
   }
-
-
-
-
 
   async UpdateStatus(req, res) {
     try {
@@ -668,12 +640,13 @@ class Admin {
 
       // Handle Status = 1 (Accepted)
       if (status == 1) {
-
         const parentUser = await User_model.findOne({
           _id: admin_id,
         });
 
-        const bonusAmount = paymentHistoryFind.Balance * (parentUser.FixedTransactionPercent / 100);
+        const bonusAmount =
+          paymentHistoryFind.Balance *
+          (parentUser.FixedTransactionPercent / 100);
 
         if (parentUser && parentUser.EveryTransaction) {
           const Bonus = await BonusCollectioniModel({
@@ -684,7 +657,6 @@ class Admin {
           });
           await Bonus.save();
         }
-
 
         if (paymentHistoryFind.type === 0) {
           // Withdrawal Request
@@ -701,7 +673,6 @@ class Admin {
           // Update payment history
           paymentHistoryFind.status = status;
           const data = await paymentHistoryFind.save();
-
 
           // Update wallet
           const walletUpdateResult = new Wallet_model({
@@ -740,23 +711,23 @@ class Admin {
         } else if (paymentHistoryFind.type === 1) {
           // Deposit Request
           // Add balance
-          console.log("findUser.Balance", findUser.Balance);
           if (findUser.Balance === 0) {
-            console.log("inside fn", findUser);
             if (findUser && findUser.ReferredBy) {
-              const ReferredByUser = await User_model.findOne({ _id: findUser.ReferredBy });
-              console.log("ReferredByUser", ReferredByUser);
+              const ReferredByUser = await User_model.findOne({
+                _id: findUser.ReferredBy,
+              });
+
               if (ReferredByUser && ReferredByUser.Role === "USER") {
                 let refferalAmount = 0;
-                let balanceToAdd = paymentHistoryFind.Balance
+                let balanceToAdd = paymentHistoryFind.Balance;
                 if (balanceToAdd > 50 && balanceToAdd <= 100) {
-                  refferalAmount = (balanceToAdd * parentUser.Range1) / 100
+                  refferalAmount = (balanceToAdd * parentUser.Range1) / 100;
                 } else if (balanceToAdd > 100 && balanceToAdd <= 500) {
-                  refferalAmount = (balanceToAdd * parentUser.Range2) / 100
+                  refferalAmount = (balanceToAdd * parentUser.Range2) / 100;
                 } else if (balanceToAdd > 500 && balanceToAdd <= 1000) {
-                  refferalAmount = (balanceToAdd * parentUser.Range3) / 100
+                  refferalAmount = (balanceToAdd * parentUser.Range3) / 100;
                 } else if (balanceToAdd > 1000) {
-                  refferalAmount = (balanceToAdd * parentUser.Range4) / 100
+                  refferalAmount = (balanceToAdd * parentUser.Range4) / 100;
                 }
 
                 const newStatement = new BalanceStatement({
@@ -767,8 +738,6 @@ class Admin {
                   message: "Referral Balance Added",
                 });
                 await newStatement.save();
-                console.log("newStatement", newStatement);
-
               }
             }
           }
@@ -791,7 +760,6 @@ class Admin {
 
           // findUser.Balance
 
-
           const balanceStatement = new BalanceStatement({
             userid: findUser._id,
             Amount: paymentHistoryFind.Balance,
@@ -801,10 +769,6 @@ class Admin {
             orderid: null,
           });
           await balanceStatement.save();
-
-
-
-
 
           // Send push notification for Accepted Status
           const { DeviceToken } = findUser;
@@ -945,14 +909,18 @@ class Admin {
         },
         {
           $sort: { "balance_data.createdAt": -1 },
-        }
+        },
       ]);
 
       // Format the `brokerage` value to 5 decimal places
-      const filteredData = aggregatedData.filter(item => item.balance_data?.brokerage != 0);
+      const filteredData = aggregatedData.filter(
+        (item) => item.balance_data?.brokerage != 0
+      );
 
       const formattedData = filteredData.map((item) => {
-        item.balance_data.brokerage = Number(item.balance_data.brokerage).toFixed(5);
+        item.balance_data.brokerage = Number(
+          item.balance_data.brokerage
+        ).toFixed(4);
         return item;
       });
 
@@ -1220,8 +1188,6 @@ class Admin {
         .select("UserName Start_Date End_Date Role parent_role")
         .sort({ createdAt: -1 });
 
-
-
       if (!result || result.length === 0) {
         return res.json({ status: false, message: "User not found", data: [] });
       }
@@ -1321,10 +1287,17 @@ class Admin {
         entryReason,
         note,
         user_id,
-        type
+        type,
       } = req.body;
 
-      if (!researchType || !coin || !price || !targetPrice || !stopLoss || !type) {
+      if (
+        !researchType ||
+        !coin ||
+        !price ||
+        !targetPrice ||
+        !stopLoss ||
+        !type
+      ) {
         return res.json({
           status: false,
           message: "Missing required fields",
@@ -1361,7 +1334,7 @@ class Admin {
         user_id,
         token: MatchSymbol.token,
         lotsize: MatchSymbol.lotsize,
-        type
+        type,
       });
 
       await newResearch.save();
@@ -1383,7 +1356,6 @@ class Admin {
 
   async getResearch(req, res) {
     try {
-
       const GetAllResearch = await ResearchModel.find({}).sort({
         createdAt: -1,
       });
@@ -1421,7 +1393,7 @@ class Admin {
         stopLoss,
         entryReason,
         note,
-        type
+        type,
       } = req.body;
 
       if (!id) {
@@ -1513,62 +1485,30 @@ class Admin {
     try {
       const {
         id,
-        upiId,
-        accountHolderName,
-        bankName,
-        bankAccountNo,
-        bankIfsc,
+        walleturl,
+
         qrCodeBase64,
       } = req.body;
 
       const GetData = await UpiDetails.findOne();
-      // if (!GetData) {
-      //   return res.json({ status: false, message: "UPI details not found" });
-      // }
 
-      if (!upiId) {
+      if (!walleturl) {
         return res.json({ status: false, message: "UPI ID is required" });
       }
 
-      if (!accountHolderName) {
-        return res.json({
-          status: false,
-          message: "Account Holder Name is required",
-        });
-      }
-      if (!bankName) {
-        return res.json({ status: false, message: "Bank Name is required" });
-      }
-      if (!bankAccountNo) {
-        return res.json({
-          status: false,
-          message: "Bank Account Number is required",
-        });
-      }
-
-      if (!bankIfsc) {
-        return res.json({ status: false, message: "Bank IFSC is required" });
-      }
       if (!qrCodeBase64) {
         return res.json({ status: false, message: "QR Code is required" });
       }
 
       // Update the UPI details
       let updatedDetails = {
-        upiId,
-        accountHolderName,
-        bankName,
-        bankAccountNo,
-        bankIfsc,
+        walleturl,
+
         qrCodeBase64,
       };
-      const updatedUpiDetails = await UpiDetails.updateOne(
-        {},
-        updatedDetails,
-        {
-          upsert: true,
-        }
-      );
+      const updatedUpiDetails = await UpiDetails.updateOne({}, updatedDetails, {
+        upsert: true,
+      });
 
       if (!updatedUpiDetails) {
         return res.json({
@@ -1640,7 +1580,6 @@ class Admin {
         message: "Primary bank updated successfully",
         data: updatedPrimaryBank,
       });
-
     } catch (error) {
       console.error("Error in setPrimaryBank:", error);
       return res.json({
@@ -1676,8 +1615,14 @@ class Admin {
 
   async updateBankDetails(req, res) {
     try {
-      const { id, accountHolderName, bankName, bankAccountNo, bankIfsc, upiId } =
-        req.body;
+      const {
+        id,
+        accountHolderName,
+        bankName,
+        bankAccountNo,
+        bankIfsc,
+        upiId,
+      } = req.body;
 
       const bankDetail = await Useraccount.findById(id);
       if (!bankDetail) {
@@ -1706,7 +1651,6 @@ class Admin {
         return res.json({ status: false, message: "UPI ID is required" });
       }
 
-
       // Update the bank details
       const updatedBankDetails = await Useraccount.findByIdAndUpdate(
         id,
@@ -1731,8 +1675,6 @@ class Admin {
         message: "Bank details updated successfully",
         data: updatedBankDetails,
       });
-
-
     } catch (error) {
       console.error("Error in updateBankDetails:", error);
       return res.json({
@@ -1776,6 +1718,33 @@ class Admin {
         message,
       });
       await newMsg.save();
+
+
+
+      const GetUser = await User_model.findById(receiverId).select(
+        "DeviceToken" );
+      if (!GetUser) {
+        return res.json({
+          status: false,
+          message: "User not found",
+        });
+      }
+
+      const { DeviceToken } = GetUser;
+      if (!DeviceToken) {
+        return res.json({
+          status: false,
+          message: "DeviceToken not found",
+        });
+      }
+
+
+      sendPushNotification(
+        DeviceToken,
+        "New Message",
+        message
+      );
+
       res.json({ success: true, message: newMsg });
     } catch (error) {
       console.error("Error in message:", error);
@@ -1848,7 +1817,7 @@ class Admin {
         referred_by: user._id,
       });
 
-      let GetCompany = await Company.find()
+      let GetCompany = await Company.find();
       return res.json({
         status: true,
         message: "Referral code found",
@@ -1905,13 +1874,12 @@ class Admin {
   }
 
   async Downloadapk(req, res) {
-    res.download(apkPath, 'application.apk', (err) => {
+    res.download(apkPath, "application.apk", (err) => {
       if (err) {
-        res.status(500).send('Error downloading file');
+        res.status(500).send("Error downloading file");
       }
     });
-  };
-
+  }
 
   async GetBonusDetails(req, res) {
     try {
@@ -1958,10 +1926,9 @@ class Admin {
         },
       ]);
 
-      const ProfitBalanceTotal = await User_model.findOne({ _id: admin_id })
-        .select("ProfitBalance")
-
-
+      const ProfitBalanceTotal = await User_model.findOne({
+        _id: admin_id,
+      }).select("ProfitBalance");
 
       if (!bonusDetails || bonusDetails.length === 0) {
         return res.json({
@@ -1971,14 +1938,12 @@ class Admin {
         });
       }
 
-
       return res.json({
         status: true,
         message: "Bonus details found",
         data: bonusDetails,
         CompletedBrokrageandBonus: ProfitBalanceTotal?.ProfitBalance || 0,
       });
-
     } catch (error) {
       console.error("Error in GetBonusDetails:", error);
       return res.json({
@@ -1988,6 +1953,7 @@ class Admin {
       });
     }
   }
+
 
 
 }

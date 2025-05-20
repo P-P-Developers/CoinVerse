@@ -126,7 +126,6 @@ const Tradehistory = () => {
       const response = await Clienthistory(data);
       setData(response.data);
     } catch (error) {
-      console.log("error", error);
     }
   };
 
@@ -166,7 +165,7 @@ const Tradehistory = () => {
                   <Link
                     to="/admin/users"
                     className="float-end mb-4 btn btn-primary">
-                    Back
+                          <i className="fa-solid fa-arrow-left"></i> Back
                   </Link>
                 </div>
                 <div className="card-body p-0">
@@ -177,7 +176,7 @@ const Tradehistory = () => {
                       role="tabpanel"
                       aria-labelledby="Week-tab">
                       <div className="mb-3 ms-4">
-                        Search :{" "}
+                       🔍 Search :{" "}
                         <input
                           className="ml-2 input-search form-control"
                           defaultValue=""
