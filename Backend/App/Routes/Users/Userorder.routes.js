@@ -21,7 +21,8 @@ const { userWithdrawalanddeposite, getpaymenthistory, getUserDetail, getmarginpr
     tradeStatementForOrder,
     tradeStatementForUser1,
     getUserAccountDetails,
-    updateUserAccountDetails
+    updateUserAccountDetails,
+    ForgotPin
 } = require("../../Controllers/Users/Users.controller")
 const { statement } = require("../../Controllers/Users/Statement.controller")
 
@@ -60,6 +61,8 @@ router.post('/user/matchPin', matchPin);
 router.post('/user/fingerauth', FingerAuth);
 
 router.post('/user/changePin', changePin);
+router.post('/user/ForgotPin', ForgotPin);
+
 
 router.post('/switchOrderType', switchOrderType);
 router.post('/UpdateTargetSlPRice', UpdateTargetSlPRice);
