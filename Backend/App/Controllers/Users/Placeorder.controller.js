@@ -343,7 +343,6 @@ class Placeorder {
       }
 
       if (TradeHistoryData.orderid.length == 2) {
-
         // Toggle the signal_type
         TradeHistoryData.signal_type =
           TradeHistoryData.signal_type === "buy_sell" ? "sell_buy" : "buy_sell";
@@ -362,7 +361,6 @@ class Placeorder {
           _id: { $in: TradeHistoryData.orderid },
         }).sort({ createdAt: 1 });
 
-
         let tempOrder = OrderData[0].createdAt;
         OrderData[0].createdAt = OrderData[1].createdAt;
         OrderData[1].createdAt = tempOrder;
@@ -374,8 +372,7 @@ class Placeorder {
           orderid: { $in: TradeHistoryData.orderid },
         }).sort({ createdAt: 1 });
 
-
-        let tempBalance = balanceStatementData[0].Amount;  // Change nagitive to positive
+        let tempBalance = balanceStatementData[0].Amount; // Change nagitive to positive
         balanceStatementData[0].Amount = -balanceStatementData[1].Amount;
         balanceStatementData[1].Amount = Math.abs(tempBalance);
 
@@ -391,9 +388,6 @@ class Placeorder {
           balanceStatementData[1].orderid = [OrderData[0]._id];
         }
 
-        
-
-
         await balanceStatementData[0].save();
         await balanceStatementData[1].save();
 
@@ -404,9 +398,71 @@ class Placeorder {
           balanceStatements: "",
         });
       } else {
+        console.log("TradeHistoryData", TradeHistoryData);
+
+        if (TradeHistoryData.signal_type == "buy_sell") {
+          
+          TradeHistoryData.signal_type = "sell_buy";
+
+          TradeHistoryData.sell_price = TradeHistoryData.buy_price;
+          TradeHistoryData.buy_price = null;
+
+          TradeHistoryData.sell_time = TradeHistoryData.buy_time;
+          TradeHistoryData.buy_time = null;
+
+          TradeHistoryData.sell_qty = TradeHistoryData.buy_qty;
+          TradeHistoryData.buy_qty = null;
+
+          TradeHistoryData.sell_lot = TradeHistoryData.buy_lot;
+          TradeHistoryData.buy_lot = null;
+
+          TradeHistoryData.sell_type = TradeHistoryData.buy_type;
+          TradeHistoryData.buy_type = null;
+
+          await TradeHistoryData.save();
+
+          let OrderData = await Order.findOne({
+            _id: { $in: TradeHistoryData.orderid },
+          }).sort({ createdAt: 1 });
+
+          OrderData.type = "sell";
+
+          await OrderData.save();
+        } else {
+
+          TradeHistoryData.signal_type = "buy_sell";
+
+          TradeHistoryData.buy_price = TradeHistoryData.sell_price;
+          TradeHistoryData.sell_price = null;
+
+          TradeHistoryData.buy_time = TradeHistoryData.sell_time;
+          TradeHistoryData.sell_time = null;
+
+          TradeHistoryData.buy_qty = TradeHistoryData.sell_qty;
+          TradeHistoryData.sell_qty = null;
+
+          TradeHistoryData.buy_lot = TradeHistoryData.sell_lot;
+          TradeHistoryData.sell_lot = null;
+
+          TradeHistoryData.buy_type = TradeHistoryData.sell_type;
+          TradeHistoryData.sell_type = null;
+
+          await TradeHistoryData.save();
+
+          let OrderData = await Order.findOne({
+            _id: { $in: TradeHistoryData.orderid },
+          }).sort({ createdAt: 1 });
+
+          OrderData.type = "buy";
+
+          await OrderData.save();
+        }
+
         return res.json({
-          status: false,
-          message: "Order not found",
+          status: true,
+          message: "Order type switched",
+          TradeHistoryData,
+          balanceStatements: "",
         });
       }
     } catch (error) {
