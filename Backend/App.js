@@ -11,21 +11,24 @@ const cors = require("cors");
 const bodyparser = require("body-parser");
 const socketIo = require("socket.io");
 const axios = require("axios");
+const cookieParser = require('cookie-parser');
 
 // Setting up CORS options
 const corsOpts = {
-  origin: "*",
+  origin: "http://localhost:3000", // your React frontend URL
+  credentials: true,               // allow cookies to be sent
   methods: ["GET", "POST"],
   allowedHeaders: [
-    "Access-Control-Allow-Headers",
-    "x-access-token, Origin, Content-Type, Accept",
-    "authorization",
+    "Content-Type",
+    "Authorization",
+    "x-access-token",
   ],
 };
 
+
 // app.use(express.static("public"));
 app.use(cors(corsOpts));
-
+app.use(cookieParser());
 // Body-parser middleware setup
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(bodyparser.json({ limit: "10mb", extended: true }));

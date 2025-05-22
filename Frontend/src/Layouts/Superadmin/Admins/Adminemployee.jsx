@@ -56,13 +56,7 @@ const Adminemployee = () => {
 
             },
         },
-        {
-            Header: "Start_Date", accessor: "Start_Date",
-            Cell: ({ cell }) => {
-                return fDateTime(cell.value)
-
-            },
-        },
+       
         
     
 

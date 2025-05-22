@@ -3,6 +3,7 @@ import axios from "axios";
 // import Files
 import * as Config from "../../Utils/Config";
 
+axios.defaults.withCredentials = true; // Send cookies with every request
 
 
 // Adding admin

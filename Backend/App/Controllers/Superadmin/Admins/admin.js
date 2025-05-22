@@ -1007,6 +1007,10 @@ class Superadmin {
   async getCompany(req, res) {
     try {
       const company = await Company.findOne();
+      const token = req.cookies.token;
+      if (!token) {
+        return res.json({ message: "No token provided",status: false,data: [] });
+      }
 
       if (!company) {
         return res.json({
@@ -1225,7 +1229,6 @@ class Superadmin {
 
         totalPnL += pnl;
 
-
         return {
           ...pos,
           pnl: pnl, // round to 2 decimals
@@ -1243,7 +1246,7 @@ class Superadmin {
       return res.json({
         status: true,
         message: "Balance and count fetched successfully",
-        data: { ...response, data: positionsWithPnL,totalPnL:totalPnL },
+        data: { ...response, data: positionsWithPnL, totalPnL: totalPnL },
       });
     } catch (error) {
       console.error("Error in GetAdminBalanceWithPosition:", error);

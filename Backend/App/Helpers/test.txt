@@ -1,0 +1,26 @@
+PORT = 8800
+# MONGO_URI="mongodb+srv://snehpnp:snehpnp@newsmartalgo.n5bxaxz.mongodb.net/"
+MONGO_URI="mongodb://testing:MWQ5RP%26k5T567Gy%26Maa@185.209.75.198:27017/"
+
+
+DB_NAME="test"
+# DB_TRADETOOLS="TradeTools"
+SECRET= "FOREX_CERPTO_MARKET"
+
+
+API_TOKEN=e533600bac1b5195c93e19a99b72720043ba3d79;
+# base_url = https://offlinenew.tradestreet.in/backend/
+base_url = http://localhost:8800/
+FIREBASE_CREDENTIALS='{
+  "type": "service_account",
+  "project_id": "quantfx-8293a",
+  "private_key_id": "5e0fc50fec04cbd355327af210008d0fd7d80ef1",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCzoeAXe/S3fkVb\nxRxKRXbr/7cKP7nTZ0zK1M9XZo52cXM1N1tbSJupHu9Vej4qtsFJwhURMlTpXWUc\nrxjTHU5Lu9lm53LUiW0+jLX8bLkWZd3xfCcdQxtpGocJYKr3cpRc0i4vRoH5Wtf8\n6ZmPCFH69HhVLFsRH94POOKB4d4XUVdH/pxG7BpT10nGooL2s32GK8jg0tzEzN4W\nJ2wq02F5mOWmt7zydUMrw9R8mRCBj3r1HIC0rN89Gt9p8FurYNea7EqQ7o92TBgx\nIjDaCW2/gRBN0fC79nJOdcxxnVJUv9B3YLd51sCvtdzYIq0maoXuKW8tqVrcr8DS\n1Eu3x/ATAgMBAAECggEADzCzKIk86n9tEhObDtTM96wKKH23Ex97KPPSDMwJZA63\n9VoXCaMcNrL8/jd2JlqKAdi9u1SMRae2MzTDXqbtxg2+lqsf1MVCTbXMdeojxLcc\ni506GYlhOgQaQzq/emlgDnFfonPN7e42sZZ3e9byR8yAmINFuC7/sj3XObCF/Wap\nHOGFNSvemf8tYwToMtJTRaMC+1XiMaXBJsZSjP8X9hEY3u9OWuSSkUzcMwk71gH3\nekg17/p/cGqqXUjzU/P/F677DXBMCoMZ7un3muuJaXRxygATuWiPliVFHMnygnwt\nAMWLvywnaugIV2TR7ZQr+Ub5N7FG/dNnPVQvZrR+kQKBgQDoxW7foLzCcYBAO+a9\nVDX9RtPtRyoHrd1Nots1pGXFA2QSrkdxIN70A6Eaerksa2Sr6zm/uPywP7G0m0Uq\ns/aPFbxRKIRqVC0yeYBF7Hh5jUSd9z3xLvW9GLtBQm5BmQPZeBqBvg+yF95H4H8l\navzfye1p4zm4JMy0jT5moZuVZQKBgQDFjulwZjRXtJ6ScrMfuRm4a2XfL+48Tkbs\niMFjjFt1mzQ5+o4rYdmu37te0+SP9WEnt5Wxuxc4XvcI/xw+IsZvhY22IcUTiuzl\ncIAUpSz6P3QwobGTBY11D8+kT3hEW1g2VG2icB5VfwQN1X6zIoadHPwRLX8f8SXL\nGzUKjdE0FwKBgHmhOOdHsXqVHmPyKQbDaxa2nOS+q9qpYhtAPvVPuxHwTKlqQdB+\nUaIGB3ezqvDoCQnAd0OUYQ2jqrLp84F12h84R1fNKSv6Ykeer4VaJDW3uKQmXkqZ\ntDSkKKzYDo7eauGG3arv6nmv+SlryGR//DTf6dvLrQxoxkKOD45HYen1AoGAHrI4\n9Vz8DxCifvDRgkFZjL0rRAWHh9lFzeTl35jkcR6fe87Bnl4C29gpne9gmTmwUeKF\noOsIDZs72SsCcWkn2hYvUbhnjcTNUE0tqYeMuIl5fUDyfXykYScGxWoPrtdemnp9\n2np/TBuDPr8Ig77+mZTyWZzvHsBydd+RW0Vz1xsCgYAqGgTpsRdufEwFbuK/nieX\nneJ7xZogkzzExtYePkVJVA11Uws55bEEGLmAAkCfhSpvGpjBQqB1BVZAuJ49kHpI\nt0ySu2DlhABeliGnDpVFETxWslQtIMLi0wbRUnRVszTQcLhzG7s9DW+F4SURz3wa\n+1Or/7tvCBQnoJliZTSfDw==\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-fbsvc@quantfx-8293a.iam.gserviceaccount.com",
+  "client_id": "114340253242717751546",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40quantfx-8293a.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}'
