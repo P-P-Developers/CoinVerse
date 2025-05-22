@@ -925,73 +925,73 @@ class Users {
   }
 
 
- async ForgotPin(req, res) {
-  try {
-    const { user_id, password, newPin } = req.body;
+  async ForgotPin(req, res) {
+    try {
+      const { user_id, password, newPin } = req.body;
 
-    if (!user_id || !password || !newPin) {
-      return res.status(400).send({
-        status: false,
-        message: "Missing required fields",
+      if (!user_id || !password || !newPin) {
+        return res.status(400).send({
+          status: false,
+          message: "Missing required fields",
+          data: [],
+        });
+      }
+
+      const user = await User_model.findOne({ _id: user_id });
+
+      if (!user) {
+        return res.status(404).send({
+          status: false,
+          message: "User does not exist",
+          data: [],
+        });
+      }
+
+      if (user.ActiveStatus !== "1") {
+        return res.status(403).send({
+          status: false,
+          message: "Account is not active",
+          data: [],
+        });
+      }
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+
+      if (!isPasswordValid) {
+        return res.status(401).send({
+          status: false,
+          message: "Incorrect password",
+          data: [],
+        });
+      }
+
+      if (!/^\d{4}$/.test(newPin)) {
+        return res.status(400).send({
+          status: false,
+          message: "New PIN must be a 4-digit number",
+          data: [],
+        });
+      }
+
+      user.pin = newPin;
+      user.pin_status = true;
+      await user.save();
+
+      return res.status(200).send({
+        status: true,
+        message: "PIN updated successfully",
         data: [],
       });
-    }
 
-    const user = await User_model.findOne({ _id: user_id });
-
-    if (!user) {
-      return res.status(404).send({
+    } catch (error) {
+      console.error("ForgotPin error:", error);
+      return res.status(500).send({
         status: false,
-        message: "User does not exist",
-        data: [],
+        message: "Internal server error",
+        data: error,
       });
     }
-
-    if (user.ActiveStatus !== "1") {
-      return res.status(403).send({
-        status: false,
-        message: "Account is not active",
-        data: [],
-      });
-    }
-
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordValid) {
-      return res.status(401).send({
-        status: false,
-        message: "Incorrect password",
-        data: [],
-      });
-    }
-
-    if (!/^\d{4}$/.test(newPin)) {
-      return res.status(400).send({
-        status: false,
-        message: "New PIN must be a 4-digit number",
-        data: [],
-      });
-    }
-
-    user.pin = newPin;
-    user.pin_status = true;
-    await user.save();
-
-    return res.status(200).send({
-      status: true,
-      message: "PIN updated successfully",
-      data: [],
-    });
-
-  } catch (error) {
-    console.error("ForgotPin error:", error);
-    return res.status(500).send({
-      status: false,
-      message: "Internal server error",
-      data: error,
-    });
   }
-}
 
   async getUserAccountDetails(req, res) {
     try {
