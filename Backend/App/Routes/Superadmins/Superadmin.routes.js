@@ -50,7 +50,7 @@ router.get("/getBrokerageDataForSuperAdmin", brokerageDataForSuperAdmin);
 router.post("/AddProfitMargin", AddProfitMargin);
 router.post("/getProfitMargin", getProfitMargin);
 router.post("/createOrUpdateCompany", createOrUpdateCompany);
-router.get("/getCompany",auth, getCompany);
+router.get("/getCompany", getCompany);
 router.get("/getAdminName", getAdminName);
 router.delete("/deleteCompany", deleteCompany);
 
