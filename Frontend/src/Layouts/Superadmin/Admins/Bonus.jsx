@@ -335,13 +335,19 @@ const Brokerage = () => {
               border: "1px solid #dcdcdc",
             }}
           >
-            <div>
-              <span style={{ color: "#007bff" }}>🎁 Total Bonus:</span>{" "}
-              <span className="text-dark">{totalBrokerage.toFixed(4)}</span>
-            </div>
+          <div>
+  <span style={{ color: "#007bff" }}>
+    🎁 Total
+    {selectedAdminId.brokerage && " Brokerage"}
+    {selectedAdminId.bonus && " Bonus"}:
+  </span>{" "}
+  <span className="text-dark">{totalBrokerage.toFixed(4)}</span>
+</div>
+
 
             <div>
-              <span style={{ color: "#fd7e14" }}>🏆 Our Bonus:</span>{" "}
+              <span style={{ color: "#fd7e14" }}>🏆 Our   {selectedAdminId.brokerage && " Brokerage"}
+    {selectedAdminId.bonus && " Bonus"}:</span>{" "}
               <span className="text-dark">
                 {(totalBrokerage - ProfitBalance).toFixed(4)}
               </span>

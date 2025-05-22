@@ -9,7 +9,12 @@ const {
   getlogsuser,
   PasswordChanged,
   DeleteSignIn,
-  getReferClients
+  getReferClients,
+  generatePin,
+  matchPin,
+  FingerAuth,
+  changePin,
+  ForgotPin,
 } = require("../../Controllers/Auth/Auth.controller");
 
 router.post("/login", login);
@@ -21,5 +26,14 @@ router.post("/PasswordChanged", PasswordChanged);
 
 router.post("/DeleteSignIn", DeleteSignIn);
 router.post("/getReferClients", getReferClients);
+
+
+
+router.post('/user/generateMPin', generatePin)
+router.post('/user/matchPin', matchPin);
+router.post('/user/fingerauth', FingerAuth);
+
+router.post('/user/changePin', changePin);
+router.post('/user/ForgotPin', ForgotPin);
 
 module.exports = router;
