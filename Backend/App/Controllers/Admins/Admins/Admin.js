@@ -1888,8 +1888,7 @@ class Admin {
 
   res.download(apkPath, "application.apk", (err) => {
     if (err) {
-      console.error("Error downloading APK:", err);
-      return res.status(500).send("Error downloading file");
+      return res.send("Error downloading file");
     }
   });
 }
