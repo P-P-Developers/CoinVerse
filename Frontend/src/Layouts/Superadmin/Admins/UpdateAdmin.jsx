@@ -18,6 +18,8 @@ const UpdateAdmin = () => {
   const Role = userDetails?.Role;
   const user_id = userDetails?.user_id;
 
+  console.log("rowData", rowData);
+  
   const formik = useFormik({
     initialValues: {
       fullName: rowData?.FullName || "",
@@ -187,7 +189,7 @@ const UpdateAdmin = () => {
       type: "checkbox",
       label_size: 12,
       col_size: 12,
-      disable: true,
+      disable: rowData?.FixedPerClient ? false : true,
     },
     {
       name: "AddClientBonus",
@@ -195,7 +197,7 @@ const UpdateAdmin = () => {
       type: "text",
       label_size: 12,
       col_size: 6,
-      disable: true,
+      disable: rowData?.AddClientBonus ? false : true,
       showWhen: (values) => values.FixedPerClient,
     },
     {
@@ -204,7 +206,7 @@ const UpdateAdmin = () => {
       type: "checkbox",
       label_size: 12,
       col_size:  12,
-      disable: true,
+      disable: rowData?.FundAdd ? false : true,
     },
     {
       name: "FundLessThan100",
@@ -249,7 +251,7 @@ const UpdateAdmin = () => {
       type: "checkbox",
       label_size: 12,
       col_size: 12,
-      disable: true,
+      disable: rowData?.EveryTransaction ? false : true,
 
     },
     {
@@ -258,7 +260,7 @@ const UpdateAdmin = () => {
       type: "text",
       label_size: 12,
       col_size: 6,
-      disable: true,
+      disable: rowData?.EveryTransaction ? false : true,
       showWhen: (values) => values.EveryTransaction,
     },
 
