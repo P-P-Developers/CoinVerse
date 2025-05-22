@@ -12,6 +12,8 @@ const bodyparser = require("body-parser");
 const socketIo = require("socket.io");
 const axios = require("axios");
 const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
+
 
 // Setting up CORS options
 const corsOpts = {
@@ -40,7 +42,7 @@ const io = socketIo(server, {
     credentials: true,
   },
 });
-
+app.use(helmet());
 
 // Importing routes
 require("./App/Routes")(app);
