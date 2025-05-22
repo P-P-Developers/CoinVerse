@@ -351,6 +351,8 @@ const Header = () => {
                   ? "Trade History"
                   : formattedSegment === "Holdoff"
                   ? "Hold Off"
+                    : formattedSegment === "Changedpassword"
+                  ? "Changed Password"
                   : formattedSegment === "Addemployees"
                   ? "Add Employee"
                   : formattedSegment == "Basicsetting" ? "Basic Settings" :formattedSegment}

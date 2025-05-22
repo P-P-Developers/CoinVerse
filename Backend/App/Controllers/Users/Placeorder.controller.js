@@ -268,14 +268,26 @@ class Placeorder {
       ];
 
       const finduser = await mainorder_model.aggregate([
-        {
-          $match: {
-            userid,
-            createdAt: { $lt: startOfDay },
-            // $or: [{ buy_type: null }, { sell_type: null }],
-            $expr: { $ne: ["$buy_qty", "$sell_qty"] },
-          },
-        },
+      {
+  $match: {
+    $or: [
+      {
+        userid: userid,
+        createdAt: { $lt: startOfDay },
+        $expr: { $ne: ["$buy_qty", "$sell_qty"] }
+      },
+      {
+        $expr: {
+          $eq: [
+            { $dateToString: { format: "%Y-%m-%d", date: "$holding_dtime" } },
+            { $dateToString: { format: "%Y-%m-%d", date: new Date() } }
+          ]
+        }
+      }
+    ]
+  }
+},
+
         {
           $addFields: {
             Mk_type: {
@@ -336,83 +348,110 @@ class Placeorder {
     try {
       const { id } = req.body;
 
-      const TradeHistoryData = await mainorder_model.findOne({ _id: id });
-
-      if (!TradeHistoryData) {
+      const trade = await mainorder_model.findOne({ _id: id });
+      if (!trade) {
         return res.json({ status: false, message: "Order not found" });
       }
 
-      if (TradeHistoryData.orderid.length == 2) {
+      const isDoubleOrder = trade.orderid.length === 2;
 
-        // Toggle the signal_type
-        TradeHistoryData.signal_type =
-          TradeHistoryData.signal_type === "buy_sell" ? "sell_buy" : "buy_sell";
+      // Swap helpers
+      const swap = (a, b) => [b, a];
+      const isBuySell = trade.signal_type === "buy_sell";
 
-        const temp = TradeHistoryData.buy_price;
-        TradeHistoryData.buy_price = TradeHistoryData.sell_price;
-        TradeHistoryData.sell_price = temp;
+      if (isDoubleOrder) {
+        trade.signal_type = isBuySell ? "sell_buy" : "buy_sell";
+        [trade.buy_price, trade.sell_price] = swap(
+          trade.buy_price,
+          trade.sell_price
+        );
+        [trade.buy_time, trade.sell_time] = swap(
+          trade.buy_time,
+          trade.sell_time
+        );
+        await trade.save();
 
-        const temp1 = TradeHistoryData.buy_time;
-        TradeHistoryData.buy_time = TradeHistoryData.sell_time;
-        TradeHistoryData.sell_time = temp1;
-
-        await TradeHistoryData.save();
-
-        let OrderData = await Order.find({
-          _id: { $in: TradeHistoryData.orderid },
+        let [order1, order2] = await Order.find({
+          _id: { $in: trade.orderid },
         }).sort({ createdAt: 1 });
+        [order1.createdAt, order2.createdAt] = swap(
+          order1.createdAt,
+          order2.createdAt
+        );
+        await Promise.all([order1.save(), order2.save()]);
 
-
-        let tempOrder = OrderData[0].createdAt;
-        OrderData[0].createdAt = OrderData[1].createdAt;
-        OrderData[1].createdAt = tempOrder;
-
-        await OrderData[0].save();
-        await OrderData[1].save();
-
-        const balanceStatementData = await BalanceStatement.find({
-          orderid: { $in: TradeHistoryData.orderid },
+        let [bs1, bs2] = await BalanceStatement.find({
+          orderid: { $in: trade.orderid },
         }).sort({ createdAt: 1 });
+        const tempAmt = bs1.Amount;
+        bs1.Amount = -bs2.Amount;
+        bs2.Amount = Math.abs(tempAmt);
 
+        bs1.orderid = Array.isArray(bs1.orderid)
+          ? [...bs1.orderid, order2._id]
+          : [order2._id];
+        bs2.orderid = Array.isArray(bs2.orderid)
+          ? [...bs2.orderid, order1._id]
+          : [order1._id];
 
-        let tempBalance = balanceStatementData[0].Amount;  // Change nagitive to positive
-        balanceStatementData[0].Amount = -balanceStatementData[1].Amount;
-        balanceStatementData[1].Amount = Math.abs(tempBalance);
-
-        // balanceStatementData[0].orderid is array and store the orderid
-        if (Array.isArray(balanceStatementData[0].orderid)) {
-          balanceStatementData[0].orderid.push(OrderData[1]._id);
-        } else {
-          balanceStatementData[0].orderid = [OrderData[1]._id];
-        }
-        if (Array.isArray(balanceStatementData[1].orderid)) {
-          balanceStatementData[1].orderid.push(OrderData[0]._id);
-        } else {
-          balanceStatementData[1].orderid = [OrderData[0]._id];
-        }
-
-        
-
-
-        await balanceStatementData[0].save();
-        await balanceStatementData[1].save();
-
-        return res.json({
-          status: true,
-          message: "Order type switched",
-          TradeHistoryData,
-          balanceStatements: "",
-        });
+        await Promise.all([bs1.save(), bs2.save()]);
       } else {
-        return res.json({
-          status: false,
-          message: "Order not found",
-        });
+        trade.signal_type = isBuySell ? "sell_buy" : "buy_sell";
+
+        if (isBuySell) {
+          trade.sell_price = trade.buy_price;
+          trade.buy_price = null;
+
+          trade.sell_time = trade.buy_time;
+          trade.buy_time = null;
+
+          trade.sell_qty = trade.buy_qty;
+          trade.buy_qty = null;
+
+          trade.sell_lot = trade.buy_lot;
+          trade.buy_lot = null;
+
+          trade.sell_type = trade.buy_type;
+          trade.buy_type = null;
+        } else {
+          trade.buy_price = trade.sell_price;
+          trade.sell_price = null;
+
+          trade.buy_time = trade.sell_time;
+          trade.sell_time = null;
+
+          trade.buy_qty = trade.sell_qty;
+          trade.sell_qty = null;
+
+          trade.buy_lot = trade.sell_lot;
+          trade.sell_lot = null;
+
+          trade.buy_type = trade.sell_type;
+          trade.sell_type = null;
+        }
+
+        await trade.save();
+
+        const order = await Order.findOne({ _id: { $in: trade.orderid } }).sort(
+          { createdAt: 1 }
+        );
+        order.type = isBuySell ? "sell" : "buy";
+        await order.save();
       }
+
+      return res.json({
+        status: true,
+        message: "Order type switched",
+        TradeHistoryData: trade,
+        balanceStatements: "",
+      });
     } catch (error) {
-      return res
-        .status(500)
-        .json({ status: false, message: "An error occurred", error });
+      console.error("Switch order type error:", error);
+      return res.status(500).json({
+        status: false,
+        message: "An error occurred",
+        error: error.message || error,
+      });
     }
   }
 
@@ -650,6 +689,23 @@ class Placeorder {
       });
 
       await newstatement.save();
+
+ const today = new Date();
+      const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+      
+      const tradehistorydata = await mainorder_model.findOne({ _id: id });
+      console.log("tradehistorydata", tradehistorydata);
+       if (tradehistorydata.createdAt > startOfDay) {
+        console.log("Order is within the same day");
+      } else {
+        console.log("Order is not within the same day");
+
+        tradehistorydata.holding_dtime = new Date();
+
+        await tradehistorydata.save();
+      }
+
+
 
       return res.json({
         status: true,

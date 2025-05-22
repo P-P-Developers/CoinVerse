@@ -133,6 +133,10 @@ const mainorderSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  holding_dtime: {
+    type: Date,
+    default: null,
+  },
 
   orderid: [
     {

@@ -72,7 +72,7 @@ const Changedpassword = () => {
           <div className="col-xl-12 col-lg-12">
             <div className="card profile-card card-bx">
               <div className="card-header">
-                <h6 className="card-title">Bank A </h6>
+                <h6 className="card-title">Changed Password </h6>
               </div>
               <form className="profile-form" onSubmit={handleSubmit}>
                 <div className="card-body">

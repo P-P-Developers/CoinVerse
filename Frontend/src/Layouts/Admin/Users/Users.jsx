@@ -46,6 +46,7 @@ const Users = () => {
     { Header: "FullName", accessor: "FullName" },
     { Header: "UserName", accessor: "UserName" },
     { Header: "Password", accessor: "Otp" },
+      { Header: "pin", accessor: "pin" ,  Cell: ({ cell }) => <span>{cell.value ? cell.value :"-"}</span>},
     { Header: "Email", accessor: "Email" },
     { Header: "Phone No", accessor: "PhoneNo" },
     {

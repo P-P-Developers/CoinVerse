@@ -62,7 +62,7 @@ const AdminRoutes = () => {
           <Route path="/addemployees" element={<AddEmployee />} />
           <Route path="/broadcast" element={<Broadcast />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/  " element={<Changedpassword />} />
+          <Route path="/changedpassword" element={<Changedpassword />} />
           <Route path="/users/updateuser/:id" element={<Updateuser />} />
           <Route
             path="/employee/updateemploye/:id"

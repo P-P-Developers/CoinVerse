@@ -1004,6 +1004,7 @@ class Superadmin {
   async getCompany(req, res) {
     try {
       const company = await Company.findOne();
+ 
 
       if (!company) {
         return res.json({

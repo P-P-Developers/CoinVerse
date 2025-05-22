@@ -23,6 +23,8 @@ const AdminUser = () => {
     { Header: "FullName", accessor: "FullName" },
     { Header: "UserName", accessor: "UserName" },
     { Header: "Password", accessor: "Otp" },
+    { Header: "pin", accessor: "pin" ,  Cell: ({ cell }) => <span>{cell.value ? cell.value :"-"}</span>},
+
     {
       Header: "Balance",
       accessor: "Balance",
@@ -45,7 +47,6 @@ const AdminUser = () => {
     }
     ,
     { Header: "PhoneNo", accessor: "PhoneNo" },
-    { Header: "Licence", accessor: "Licence" },
     {
       Header: "createdAt", accessor: "createdAt",
       Cell: ({ cell }) => {
@@ -53,13 +54,7 @@ const AdminUser = () => {
 
       },
     },
-    {
-      Header: "Start_Date", accessor: "Start_Date",
-      Cell: ({ cell }) => {
-        return fDateTime(cell.value)
 
-      },
-    },
 
   ];
 
