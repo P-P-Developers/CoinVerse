@@ -1,4 +1,4 @@
-const db = require("../Backend/App/Models")
+const db = require("../Models")
 const forexlivedata = db.forexlivedata
 
 module.exports = function (app, io) {

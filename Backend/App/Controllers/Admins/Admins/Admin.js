@@ -1873,13 +1873,26 @@ class Admin {
     }
   }
 
+  // async Downloadapk(req, res) {
+  //   res.download(apkPath, "application.apk", (err) => {
+  //     if (err) {
+  //       res.status(500).send("Error downloading file");
+  //     }
+  //   });
+  // }
+  
   async Downloadapk(req, res) {
-    res.download(apkPath, "application.apk", (err) => {
-      if (err) {
-        res.status(500).send("Error downloading file");
-      }
-    });
-  }
+
+  // Optionally, set content type header (APK ka mime type hai application/vnd.android.package-archive)
+  res.setHeader("Content-Type", "application/vnd.android.package-archive");
+
+  res.download(apkPath, "application.apk", (err) => {
+    if (err) {
+      console.error("Error downloading APK:", err);
+      return res.status(500).send("Error downloading file");
+    }
+  });
+}
 
   async GetBonusDetails(req, res) {
     try {
