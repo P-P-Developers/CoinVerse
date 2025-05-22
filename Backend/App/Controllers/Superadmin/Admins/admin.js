@@ -954,11 +954,7 @@ class Superadmin {
   async getCompany(req, res) {
     try {
       const company = await Company.findOne();
-      const token = req.cookies.token;
-      if (!token) {
-        return res.json({ message: "No token provided",status: false,data: [] });
-      }
-
+ 
       if (!company) {
         return res.json({
           status: false,
