@@ -234,7 +234,7 @@ const Admin = () => {
             <div className="card transaction-table">
               <div className="card-header border-0 flex-wrap pb-0">
                 <div className="mb-2">
-                  <h4 className="card-title">All Admins</h4>
+                  <h4 className="card-title">👩‍💼 All Admins </h4>
                 </div>
                 <Link
                   to="/superadmin/addmin"

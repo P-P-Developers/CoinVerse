@@ -261,6 +261,8 @@ const Deposit = () => {
               <div className="col-xl-12">
                 <div className="card dz-card" id="nav-pills">
                   <div className="card-header flex-wrap border-0">
+                    <h4 className="card-title">🏦 Deposit History</h4>
+
                   </div>
 
                   <div className="card-body pt-0">

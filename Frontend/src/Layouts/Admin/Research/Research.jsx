@@ -226,7 +226,8 @@ const Research = () => {
           <div className="card transaction-table">
             <div className="container-fluid py-4">
               <div className="d-flex justify-content-between align-items-center mb-3">
-                <h4 className="fw-bold mb-0">Research</h4>
+                                    <h4 className="card-title">📈 Trade Research</h4>
+
                 <Button
                   onClick={() => {
                     setShowModal(true);

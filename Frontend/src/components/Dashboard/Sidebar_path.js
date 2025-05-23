@@ -138,7 +138,7 @@ export const admin_header = [
   },
   {
     id: 13,
-    name: "Sign Up Request",
+    name: "Sign Up",
     icon: "fa fa-dollar-sign",
     route: "/admin/signup",
   },

@@ -131,7 +131,7 @@ const Signup = () => {
               <div className="card transaction-table">
                 <div className="card-header border-0 flex-wrap pb-0">
                   <div className="mb-4">
-                    <h4 className="card-title">Sign Up Request</h4>
+                    <h4 className="card-title">📝 New User Sign-Ups</h4>
                   </div>
                 </div>
                 <div className="card-body p-0">
