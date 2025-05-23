@@ -97,7 +97,6 @@ const UpdateAdmin = () => {
 
       try {
 
-       
         const response = await Update_admin(data);
         if (response.status) {
           Swal.fire({
