@@ -314,3 +314,17 @@ export async function GetAdminBalanceWithPosition(data, token) {
       await err;
   }
 }
+
+
+export async function getAdminLogsAPI(data, token) {
+  try {
+    const res = await axios.post(`${Config.base_url}getAdminLogs`, data, {
+      data: {},
+    })
+    return await res?.data;
+  }
+  catch (err) {
+    return
+      await err;
+  }
+}

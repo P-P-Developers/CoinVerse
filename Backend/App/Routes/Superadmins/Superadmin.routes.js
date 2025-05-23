@@ -25,6 +25,7 @@ const {
   gettradehistory,
   GetAdminBalanceWithPosition,
   getAdminName,
+  getAdminLogs,
 } = require("../../Controllers/Superadmin/Admins/admin");
 
 const {
@@ -58,5 +59,7 @@ router.post("/gettradehistory", gettradehistory);
 
 router.post("/getAdminUserName", GetAdminUserName);
 router.post("/GetAdminBalanceWithPosition", GetAdminBalanceWithPosition);
+
+router.post("/getAdminLogs", getAdminLogs);
 
 module.exports = router;

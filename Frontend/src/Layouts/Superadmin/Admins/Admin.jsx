@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
 import {
+  getAdminLogsAPI,
   getUserdata,
   updateActivestatus,
 } from "../../../Services/Superadmin/Superadmin";
@@ -8,7 +9,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Pencil, Eye } from "lucide-react";
 import Swal from "sweetalert2";
 import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
-import { use } from "react";
+import { Modal, Button } from "react-bootstrap";
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -23,6 +24,8 @@ const Admin = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilters, setSelectedFilters] = useState([]);
   const [getActiveInactive, setActiveInactive] = useState(location.state?.status || "all");
+  const [logsModalOpen, setLogsModalOpen] = useState(false);
+  const [logsData, setLogsData] = useState([]);
 
 
 
@@ -113,6 +116,20 @@ const Admin = () => {
         );
       },
     },
+     {
+      Header: "Logs",
+      accessor: "",
+      Cell: ({ cell }) => {
+        return (
+          <div>
+            <Eye
+              style={{ cursor: "pointer", color: "#33B469" }}
+              onClick={() => AdminLogs(cell.row._id)}
+            />
+          </div>
+        );
+      },
+    },
     {
       Header: "Employee",
       accessor: "Employee",
@@ -139,6 +156,13 @@ const Admin = () => {
 
   const AdminUserdetail = (_id) => {
     navigate(`adminuser/${_id}`);
+  };
+
+  const AdminLogs = async (_id) => {
+    const data = { id: _id };
+    const response = await getAdminLogsAPI(data);
+    setLogsData(response.data || []);
+    setLogsModalOpen(true);
   };
 
   const AdminEmployeedetail = (_id) => {
@@ -228,6 +252,65 @@ const Admin = () => {
 
   return (
     <>
+      {/* Logs Modal */}
+      <Modal show={logsModalOpen} onHide={() => setLogsModalOpen(false)} size="lg" centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Admin Logs</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="overflow-auto" style={{ maxHeight: "70vh" }}>
+          {logsData.length === 0 ? (
+            <div className="text-center">No logs found.</div>
+          ) : (
+            <div className="table-responsive">
+              <table className="table table-bordered table-sm">
+                <thead className="table-light">
+                  <tr>
+                    <th>S.No</th>
+                    <th>Field</th>
+                    <th>Old Value</th>
+                    <th>New Value</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(() => {
+                    let serial = 1;
+                    const rows = [];
+                    logsData.forEach((log) => {
+                      if (log.changes && log.changes.length > 0) {
+                        log.changes.forEach((change) => {
+                          rows.push(
+                            <tr key={`${log._id}-${serial}`}>
+                              <td>{serial++}</td>
+                              <td>{change.field}</td>
+                              <td>{change.oldValue === true ? 'Checked' : change.oldValue === false ? 'Unchecked' : String(change.oldValue)}</td>
+                              <td>{change.newValue === true ? 'Checked' : change.newValue === false ? 'Unchecked' : String(change.newValue)}</td>
+                              <td>{log.timestamp ? fDateTimesec(log.timestamp) : "-"}</td>
+                            </tr>
+                          );
+                        });
+                      } else {
+                        rows.push(
+                          <tr key={`${log._id}-nochange`}>
+                            <td>{serial++}</td>
+                            <td colSpan={4} className="text-center">No changes</td>
+                          </tr>
+                        );
+                      }
+                    });
+                    return rows;
+                  })()}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setLogsModalOpen(false)}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
       <div className="container-fluid">
         <div className="row">
           <div className="col-lg-12">
