@@ -217,7 +217,6 @@ class Auth {
         data: result,
       });
     } catch (error) {
-      console.error("Error in SignIn:", error);
 
       return res.json({
         status: false,

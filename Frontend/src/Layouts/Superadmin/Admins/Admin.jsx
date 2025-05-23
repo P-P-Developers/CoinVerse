@@ -3,50 +3,32 @@ import Table from "../../../Utils/Table/Table";
 import {
   getUserdata,
   updateActivestatus,
-  Delete_Admin,
 } from "../../../Services/Superadmin/Superadmin";
-import { Link, useNavigate } from "react-router-dom";
-import { CirclePlus, Pencil, Trash2, Eye } from "lucide-react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Pencil, Eye } from "lucide-react";
 import Swal from "sweetalert2";
-import {
-  MarginpriceRequired,
-  updateuserLicence,
-} from "../../../Services/Admin/Addmin";
 import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
-
+import { use } from "react";
 
 const Admin = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const userDetails = JSON.parse(localStorage.getItem("user_details"));
   const user_id = userDetails?.user_id;
 
   const [data, setData] = useState([]);
-  const [license, setLicence] = useState(false);
-  const [licenseid, setLicenceId] = useState("");
-  const [licencevalue, setLicencevalue] = useState("");
   const [loading, setLoading] = useState(false);
-  const [rowId, setRowId] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
-  const [formData, setFormData] = useState({
-    crypto: "",
-    forex: "",
-    dollarprice: "",
-  });
   const [selectedFilters, setSelectedFilters] = useState([]);
+  const [getActiveInactive, setActiveInactive] = useState(location.state?.status || "all");
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
+
 
   useEffect(() => {
     getAllAdmin();
-  }, [searchTerm, selectedFilters]);
+  }, [searchTerm, selectedFilters, getActiveInactive]);
 
   const handleFilterChange = (e) => {
     const { value, checked } = e.target;
@@ -73,8 +55,6 @@ const Admin = () => {
 
   const isAllSelected = selectedFilters.length === 4;
 
- 
-
   const columns = [
     // { Header: "FullName", accessor: "FullName" },
     { Header: "UserName", accessor: "UserName" },
@@ -92,7 +72,9 @@ const Admin = () => {
             className="form-check-input"
             type="checkbox"
             onChange={(event) => updateactivestatus(event, cell.row._id)}
-            defaultChecked={cell.value == 1}
+            // defaultChecked={cell.value == 1}
+
+            checked={cell.value == 1}
           />
           <label
             htmlFor={`rating_${cell.row.id}`}
@@ -101,7 +83,7 @@ const Admin = () => {
         </label>
       ),
     },
-    
+
     {
       Header: "Action",
       accessor: "Action",
@@ -112,13 +94,11 @@ const Admin = () => {
               style={{ cursor: "pointer", color: "#33B469" }}
               onClick={() => updateAdmin(cell.row._id, cell)}
             />
-          
           </div>
         );
       },
     },
 
- 
     {
       Header: "User",
       accessor: "Admin_User",
@@ -147,14 +127,14 @@ const Admin = () => {
         );
       },
     },
-   
-      {
-            Header: "Create Date",
-            accessor: "createdAt",
-            Cell: ({ cell }) => {
-              return cell.value ? fDateTimesec(cell.value): "";
-            },
-          },
+
+    {
+      Header: "Create Date",
+      accessor: "createdAt",
+      Cell: ({ cell }) => {
+        return cell.value ? fDateTimesec(cell.value) : "";
+      },
+    },
   ];
 
   const AdminUserdetail = (_id) => {
@@ -165,69 +145,8 @@ const Admin = () => {
     navigate(`adminemployee/${_id}`);
   };
 
-  const AdminBrokerageDetail = (row) => {
-    navigate(`/superadmin/brokerage/${row._id}`, { state: { rowData: row } });
-  };
-
-  const DeleteAdmin = async (_id) => {
-    try {
-      const confirmResult = await Swal.fire({
-        title: "Are you sure?",
-        text: "You will not be able to recover this user!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!",
-      });
-
-      if (confirmResult.isConfirmed) {
-        const data = { id: _id };
-        await Delete_Admin(data);
-
-        Swal.fire({
-          icon: "success",
-          title: "User Deleted",
-          text: "The user has been deleted successfully.",
-        });
-
-        getAllAdmin();
-      }
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Deletion Failed",
-        text: "There was an error deleting the user. Please try again.",
-      });
-    }
-  };
-
   const updateAdmin = (_id, obj) => {
     navigate(`updateadmin/${_id}`, { state: { rowData: obj.row } });
-  };
-
-  const updateLicence = async () => {
-    try {
-      await updateuserLicence({
-        id: licenseid,
-        Licence: licencevalue,
-        parent_Id: user_id,
-      });
-
-      Swal.fire({
-        icon: "success",
-        title: "Licence Updated",
-        text: "The Licence has been updated successfully.",
-      });
-      getAllAdmin();
-      setLicence(false);
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Update Failed",
-        text: "There was an error updating the Licence. Please try again.",
-      });
-    }
   };
 
   const updateactivestatus = async (event, id) => {
@@ -252,7 +171,9 @@ const Admin = () => {
             timerProgressBar: true,
           });
           setTimeout(() => {
-            Swal.close(); // Close the modal
+            Swal.close();
+
+            getAllAdmin();
           }, 1000);
         }
       } catch (error) {
@@ -270,22 +191,39 @@ const Admin = () => {
   const getAllAdmin = async () => {
     setLoading(true);
     const data = { id: user_id };
+
     try {
       const response = await getUserdata(data);
 
-      const filteredData = response.data.filter(
-        (item) =>
-          (item.FullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.UserName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.Email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.PhoneNo.toLowerCase().includes(searchTerm.toLowerCase())) &&
-          (selectedFilters.length === 0 ||
-            selectedFilters.some((filter) => item[filter]))
-      );
-      setData(filteredData);
+      const finalData = response.data.filter((item) => {
+        // Search match
+        const matchesSearch =
+          searchTerm.trim() === "" ||
+          item.FullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.UserName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.Email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.PhoneNo.toLowerCase().includes(searchTerm.toLowerCase());
 
+        // Status match
+        const matchesStatus =
+          getActiveInactive === "all" ||
+          (getActiveInactive === "Active" && item.ActiveStatus == 1) ||
+          (getActiveInactive === "Inactive" && item.ActiveStatus == 0);
+
+        // Filter checkbox match
+        const matchesFilters =
+          selectedFilters.length === 0 ||
+          selectedFilters.some((filter) => item[filter]);
+
+        return matchesSearch && matchesStatus && matchesFilters;
+      });
+
+      setData(finalData);
+    } catch (error) {
+
+    } finally {
       setLoading(false);
-    } catch (error) {}
+    }
   };
 
   return (
@@ -326,10 +264,30 @@ const Admin = () => {
                           id="searchInput"
                           type="text"
                           className="form-control"
-                          placeholder="Search Here"
+                          placeholder="Search here..."
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
                         />
+                      </div>
+
+                      {/* Active / Inactive Filter */}
+                      <div className="col-md-3 mb-2">
+                        <label
+                          htmlFor="statusSelect"
+                          className="form-label fw-bold"
+                        >
+                          Active / Inactive
+                        </label>
+                        <select
+                          id="statusSelect"
+                          className="form-select"
+                          value={getActiveInactive}
+                          onChange={(e) => setActiveInactive(e.target.value)}
+                        >
+                          <option value="all">All</option>
+                          <option value="Active">Active</option>
+                          <option value="Inactive">Inactive</option>
+                        </select>
                       </div>
 
                       {/* Filter Dropdown */}
@@ -421,10 +379,6 @@ const Admin = () => {
           </div>
         </div>
       </div>
-
- 
-
- 
     </>
   );
 };

@@ -700,9 +700,7 @@ class Admin {
               "Withdrawal Accepted",
               "Your withdrawal request has been accepted successfully."
             );
-          } else {
-            console.warn("DeviceToken not found for user:", findUser._id);
-          }
+          } 
 
           return res.json({
             status: true,
@@ -1423,7 +1421,7 @@ class Admin {
         data: research,
       });
     } catch (error) {
-      console.log("Error in EditResearch:", error);
+
     }
   }
 
@@ -1445,7 +1443,7 @@ class Admin {
         data: result,
       });
     } catch (error) {
-      console.error("Error in DeleteResearch:", error);
+     
     }
   }
 
@@ -1522,7 +1520,7 @@ class Admin {
         data: updatedUpiDetails,
       });
     } catch (error) {
-      console.error("Error in UpdateUpiDetails:", error);
+
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1546,7 +1544,7 @@ class Admin {
         data: GetData,
       });
     } catch (error) {
-      console.error("Error in getUpiDetails:", error);
+    
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1581,7 +1579,7 @@ class Admin {
         data: updatedPrimaryBank,
       });
     } catch (error) {
-      console.error("Error in setPrimaryBank:", error);
+
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1676,7 +1674,7 @@ class Admin {
         data: updatedBankDetails,
       });
     } catch (error) {
-      console.error("Error in updateBankDetails:", error);
+
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1764,7 +1762,7 @@ class Admin {
       }).sort({ timestamp: 1 });
       res.json({ success: true, messages });
     } catch (error) {
-      console.error("Error in getMessages:", error);
+   
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1782,7 +1780,7 @@ class Admin {
       });
       res.json({ success: true, conversations: convos });
     } catch (error) {
-      console.error("Error in getConversations:", error);
+     
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1826,7 +1824,7 @@ class Admin {
         url: GetCompany[0]?.loginUrl + "/" + referralCode,
       });
     } catch (error) {
-      console.error("Error in GetReferralCode:", error);
+  
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1864,7 +1862,7 @@ class Admin {
         data: user,
       });
     } catch (error) {
-      console.error("Error in UpdateReferPrice:", error);
+     
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1957,7 +1955,7 @@ class Admin {
         CompletedBrokrageandBonus: ProfitBalanceTotal?.ProfitBalance || 0,
       });
     } catch (error) {
-      console.error("Error in GetBonusDetails:", error);
+ 
       return res.json({
         status: false,
         message: "Internal server error",

@@ -65,6 +65,8 @@ const Table = ({
     );
   }
 
+
+
   return (
     <div>
       <div className={tableContainerClassName}>
