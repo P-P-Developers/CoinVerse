@@ -230,7 +230,7 @@ const UpdateAdmin = () => {
     {
       name: "AddClientBonus",
       label: "Add Client Bonus",
-      type: "text",
+      type: "number",
       label_size: 12,
       col_size: 6,
       showWhen: (values) => values.FixedPerClient,
@@ -246,7 +246,7 @@ const UpdateAdmin = () => {
     {
       name: "FundLessThan100",
       label: "Fund < 100",
-      type: "text",
+      type: "number",
       label_size: 12,
       col_size: 6,
       disable: formik.values.FundAdd ? false : true,
@@ -254,7 +254,7 @@ const UpdateAdmin = () => {
     {
       name: "FundLessThan500",
       label: "Fund < 500",
-      type: "text",
+      type: "number",
       label_size: 12,
       col_size: 6,
       disable: formik.values.FundAdd ? false : true,
@@ -263,7 +263,7 @@ const UpdateAdmin = () => {
     {
       name: "FundLessThan1000",
       label: "Fund < 1000",
-      type: "text",
+      type: "number",
       label_size: 12,
       col_size: 6,
       disable: formik.values.FundAdd ? false : true,
@@ -272,7 +272,7 @@ const UpdateAdmin = () => {
     {
       name: "FundGreaterThan1000",
       label: "Fund > 1000",
-      type: "text",
+      type: "number",
       label_size: 12,
       col_size: 6,
       disable: formik.values.FundAdd ? false : true,
@@ -289,7 +289,7 @@ const UpdateAdmin = () => {
     {
       name: "FixedTransactionPercent",
       label: "Fixed Transaction %",
-      type: "text",
+      type: "text4",
       label_size: 12,
       col_size: 6,
       showWhen: (values) => values.EveryTransaction,
@@ -307,7 +307,7 @@ const UpdateAdmin = () => {
     {
       name: "NetTransaction",
       label: "Net Trasaction %",
-      type: "text",
+      type: "text4",
       label_size: 12,
       col_size: 6,
       disable: true,
