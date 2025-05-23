@@ -502,7 +502,7 @@ const Brokerage = () => {
                           <tr key={index}>
                             <td>{index + 1}</td>
                             <td>
-                              {log.balance ? log.balance.toFixed(4) : "-"}
+                              {log.balance ? log.balance: "-"}
                             </td>
                             <td>{fDateTimesec(log.createdAt)}</td>
                           </tr>
