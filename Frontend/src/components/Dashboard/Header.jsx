@@ -59,7 +59,6 @@ const Header = () => {
     if (element) {
       element.classList.toggle("menu-toggle");
     } else {
-     
     }
   };
 
@@ -92,18 +91,14 @@ const Header = () => {
     try {
       const response = await LogoutUser({ userid: user_id });
       if (response.status) localStorage.clear();
-    } catch (error) {
-     
-    }
+    } catch (error) {}
   };
 
   const getNotifications = async () => {
     try {
       const response = await getbroadcastmessageforuser({ userid: user_id });
       if (response.status) setNotification(response.data);
-    } catch (error) {
-    
-    }
+    } catch (error) {}
   };
 
   const isTokenExpired = () => {
@@ -186,56 +181,59 @@ const Header = () => {
                     {/* // )} */}
                   </a>
                 </li>
+                {user_role === "ADMIN" && (
+                 <li className="nav-item dropdown notification_dropdown">
+  <a
+    href="#"
+    className="nav-link"
+    role="button"
+    data-bs-toggle="dropdown"
+    aria-expanded="false"
+  >
+    <i className="fa fa-bell" style={{ color: "white" }} />
+  </a>
+  <div className="dropdown-menu dropdown-menu-end of-visible">
+    <div
+      id="DZ_W_Notification3"
+      className="widget-media dlab-scroll p-3"
+      // style={{ height: 380 }}
+    >
+      <ul className="timeline">
+        {notification.length === 0 ? (
+          <p className="text-center text-muted">No new notifications</p>
+        ) : (
+          notification.map((item) => (
+            <li key={item.id}>
+              <div className="timeline-panel">
+                <div className="media me-2">
+                  <img
+                    alt={`Avatar of ${item.UserName}`}
+                    width={40}
+                    src="/assets/images/avatar/1.png"
+                  />
+                </div>
+                <div className="media-body">
+                  <h6 className="mb-1">{item.message}</h6>
+                  <small className="d-block">
+                    {fDateTime(item.createdAt)}
+                  </small>
+                </div>
+                <h6 className="mb-4">{item.UserName}</h6>
+              </div>
+            </li>
+          ))
+        )}
+      </ul>
+    </div>
+     {notification.length != 0 && (
+    <a href="#" className="all-notification">
+      See all notifications <i className="ti-arrow-end" />
+    </a>
+  ) }
+  </div>
+</li>
 
-                <li className="nav-item dropdown notification_dropdown">
-                  <a
-                    className="nav-link"
-                    role="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    <i
-                      className="fa fa-bell"  style={{  color: "white" }}
-                    
-                    />
-                  </a>
-                  <div className="dropdown-menu dropdown-menu-end of-visible">
-                    <div
-                      id="DZ_W_Notification3"
-                      className="widget-media dlab-scroll p-3"
-                      style={{ height: 380 }}
-                    >
-                      {user_role === "ADMIN" && (
-                        <ul className="timeline">
-                          {notification.map((item) => (
-                            <li key={item.id}>
-                              <div className="timeline-panel">
-                                <div className="media me-2">
-                                  <img
-                                    alt="image"
-                                    width={40}
-                                    src="/assets/images/avatar/1.png"
-                                  />
-                                </div>
-                                <div className="media-body">
-                                  <h6 className="mb-1">{item.message}</h6>
-                                  <small className="d-block">
-                                    {fDateTime(item.createdAt)}
-                                  </small>
-                                </div>
-                                <h6 className="mb-4">{item.UserName}</h6>
-                              </div>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                    <a className="all-notification">
-                      See all notifications <i className="ti-arrow-end" />
-                    </a>
-                  </div>
-                </li>
-
+                )}
                 <li>
                   <div className="dropdown header-profile2">
                     <a
@@ -351,11 +349,13 @@ const Header = () => {
                   ? "Trade History"
                   : formattedSegment === "Holdoff"
                   ? "Hold Off"
-                    : formattedSegment === "Changedpassword"
+                  : formattedSegment === "Changedpassword"
                   ? "Changed Password"
                   : formattedSegment === "Addemployees"
                   ? "Add Employee"
-                  : formattedSegment == "Basicsetting" ? "Basic Settings" :formattedSegment}
+                  : formattedSegment == "Basicsetting"
+                  ? "Basic Settings"
+                  : formattedSegment}
               </h2>
             </div>
           </div>

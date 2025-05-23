@@ -180,7 +180,7 @@ const Deposit = () => {
     const filteredData = filterDataBySearch(filterDataByStatus(status));
     return (
       <div className="table-responsive">
-        <div className="row align-items-center gap-4">
+        <div className="row align-items-center gap-4 mb-2">
           {/* Search Input */}
           <div className="col-lg-4">
             <label htmlFor="searchInput" className="form-label">
@@ -220,7 +220,7 @@ const Deposit = () => {
         </div>
 
         <Table
-        className='mt-5'
+        className='mt-5 '
           columns={columns}
           data={filteredData}
           rowsPerPage={rowsPerPage}
@@ -261,6 +261,8 @@ const Deposit = () => {
               <div className="col-xl-12">
                 <div className="card dz-card" id="nav-pills">
                   <div className="card-header flex-wrap border-0">
+                    <h4 className="card-title">🏦 Deposit History</h4>
+
                   </div>
 
                   <div className="card-body pt-0">

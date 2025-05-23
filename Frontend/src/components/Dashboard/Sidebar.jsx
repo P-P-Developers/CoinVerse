@@ -76,7 +76,7 @@ const Sidebar = () => {
         return "fa fa-user";
       case "currency setup":
         return "fa-regular fa-coin";
-      case "sign up request":
+      case "sign up":
         return "fa-solid fa-right-to-bracket";
       case "brokerage":
         return "fa fa-hand-holding-usd";

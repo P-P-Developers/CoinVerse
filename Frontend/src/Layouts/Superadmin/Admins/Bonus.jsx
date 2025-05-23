@@ -245,9 +245,9 @@ const Brokerage = () => {
         {/* Header */}
         <div
           className="card-header d-flex justify-content-between align-items-center"
-          style={{ background: "#f8f9fa", padding: "1rem 1.5rem" }}
+          style={{padding: "1rem 1.5rem" }}
         >
-          <h2 className="mb-0 fw-bold text-primary">🎁 Bonus Panel</h2>
+          <h2 className="mb-0 fw-bold">🎁 Bonus Panel</h2>
           <button
             className="btn btn-outline-secondary"
             onClick={() => navigate(-1)}
@@ -317,7 +317,7 @@ const Brokerage = () => {
 
           {/* Bonus Summary */}
           <div
-            className="d-flex justify-content-between flex-wrap gap-3 p-4 bg-light rounded border"
+            className="d-flex justify-content-between flex-wrap gap-3 p-4  rounded border"
             style={{
               fontSize: "1.15rem",
               fontWeight: "600",
@@ -352,7 +352,7 @@ const Brokerage = () => {
 
           {/* Balance Summary */}
           <div
-            className="d-flex justify-content-between flex-wrap gap-3 mb-4 p-4 bg-light rounded border"
+            className="d-flex justify-content-between flex-wrap gap-3 mb-4 p-4  rounded border"
             style={{
               fontSize: "1.15rem",
               fontWeight: "600",
@@ -478,7 +478,7 @@ const Brokerage = () => {
                   <button
                     type="button"
                     className="btn-close"
-                    onClick={() => setOpenModal(false)}
+                    onClick={() => {setMarginLogs([]); setOpenModal(false);}}
                   ></button>
                 </div>
                 <div className="modal-body">

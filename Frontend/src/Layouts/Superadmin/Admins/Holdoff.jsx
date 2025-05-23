@@ -114,7 +114,7 @@ const Holdoff = () => {
               <div className="card transaction-table">
                 <div className="card-header border-0 flex-wrap pb-0">
                   <div className="mb-4">
-                    <h4 className="card-title">Hold off</h4>
+                    <h4 className="card-title">⏸️ Hold off</h4>
                   </div>
                 </div>
                 <div className="card-body p-0">

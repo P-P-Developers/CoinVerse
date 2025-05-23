@@ -42929,3 +42929,8 @@ ul.nav.nav-pills.mb-4.light {
   font-size: 0.95rem;
   padding: 0.55rem 0.75rem;
 }
+.msg-body {
+  height: 400px; /* or any fixed height suitable */
+  overflow-y: auto;
+  padding-right: 10px; /* optional, for scrollbar space */
+}
