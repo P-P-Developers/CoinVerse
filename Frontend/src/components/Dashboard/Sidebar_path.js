@@ -132,9 +132,9 @@ export const admin_header = [
 
   {
     id: 12,
-    name: "Brokerage",
+    name: "Bonus",
     icon: "fe fe-arrow-up-circle",
-    route: "/admin/brokerage",
+    route: "/admin/bonus",
   },
   {
     id: 13,

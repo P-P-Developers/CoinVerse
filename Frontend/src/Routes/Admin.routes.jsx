@@ -70,7 +70,7 @@ const AdminRoutes = () => {
           />
           <Route path="/signup" element={<Signup />} />
           <Route path="/tradehistory" element={<AdminTradehistory />} />
-          <Route path="/brokerage" element={<Brokerage />} />
+          <Route path="/bonus" element={<Brokerage />} />
 
           <Route path="/research" element={<Research />} />
           <Route path="/basicsetting" element={<Basicsetting />} />
