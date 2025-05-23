@@ -196,6 +196,7 @@ const UpdateAdmin = () => {
       type: "text",
       label_size: 12,
       col_size: 6,
+      disable: true,
     },
     {
       name: "email",

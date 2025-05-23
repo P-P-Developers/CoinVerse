@@ -18,6 +18,7 @@ const Company = require("../../../Models/Company.model");
 const BonusCollectioniModel = require("../../../Models/BonusCollectioni.model");
 const { sendPushNotification } = require("../../common/firebase");
 const open_position = db.open_position;
+const AdminActivityLog = db.AdminActivityLog;
 class Superadmin {
   async AddAdmin(req, res) {
     try {
@@ -355,7 +356,7 @@ class Superadmin {
 
   async getAdminDetail(req, res) {
     try {
-      const { id, page = 1, limit = 1000} = req.body; // You can also take page/limit from req.query
+      const { id, page = 1, limit = 1000 } = req.body; // You can also take page/limit from req.query
       const skip = (page - 1) * limit;
 
       // Step 1: Get paginated users
@@ -391,14 +392,14 @@ class Superadmin {
         status: true,
         message: "Getting data",
         data: result,
-        
+
       });
     } catch (error) {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
 
-  
+
   //  async getAdminDetail(req, res) {
   //   try {
   //     const { id, page = 1, limit = 10 } = req.body; // You can also take page/limit from req.query
@@ -448,7 +449,7 @@ class Superadmin {
   //     return res.json({ status: false, message: "Internal error", data: [] });
   //   }
   // }
-   
+
   async UpdateActiveStatusAdmin(req, res) {
     try {
       const { id, user_active_status } = req.body;
@@ -481,7 +482,7 @@ class Superadmin {
           data: result,
         });
       }
-    } catch (error) {}
+    } catch (error) { }
   }
 
   // admin history
@@ -531,32 +532,161 @@ class Superadmin {
     }
   }
 
+  // async Update_Admin(req, res) {
+  //   try {
+  //     const data = req.body;
+  //     const id = req.body.id;
+
+  //     const filter = { _id: id, Role: "ADMIN" };
+  //     const updateOperation = { $set: data };
+
+  //     const result = await User_model.updateOne(filter, updateOperation);
+
+  //     if (result.nModified === 0) {
+  //       return res.json({
+  //         status: false,
+  //         message: "Data not Updated",
+  //         data: [],
+  //       });
+  //     }
+  //     return res.json({ status: true, message: "Data updated", data: result });
+  //   } catch (error) {
+  //     return res.json({
+  //       status: false,
+  //       message: "Internal server error",
+  //       error: error.message,
+  //     });
+  //   }
+  // }
+
+
+
+  // async Update_Admin(req, res) {
+  //   try {
+  //     const data = req.body;
+  //     const id = data.id;
+
+  //     const filter = { _id: id, Role: "ADMIN" };
+
+  //     const oldUser = await User_model.findOne(filter).lean();
+  //     if (!oldUser) {
+  //       return res.status(404).json({
+  //         status: false,
+  //         message: "Admin not found",
+  //       });
+  //     }
+
+  //     const changes = [];
+  //     for (const key in data) {
+  //       if ( key !== "_id" && data[key] !== undefined && data[key] !== oldUser[key]) {
+  //         changes.push({
+  //           field: key,
+  //           oldValue: oldUser[key],
+  //           newValue: data[key],
+  //         });
+  //       }
+  //     }
+
+  //     if (changes.length === 0) {
+  //       return res.json({ status: false, message: "No changes detected" });
+  //     }
+
+  //     const updateOperation = { $set: data };
+  //     await User_model.updateOne(filter, updateOperation);
+
+  //     const message = changes
+  //       .map(
+  //         (c) => `${c.field}: 'Old Value : ${c.oldValue ?? ""}' → 'Updated Value : ${c.newValue ?? ""}'`
+  //       )
+  //       .join(", ");
+
+  //     // Step 5: Save activity log
+  //     await AdminActivityLog.create({
+  //       userId: id, 
+  //       changes,
+  //       message,
+  //     });
+
+  //     return res.json({
+  //       status: true,
+  //       message: "Admin updated successfully",
+  //       changes,
+  //     });
+  //   } catch (error) {
+  //     return res.status(500).json({
+  //       status: false,
+  //       message: "Internal server error",
+  //       error: error.message,
+  //     });
+  //   }
+  // }
+
+
   async Update_Admin(req, res) {
     try {
-      const data = req.body;
-      const id = req.body.id;
+      const data = { ...req.body }; // clone to avoid mutation 
+      const id = data.id;
+
+
+      delete data._id;
+      delete data.id;
 
       const filter = { _id: id, Role: "ADMIN" };
-      const updateOperation = { $set: data };
 
-      const result = await User_model.updateOne(filter, updateOperation);
-
-      if (result.nModified === 0) {
-        return res.json({
+      const oldUser = await User_model.findOne(filter).lean();
+      if (!oldUser) {
+        return res.status(404).json({
           status: false,
-          message: "Data not Updated",
-          data: [],
+          message: "Admin not found",
         });
       }
-      return res.json({ status: true, message: "Data updated", data: result });
-    } catch (error) {
+
+      const changes = [];
+      for (const key in data) {
+        if (data[key] !== undefined && data[key] !== oldUser[key]) {
+          changes.push({
+            field: key,
+            oldValue: oldUser[key],
+            newValue: data[key],
+          });
+        }
+      }
+
+      if (changes.length === 0) {
+        return res.json({ status: false, message: "No changes detected" });
+      }
+
+      const updateOperation = { $set: data };
+      await User_model.updateOne(filter, updateOperation);
+
+      const message = changes
+        .map(
+          (c) =>
+            `${c.field}: 'Old Value : ${c.oldValue ?? ""}' → 'Updated Value : ${c.newValue ?? ""}'`
+        )
+        .join(", ");
+
+      await AdminActivityLog.create({
+        userId: id,
+        changes,
+        message,
+      });
+
       return res.json({
+        status: true,
+        message: "Admin updated successfully",
+        changes,
+      });
+    } catch (error) {
+      return res.status(500).json({
         status: false,
         message: "Internal server error",
         error: error.message,
       });
     }
   }
+
+
 
   // deleted admin
   async Delete_Admin(req, res) {
@@ -1166,42 +1296,42 @@ class Superadmin {
     }
   }
 
-async GetAdminBalanceWithPosition(req, res) {
-  try {
-    const { admin_id } = req.body;
+  async GetAdminBalanceWithPosition(req, res) {
+    try {
+      const { admin_id } = req.body;
 
-    if (!admin_id) {
-      return res.json({
-        status: false,
-        message: "Admin ID is required",
-        data: [],
-      });
-    }
+      if (!admin_id) {
+        return res.json({
+          status: false,
+          message: "Admin ID is required",
+          data: [],
+        });
+      }
 
-    // Total user balance and count
-    const result = await User_model.aggregate([
-      { $match: { parent_id: admin_id } },
-      {
-        $group: {
-          _id: null,
-          totalBalance: { $sum: "$Balance" },
-          userCount: { $sum: 1 },
+      // Total user balance and count
+      const result = await User_model.aggregate([
+        { $match: { parent_id: admin_id } },
+        {
+          $group: {
+            _id: null,
+            totalBalance: { $sum: "$Balance" },
+            userCount: { $sum: 1 },
+          },
         },
-      },
-      {
-        $project: {
-          _id: 0,
-          totalBalance: { $round: ["$totalBalance", 2] },
-          userCount: 1,
+        {
+          $project: {
+            _id: 0,
+            totalBalance: { $round: ["$totalBalance", 2] },
+            userCount: 1,
+          },
         },
-      },
-    ]);
+      ]);
 
-    const adminInfo = await User_model.findOne({ _id: admin_id }).select("ProfitBalance ProfitMargin");
-    const { ProfitBalance = 0, ProfitMargin = 0 } = adminInfo || {};
+      const adminInfo = await User_model.findOne({ _id: admin_id }).select("ProfitBalance ProfitMargin");
+      const { ProfitBalance = 0, ProfitMargin = 0 } = adminInfo || {};
 
-    // Open positions and PnL
-    const openPositions = await open_position.find({ adminid: admin_id }).toArray();
+      // Open positions and PnL
+      const openPositions = await open_position.find({ adminid: admin_id }).toArray();
 
       let totalPnL = 0;
 
