@@ -355,7 +355,7 @@ class Superadmin {
 
   async getAdminDetail(req, res) {
     try {
-      const { id, page = 1, limit = 10 } = req.body; // You can also take page/limit from req.query
+      const { id, page = 1, limit = 1000} = req.body; // You can also take page/limit from req.query
       const skip = (page - 1) * limit;
 
       // Step 1: Get paginated users
@@ -390,13 +390,8 @@ class Superadmin {
       return res.json({
         status: true,
         message: "Getting data",
-        data: combinedData,
-        pagination: {
-          total: totalCount,
-          page: Number(page),
-          limit: Number(limit),
-          totalPages: Math.ceil(totalCount / limit),
-        },
+        data: result,
+        
       });
     } catch (error) {
       return res.json({ status: false, message: "Internal error", data: [] });
@@ -1004,7 +999,6 @@ class Superadmin {
   async getCompany(req, res) {
     try {
       const company = await Company.findOne();
- 
 
       if (!company) {
         return res.json({
@@ -1172,33 +1166,42 @@ class Superadmin {
     }
   }
 
-  async GetAdminBalanceWithPosition(req, res) {
-    try {
-      const { admin_id } = req.body;
+async GetAdminBalanceWithPosition(req, res) {
+  try {
+    const { admin_id } = req.body;
 
-      if (!admin_id) {
-        return res.json({
-          status: false,
-          message: "Admin ID is required",
-          data: [],
-        });
-      }
+    if (!admin_id) {
+      return res.json({
+        status: false,
+        message: "Admin ID is required",
+        data: [],
+      });
+    }
 
-      // MongoDB Aggregation for sum and count
-      const result = await User_model.aggregate([
-        { $match: { parent_id: admin_id } },
-        {
-          $group: {
-            _id: null,
-            totalBalance: { $sum: "$Balance" },
-            userCount: { $sum: 1 },
-          },
+    // Total user balance and count
+    const result = await User_model.aggregate([
+      { $match: { parent_id: admin_id } },
+      {
+        $group: {
+          _id: null,
+          totalBalance: { $sum: "$Balance" },
+          userCount: { $sum: 1 },
         },
-      ]);
+      },
+      {
+        $project: {
+          _id: 0,
+          totalBalance: { $round: ["$totalBalance", 2] },
+          userCount: 1,
+        },
+      },
+    ]);
 
-      const openPositions = await open_position
-        .find({ adminid: admin_id })
-        .toArray();
+    const adminInfo = await User_model.findOne({ _id: admin_id }).select("ProfitBalance ProfitMargin");
+    const { ProfitBalance = 0, ProfitMargin = 0 } = adminInfo || {};
+
+    // Open positions and PnL
+    const openPositions = await open_position.find({ adminid: admin_id }).toArray();
 
       let totalPnL = 0;
 
@@ -1223,7 +1226,6 @@ class Superadmin {
 
         totalPnL += pnl;
 
-
         return {
           ...pos,
           pnl: pnl, // round to 2 decimals
@@ -1241,7 +1243,7 @@ class Superadmin {
       return res.json({
         status: true,
         message: "Balance and count fetched successfully",
-        data: { ...response, data: positionsWithPnL,totalPnL:totalPnL },
+        data: { ...response, data: positionsWithPnL, totalPnL: totalPnL },
       });
     } catch (error) {
       console.error("Error in GetAdminBalanceWithPosition:", error);

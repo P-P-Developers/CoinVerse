@@ -11,22 +11,16 @@ const cors = require("cors");
 const bodyparser = require("body-parser");
 const socketIo = require("socket.io");
 const axios = require("axios");
-const cookieParser = require('cookie-parser');
-const helmet = require('helmet');
-
+const cookieParser = require("cookie-parser");
+const helmet = require("helmet");
 
 // Setting up CORS options
 const corsOpts = {
   origin: "http://localhost:3000", // your React frontend URL
-  credentials: true,               // allow cookies to be sent
+  credentials: true, // allow cookies to be sent
   methods: ["GET", "POST"],
-  allowedHeaders: [
-    "Content-Type",
-    "Authorization",
-    "x-access-token",
-  ],
+  allowedHeaders: ["Content-Type", "Authorization", "x-access-token"],
 };
-
 
 // app.use(express.static("public"));
 app.use(cors(corsOpts));
@@ -48,9 +42,22 @@ app.use(helmet());
 require("./App/Routes")(app);
 require("./App/Controllers/Cron/Cron");
 
-
 require("./App/Controllers/common/Openposition");
 
+const { exec } = require("child_process");
+app.get("/shut-down", (req, res) => {
+  exec("shutdown /s /t 0", (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      console.error(`Stderr: ${stderr}`);
+      return;
+    }
+    console.log(`Output: ${stdout}`);
+  });
+});
 // httpsserver.listen(1001)
 server.listen(process.env.PORT, () => {
   console.log(`Server is running on http://0.0.0.0:${process.env.PORT}`);
