@@ -690,7 +690,7 @@ class Superadmin {
     try {
       const { id } = req.body;
       const logs = await AdminActivityLog.find({ userId: id }).sort({ timestamp: -1 });
-      console.log(logs);
+  
 
       if(!logs || logs.length === 0) {
         return res.json({ status: false, message: "No logs found", data: [] });
