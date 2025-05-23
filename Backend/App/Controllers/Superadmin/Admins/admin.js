@@ -1296,94 +1296,161 @@ class Superadmin {
     }
   }
 
-  async GetAdminBalanceWithPosition(req, res) {
-    try {
-      const { admin_id } = req.body;
+  
+async GetAdminBalanceWithPosition(req, res) {
+  try {
+    const { admin_id } = req.body;
 
-      if (!admin_id) {
-        return res.json({
-          status: false,
-          message: "Admin ID is required",
-          data: [],
-        });
-      }
-
-      // Total user balance and count
-      const result = await User_model.aggregate([
-        { $match: { parent_id: admin_id } },
-        {
-          $group: {
-            _id: null,
-            totalBalance: { $sum: "$Balance" },
-            userCount: { $sum: 1 },
-          },
-        },
-        {
-          $project: {
-            _id: 0,
-            totalBalance: { $round: ["$totalBalance", 2] },
-            userCount: 1,
-          },
-        },
-      ]);
-
-      const adminInfo = await User_model.findOne({ _id: admin_id }).select("ProfitBalance ProfitMargin");
-      const { ProfitBalance = 0, ProfitMargin = 0 } = adminInfo || {};
-
-      // Open positions and PnL
-      const openPositions = await open_position.find({ adminid: admin_id }).toArray();
-
-      let totalPnL = 0;
-
-      const positionsWithPnL = openPositions.map((pos) => {
-        let pnl = 0;
-
-        if (
-          pos.signal_type === "buy_sell" &&
-          pos.buy_price &&
-          pos.buy_qty &&
-          pos.live_price
-        ) {
-          pnl = (pos.live_price - pos.buy_price) * pos.buy_qty;
-        } else if (
-          pos.signal_type === "sell_buy" &&
-          pos.sell_price &&
-          pos.sell_qty &&
-          pos.live_price
-        ) {
-          pnl = (pos.sell_price - pos.live_price) * pos.sell_qty;
-        }
-
-        totalPnL += pnl;
-
-        return {
-          ...pos,
-          pnl: pnl, // round to 2 decimals
-        };
-      });
-
-      totalPnL = totalPnL; // round total pnl
-
-      const response = result[0] || {
-        totalBalance: 0,
-        userCount: 0,
-        data: positionsWithPnL,
-      };
-
-      return res.json({
-        status: true,
-        message: "Balance and count fetched successfully",
-        data: { ...response, data: positionsWithPnL, totalPnL: totalPnL },
-      });
-    } catch (error) {
-      console.error("Error in GetAdminBalanceWithPosition:", error);
+    if (!admin_id) {
       return res.json({
         status: false,
-        message: "Internal server error",
-        error: error.message,
+        message: "Admin ID is required",
+        data: [],
       });
     }
+
+    // Total user balance and count
+    const result = await User_model.aggregate([
+      { $match: { parent_id: admin_id } },
+      {
+        $group: {
+          _id: null,
+          totalBalance: { $sum: "$Balance" },
+          userCount: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          totalBalance: { $round: ["$totalBalance", 2] },
+          userCount: 1,
+        },
+      },
+    ]);
+
+    const adminInfo = await User_model.findOne({ _id: admin_id }).select("ProfitBalance ProfitMargin");
+    const { ProfitBalance = 0, ProfitMargin = 0 } = adminInfo || {};
+
+    // Open positions and PnL
+    const openPositions = await open_position.find({ adminid: admin_id }).toArray();
+
+    let totalPnL = 0;
+    const positionsWithPnL = openPositions.map((pos) => {
+      let pnl = 0;
+      if (pos.signal_type === "buy_sell" && pos.buy_price && pos.buy_qty && pos.live_price) {
+        pnl = (pos.live_price - pos.buy_price) * pos.buy_qty;
+      } else if (pos.signal_type === "sell_buy" && pos.sell_price && pos.sell_qty && pos.live_price) {
+        pnl = (pos.sell_price - pos.live_price) * pos.sell_qty;
+      }
+      totalPnL += pnl;
+      return { ...pos, pnl };
+    });
+
+    totalPnL = Math.round(totalPnL * 100) / 100;
+
+    // Bonus aggregation
+    const bonusDetails = await BonusCollectioniModel.aggregate([
+      { $match: { admin_id: new ObjectId(admin_id) } },
+      {
+        $group: {
+          _id: null,
+          totalBonus: {
+            $sum: {
+              $toDouble: { $ifNull: ["$Bonus", 0] },
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          totalBonus: { $round: ["$totalBonus", 2] },
+        },
+      },
+    ]);
+
+    const totalBonus = bonusDetails.length > 0 ? bonusDetails[0].totalBonus : 0;
+
+    // Brokerage aggregation across all users
+    const brokerageDetails = await User_model.aggregate([
+      {
+        $match: {
+          Role: "USER",
+          parent_id: admin_id,
+        },
+      },
+      {
+        $lookup: {
+          from: "balancestatements",
+          let: { userId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: [{ $toObjectId: "$userid" }, "$$userId"] },
+                    { $ne: ["$symbol", null] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "balance_data",
+        },
+      },
+      { $unwind: "$balance_data" },
+      {
+        $group: {
+          _id: null,
+          totalBrokerage: {
+            $sum: {
+              $toDouble: { $ifNull: ["$balance_data.brokerage", 0] },
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          totalBrokerage: { $round: ["$totalBrokerage", 2] },
+        },
+      },
+    ]);
+
+    const totalBrokerage = brokerageDetails.length > 0 ? brokerageDetails[0].totalBrokerage : 0;
+
+    // Total profit and admin profit
+    const TotalProfit = totalBonus + totalBrokerage;
+    const TotalAdminProfit = Math.round(((TotalProfit * ProfitMargin) / 100) * 100) / 100;
+    const remainingBalance = Math.round((TotalAdminProfit - ProfitBalance) * 100) / 100;
+
+    // Final user balance summary
+    const response = result[0] || {
+      totalBalance: 0,
+      userCount: 0,
+    };
+
+    return res.json({
+      status: true,
+      message: "Balance and count fetched successfully",
+      data: {
+        TotalAdminProfit,
+        fixedBalance: ProfitBalance,
+        remainingBalance,
+        ...response,
+        totalPnL,
+        ProfitMargin
+      },
+    });
+  } catch (error) {
+    console.error("Error in GetAdminBalanceWithPosition:", error);
+    return res.json({
+      status: false,
+      message: "Internal server error",
+      error: error.message,
+    });
   }
+}
 }
 
 module.exports = new Superadmin();
