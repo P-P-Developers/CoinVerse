@@ -18,6 +18,8 @@ const UpdateAdmin = () => {
   const Role = userDetails?.Role;
   const user_id = userDetails?.user_id;
 
+  console.log("rowData", rowData);
+
   const formik = useFormik({
     initialValues: {
       fullName: rowData?.FullName || "",
@@ -41,7 +43,7 @@ const UpdateAdmin = () => {
       NetTransaction: "",
 
     },
-    
+
     validate: (values) => {
       let errors = {};
       if (!values.fullName) {
@@ -61,11 +63,11 @@ const UpdateAdmin = () => {
         errors.phone = "Please enter a valid 10-digit phone number.";
       }
 
-   
+
 
       return errors;
     },
-    
+
     onSubmit: async (values, { setSubmitting }) => {
       const data = {
         id: rowData?._id,
@@ -74,12 +76,28 @@ const UpdateAdmin = () => {
         Email: values.email,
         PhoneNo: values.phone,
         Licence: values.Licence,
-        // Password: values.password,
+        FixedPerClient: values.FixedPerClient,
+        AddClientBonus: values.FixedPerClient ? values.AddClientBonus : 0,
+
+        FundAdd: values.FundAdd,
+        EveryTransaction: values.FundAdd ? values.EveryTransaction : 0,
+        FundLessThan100: values.FundAdd ? values.FundLessThan100 : 0,
+        FundLessThan500: values.FundAdd ? values.FundLessThan500 : 0,
+        FundLessThan1000: values.FundAdd ? values.FundLessThan1000 : 0,
+        FundGreaterThan1000: values.FundAdd ? values.FundGreaterThan1000 : 0,
+
+        EveryTransaction: values.EveryTransaction ,
+        FixedTransactionPercent: values.EveryTransaction ? values.FixedTransactionPercent : 0,
+        NetTransactionPercent: values.NetTransactionPercent,
+        NetTransaction:  values.NetTransactionPercent ? values.NetTransaction : 0,
+
       };
 
       setSubmitting(false);
 
       try {
+
+       
         const response = await Update_admin(data);
         if (response.status) {
           Swal.fire({
@@ -134,9 +152,35 @@ const UpdateAdmin = () => {
       FixedTransactionPercent: rowData?.FixedTransactionPercent || "",
       NetTransactionPercent: rowData?.NetTransactionPercent || false,
       NetTransaction: rowData?.NetTransaction || "",
-      
+
     });
   }, [rowData]);
+
+  useEffect(() => {
+    if (formik.values.FixedPerClient) {
+      formik.setFieldValue("FundAdd", false);
+    }
+  }, [formik.values.FixedPerClient]);
+
+  useEffect(() => {
+    if (formik.values.FundAdd) {
+      formik.setFieldValue("FixedPerClient", false);
+    }
+  }, [formik.values.FundAdd]);
+
+  useEffect(() => {
+    if (formik.values.EveryTransaction) {
+      formik.setFieldValue("NetTransactionPercent", false);
+      formik.setFieldValue("NetTransaction", "");
+    }
+  }, [formik.values.EveryTransaction]);
+
+  useEffect(() => {
+    if (formik.values.NetTransactionPercent) {
+      formik.setFieldValue("EveryTransaction", false);
+      formik.setFieldValue("FixedTransactionPercent", "");
+    }
+  }, [formik.values.NetTransactionPercent]);
 
   const fields = [
     {
@@ -145,7 +189,6 @@ const UpdateAdmin = () => {
       type: "text",
       label_size: 6,
       col_size: 6,
-      disable: false,
     },
     {
       name: "username",
@@ -161,7 +204,6 @@ const UpdateAdmin = () => {
       type: "text",
       label_size: 12,
       col_size: 6,
-      disable: true,
     },
     {
       name: "phone",
@@ -169,16 +211,14 @@ const UpdateAdmin = () => {
       type: "text3",
       label_size: 12,
       col_size: 6,
-      disable: true,
     },
- 
+
     {
       name: "ProfitMargin",
       label: "Brokerage Sharing",
       type: "text4",
       label_size: 12,
       col_size: 6,
-      disable: true,
     },
 
     {
@@ -187,7 +227,6 @@ const UpdateAdmin = () => {
       type: "checkbox",
       label_size: 12,
       col_size: 12,
-      disable: true,
     },
     {
       name: "AddClientBonus",
@@ -195,16 +234,15 @@ const UpdateAdmin = () => {
       type: "text",
       label_size: 12,
       col_size: 6,
-      disable: true,
       showWhen: (values) => values.FixedPerClient,
+      disable: formik.values.FixedPerClient ? false : true,
     },
     {
       name: "FundAdd",
       label: "First-Time Funding Reward",
       type: "checkbox",
       label_size: 12,
-      col_size:  12,
-      disable: true,
+      col_size: 12,
     },
     {
       name: "FundLessThan100",
@@ -212,8 +250,7 @@ const UpdateAdmin = () => {
       type: "text",
       label_size: 12,
       col_size: 6,
-      disable: true,
-      showWhen: (values) => values.FundAdd,
+      disable: formik.values.FundAdd ? false : true,
     },
     {
       name: "FundLessThan500",
@@ -221,8 +258,8 @@ const UpdateAdmin = () => {
       type: "text",
       label_size: 12,
       col_size: 6,
-      disable: true,
-      showWhen: (values) => values.FundAdd,
+      disable: formik.values.FundAdd ? false : true,
+
     },
     {
       name: "FundLessThan1000",
@@ -230,8 +267,8 @@ const UpdateAdmin = () => {
       type: "text",
       label_size: 12,
       col_size: 6,
-      disable: true,
-      showWhen: (values) => values.FundAdd,
+      disable: formik.values.FundAdd ? false : true,
+
     },
     {
       name: "FundGreaterThan1000",
@@ -239,9 +276,9 @@ const UpdateAdmin = () => {
       type: "text",
       label_size: 12,
       col_size: 6,
-      disable: true,
+      disable: formik.values.FundAdd ? false : true,
 
-      showWhen: (values) => values.FundAdd,
+
     },
     {
       name: "EveryTransaction",
@@ -249,8 +286,6 @@ const UpdateAdmin = () => {
       type: "checkbox",
       label_size: 12,
       col_size: 12,
-      disable: true,
-
     },
     {
       name: "FixedTransactionPercent",
@@ -258,8 +293,8 @@ const UpdateAdmin = () => {
       type: "text",
       label_size: 12,
       col_size: 6,
-      disable: true,
       showWhen: (values) => values.EveryTransaction,
+      disable: formik.values.EveryTransaction ? false : true,
     },
 
     {
@@ -268,8 +303,6 @@ const UpdateAdmin = () => {
       type: "checkbox",
       label_size: 12,
       col_size: 12,
-      disable: true,
-      helperText: "Select either Every Transaction % or Net Transaction %",
     },
 
     {
@@ -280,6 +313,7 @@ const UpdateAdmin = () => {
       col_size: 6,
       disable: true,
       showWhen: (values) => values.NetTransactionPercent,
+      disable: formik.values.NetTransactionPercent ? false : true,
     },
 
   ];

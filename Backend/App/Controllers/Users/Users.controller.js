@@ -630,6 +630,368 @@ class Users {
     }
   }
 
+  async generatePin(req, res) {
+    try {
+      const { user_id, pin } = req.body;
+
+      // Validate that the pin is exactly 4 digits if it's provided
+      if (pin && !/^\d{4}$/.test(pin)) {
+        return res.send({
+          status: false,
+          message: "Pin must be a 4-digit number",
+          data: [],
+        });
+      }
+
+      const user = await User_model.findById(user_id);
+
+      if (!user) {
+        return res.send({ status: false, message: "User not found", data: [] });
+      }
+
+      user.pin = pin;
+      user.pin_status = true;
+
+      await user.save();
+
+      return res.send({
+        status: true,
+        message: "Pin generated successfully",
+        data: { user_id: user._id },
+      });
+    } catch (error) {
+      return res.send({
+        status: false,
+        message: "Server side error",
+        data: error,
+      });
+    }
+  }
+
+  async matchPin(req, res) {
+    try {
+      const { user_id, pin, fcm_token } = req.body;
+      console.log("matchPin Auth-", fcm_token)
+
+      if (pin && !/^\d{4}$/.test(pin)) {
+        return res.send({ status: false, message: "Invalid PIN", data: [] });
+      }
+
+      const user = await User_model.findById(user_id);
+
+      if (!user) {
+        return res.send({ status: false, message: "User not found", data: [] });
+      }
+
+      if (user.ActiveStatus !== "1") {
+        return res.send({
+          status: false,
+          message: "Account is not active",
+          data: [],
+        });
+      }
+
+      if (user.Role === "USER" || user.Role === "ADMIN") {
+        const currentDate = new Date();
+        const endDate = new Date(user.End_Date);
+
+        if (
+          endDate.getDate() === currentDate.getDate() &&
+          endDate.getMonth() === currentDate.getMonth() &&
+          endDate.getFullYear() === currentDate.getFullYear()
+        ) {
+          return res.send({
+            status: false,
+            message: "Account is expired",
+            data: [],
+          });
+        }
+      }
+
+      // If pin_status is false, return a message to generate the pin first
+      if (!user.pin_status) {
+        return res.send({
+          status: false,
+          message: "Please generate your PIN first",
+          data: [],
+        });
+      }
+
+      // Compare the entered pin with the stored pin
+      if (user.pin !== pin) {
+        return res.send({ status: false, message: "Incorrect pin", data: [] });
+      }
+
+      var token = jwt.sign({ id: user._id }, process.env.SECRET, {
+        expiresIn: 28800,
+      });
+
+      // Create user login log
+      const user_login = new user_logs({
+        user_Id: user._id,
+        admin_Id: user.parent_id || "",
+        UserName: user.UserName,
+        login_status: "Panel On",
+        role: user.Role,
+        DeviceToken: "",
+      });
+
+      await user_login.save();
+
+      return res.send({
+        status: true,
+        message: "Pin matched successfully",
+        data: {
+          token: token,
+          Role: user.Role,
+          user_id: user._id,
+          UserName: user.UserName,
+          ReferralCode: user.ReferralCode,
+          ReferredBy: user.ReferredBy,
+          parent_id: user.parent_id,
+        },
+      });
+    } catch (error) {
+      console.error("Error in matchPin:", error);
+      return res.send({
+        status: false,
+        message: "Server side error",
+        data: error,
+      });
+    }
+  }
+
+
+  async FingerAuth(req, res) {
+    try {
+      const { user_id, fcm_token } = req.body;
+      console.log("Login Auth-", fcm_token)
+
+
+      const user = await User_model.findById(user_id);
+
+      if (!user) {
+        return res.send({ status: false, message: "User not found", data: [] });
+      }
+
+      if (user.ActiveStatus !== "1") {
+        return res.send({
+          status: false,
+          message: "Account is not active",
+          data: [],
+        });
+      }
+
+      if (user.Role === "USER" || user.Role === "ADMIN") {
+        const currentDate = new Date();
+        const endDate = new Date(user.End_Date);
+
+        if (
+          endDate.getDate() === currentDate.getDate() &&
+          endDate.getMonth() === currentDate.getMonth() &&
+          endDate.getFullYear() === currentDate.getFullYear()
+        ) {
+          return res.send({
+            status: false,
+            message: "Account is expired",
+            data: [],
+          });
+        }
+      }
+
+      // If pin_status is false, return a message to generate the pin first
+      if (!user.pin_status) {
+        return res.send({
+          status: false,
+          message: "Please generate your PIN first",
+          data: [],
+        });
+      }
+
+
+
+      var token = jwt.sign({ id: user._id }, process.env.SECRET, {
+        expiresIn: 28800,
+      });
+
+      // Create user login log
+      const user_login = new user_logs({
+        user_Id: user._id,
+        admin_Id: user.parent_id || "",
+        UserName: user.UserName,
+        login_status: "Panel On",
+        role: user.Role,
+        DeviceToken: "",
+      });
+
+      await user_login.save();
+
+      return res.send({
+        status: true,
+        message: "Pin matched successfully",
+        data: {
+          token: token,
+          Role: user.Role,
+          user_id: user._id,
+          UserName: user.UserName,
+          ReferralCode: user.ReferralCode,
+          ReferredBy: user.ReferredBy,
+          parent_id: user.parent_id,
+        },
+      });
+    } catch (error) {
+      console.error("Error in matchPin:", error);
+      return res.send({
+        status: false,
+        message: "Server side error",
+        data: error,
+      });
+    }
+  }
+
+  async changePin(req, res) {
+    try {
+      const { user_id, pin, newPin, confirmNewPin } = req.body;
+
+      if (pin && !/^\d{4}$/.test(pin)) {
+        return res.send({
+          status: false,
+          message: "Invalid Old PIN",
+          data: [],
+        });
+      }
+      // Validate the new PIN and confirm PIN to ensure they're 4
+      if (!/^\d{4}$/.test(newPin)) {
+        return res.send({
+          status: false,
+          message: "Invalid New PIN",
+          data: [],
+        });
+      }
+
+      if (newPin !== confirmNewPin) {
+        return res.send({
+          status: false,
+          message: "New Pin and Confirm Pin don't match",
+          data: [],
+        });
+      }
+
+      const user = await User_model.findById(user_id);
+
+      if (!user) {
+        return res.send({ status: false, message: "User not found", data: [] });
+      }
+
+      if (!user.pin_status) {
+        return res.send({
+          status: false,
+          message: "Please generate your PIN first",
+          data: [],
+        });
+      }
+
+      if (user.pin !== pin) {
+        return res.send({
+          status: false,
+          message: "Incorrect Old PIN",
+          data: [],
+        });
+      }
+
+      if (newPin === pin) {
+        return res.send({
+          status: false,
+          message: "New PIN cannot be the same as the old PIN",
+          data: [],
+        });
+      }
+
+      user.pin = newPin;
+      await user.save();
+
+      return res.send({
+        status: true,
+        message: "PIN updated successfully",
+        data: [],
+      });
+    } catch (error) {
+      return res.send({
+        status: false,
+        message: "Server side error",
+        data: error,
+      });
+    }
+  }
+
+
+  async ForgotPin(req, res) {
+    try {
+      const { user_id, password, newPin } = req.body;
+
+      if (!user_id || !password || !newPin) {
+        return res.status(400).send({
+          status: false,
+          message: "Missing required fields",
+          data: [],
+        });
+      }
+
+      const user = await User_model.findOne({ _id: user_id });
+
+      if (!user) {
+        return res.status(404).send({
+          status: false,
+          message: "User does not exist",
+          data: [],
+        });
+      }
+
+      if (user.ActiveStatus !== "1") {
+        return res.status(403).send({
+          status: false,
+          message: "Account is not active",
+          data: [],
+        });
+      }
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+
+      if (!isPasswordValid) {
+        return res.status(401).send({
+          status: false,
+          message: "Incorrect password",
+          data: [],
+        });
+      }
+
+      if (!/^\d{4}$/.test(newPin)) {
+        return res.status(400).send({
+          status: false,
+          message: "New PIN must be a 4-digit number",
+          data: [],
+        });
+      }
+
+      user.pin = newPin;
+      user.pin_status = true;
+      await user.save();
+
+      return res.status(200).send({
+        status: true,
+        message: "PIN updated successfully",
+        data: [],
+      });
+
+    } catch (error) {
+      console.error("ForgotPin error:", error);
+      return res.status(500).send({
+        status: false,
+        message: "Internal server error",
+        data: error,
+      });
+    }
+  }
 
   async getUserAccountDetails(req, res) {
     try {

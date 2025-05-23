@@ -36,4 +36,5 @@ module.exports = {
   Useraccount: require("./Useraccount"),
   Conversation: require("./Conversation"),
   Message: require("./Message"),
+  AdminActivityLog: require("./AdminActivityLogs.model"), 
 };
