@@ -694,11 +694,9 @@ class Placeorder {
       const startOfDay = new Date(today.setHours(0, 0, 0, 0));
       
       const tradehistorydata = await mainorder_model.findOne({ _id: id });
-      console.log("tradehistorydata", tradehistorydata);
+    
        if (tradehistorydata.createdAt > startOfDay) {
-        console.log("Order is within the same day");
       } else {
-        console.log("Order is not within the same day");
 
         tradehistorydata.holding_dtime = new Date();
 
@@ -715,7 +713,6 @@ class Placeorder {
         data: [],
       });
     } catch (error) {
-      console.error("Error:", error);
       return res.json({
         status: false,
         message: "Internal server error",
@@ -857,7 +854,6 @@ class Placeorder {
         return res.json({ status: false, message: "Invalid request" });
       }
     } catch (error) {
-      console.error("Error placing order:", error);
       res.json({
         status: false,
         message: "internal error",
@@ -970,7 +966,6 @@ const EntryTrade = async (
       message: "Order placed",
     });
   } catch (error) {
-    console.error("Error processing buy order:", error);
     return res.json({ status: false, message: "internal error", data: [] });
   }
 };
@@ -1103,7 +1098,6 @@ const ExitTrade = async (
       message: "Order placed",
     });
   } catch (error) {
-    console.error("Error processing sell order:", error);
     return res.json({
       status: false,
       message: "An error occurred while processing the sell order",

@@ -81,7 +81,6 @@ class Users {
         data: paymentHistory,
       });
     } catch (error) {
-      console.error("Error in userWithdrawalanddeposite:", error);
       return res.json({
         status: false,
         message: "Error to request send",
@@ -110,7 +109,6 @@ class Users {
         data: result,
       });
     } catch (error) {
-      console.error("Error in getpaymenthistory:", error);
       return res.json({ status: false, message: "Server error", data: [] });
     }
   }
@@ -348,7 +346,6 @@ class Users {
         data: result,
       });
     } catch (error) {
-      console.error("Error in balanceStatementForUser:", error);
 
       return res.json({
         status: false,
@@ -432,7 +429,6 @@ class Users {
         data: enrichedData,
       });
     } catch (error) {
-      console.error("Error in tradeStatementForUser:", error);
 
       return res.json({
         status: false,
@@ -518,7 +514,6 @@ class Users {
         data: balanceStatements, // Return the enriched data
       });
     } catch (error) {
-      console.error("Error in tradeStatementForUser1:", error);
 
       return res.json({
         status: false,
@@ -620,7 +615,6 @@ class Users {
         data: DataArray.flat(), // Flatten the array of results
       });
     } catch (error) {
-      console.error("Error in tradeStatementForOrder:", error);
 
       return res.json({
         status: false,
@@ -726,7 +720,6 @@ class Users {
         expiresIn: 28800,
       });
 
-      // Create user login log
       const user_login = new user_logs({
         user_Id: user._id,
         admin_Id: user.parent_id || "",
@@ -752,7 +745,6 @@ class Users {
         },
       });
     } catch (error) {
-      console.error("Error in matchPin:", error);
       return res.send({
         status: false,
         message: "Server side error",
@@ -840,7 +832,6 @@ class Users {
         },
       });
     } catch (error) {
-      console.error("Error in matchPin:", error);
       return res.send({
         status: false,
         message: "Server side error",
@@ -1032,7 +1023,6 @@ class Users {
         data: userAccountDetails, // 👈 array of accounts
       });
     } catch (error) {
-      console.error("Error in getUserAccountDetails:", error);
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1088,7 +1078,6 @@ class Users {
         data: savedAccount,
       });
     } catch (error) {
-      console.error("Error in updateUserAccountDetails:", error.message);
       return res.status(500).json({
         status: false,
         message: "Internal server error",
