@@ -40,10 +40,17 @@ const Brokerage = () => {
     fetchAdminUsername();
   }, []);
 
+  const fetchAdminUsername = async () => {
+    try {
+      const res = await GetAdminUsername();
+
+      setAdminUsername(res?.data || []);
+    } catch (err) {}
+  };
+
   useEffect(() => {
     if (selectedAdminId && selectedAdminId._id) {
       fetchAllData();
-      // GetAdminBalanceWithPositionData();
     }
   }, [refresh, search, selectedAdminId]);
 
@@ -59,15 +66,25 @@ const Brokerage = () => {
         admin_id: selectedAdminId._id,
       });
       if (res.status) {
-        const { totalBalance, totalPnL, userCount } = res.data;
+        const {
+          totalBalance,
+          totalPnL,
+          userCount,
+          fixedBalance,
+          remainingBalance,
+          TotalAdminProfit,
+        } = res.data;
         setBalanceData({
           totalBalance: totalBalance || 0,
           totalOpenPosition: totalPnL || 0,
           totalUsersOpen: userCount || 0,
+          TotalAdminProfit: TotalAdminProfit || 0,
+
+          fixedBalance: fixedBalance || 0,
+          remainingBalance: remainingBalance || 0,
         });
       }
-    } catch (err) {
-    }
+    } catch (err) {}
   };
 
   const columns = [
@@ -104,6 +121,7 @@ const Brokerage = () => {
       Cell: ({ cell }) => (cell.value ? fDateTimesec(cell.value) : "-"),
     },
   ];
+
   const fetchAllData = async (adminId = selectedAdminId._id) => {
     if (!adminId) return;
     try {
@@ -140,35 +158,10 @@ const Brokerage = () => {
       setData(filteredBrokerage);
       setBonusData(filteredBonus);
 
-      const brokerageTotal = filteredBrokerage.reduce(
-        (acc, item) => acc + Number(item.brokerage || 0),
-        0
-      );
-      const bonusTotal = filteredBonus.reduce(
-        (acc, item) => acc + Number(item.Bonus || 0),
-        0
-      );
 
-      setProfitBalance(Number(bonusRes.CompletedBrokrageandBonus || 0));
-      setTotalBrokerage(brokerageTotal + bonusTotal);
+  
     } catch (err) {
       Swal.fire("Error", "Failed to fetch data. Please try again.", "error");
-    }
-  };
-
-  const fetchAdminUsername = async () => {
-    try {
-      const res = await GetAdminUsername();
-      const firstAdmin = res?.data?.[0];
-
-      setAdminUsername(res?.data || []);
-      setSelectedAdminId(firstAdmin);
-
-      // Wait until after admin ID is set
-      if (firstAdmin?._id) {
-        fetchAllData(firstAdmin._id); // modified to accept param
-      }
-    } catch (err) {
     }
   };
 
@@ -178,12 +171,11 @@ const Brokerage = () => {
       if (res.status) {
         setMarginLogs(res.data);
       }
-    } catch (err) {
-    }
+    } catch (err) {}
   };
 
   const clearBrokerage = async () => {
-    let amountToClear = totalBrokerage - ProfitBalance;
+    let amountToClear = BalanceData.remainingBalance;
     if (amountToClear <= 0) {
       Swal.fire("Error", "No brokerage to clear.", "error");
       return;
@@ -191,11 +183,11 @@ const Brokerage = () => {
 
     const result = await Swal.fire({
       title: "Clear Brokerage",
-      text: `Enter amount to clear (max: ${totalBrokerage - ProfitBalance})`,
+      text: `Enter amount to clear (max: ${BalanceData.remainingBalance})`,
       input: "number",
       inputAttributes: {
         min: 1,
-        max: totalBrokerage - ProfitBalance,
+        max: BalanceData.remainingBalance,
         step: 1,
       },
       showCancelButton: true,
@@ -206,12 +198,10 @@ const Brokerage = () => {
         if (
           isNaN(amount) ||
           amount <= 0 ||
-          amount > totalBrokerage - ProfitBalance
+          amount > BalanceData.remainingBalance
         ) {
           Swal.showValidationMessage(
-            `Please enter a valid amount between 1 and ${
-              totalBrokerage - ProfitBalance
-            }`
+            `Please enter a valid amount between 1 and ${BalanceData.remainingBalance}`
           );
           return false;
         }
@@ -235,7 +225,7 @@ const Brokerage = () => {
           `${amountToClear} cleared successfully`,
           "success"
         );
-        setRefresh((prev) => !prev);
+        GetAdminBalanceWithPositionData();
       }
     } catch (err) {
       Swal.fire("Error", "Failed to clear brokerage.", "error");
@@ -335,27 +325,28 @@ const Brokerage = () => {
               border: "1px solid #dcdcdc",
             }}
           >
-          <div>
-  <span style={{ color: "#007bff" }}>
-    🎁 Total
-    {selectedAdminId.brokerage && " Brokerage"}
-    {selectedAdminId.bonus && " Bonus"}:
-  </span>{" "}
-  <span className="text-dark">{totalBrokerage.toFixed(4)}</span>
-</div>
-
+            <div>
+              <span style={{ color: "#007bff" }}>
+                🎁 Total
+                {selectedAdminId.brokerage && " Brokerage"}
+                {selectedAdminId.bonus && " Bonus"}:
+              </span>{" "}
+              <span className="text-dark">{BalanceData.TotalAdminProfit}</span>
+            </div>
 
             <div>
-              <span style={{ color: "#fd7e14" }}>🏆 Our   {selectedAdminId.brokerage && " Brokerage"}
-    {selectedAdminId.bonus && " Bonus"}:</span>{" "}
+              <span style={{ color: "#fd7e14" }}>
+                🏆 Our {selectedAdminId.brokerage && " Brokerage"}
+                {selectedAdminId.bonus && " Bonus"}:
+              </span>{" "}
               <span className="text-dark">
-                {(totalBrokerage - ProfitBalance).toFixed(4)}
+                {BalanceData.remainingBalance || 0}
               </span>
             </div>
 
             <div>
               <span style={{ color: "#28a745" }}>✅ Completed:</span>{" "}
-              <span className="text-dark">{ProfitBalance.toFixed(4)}</span>
+              <span className="text-dark">{BalanceData.fixedBalance || 0}</span>
             </div>
           </div>
 
@@ -371,16 +362,12 @@ const Brokerage = () => {
           >
             <div>
               <span style={{ color: "#007bff" }}>💰 Total Balance:</span>{" "}
-              <span className="text-dark">
-                {BalanceData.totalBalance.toFixed(4)}
-              </span>
+              <span className="text-dark">{BalanceData.totalBalance}</span>
             </div>
 
             <div>
               <span style={{ color: "#fd7e14" }}>📈 Total Open Position:</span>{" "}
-              <span className="text-dark">
-                {BalanceData.totalOpenPosition.toFixed(4)}
-              </span>
+              <span className="text-dark">{BalanceData.totalOpenPosition}</span>
             </div>
 
             <div>
@@ -440,7 +427,6 @@ const Brokerage = () => {
                     data={bonusData}
                     rowsPerPage={rowsPerPage}
                     search={search}
-
                   />
                 </div>
               </Tab>
