@@ -4,30 +4,27 @@ import { getFundstatus } from "../../../Services/Admin/Addmin";
 import { UpdatestatusForpaymenthistory } from "../../../Services/Admin/Addmin";
 import Swal from "sweetalert2";
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
-import Modal from "react-modal"; // Import Modal if not already imported
+import Modal from "react-modal";
+import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const Withdraw = () => {
   const [data, setData] = useState([]);
+  const TokenData = getUserFromToken();
+  const user_id = TokenData?.user_id;
+
   const [activeTab, setActiveTab] = useState("Pending");
   const [selectedValues, setSelectedValues] = useState({});
   const [search, setSearch] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0); // for backend total rows
-
-
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
-
   const [selectedBankDetails, setSelectedBankDetails] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const handleOpenModal = (data) => {
-
     setSelectedBankDetails(data);
     setShowModal(true);
   };
-
 
   const handlePageChange = (newPage) => {
     setPage(newPage);
@@ -42,6 +39,11 @@ const Withdraw = () => {
   const [transactionId, setTransactionId] = useState("");
   const [uploadedImage, setUploadedImage] = useState(null);
   const [currentRowId, setCurrentRowId] = useState(null);
+
+
+   useEffect(() => {
+    getAllfundsstatus();
+  }, [search, activeTab, page, rowsPerPage]);
 
   const handleSelectChange = async (rowId, row, event) => {
     const newSelectedValues = {
@@ -148,7 +150,6 @@ const Withdraw = () => {
       ),
     },
 
-
     {
       Header: "Date",
       accessor: "createdAt",
@@ -222,7 +223,13 @@ const Withdraw = () => {
   const getAllfundsstatus = async () => {
     try {
       setLoading(true);
-      const data = { adminid: user_id, type: 0, activeTab, page, limit: rowsPerPage };
+      const data = {
+        adminid: user_id,
+        type: 0,
+        activeTab,
+        page,
+        limit: rowsPerPage,
+      };
       let response = await getFundstatus(data);
       if (response.status) {
         const filtertype =
@@ -248,10 +255,6 @@ const Withdraw = () => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    getAllfundsstatus();
-  }, [search, activeTab, page, rowsPerPage]);
 
   const filterDataByStatus = (status) => {
     return data.filter((item) => item.status === status);
@@ -367,8 +370,9 @@ const Withdraw = () => {
                           <li className="nav-item">
                             <a
                               href="#navpills-1"
-                              className={`nav-link navlink ${activeTab === "Pending" ? "active" : ""
-                                }`}
+                              className={`nav-link navlink ${
+                                activeTab === "Pending" ? "active" : ""
+                              }`}
                               data-bs-toggle="tab"
                               aria-expanded="false"
                               onClick={() => handleTabClick("Pending")}
@@ -379,8 +383,9 @@ const Withdraw = () => {
                           <li className="nav-item">
                             <a
                               href="#navpills-2"
-                              className={`nav-link navlink ${activeTab === "Complete" ? "active" : ""
-                                }`}
+                              className={`nav-link navlink ${
+                                activeTab === "Complete" ? "active" : ""
+                              }`}
                               data-bs-toggle="tab"
                               aria-expanded="false"
                               onClick={() => handleTabClick("Complete")}
@@ -391,8 +396,9 @@ const Withdraw = () => {
                           <li className="nav-item">
                             <a
                               href="#navpills-3"
-                              className={`nav-link navlink ${activeTab === "Reject" ? "active" : ""
-                                }`}
+                              className={`nav-link navlink ${
+                                activeTab === "Reject" ? "active" : ""
+                              }`}
                               data-bs-toggle="tab"
                               aria-expanded="true"
                               onClick={() => handleTabClick("Reject")}
@@ -404,8 +410,9 @@ const Withdraw = () => {
                         <div className="tab-content">
                           <div
                             id="navpills-1"
-                            className={`tab-pane ${activeTab === "Pending" ? "active" : ""
-                              }`}
+                            className={`tab-pane ${
+                              activeTab === "Pending" ? "active" : ""
+                            }`}
                           >
                             <div className="row">
                               <div className="col-lg-12">
@@ -431,8 +438,9 @@ const Withdraw = () => {
                           </div>
                           <div
                             id="navpills-2"
-                            className={`tab-pane ${activeTab === "Complete" ? "active" : ""
-                              }`}
+                            className={`tab-pane ${
+                              activeTab === "Complete" ? "active" : ""
+                            }`}
                           >
                             <div className="row">
                               <div className="col-lg-12">
@@ -458,8 +466,9 @@ const Withdraw = () => {
                           </div>
                           <div
                             id="navpills-3"
-                            className={`tab-pane ${activeTab === "Reject" ? "active" : ""
-                              }`}
+                            className={`tab-pane ${
+                              activeTab === "Reject" ? "active" : ""
+                            }`}
                           >
                             <div className="row">
                               <div className="col-lg-12">
@@ -535,16 +544,12 @@ const Withdraw = () => {
               {selectedBankDetails.bankName || "N/A"}
             </p>
             <p>
-              <strong>UPI ID:</strong>{" "}
-              {selectedBankDetails.upiId || "N/A"}
+              <strong>UPI ID:</strong> {selectedBankDetails.upiId || "N/A"}
             </p>
           </div>
         )}
         <div className="text-center mt-4">
-          <button
-            onClick={handleCloseModal}
-            className="btn btn-danger"
-          >
+          <button onClick={handleCloseModal} className="btn btn-danger">
             Close
           </button>
         </div>

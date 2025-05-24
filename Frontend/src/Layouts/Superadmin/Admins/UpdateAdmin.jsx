@@ -14,11 +14,6 @@ const UpdateAdmin = () => {
   const location = useLocation();
   const { rowData } = location.state;
 
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const Role = userDetails?.Role;
-  const user_id = userDetails?.user_id;
-
-  console.log("rowData", rowData);
 
   const formik = useFormik({
     initialValues: {

@@ -1,19 +1,16 @@
 import React, { useEffect } from "react";
 import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 import Form from "../../../Utils/Form/Formik";
 import { AddnewUsers } from "../../../Services/Superadmin/Superadmin";
+import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const AddEmployee = () => {
-
-
-
+  const TokenData = getUserFromToken();
   const navigate = useNavigate();
-
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const Role = userDetails?.Role;
-  const user_id = userDetails?.user_id;
+  const Role = TokenData?.Role;
+  const user_id = TokenData?.user_id;
 
   const formik = useFormik({
     initialValues: {
@@ -34,9 +31,7 @@ const AddEmployee = () => {
       open_position: false,
       Licence_Edit: false,
       limit_edit: false,
-      Balance_edit: false
-
-
+      Balance_edit: false,
     },
 
     validate: (values) => {
@@ -118,8 +113,7 @@ const AddEmployee = () => {
             });
           }
         })
-        .catch((error) => {
-        });
+        .catch((error) => {});
     },
     onChange: (e) => {
       const { name, checked } = e.target;
@@ -134,12 +128,7 @@ const AddEmployee = () => {
         formik.setFieldValue("Balance_edit", checked);
       }
     },
-
   });
-
-
-  
-
 
   useEffect(() => {
     const {
@@ -151,7 +140,7 @@ const AddEmployee = () => {
       limit_edit,
       Balance_edit,
     } = formik.values;
-  
+
     const allSelected =
       addclient &&
       Edit &&
@@ -160,7 +149,7 @@ const AddEmployee = () => {
       Licence_Edit &&
       limit_edit &&
       Balance_edit;
-  
+
     if (formik.values.all == allSelected) {
       formik.setFieldValue("all", allSelected);
     }
@@ -172,12 +161,8 @@ const AddEmployee = () => {
     formik.values.Licence_Edit,
     formik.values.limit_edit,
     formik.values.Balance_edit,
-    formik.values.all
+    formik.values.all,
   ]);
-  
-
-
-
 
   const fields = [
     {
@@ -237,14 +222,7 @@ const AddEmployee = () => {
       col_size: 12,
       disable: true,
     },
-    // {
-    //   name: "all",
-    //   label: "Select All",
-    //   type: "checkbox",
-    //   label_size: 12,
-    //   col_size: 12,
-    //   check_box_true: formik.values.all,
-    // },
+
     {
       name: "addclient",
       label: "Add Client",
@@ -252,7 +230,7 @@ const AddEmployee = () => {
       label_size: 12,
       col_size: 3,
       check_box_true:
-        formik.values.all  || formik.values.addclient ? true : false,
+        formik.values.all || formik.values.addclient ? true : false,
     },
     {
       name: "Edit",
@@ -260,8 +238,7 @@ const AddEmployee = () => {
       type: "checkbox",
       label_size: 12,
       col_size: 3,
-      check_box_true:
-        formik.values.all || formik.values.Edit ? true : false,
+      check_box_true: formik.values.all || formik.values.Edit ? true : false,
     },
     {
       name: "trade_history",
@@ -269,7 +246,8 @@ const AddEmployee = () => {
       type: "checkbox",
       label_size: 12,
       col_size: 3,
-      check_box_true: formik.values.all || formik.values.trade_history ? true : false,
+      check_box_true:
+        formik.values.all || formik.values.trade_history ? true : false,
     },
     {
       name: "open_position",

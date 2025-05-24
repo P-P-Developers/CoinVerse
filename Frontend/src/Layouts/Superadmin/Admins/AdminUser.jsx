@@ -1,34 +1,32 @@
 import React, { useEffect, useState } from "react";
-import Table from "../../../Utils/Table/Table"
+import Table from "../../../Utils/Table/Table";
 import { useParams } from "react-router-dom";
-// import { Clienthistory } from "../../Services/Admin/Addmin";
-import { DollarSign } from 'lucide-react'
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { getadminuserdetail } from "../../../Services/Superadmin/Superadmin";
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 
-
-
 const AdminUser = () => {
-
   const { id } = useParams();
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
-  const Role = userDetails?.Role;
-
   const [data, setData] = useState([]);
 
-  // Define columns for the table
+  useEffect(() => {
+    getuserallhistory();
+  }, [id]);
+
   const columns = [
     { Header: "FullName", accessor: "FullName" },
     { Header: "UserName", accessor: "UserName" },
     { Header: "Password", accessor: "Otp" },
-    { Header: "pin", accessor: "pin" ,  Cell: ({ cell }) => <span>{cell.value ? cell.value :"-"}</span>},
+    {
+      Header: "pin",
+      accessor: "pin",
+      Cell: ({ cell }) => <span>{cell.value ? cell.value : "-"}</span>,
+    },
 
     {
       Header: "Balance",
       accessor: "Balance",
-      Cell: ({ cell }) => Number(cell.value).toFixed(4)
+      Cell: ({ cell }) => Number(cell.value).toFixed(4),
     },
     {
       Header: "ActiveStatus",
@@ -36,47 +34,39 @@ const AdminUser = () => {
       Cell: ({ cell }) => (
         <span
           style={{
-            height: '15px',
-            width: '15px',
-            backgroundColor: cell.value == 1 ? 'green' : 'red',
-            borderRadius: '50%',
-            display: 'inline-block',
+            height: "15px",
+            width: "15px",
+            backgroundColor: cell.value == 1 ? "green" : "red",
+            borderRadius: "50%",
+            display: "inline-block",
           }}
         ></span>
       ),
-    }
-    ,
+    },
     { Header: "PhoneNo", accessor: "PhoneNo" },
     {
-      Header: "createdAt", accessor: "createdAt",
+      Header: "createdAt",
+      accessor: "createdAt",
       Cell: ({ cell }) => {
-        return fDateTime(cell.value)
-
+        return fDateTime(cell.value);
       },
     },
-
-
   ];
 
-  //   Function to get user history
   const getuserallhistory = async () => {
     try {
       const data = { userid: id };
       const response = await getadminuserdetail(data);
-      const filteruser = response.data && response.data.filter((item) => {
-        return item.Role === "USER"
-      })
+      const filteruser =
+        response.data &&
+        response.data.filter((item) => {
+          return item.Role === "USER";
+        });
       setData(filteruser);
     } catch (error) {
-      return error
+      return error;
     }
   };
-
-  useEffect(() => {
-    getuserallhistory();
-  }, [id]);
-
-
 
   return (
     <>
@@ -98,14 +88,13 @@ const AdminUser = () => {
                 </div>
                 <div className="card-body p-0">
                   <div className="tab-content" id="myTabContent1">
-
                     <div
                       className="tab-pane fade show active"
                       id="Week"
                       role="tabpanel"
                       aria-labelledby="Week-tab"
                     >
-                      <div className='mb-3 ms-4'>
+                      <div className="mb-3 ms-4">
                         Search :{" "}
                         <input
                           className="ml-2 input-search form-control"

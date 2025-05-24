@@ -8,10 +8,6 @@ import {
 import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
 
 const Position = () => {
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
-  const Role = userDetails?.Role;
-
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [adminNames, setAdminNames] = useState([]);
@@ -19,6 +15,15 @@ const Position = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selectedUser, setSelectedUser] = useState([]);
   const [selectedUserName, setSelectedUserName] = useState("");
+
+useEffect(() => {
+    getuserallhistory();
+  }, [search, selectedAdmin, selectedUserName]);
+
+  useEffect(() => {
+    GetAdminUserName();
+  }, []);
+
 
   const columns = [
     { Header: "UserName", accessor: "userName" },
@@ -95,13 +100,7 @@ const Position = () => {
     }
   };
 
-  useEffect(() => {
-    getuserallhistory();
-  }, [search, selectedAdmin, selectedUserName]);
-
-  useEffect(() => {
-    GetAdminUserName();
-  }, []);
+  
 
   return (
     <>

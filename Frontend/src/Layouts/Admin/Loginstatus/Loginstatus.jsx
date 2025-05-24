@@ -2,18 +2,19 @@ import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
 import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
 import { getlogoutuser, GetUsersName } from "../../../Services/Admin/Addmin";
+import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const Loginstatus = () => {
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
+  const TokenData = getUserFromToken();
+
+  const user_id = TokenData?.user_id;
 
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
-  const [selectedUserId, setSelectedUserId] = useState(null); // For selected user
-  const [users, setUsers] = useState([]); // For dropdown user list
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [users, setUsers] = useState([]);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  // Fetch users for dropdown
   const fetchUsers = async () => {
     try {
       const response = await GetUsersName({ admin_id: user_id });
@@ -23,49 +24,40 @@ const Loginstatus = () => {
         setUsers([]);
       }
     } catch (error) {
-      setUsers([]); // Fallback in case of error
+      setUsers([]);
     }
   };
 
-  // Fetch logs when selected user changes or no user is selected (show all data)
   const getLogsForSelectedUser = async () => {
     try {
       const data = { userid: user_id, selectedUserId };
 
-      // Fetch all data if no user is selected
       const response = await getlogoutuser(data);
 
-      // Check if selectedUserId is empty or null and show data of all users
       const filteredData = response.data?.filter((item) => {
-        // Search filter logic
         const searchInputMatch =
           search === "" ||
           (item.UserName &&
             item.UserName.toLowerCase().includes(search.toLowerCase())) ||
           (item.login_status &&
             item.login_status.toLowerCase().includes(search.toLowerCase())) ||
-          (item.role && item.role.toLowerCase().includes(search.toLowerCase())); // Added role to search logic
+          (item.role && item.role.toLowerCase().includes(search.toLowerCase()));
 
-        // If selectedUserId is null or empty, show data for all users
         if (!selectedUserId) {
           return searchInputMatch;
         }
 
-        // If a user is selected, filter by selectedUserId
         return searchInputMatch && item.UserName === selectedUserId;
       });
 
       setData(filteredData || response.data);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
-  // Fetch users when component mounts
   useEffect(() => {
     fetchUsers();
   }, []);
 
-  // Fetch logs whenever selectedUserId or search changes
   useEffect(() => {
     getLogsForSelectedUser();
   }, [selectedUserId, search]);
@@ -74,7 +66,7 @@ const Loginstatus = () => {
     { Header: "UserName", accessor: "UserName" },
     { Header: "Role", accessor: "role" },
     { Header: "Created By", accessor: "parent_role" },
-  
+
     {
       Header: "Login Status",
       accessor: "login_status",
@@ -84,7 +76,7 @@ const Loginstatus = () => {
         </span>
       ),
     },
-      {
+    {
       Header: "Create Date",
       accessor: "createdAt",
       Cell: ({ cell }) => {
@@ -107,7 +99,6 @@ const Loginstatus = () => {
               <div className="card-body p-0">
                 <div className="tab-content" id="myTabContent1">
                   <div className="row mb-3 ms-3">
-                    {/* Vertical Layout for Search and Select User */}
                     <div className="col-md-3">
                       <div className="">
                         <label className="me-2">🔍 Search:</label>
@@ -122,7 +113,6 @@ const Loginstatus = () => {
                       </div>
                     </div>
 
-                    {/* User Dropdown */}
                     <div className="col-md-3">
                       <div className="">
                         <label className="me-2">Select User:</label>
@@ -130,7 +120,8 @@ const Loginstatus = () => {
                           className="form-control"
                           style={{ width: "50%%" }}
                           onChange={(e) => setSelectedUserId(e.target.value)}
-                          value={selectedUserId}>
+                          value={selectedUserId}
+                        >
                           <option value="">Select a user</option>
                           {users.length > 0 ? (
                             users.map((user) => (
@@ -146,12 +137,12 @@ const Loginstatus = () => {
                     </div>
                   </div>
 
-                  {/* Table Section */}
                   <div
                     className="tab-pane fade show active"
                     id="Week"
                     role="tabpanel"
-                    aria-labelledby="Week-tab">
+                    aria-labelledby="Week-tab"
+                  >
                     <Table
                       columns={columns}
                       data={data}
@@ -163,13 +154,15 @@ const Loginstatus = () => {
                         marginBottom: "20px",
                         marginLeft: "20px",
                         marginTop: "-48px",
-                      }}>
+                      }}
+                    >
                       Rows per page:{" "}
                       <select
                         className="form-select ml-2"
                         value={rowsPerPage}
                         onChange={(e) => setRowsPerPage(Number(e.target.value))}
-                        style={{ width: "auto", marginLeft: "10px" }}>
+                        style={{ width: "auto", marginLeft: "10px" }}
+                      >
                         <option value={5}>5</option>
                         <option value={10}>10</option>
                         <option value={20}>20</option>

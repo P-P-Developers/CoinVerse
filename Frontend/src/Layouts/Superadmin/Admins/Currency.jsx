@@ -4,15 +4,20 @@ import {
   getMarginpriceRequired,
 } from "../../../Services/Admin/Addmin";
 import Swal from "sweetalert2";
+import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const Setting = () => {
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
+  const TokenData = getUserFromToken();
+  const user_id = TokenData?.user_id;
 
   const [updatemargin, setUpdatemargin] = useState({
     adminid: "",
     dollarprice: "",
   });
+
+  useEffect(() => {
+    getmarginprice();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -58,10 +63,6 @@ const Setting = () => {
       }
     } catch (error) {}
   };
-
-  useEffect(() => {
-    getmarginprice();
-  }, []);
 
   return (
     <div>

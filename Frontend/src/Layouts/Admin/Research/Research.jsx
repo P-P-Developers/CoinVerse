@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Form, Badge, Row, Col } from "react-bootstrap";
+import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import { FaPlusCircle } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import Table from "../../../Utils/Table/Table";
-
-import btcImage from "../btc.png";
-import forexImage from "../btc.png";
 
 import {
   AddResearch,
@@ -15,6 +12,8 @@ import {
   EditResearch,
   UpdatStatus,
 } from "../../../Services/Admin/Addmin";
+
+import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const initialFormData = {
   researchType: "Crypto",
@@ -35,8 +34,10 @@ const formFields = [
 ];
 
 const Research = () => {
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
+  const TokenData = getUserFromToken();
+
+  const user_id = TokenData?.user_id;
+
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [showModal, setShowModal] = useState(false);
   const [researchData, setResearchData] = useState([]);
@@ -85,23 +86,19 @@ const Research = () => {
     }
   };
 
-  const getImage = (type) => (type === "Forex" ? forexImage : btcImage);
-
   useEffect(() => {
     const fetchResearchData = async () => {
       try {
         const response = await getResearch(user_id);
         if (response?.data) setResearchData(response.data);
-      } catch (error) {
-      }
+      } catch (error) {}
     };
 
     const fetchSymbols = async () => {
       try {
         const response = await symbolholdoff(user_id);
         setSymbols(response?.data || []);
-      } catch (error) {
-      }
+      } catch (error) {}
     };
 
     fetchSymbols();
@@ -131,7 +128,6 @@ const Research = () => {
   };
 
   const handleToggleStatus = async (id, status) => {
-
     const confirmToggle = window.confirm(
       `Are you sure you want to ${
         status === "Open" ? "close" : "open"
@@ -189,8 +185,6 @@ const Research = () => {
       accessor: "actions",
       Cell: (row) => (
         <div style={{ display: "flex", gap: "8px" }}>
-
-
           <Button
             variant="warning"
             size="sm"
@@ -226,7 +220,7 @@ const Research = () => {
           <div className="card transaction-table">
             <div className="container-fluid py-4">
               <div className="d-flex justify-content-between align-items-center mb-3">
-                                    <h4 className="card-title">📈 Trade Research</h4>
+                <h4 className="card-title">📈 Trade Research</h4>
 
                 <Button
                   onClick={() => {
@@ -348,7 +342,7 @@ const Research = () => {
                     </Col>
                   </Row>
                   <Row className="mb-3">
-                  <Col md={6}>
+                    <Col md={6}>
                       <Form.Group>
                         <Form.Label>Status</Form.Label>
                         <Form.Select

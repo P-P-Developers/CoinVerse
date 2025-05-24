@@ -4,18 +4,14 @@ import { fDateTime, fDateTimesec } from "../../../Utils/Date_format/datefromat";
 import { useParams } from "react-router-dom";
 import { Clienthistory } from "../../../Services/Admin/Addmin";
 import { DollarSign } from "lucide-react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Tradehistory = () => {
   const { id } = useParams();
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
-  const Role = userDetails?.Role;
 
   const [data, setData] = useState([]);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  // Define columns for the table
   const columns = [
     { Header: "Symbol", accessor: "symbol" },
     {
@@ -75,9 +71,6 @@ const Tradehistory = () => {
       },
     },
 
-   
-
-
     {
       Header: "Buy qty",
       accessor: "buy_qty",
@@ -119,21 +112,18 @@ const Tradehistory = () => {
     },
   ];
 
-  // Function to get user history
   const getuserallhistory = async () => {
     try {
       const data = { userid: id };
       const response = await Clienthistory(data);
       setData(response.data);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
     getuserallhistory();
   }, [id]);
 
-  // Calculate total profit/loss
   const calculateTotalProfitLoss = () => {
     return data
       .reduce((total, row) => {
@@ -164,8 +154,9 @@ const Tradehistory = () => {
                   </div>
                   <Link
                     to="/admin/users"
-                    className="float-end mb-4 btn btn-primary">
-                          <i className="fa-solid fa-arrow-left"></i> Back
+                    className="float-end mb-4 btn btn-primary"
+                  >
+                    <i className="fa-solid fa-arrow-left"></i> Back
                   </Link>
                 </div>
                 <div className="card-body p-0">
@@ -174,9 +165,10 @@ const Tradehistory = () => {
                       className="tab-pane fade show active"
                       id="Week"
                       role="tabpanel"
-                      aria-labelledby="Week-tab">
+                      aria-labelledby="Week-tab"
+                    >
                       <div className="mb-3 ms-4">
-                       🔍 Search :{" "}
+                        🔍 Search :{" "}
                         <input
                           className="ml-2 input-search form-control"
                           defaultValue=""
@@ -188,7 +180,8 @@ const Tradehistory = () => {
                         <span
                           style={{
                             color: totalProfitLoss > 0 ? "green" : "red",
-                          }}>
+                          }}
+                        >
                           {" "}
                           <DollarSign />
                           {totalProfitLoss}
@@ -205,7 +198,8 @@ const Tradehistory = () => {
                           marginBottom: "20px",
                           marginLeft: "20px",
                           marginTop: "-48px",
-                        }}>
+                        }}
+                      >
                         Rows per page:{" "}
                         <select
                           className="form-select ml-2"
@@ -213,7 +207,8 @@ const Tradehistory = () => {
                           onChange={(e) =>
                             setRowsPerPage(Number(e.target.value))
                           }
-                          style={{ width: "auto", marginLeft: "10px" }}>
+                          style={{ width: "auto", marginLeft: "10px" }}
+                        >
                           <option value={5}>5</option>
                           <option value={10}>10</option>
                           <option value={20}>20</option>

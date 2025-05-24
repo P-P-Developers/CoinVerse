@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
 import {
-  getUserdata,
   Addbalance,
-  updateActivestatus,
   getAllClient,
 } from "../../../Services/Superadmin/Superadmin";
 import {
@@ -11,13 +9,12 @@ import {
   DeleteUserdata,
 } from "../../../Services/Admin/Addmin";
 
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   CirclePlus,
   Pencil,
   Trash2,
   CircleDollarSign,
-  CircleMinus,
   Eye,
 } from "lucide-react";
 
@@ -27,27 +24,24 @@ import Loader from "../../../Utils/Loader/Loader";
 import { getEmployeedata } from "../../../Services/Employee/Employee";
 import { getEmployee_permissiondata } from "../../../Services/Employee/Employee";
 
+import { getUserFromToken } from "../../../Utils/TokenVerify";
+
 const Users = () => {
   const navigate = useNavigate();
+  const TokenData = getUserFromToken();
 
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
-
-  const [filteredData, setFilteredData] = useState([]);
+  const user_id = TokenData?.user_id;
   const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
   const [balance, setBalance] = useState("");
   const [modal, setModal] = useState(false);
   const [id, setID] = useState("");
   const [type, setType] = useState("");
-
   const [license, setLicence] = useState(false);
   const [licenseid, setLicenceId] = useState("");
   const [licencevalue, setLicencevalue] = useState("");
-
   const [loading, setLoading] = useState(false);
   const [getaccess, setGetaccess] = useState({});
-
   const [getid, setGetid] = useState([]);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -100,7 +94,6 @@ const Users = () => {
 
             {parseFloat(cell.value).toFixed(4)}
           </span>
-      
         </div>
       ),
     },
@@ -118,8 +111,6 @@ const Users = () => {
         </span>
       ),
     },
-
-
 
     getaccess.Licence_Edit === 1 && {
       Header: "Licence",
@@ -205,6 +196,11 @@ const Users = () => {
       },
     },
   ];
+  useEffect(() => {
+    getAlluserdata();
+    getpermission();
+    getallclient();
+  }, [search]);
 
   const updateuserpage = (_id, obj) => {
     navigate(`updateuser/${_id}`, { state: { rowData: obj.row } });
@@ -213,8 +209,6 @@ const Users = () => {
   const Clienthistory = (_id) => {
     navigate(`tradehistory/${_id}`);
   };
-
-  //delete user
 
   const DeleteUser = async (_id) => {
     try {
@@ -250,7 +244,6 @@ const Users = () => {
   };
 
   // update Licence
-
   const updateLicence = async () => {
     try {
       await updateuserLicence({
@@ -319,8 +312,7 @@ const Users = () => {
       if (response.status) {
         setGetaccess(response.data[0]);
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   // get all admin
@@ -348,7 +340,7 @@ const Users = () => {
       });
 
       setData(search ? searchfilter : result);
-      setFilteredData(result);
+
       setLoading(false);
     } catch (error) {}
   };
@@ -362,12 +354,6 @@ const Users = () => {
       }
     } catch (error) {}
   };
-
-  useEffect(() => {
-    getAlluserdata();
-    getpermission();
-    getallclient();
-  }, [search]);
 
   return (
     <>

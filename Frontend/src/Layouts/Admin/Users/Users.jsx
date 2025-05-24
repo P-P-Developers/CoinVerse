@@ -6,24 +6,20 @@ import {
   Addbalance,
   updateActivestatus,
 } from "../../../Services/Superadmin/Superadmin";
-import {
-  updateuserLicence,
-  DeleteUserdata,
-  TotalcountLicence,
-} from "../../../Services/Admin/Addmin";
-
 import { Link, useNavigate } from "react-router-dom";
 import { CirclePlus, Pencil, CircleDollarSign, Eye } from "lucide-react";
 
 import Swal from "sweetalert2";
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 import Loader from "../../../Utils/Loader/Loader";
+import { getUserFromToken } from "../../../Utils/TokenVerify";
+
 
 const Users = () => {
   const navigate = useNavigate();
+  const TokenData = getUserFromToken();
 
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
+  const user_id = TokenData?.user_id;
 
   const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
@@ -32,15 +28,13 @@ const Users = () => {
   const [id, setID] = useState("");
   const [type, setType] = useState("");
   const [refresh, setrefresh] = useState(false);
-  const [license, setLicence] = useState(false);
-  const [licenseid, setLicenceId] = useState("");
-  const [licencevalue, setLicencevalue] = useState("");
-  const [checkLicence, setCheckLicence] = useState([]);
+
   const [loading, setLoading] = useState(false);
   const [employeename, setEmployeename] = useState([]);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const [getActiveInactive,setActiveInactive]=useState("all")
 
   const columns = [
     { Header: "FullName", accessor: "FullName" },
@@ -180,42 +174,6 @@ const Users = () => {
     navigate(`updateuser/${_id}`, { state: { rowData: obj.row } });
   };
 
-  //delete user
-  const DeleteUser = async (_id) => {
-    try {
-      const confirmResult = await Swal.fire({
-        title: "Are you sure?",
-        text: "You will not be able to recover this user!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!",
-      });
-
-      if (confirmResult.isConfirmed) {
-        const data = { id: _id };
-        await DeleteUserdata(data);
-
-        Swal.fire({
-          icon: "success",
-          title: "User Deleted",
-          text: "The user has been deleted successfully.",
-        });
-        // setrefresh(!refresh)
-        getAlluserdata();
-      }
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Deletion Failed",
-        text: "There was an error deleting the user. Please try again.",
-      });
-    }
-  };
-
-
-
   // update  balance
   const updateBalance = async () => {
     try {
@@ -280,7 +238,6 @@ const Users = () => {
   };
 
   // update acctive status
-
   const updateactivestatus = async (event, id) => {
     const user_active_status = event.target.checked ? 1 : 0;
 
@@ -320,61 +277,62 @@ const Users = () => {
     }
   };
 
-  // get all admin
-  const getAlluserdata = async () => {
-    setLoading(true);
-    const data = { id: user_id, page: page, limit: rowsPerPage };
+const getAlluserdata = async () => {
+  setLoading(true);
 
-    try {
-      const response = await getUserdata(data);
-      const result =
-        response.data &&
-        response.data.filter((item) => {
-          return item.Role === "USER";
-        });
-
-      const filterusername =
-        response.data &&
-        response.data.filter((item) => {
-          return item._id;
-        });
-
-      const searchfilter = result?.filter((item) => {
-        const searchInputMatch =
-          search == "" ||
-          (item.FullName &&
-            item.FullName.toLowerCase().includes(search.toLowerCase())) ||
-          (item.UserName &&
-            item.UserName.toLowerCase().includes(search.toLowerCase())) ||
-          (item.Email &&
-            item.Email.toLowerCase().includes(search.toLowerCase()));
-
-        return searchInputMatch;
-      });
-      setTotalCount(response?.pagination?.totalPages || 0); // assuming backend returns total count
-
-      setEmployeename(filterusername);
-      setData(search ? searchfilter : result);
-
-      setLoading(false);
-    } catch (error) {}
+  const params = {
+    id: user_id,
+    page,
+    limit: rowsPerPage,
   };
 
-  const getadminLicence = async () => {
-    const data = { userid: user_id };
-    try {
-      const response = await TotalcountLicence(data);
-      setCheckLicence(response.data);
-    } catch (error) {}
-  };
+  try {
+    const response = await getUserdata(params);
+    const allUsers = response?.data || [];
 
-  useEffect(() => {
-    getAlluserdata();
-  }, [search, refresh, page, rowsPerPage]);
+    // Filter by role
+    const userRoleData = allUsers.filter(user => user.Role === "USER");
 
-  useEffect(() => {
-    getadminLicence();
-  }, []);
+    // Extract all usernames (_id present check seems redundant here)
+    const userNames = allUsers.filter(user => user._id);
+
+
+    // Filter by search and status
+    const filteredData = userRoleData.filter(user => {
+      const searchMatch =
+        !search || (
+          (user.FullName && user.FullName.toLowerCase().includes(search.toLowerCase())) ||
+          (user.UserName && user.UserName.toLowerCase().includes(search.toLowerCase())) ||
+          (user.Email && user.Email.toLowerCase().includes(search.toLowerCase()))
+        );
+
+      const statusMatch =
+        getActiveInactive === "all" ||
+        (getActiveInactive === "Active" && user.ActiveStatus === "1") ||
+        (getActiveInactive === "Inactive" && user.ActiveStatus === "0");
+
+      return searchMatch && statusMatch;
+    });
+
+    // Set filtered results and other states
+    setData(filteredData || []);
+    setEmployeename(userNames);
+    setTotalCount(response?.pagination?.totalPages || 0);
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+// Call on dependency change
+useEffect(() => {
+  getAlluserdata();
+}, [search, refresh, page, rowsPerPage, getActiveInactive]);
+
+
+
+
 
   return (
     <>
@@ -401,18 +359,46 @@ const Users = () => {
                     role="tabpanel"
                     aria-labelledby="Week-tab"
                   >
-                    <div className="mb-3 ms-4">
-                     🔍 Search :{" "}
-                      <input
-                        className="ml-2 input-search form-control"
-                        style={{ width: "20%" }}
-                        type="text"
-                        placeholder="Search..."
-                        value={search}
-                        autoFocus
-                        onChange={(e) => setSearch(e.target.value)}
-                      />
-                    </div>
+                    <div className="row mb-3 ms-2">
+                      {/* Search Box */}
+                      <div className="col-md-4 mb-2">
+                        <label
+                          htmlFor="searchInput"
+                          className="form-label fw-bold"
+                        >
+                          🔍 Search
+                        </label>
+                        <input
+                          id="searchInput"
+                          type="text"
+                          className="form-control"
+                          placeholder="Search here..."
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                        />
+                      </div>
+
+                      {/* Active / Inactive Filter */}
+                      <div className="col-md-3 mb-2">
+                        <label
+                          htmlFor="statusSelect"
+                          className="form-label fw-bold"
+                        >
+                          Active / Inactive
+                        </label>
+                        <select
+                          id="statusSelect"
+                          className="form-select"
+                          value={getActiveInactive}
+                          onChange={(e) => setActiveInactive(e.target.value)}
+                        >
+                          <option value="all">All</option>
+                          <option value="Active">Active</option>
+                          <option value="Inactive">Inactive</option>
+                        </select>
+                      </div>
+                      </div>
+
                     {loading ? (
                       <Loader />
                     ) : (

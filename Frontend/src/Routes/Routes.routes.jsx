@@ -5,12 +5,16 @@ import Superadminroutes from "./Superadmin.routes";
 import Adminroutes from "./Admin.routes";
 import EmployeeRoutes from "./Employee.routes";
 import Register from "../Layouts/Auth/Register";
+import { getUserFromToken } from "../Utils/TokenVerify";
 
 const Routing = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const roles = JSON.parse(localStorage.getItem("user_role"));
-  const user_details = JSON.parse(localStorage.getItem("user_details"));
+  const TokenData = getUserFromToken();
+
+  console.log("TokenData", TokenData);
+
+  const roles = TokenData?.Role;
 
   useEffect(() => {
     if (location.pathname.startsWith("/updatepassword")) {
@@ -28,9 +32,9 @@ const Routing = () => {
     }
 
     if (
-      !user_details ||
+      !TokenData ||
       !roles ||
-      user_details === "null" ||
+      TokenData === "null" ||
       roles === "null" ||
       location.pathname === "/login"
     ) {
@@ -78,11 +82,11 @@ const Routing = () => {
       default:
         break;
     }
-  }, [navigate, location.pathname, roles, user_details]);
+  }, [navigate, location.pathname, roles, TokenData]);
 
   return (
     <Routes>
-      <Route 
+      <Route
         path="/superadmin/*"
         element={roles === "SUPERADMIN" ? <Superadminroutes /> : <Login />}
       />

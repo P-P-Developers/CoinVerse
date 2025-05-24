@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import Header from "../components/Dashboard/Header";
 import Sidebar from "../components/Dashboard/Sidebar";
@@ -31,13 +30,8 @@ import Basicsetting from "../Layouts/Admin/Profile/Basicsetting";
 import Chatbox from "../Layouts/Admin/Chatbox/Chatdash";
 
 const AdminRoutes = () => {
-  const [isMenuToggled, setIsMenuToggled] = useState(false);
-
   return (
-    <div
-      id="main-wrapper"
-      className={`wallet-open show ${isMenuToggled ? "menu-toggle" : ""}`}
-    >
+    <div id="main-wrapper" className={`wallet-open show `}>
       <Header />
       <Sidebar />
       <div className="content-body">

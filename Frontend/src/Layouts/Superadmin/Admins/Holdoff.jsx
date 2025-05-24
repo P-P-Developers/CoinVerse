@@ -8,15 +8,16 @@ import {
 import Swal from "sweetalert2";
 
 const Holdoff = () => {
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
-
   const [refresh, setRefresh] = useState(false);
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
-
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
+  
+  useEffect(() => {
+    Symbolholdoff();
+  }, [refresh, search]);
+  
 
   const columns = [
     { Header: "Symbol name", accessor: "symbol" },
@@ -101,9 +102,6 @@ const Holdoff = () => {
     } catch (error) {}
   };
 
-  useEffect(() => {
-    Symbolholdoff();
-  }, [refresh, search]);
 
   return (
     <>

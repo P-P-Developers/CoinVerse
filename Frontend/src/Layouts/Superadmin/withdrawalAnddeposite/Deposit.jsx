@@ -14,13 +14,7 @@ const Deposit = () => {
   const [selectedValues, setSelectedValues] = useState({});
   const [search, setSearch] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
-
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
- 
-
   const [page, setPage] = useState(1);
-  const [totalCount, setTotalCount] = useState(0); // for backend total rows
-
   const [selectedAdminName, setSelectedAdminName] = useState("");
   const [adminNames, setAdminNames] = useState([]);
 
@@ -158,7 +152,7 @@ const Deposit = () => {
       if (response.status) {
         const filtertype = response.data || [];
         setData(filtertype);
-        setTotalCount(response?.pagination?.totalPages || 0); // assuming backend returns total count
+      
       }
     } catch (error) {
     }

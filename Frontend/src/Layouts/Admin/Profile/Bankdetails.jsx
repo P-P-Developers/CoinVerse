@@ -4,18 +4,19 @@ import {
   UpdateUpiDetails,
   getUpiDetails,
 } from "../../../Services/Admin/Addmin";
+import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const Changedpassword = () => {
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
-
+  const TokenData = getUserFromToken();
+  const user_id = TokenData?.user_id;
   const [bankDetails, setBankDetails] = useState({
     walleturl: "",
-
     qrCodeBase64: "",
   });
 
   const [errors, setErrors] = useState({});
+
+
 
   useEffect(() => {
     const fetchBankDetails = async () => {
@@ -24,11 +25,11 @@ const Changedpassword = () => {
         if (res.status) {
           setBankDetails(res.data);
         }
-      } catch (err) {
-      }
+      } catch (err) {}
     };
     fetchBankDetails();
   }, [user_id]);
+
 
   const handleBankChange = (e) => {
     const { name, value } = e.target;

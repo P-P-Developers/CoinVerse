@@ -2,15 +2,16 @@ import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
 import { getpositionhistory } from "../../../Services/Admin/Addmin";
 import { fDateTime, fDateTimesec } from "../../../Utils/Date_format/datefromat";
+import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const Position = () => {
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
-  const Role = userDetails?.Role;
-  const [user, setUser] = useState([]); // Used for storing filtered data (table rows)
-  const [originalData, setOriginalData] = useState([]); // Used for storing unfiltered data (to populate dropdown)
-  const [selectedUserName, setSelectedUserName] = useState(null); // state for selected user
-  const [data, setData] = useState([]); // Filtered data for table
+  const TokenData = getUserFromToken();
+
+  const user_id = TokenData?.user_id;
+  const Role = TokenData?.Role;
+  const [originalData, setOriginalData] = useState([]);
+  const [selectedUserName, setSelectedUserName] = useState(null);
+  const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -18,27 +19,27 @@ const Position = () => {
     { Header: "symbol", accessor: "symbol" },
     {
       Header: "UserName",
-      accessor: "username", 
+      accessor: "username",
       Cell: ({ cell }) => {
         const username = cell.row.username;
-        return username ? username : "-"; 
-      }
+        return username ? username : "-";
+      },
     },
     {
       Header: "Buy qty",
       accessor: "buy_qty",
       Cell: ({ cell }) => {
         const buy_qty = cell.row.buy_qty;
-        return buy_qty ? buy_qty : "-"; 
-      }
+        return buy_qty ? buy_qty : "-";
+      },
     },
     {
       Header: "Sell qty",
       accessor: "sell_qty",
       Cell: ({ cell }) => {
         const sell_qty = cell.row.sell_qty;
-        return sell_qty ? sell_qty : "-"; 
-      }
+        return sell_qty ? sell_qty : "-";
+      },
     },
     {
       Header: "Position Avg",
@@ -49,7 +50,7 @@ const Position = () => {
         return <span>{availablePosition}</span>;
       },
     },
-      {
+    {
       Header: "Create Date",
       accessor: "createdAt",
       Cell: ({ cell }) => {
@@ -58,16 +59,17 @@ const Position = () => {
     },
   ];
 
-  // Getting the data and storing it in both originalData and filtered data
   const getuserallhistory = async () => {
     try {
       const data = { userid: user_id, Role: Role };
       const response = await getpositionhistory(data);
 
       // Filter data based on buy_qty !== sell_qty
-      const filterdata = response.data && response.data.filter((item) => item.buy_qty !== item.sell_qty);
+      const filterdata =
+        response.data &&
+        response.data.filter((item) => item.buy_qty !== item.sell_qty);
 
-      let UniqueUsernames = filterdata.map((item) =>  item.username);
+      let UniqueUsernames = filterdata.map((item) => item.username);
       UniqueUsernames = [...new Set(UniqueUsernames)]; // Remove duplicates
 
       // Store original data (unfiltered)
@@ -77,8 +79,10 @@ const Position = () => {
       const searchfilter = filterdata?.filter((item) => {
         const searchInputMatch =
           search === "" ||
-          (item.symbol && item.symbol.toLowerCase().includes(search.toLowerCase())) ||
-          (item.username && item.username.toLowerCase().includes(search.toLowerCase())); // Added username to search filter
+          (item.symbol &&
+            item.symbol.toLowerCase().includes(search.toLowerCase())) ||
+          (item.username &&
+            item.username.toLowerCase().includes(search.toLowerCase())); // Added username to search filter
         return searchInputMatch;
       });
 
@@ -88,8 +92,7 @@ const Position = () => {
       });
 
       setData(finalFilter || filterdata);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -114,11 +117,12 @@ const Position = () => {
                       className="tab-pane fade show active"
                       id="Week"
                       role="tabpanel"
-                      aria-labelledby="Week-tab">
+                      aria-labelledby="Week-tab"
+                    >
                       <div className="mb-3 ms-4">
-                        {/* Horizontal Layout for Search and Select User */}
+                       
                         <div className="d-flex align-items-center mb-3">
-                          {/* Search Input */}
+                       
                           <div className="me-3">
                             <label className="form-label">🔍 Search:</label>
                             <input
@@ -130,7 +134,6 @@ const Position = () => {
                             />
                           </div>
 
-                          {/* User Dropdown */}
                           <div>
                             <label className="form-label">Select User:</label>
                             <select
@@ -138,7 +141,8 @@ const Position = () => {
                               onChange={(e) =>
                                 setSelectedUserName(e.target.value)
                               }
-                              value={selectedUserName}>
+                              value={selectedUserName}
+                            >
                               <option value="">Select a user</option>
                               {originalData.length > 0 ? (
                                 originalData.map((user) => (
@@ -154,7 +158,6 @@ const Position = () => {
                         </div>
                       </div>
 
-                      {/* Table */}
                       <Table
                         columns={columns}
                         data={data && data}
@@ -166,7 +169,8 @@ const Position = () => {
                           marginBottom: "20px",
                           marginLeft: "20px",
                           marginTop: "-48px",
-                        }}>
+                        }}
+                      >
                         Rows per page:{" "}
                         <select
                           className="form-select ml-2"
@@ -174,7 +178,8 @@ const Position = () => {
                           onChange={(e) =>
                             setRowsPerPage(Number(e.target.value))
                           }
-                          style={{ width: "auto", marginLeft: "10px" }}>
+                          style={{ width: "auto", marginLeft: "10px" }}
+                        >
                           <option value={5}>5</option>
                           <option value={10}>10</option>
                           <option value={20}>20</option>

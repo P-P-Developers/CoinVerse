@@ -9,13 +9,15 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 
 const Tradehistory = () => {
   const { id } = useParams();
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
-  const Role = userDetails?.Role;
+
 
   const [data, setData] = useState([]);
-
   const [rowsPerPage, setRowsPerPage] = useState(10);
+
+ useEffect(() => {
+    getuserallhistory();
+  }, [id]);
+
 
   // Define columns for the table
   const columns = [
@@ -110,12 +112,6 @@ const Tradehistory = () => {
     }
   };
 
-  useEffect(() => {
-    getuserallhistory();
-  }, [id]);
-
-
-
   // Calculate total profit/loss
   const calculateTotalProfitLoss = () => {
     return data.reduce((total, row) => {
@@ -129,7 +125,6 @@ const Tradehistory = () => {
       return total;
     }, 0).toFixed(4);
   };
-
 
 
   const totalProfitLoss = calculateTotalProfitLoss();

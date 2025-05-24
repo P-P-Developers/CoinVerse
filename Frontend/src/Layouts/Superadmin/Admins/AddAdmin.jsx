@@ -1,18 +1,17 @@
 import React, { useEffect } from "react";
 import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 import Form from "../../../Utils/Form/Formik";
 import { AddnewUsers } from "../../../Services/Superadmin/Superadmin";
 import { marginUpdateOnUserCreate } from "../../../Services/Admin/Addmin";
+import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const AddAdmin = () => {
-
   const navigate = useNavigate();
-
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const Role = userDetails?.Role;
-  const user_id = userDetails?.user_id;
+  const TokenData = getUserFromToken();
+  const Role = TokenData?.Role;
+  const user_id = TokenData?.user_id;
 
   const formik = useFormik({
     initialValues: {
@@ -25,7 +24,6 @@ const AddAdmin = () => {
       parent_id: "",
       parent_role: "",
       Role: "",
-
       ProfitMargin: "",
       FixedPerClient: false,
       FundAdd: false,
@@ -66,8 +64,7 @@ const AddAdmin = () => {
       } else if (values.password !== values.confirmPassword) {
         errors.confirmPassword = "Passwords do not match";
       }
-   
-   
+
       if (values.ProfitMargin === "") {
         errors.ProfitMargin = "Please Enter Profit Margin";
       }
@@ -99,7 +96,9 @@ const AddAdmin = () => {
 
     onSubmit: async (values, { setSubmitting }) => {
       // Generate Referral Code
-      const referralCode = `REF-${values.username}-${Math.random().toString(36).substr(2, 8)}`;
+      const referralCode = `REF-${values.username}-${Math.random()
+        .toString(36)
+        .substr(2, 8)}`;
 
       const data = {
         FullName: values.fullName,
@@ -107,7 +106,7 @@ const AddAdmin = () => {
         Email: values.email,
         PhoneNo: values.phone,
         password: values.password,
-        
+
         parent_role: Role || "SUPERADMIN",
         parent_id: user_id,
         Role: "ADMIN",
@@ -136,10 +135,8 @@ const AddAdmin = () => {
               crypto: "100",
               dollarprice: "85",
               forex: "100",
-            }
-            const res = await marginUpdateOnUserCreate(data)
-           
-
+            };
+            const res = await marginUpdateOnUserCreate(data);
 
             Swal.fire({
               title: "Admin Added!",
@@ -162,7 +159,7 @@ const AddAdmin = () => {
           }
         })
         .catch((error) => {
-          return error
+          return error;
         });
     },
   });
@@ -232,7 +229,8 @@ const AddAdmin = () => {
       label_size: 12,
       col_size: 12,
       disable: false,
-      helperText: "Select either Fixed (Per Client) or First-Time Funding Reward",
+      helperText:
+        "Select either Fixed (Per Client) or First-Time Funding Reward",
     },
     {
       name: "AddClientBonus",
@@ -248,9 +246,10 @@ const AddAdmin = () => {
       label: "First-Time Funding Reward",
       type: "checkbox",
       label_size: 12,
-      col_size:  12,
+      col_size: 12,
       disable: false,
-      helperText: "Select either Fixed (Per Client) or First-Time Funding Reward",
+      helperText:
+        "Select either Fixed (Per Client) or First-Time Funding Reward",
     },
     {
       name: "FundLessThan100",
@@ -326,7 +325,6 @@ const AddAdmin = () => {
       disable: false,
       showWhen: (values) => values.NetTransactionPercent,
     },
-    
   ];
 
   useEffect(() => {
@@ -334,7 +332,6 @@ const AddAdmin = () => {
     formik.setFieldValue("FundLessThan500", 0);
     formik.setFieldValue("FundLessThan1000", 0);
     formik.setFieldValue("FundGreaterThan1000", 0);
-
   }, [formik.values.FundAdd]);
 
   useEffect(() => {
@@ -343,8 +340,7 @@ const AddAdmin = () => {
 
   useEffect(() => {
     formik.setFieldValue("FixedTransactionPercent", 0);
-  }
-, [formik.values.EveryTransaction]);
+  }, [formik.values.EveryTransaction]);
 
   useEffect(() => {
     if (formik.values.FixedPerClient) {

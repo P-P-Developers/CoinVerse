@@ -3,35 +3,22 @@ import { useFormik } from "formik";
 import { useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import Form from "../../../Utils/Form/Formik";
-import {
-  AddUser,
-  adminWalletBalance,
-  marginUpdateOnUserCreate,
-  TotalcountLicence,
-  updateuserLicence,
-} from "../../../Services/Admin/Addmin";
+import { AddUser } from "../../../Services/Admin/Addmin";
 import { getUserdata } from "../../../Services/Superadmin/Superadmin";
-
+import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const AddUsers = () => {
-
   const navigate = useNavigate();
   const location = useLocation();
+  const TokenData = getUserFromToken();
   const clientData = location.state?.clientData || {};
-
-  const [checkprice, setCheckprice] = useState("");
-  const [dollarPrice, setDollarPrice] = useState(0);
-  const [checkdolarprice, setCheckdolarprice] = useState(0);
-  const [checkLicence, setCheckLicence] = useState([]);
-
-
   const [data, setData] = useState([]);
+  const Role = TokenData?.Role;
+  const user_id = TokenData?.user_id;
 
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const Role = userDetails?.Role;
-  const user_id = userDetails?.user_id;
-
-
+  useEffect(() => {
+    getAlluserdata();
+  }, []);
 
   const formik = useFormik({
     initialValues: {
@@ -81,9 +68,7 @@ const AddUsers = () => {
         errors.Balance = "Please Enter Balance";
       } else if (isNaN(values.Balance)) {
         errors.Balance = "Balance must be a number";
-      } 
-
-    
+      }
 
       // Password validation
       if (!values.password) {
@@ -99,12 +84,14 @@ const AddUsers = () => {
         errors.confirmPassword = "Passwords do not match";
       }
 
-   
-
       // Limit validation (should be between 0 and 100 and in percentage format)
       if (!values.limit) {
         errors.limit = "Please enter a value for Limit";
-      } else if (isNaN(values.limit) || values.limit < 0 || values.limit > 100) {
+      } else if (
+        isNaN(values.limit) ||
+        values.limit < 0 ||
+        values.limit > 100
+      ) {
         errors.limit = "Limit should be a number between 0 and 100";
       }
 
@@ -117,8 +104,6 @@ const AddUsers = () => {
       if (!values.inputValue) {
         errors.inputValue = "Please enter a value for the selected option";
       }
-
-   
 
       return errors;
     },
@@ -139,21 +124,16 @@ const AddUsers = () => {
         Role: "USER",
         limit: values.limit,
         [selectedOption]: values.inputValue,
-        referred_by:location?.state?.clientData?.referred_by || null,
-        referral_price : location?.state?.clientData?.referral_price || 0,
-        singleUserId: location?.state?.clientData?._id || null
+        referred_by: location?.state?.clientData?.referred_by || null,
+        referral_price: location?.state?.clientData?.referral_price || 0,
+        singleUserId: location?.state?.clientData?._id || null,
       };
 
       setSubmitting(false);
 
-   
-
-  
-
       try {
         const response = await AddUser(data);
         if (response.status) {
-
           Swal.fire({
             title: "User Added!",
             text: "User added successfully",
@@ -185,29 +165,6 @@ const AddUsers = () => {
     },
   });
 
-
-
-  const getadminbalance = async () => {
-    const data = { userid: user_id };
-    try {
-      const response = await adminWalletBalance(data);
-      setCheckprice(response.Balance);
-      setCheckdolarprice(response.dollarPriceDoc.dollarprice);
-    } catch (error) {
-
-    }
-  };
-
-  const getadminLicence = async () => {
-    const data = { userid: user_id };
-    try {
-      const response = await TotalcountLicence(data);
-      setCheckLicence(response.data);
-    } catch (error) {
-
-    }
-  };
-
   const getAlluserdata = async () => {
     const data = { id: user_id };
     try {
@@ -219,29 +176,8 @@ const AddUsers = () => {
           return item.Role === "EMPLOYE";
         });
       setData(result);
-    } catch (error) {
-
-    }
+    } catch (error) {}
   };
-
-
-  useEffect(() => {
-    getadminbalance();
-    getadminLicence();
-    getAlluserdata();
-  }, []);
-
-  useEffect(() => {
-    const exchangeRate = Number(checkdolarprice);
-    setDollarPrice(
-      formik.values.Balance
-        ? parseFloat(formik.values.Balance) / exchangeRate
-        : 0
-    );
-  }, [formik.values.Balance]);
-
-
-
 
   const fields = [
     {
@@ -289,13 +225,11 @@ const AddUsers = () => {
       label: "Employee",
       type: "select",
       options: [
-
         ...(data
           ? data.map((item) => ({
-
-            label: item.UserName,
-            value: item._id,
-          }))
+              label: item.UserName,
+              value: item._id,
+            }))
           : []),
       ],
       label_size: 12,
@@ -319,7 +253,7 @@ const AddUsers = () => {
       col_size: 6,
       disable: false,
     },
-   
+
     {
       name: "limit",
       label: "Margin(0-100%)",
@@ -343,22 +277,23 @@ const AddUsers = () => {
       col_size: 6,
       disable: false,
     },
-    ...(formik.values.selectedOption ? [
-      {
-        name: "inputValue",
-        label:
-          formik.values.selectedOption === "pertrade"
-            ? "Per Trade"
-            : formik.values.selectedOption === "transactionwise"
-            ? "Transaction-Wise %" 
-            : "Per Lot",      
-        type: "percentage",
-        label_size: 12,
-        col_size: 6,
-        disable: false,
-      },
-    ] : []),
-
+    ...(formik.values.selectedOption
+      ? [
+          {
+            name: "inputValue",
+            label:
+              formik.values.selectedOption === "pertrade"
+                ? "Per Trade"
+                : formik.values.selectedOption === "transactionwise"
+                ? "Transaction-Wise %"
+                : "Per Lot",
+            type: "percentage",
+            label_size: 12,
+            col_size: 6,
+            disable: false,
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -371,11 +306,8 @@ const AddUsers = () => {
         formik={formik}
         btn_name1_route={"/admin/users"}
       />
-    
-      
     </div>
   );
 };
 
 export default AddUsers;
-

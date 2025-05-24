@@ -78,11 +78,6 @@ const Login = () => {
           });
           return;
         }
-        localStorage.setItem("user_details", JSON.stringify(response.data));
-        localStorage.setItem("user_role", JSON.stringify(response.data.Role));
-        localStorage.setItem("UserName", JSON.stringify(response.data.UserName));
-        localStorage.setItem("ReferralCode", JSON.stringify(response.data?.ReferralCode))
-
 
         Swal.fire({
           icon: "success",

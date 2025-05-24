@@ -5,18 +5,18 @@ import { UpdatestatusForpaymenthistory } from "../../../Services/Admin/Addmin";
 import Swal from "sweetalert2";
 import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
 import { Modal } from "react-bootstrap";
+import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const Deposit = () => {
+  const TokenData = getUserFromToken();
+  const user_id = TokenData?.user_id;
+
   const [data, setData] = useState([]);
   const [activeTab, setActiveTab] = useState("Pending");
   const [selectedValues, setSelectedValues] = useState({});
   const [search, setSearch] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [loading, setLoading] = useState(false);
-
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
-
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0); // for backend total rows
 
@@ -32,11 +32,7 @@ const Deposit = () => {
       Cell: ({ cell }) => (cell.row.type == 1 ? "Deposite" : cell),
     },
     { Header: "Balance", accessor: "Balance" },
-    // {
-    //   Header: "Balance",
-    //   accessor: "UserBalance",
-    //   Cell: ({ cell }) => cell.value?.toFixed(4),
-    // },
+
     { Header: "Transaction Id", accessor: "transactionId" },
     {
       Header: "ScreenShot",
@@ -51,53 +47,6 @@ const Deposit = () => {
       Cell: ({ cell }) => fDateTimesec(cell.value),
     },
   ];
-
-
-
-  const handleSelectChange = async (rowId, row, event) => {
-    const newSelectedValues = {
-      ...selectedValues,
-      [rowId]: event.target.value,
-    };
-    setSelectedValues(newSelectedValues);
-    await Updatestatus(row._id, newSelectedValues[rowId]);
-  };
-
-  const Updatestatus = async (id, status) => {
-    try {
-      const data = { admin_id: user_id, id, status };
-      const response = await UpdatestatusForpaymenthistory(data);
-
-      if (response.status) {
-        Swal.fire({
-          icon: "success",
-          title: "Success",
-          text:
-            response.message ||
-            "An unexpected error occurred. Please try again.",
-          timer: 2000,
-        });
-        getAllfundsstatus();
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text:
-            response.message ||
-            "Failed to update the request. Please try again.",
-          timer: 2000,
-        });
-      }
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text:
-          error.message || "An unexpected error occurred. Please try again.",
-        timer: 2000,
-      });
-    }
-  };
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -120,11 +69,11 @@ const Deposit = () => {
       if (response.status) {
         const filtertype = response.data || [];
         setData(filtertype);
-        setTotalCount(response?.pagination?.totalPages || 0); // assuming backend returns total count
+        setTotalCount(response?.pagination?.totalPages || 0);
       }
     } catch (error) {
     } finally {
-      setLoading(false); // Stop loading in both success and error cases
+      setLoading(false);
     }
   };
 

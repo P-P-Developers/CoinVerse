@@ -5,20 +5,10 @@ import Swal from "sweetalert2";
 import Form from "../../../Utils/Form/Formik"; // Assuming this is your custom Form component
 import { updateuserdata } from "../../../Services/Admin/Addmin";
 
-
 const Updateuser = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { rowData } = location.state;
-
-  // Retrieving user details from localStorage (ensure secure usage)
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const Role = userDetails?.Role;
-  const user_id = userDetails?.user_id;
-
-
-
-
 
   const formik = useFormik({
     initialValues: {
@@ -26,7 +16,6 @@ const Updateuser = () => {
       username: "",
       email: "",
       phone: "",
-      // Balance: "",
       employee_id: "",
       Licence: "",
       limit: "",
@@ -63,14 +52,22 @@ const Updateuser = () => {
       // Licence validation
       if (!values.Licence) {
         errors.Licence = "Please Enter Licence";
-      } else if (isNaN(values.Licence) || values.Licence < 1 || values.Licence > 12) {
+      } else if (
+        isNaN(values.Licence) ||
+        values.Licence < 1 ||
+        values.Licence > 12
+      ) {
         errors.Licence = "Licence must be a number between 1 and 12.";
       }
 
       // Limit validation
       if (!values.limit) {
         errors.limit = "Please enter a value for Limit";
-      } else if (isNaN(values.limit) || values.limit < 0 || values.limit > 100) {
+      } else if (
+        isNaN(values.limit) ||
+        values.limit < 0 ||
+        values.limit > 100
+      ) {
         errors.limit = "Limit must be a number between 0 and 100.";
       }
 
@@ -152,8 +149,6 @@ const Updateuser = () => {
         setSubmitting(false);
       }
     },
-
-
   });
 
   useEffect(() => {
@@ -164,7 +159,7 @@ const Updateuser = () => {
         } else if (rowData.perlot && rowData.perlot !== 0) {
           return "perlot";
         }
-        return "pertrade"; // Default to "pertrade" if both are null, undefined, or 0.
+        return "pertrade";
       };
 
       formik.setValues({
@@ -172,13 +167,9 @@ const Updateuser = () => {
         username: rowData.UserName || "",
         email: rowData.Email || "",
         phone: rowData.PhoneNo || "",
-        // Balance: rowData.Balance || "",
         Licence: rowData.Licence || "",
         selectedOption: rowData.selectedOption || determineSelectedOption(),
-        inputValue:
-          rowData.pertrade ||
-          rowData.perlot ||
-          "",
+        inputValue: rowData.pertrade || rowData.perlot || "",
         limit: rowData.limit || "",
       });
     }
@@ -189,9 +180,6 @@ const Updateuser = () => {
     if (selectedOption === "perlot") return "Enter Value for Per Lot";
     return "Enter Value";
   };
-
-
-
 
   // Form fields configuration
   const fields = [
@@ -227,7 +215,7 @@ const Updateuser = () => {
       col_size: 6,
       disable: true,
     },
-    
+
     {
       name: "Licence",
       label: "Licence",
@@ -245,9 +233,9 @@ const Updateuser = () => {
       label_size: 12,
       col_size: 6,
       disable: false,
-      min: 0, // Minimum value allowed
-      max: 100, // Maximum value allowed
-      step: 1, // Optional: step for finer control
+      min: 0,
+      max: 100,
+      step: 1,
     },
     {
       name: "selectedOption",

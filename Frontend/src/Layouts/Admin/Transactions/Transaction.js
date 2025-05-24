@@ -2,15 +2,20 @@ import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
 import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
 import { gethistory } from "../../../Services/Superadmin/Superadmin";
-import { DollarSign } from 'lucide-react';
+import { DollarSign } from "lucide-react";
+import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const Transaction = () => {
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
+  const TokenData = getUserFromToken();
+  const user_id = TokenData?.user_id;
 
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10); // Default rows per page
+
+  useEffect(() => {
+    getallhistory();
+  }, [search]);
 
   const columns = [
     { Header: "UserName", accessor: "UserName" },
@@ -19,12 +24,12 @@ const Transaction = () => {
       accessor: "Balance",
       Cell: ({ cell }) => (
         <>
-          <DollarSign style={{ marginRight: '5px', color: "green" }} />
+          <DollarSign style={{ marginRight: "5px", color: "green" }} />
           {cell.value}
         </>
       ),
     },
-       {
+    {
       Header: "Status",
       accessor: "Type",
       Cell: ({ cell }) => (
@@ -38,7 +43,6 @@ const Transaction = () => {
       accessor: "createdAt",
       Cell: ({ cell }) => fDateTimesec(cell.value),
     },
- 
   ];
 
   const getallhistory = async () => {
@@ -49,20 +53,16 @@ const Transaction = () => {
       const searchfilter = result?.filter((item) => {
         const searchInputMatch =
           search === "" ||
-          (item.UserName && item.UserName.toLowerCase().includes(search.toLowerCase())) ||
+          (item.UserName &&
+            item.UserName.toLowerCase().includes(search.toLowerCase())) ||
           (item.Type && item.Type.toLowerCase().includes(search.toLowerCase()));
 
         return searchInputMatch;
       });
 
       setData(search ? searchfilter : result);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
-
-  useEffect(() => {
-    getallhistory();
-  }, [search]);
 
   return (
     <>
@@ -75,7 +75,6 @@ const Transaction = () => {
                   <div className="mb-4">
                     <h4 className="card-title">Transaction History</h4>
                   </div>
-                  
                 </div>
                 <div className="card-body p-0">
                   <div className="tab-content" id="myTabContent1">
@@ -96,14 +95,26 @@ const Transaction = () => {
                           onChange={(e) => setSearch(e.target.value)}
                         />
                       </div>
-                      <Table columns={columns} data={data || []} rowsPerPage={rowsPerPage} />
-                      <div className="d-flex align-items-center" style={{ marginBottom: "20px", marginLeft: "20px", marginTop: "-48px" }}>
-
+                      <Table
+                        columns={columns}
+                        data={data || []}
+                        rowsPerPage={rowsPerPage}
+                      />
+                      <div
+                        className="d-flex align-items-center"
+                        style={{
+                          marginBottom: "20px",
+                          marginLeft: "20px",
+                          marginTop: "-48px",
+                        }}
+                      >
                         Rows per page:{" "}
                         <select
                           className="form-select ml-2"
                           value={rowsPerPage}
-                          onChange={(e) => setRowsPerPage(Number(e.target.value))}
+                          onChange={(e) =>
+                            setRowsPerPage(Number(e.target.value))
+                          }
                           style={{ width: "auto", marginLeft: "10px" }}
                         >
                           <option value={5}>5</option>
@@ -111,7 +122,6 @@ const Transaction = () => {
                           <option value={20}>20</option>
                           <option value={50}>50</option>
                           <option value={100}>100</option>
-
                         </select>
                       </div>
                     </div>

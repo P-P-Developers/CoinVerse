@@ -1,24 +1,31 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
-import {  fDateTimesec } from "../../../Utils/Date_format/datefromat";
+import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
 import { Clienthistory } from "../../../Services/Admin/Addmin";
-import { DollarSign } from "lucide-react";
-import { Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import { GetUsersName, switchOrderType } from "../../../Services/Admin/Addmin";
 import { ArrowLeftRight } from "lucide-react";
+import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const Tradehistory = () => {
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
-  const Role = userDetails?.Role;
+  const TokenData = getUserFromToken();
+
+  const user_id = TokenData?.user_id;
+
   const [data, setData] = useState([]);
   const [userName, setUserName] = useState();
   const [Userid, setUserId] = useState();
   const [search, setSearch] = useState("");
 
-  // Define columns for the table
+  useEffect(() => {
+    GetUserName();
+  }, []);
+
+  useEffect(() => {
+    getuserallhistory();
+  }, [Userid, search]);
+
   const columns1 = [
-  
     { Header: "Symbol", accessor: "symbol" },
     {
       Header: "Entry Price",
@@ -29,9 +36,8 @@ const Tradehistory = () => {
         if (signal_type === "buy_sell") {
           return buy_price ? buy_price.toFixed(3) : "-";
         } else {
-          return cell.row.sell_price ? cell.row.sell_price.toFixed(3) : "-"; 
+          return cell.row.sell_price ? cell.row.sell_price.toFixed(3) : "-";
         }
-
       },
     },
     {
@@ -43,9 +49,8 @@ const Tradehistory = () => {
         if (signal_type === "sell_buy") {
           return buy_price ? buy_price.toFixed(3) : "-";
         } else {
-          return cell.row.sell_price ? cell.row.sell_price.toFixed(3) : "-"; 
+          return cell.row.sell_price ? cell.row.sell_price.toFixed(3) : "-";
         }
-
       },
     },
     {
@@ -67,10 +72,9 @@ const Tradehistory = () => {
           return (
             <span style={{ color }}>
               {/* <DollarSign /> */}
-               {formattedProfitLoss}
+              {formattedProfitLoss}
             </span>
           );
-        
         }
 
         return "-";
@@ -84,7 +88,7 @@ const Tradehistory = () => {
         if (signal_type === "buy_sell") {
           return cell.row.buy_lot ? cell.row.buy_lot : "-";
         } else {
-          return cell.row.sell_lot ? cell.row.sell_lot : "-"; 
+          return cell.row.sell_lot ? cell.row.sell_lot : "-";
         }
       },
     },
@@ -96,17 +100,16 @@ const Tradehistory = () => {
         if (signal_type === "sell_buy") {
           return cell.row.buy_lot ? cell.row.buy_lot : "-";
         } else {
-          return cell.row.sell_lot ? cell.row.sell_lot : "-"; 
+          return cell.row.sell_lot ? cell.row.sell_lot : "-";
         }
       },
     },
-   
 
     {
       Header: "Signal Type",
       accessor: "signal_type",
       Cell: ({ cell }) => {
-           const signal_type = cell.row.signal_type;
+        const signal_type = cell.row.signal_type;
 
         // return signal_type ? signal_type == "buy_sell" ? "BUY" :"SELL" : "-";
         return (
@@ -122,7 +125,7 @@ const Tradehistory = () => {
         );
       },
     },
-    
+
     {
       Header: "Entry Time",
       accessor: "buy_time",
@@ -132,9 +135,8 @@ const Tradehistory = () => {
         if (signal_type === "buy_sell") {
           return cell.row.buy_time ? fDateTimesec(cell.row.buy_time) : "-";
         } else {
-          return cell.row.sell_time ? fDateTimesec(cell.row.sell_time) : "-"; 
+          return cell.row.sell_time ? fDateTimesec(cell.row.sell_time) : "-";
         }
-
       },
     },
     {
@@ -146,9 +148,8 @@ const Tradehistory = () => {
         if (signal_type === "sell_buy") {
           return cell.row.buy_time ? fDateTimesec(cell.row.buy_time) : "-";
         } else {
-          return cell.row.sell_time ? fDateTimesec(cell.row.sell_time) : "-"; 
+          return cell.row.sell_time ? fDateTimesec(cell.row.sell_time) : "-";
         }
-
       },
     },
     {
@@ -158,20 +159,6 @@ const Tradehistory = () => {
         return fDateTimesec(cell.value);
       },
     },
-      {
-      Header: "switch",
-      accessor: "switch",
-      Cell: ({ cell }) => {
-        return (
-          <span onClick={(e) => ChangeTradeType(cell.row)}>
-            <ArrowLeftRight />
-          </span>
-        );
-      },
-    },
-  ];
-
-  const columns = [
     {
       Header: "switch",
       accessor: "switch",
@@ -181,128 +168,6 @@ const Tradehistory = () => {
             <ArrowLeftRight />
           </span>
         );
-      },
-    },
-    { Header: "Symbol", accessor: "symbol" },
-    {
-      Header: "Buy Price",
-      accessor: "buy_price",
-      Cell: ({ cell }) => {
-        const buy_price = cell.row.buy_price;
-        return buy_price ? buy_price : "-";
-      },
-    },
-    {
-      Header: "Sell Price",
-      accessor: "sell_price",
-      Cell: ({ cell }) => {
-        const sell_price = cell.row.sell_price;
-        return sell_price ? sell_price : "-";
-      },
-    },
-    {
-      Header: "P/L",
-      accessor: "P/L",
-      Cell: ({ cell }) => {
-        const signal_type = cell.row.signal_type;
-        const sellPrice = cell.row.sell_price;
-        const buyPrice = cell.row.buy_price;
-        const buyQty = cell.row.buy_qty;
-
-        if (sellPrice && buyPrice && buyQty) {
-          // if(signal_type === "buy_sell"){
-          const profitLoss = (sellPrice - buyPrice) * buyQty;
-          const formattedProfitLoss = profitLoss.toFixed(4);
-
-          const color = profitLoss > 0 ? "green" : "red";
-
-          return (
-            <span style={{ color }}>
-              {/* <DollarSign /> */}
-               {formattedProfitLoss}
-            </span>
-          );
-         
-        }
-
-        return "-";
-      },
-    },
-    {
-      Header: "Buy lot",
-      accessor: "buy_lot",
-      Cell: ({ cell }) => {
-        const buy_lot = cell.row.buy_lot;
-        return buy_lot ? buy_lot : "-";
-      },
-    },
-    {
-      Header: "Sell lot",
-      accessor: "sell_lot",
-      Cell: ({ cell }) => {
-        const sell_lot = cell.row.sell_lot;
-        return sell_lot ? sell_lot : "-";
-      },
-    },
-    {
-      Header: "Buy qty",
-      accessor: "buy_qty",
-      Cell: ({ cell }) => {
-        const buy_qty = cell.row.buy_qty;
-        return buy_qty ? buy_qty : "-";
-      },
-    },
-    {
-      Header: "Sell qty",
-      accessor: "sell_qty",
-      Cell: ({ cell }) => {
-        const sell_qty = cell.row.sell_qty;
-        return sell_qty ? sell_qty : "-";
-      },
-    },
-
-    {
-      Header: "Signal Type",
-      accessor: "signal_type",
-      Cell: ({ cell }) => {
-      const signal_type = cell.row.signal_type;
-
-        // return signal_type ? signal_type == "buy_sell" ? "BUY" :"SELL" : "-";
-        return (
-          <>
-            {signal_type === "buy_sell" ? (
-              <span style={{ color: "green" }}> BUY</span>
-            ) : signal_type === "sell_buy" ? (
-              <span style={{ color: "red" }}> SELL</span>
-            ) : (
-              <span style={{ color: "blue" }}> {signal_type}</span>
-            )}
-          </>
-        );
-      },
-    },
-    
-    {
-      Header: "Buy Time",
-      accessor: "buy_time",
-      Cell: ({ cell }) => {
-        const buyTime = cell.row.buy_time;
-        return buyTime ? fDateTimesec(buyTime) : "-";
-      },
-    },
-    {
-      Header: "Sell time",
-      accessor: "sell_time",
-      Cell: ({ cell }) => {
-        const sell_time = cell.row.sell_time;
-        return sell_time ? fDateTimesec(sell_time) : "-";
-      },
-    },
-    {
-      Header: "Create Date",
-      accessor: "createdAt",
-      Cell: ({ cell }) => {
-        return fDateTimesec(cell.value);
       },
     },
   ];
@@ -315,40 +180,27 @@ const Tradehistory = () => {
       const searchfilter = response.data?.filter((item) => {
         const searchLower = search.toLowerCase();
         return (
-       
-          (search === "" ||
-            (item.symbol && item.symbol.toLowerCase().includes(searchLower)) ||
-            (item.buy_price &&
-              item.buy_price.toString().toLowerCase().includes(searchLower)) ||
-            (item.sell_price &&
-              item.sell_price.toString().toLowerCase().includes(searchLower)))
+          search === "" ||
+          (item.symbol && item.symbol.toLowerCase().includes(searchLower)) ||
+          (item.buy_price &&
+            item.buy_price.toString().toLowerCase().includes(searchLower)) ||
+          (item.sell_price &&
+            item.sell_price.toString().toLowerCase().includes(searchLower))
         );
       });
       setData(search ? searchfilter : response.data);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const GetUserName = async () => {
     try {
- 
       const admin_id = user_id;
       const response = await GetUsersName({ admin_id });
       if (response.status) {
-       
         setUserName(response.data);
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   };
-
-  useEffect(() => {
-    GetUserName();
-  }, []);
-
-  useEffect(() => {
-    getuserallhistory();
-  }, [Userid, search]);
 
   const calculateTotalProfitLoss = () => {
     return data
@@ -359,11 +211,6 @@ const Tradehistory = () => {
         const signal_type = row.signal_type;
         if (sellPrice && buyPrice && buyQty) {
           return total + (sellPrice - buyPrice) * buyQty;
-          // if(signal_type === "buy_sell"){
-
-          // }else{
-          //   return total + (buyPrice - sellPrice) * buyQty;
-          // }
         }
         return total;
       }, 0)
@@ -383,7 +230,6 @@ const Tradehistory = () => {
     }
   };
 
-
   return (
     <>
       <div>
@@ -399,7 +245,7 @@ const Tradehistory = () => {
                     to="/admin/users"
                     className="float-end mb-4 btn btn-primary"
                   >
-                          <i className="fa-solid fa-arrow-left"></i> Back
+                    <i className="fa-solid fa-arrow-left"></i> Back
                   </Link>
                 </div>
                 <div className="card-body p-0">
@@ -427,7 +273,7 @@ const Tradehistory = () => {
                               marginRight: "0.5rem",
                             }}
                           >
-                           🔍 Search:
+                            🔍 Search:
                           </label>
                           <input
                             type="text"
@@ -455,7 +301,7 @@ const Tradehistory = () => {
                               marginRight: "0.5rem",
                             }}
                           >
-                           👤 Users:
+                            👤 Users:
                           </label>
                           <select
                             className="form-select"
@@ -479,8 +325,6 @@ const Tradehistory = () => {
                               ))}
                           </select>
                         </div>
-
-                      
                       </div>
 
                       <h3 className="ms-3">
@@ -496,9 +340,7 @@ const Tradehistory = () => {
                           {totalProfitLoss}
                         </span>
                       </h3>
-                      {/* <Table columns={columns} data={data && data} /> */}
                       <Table columns={columns1} data={data && data} />
-
                     </div>
                   </div>
                 </div>

@@ -6,33 +6,31 @@ import {
   updateActivestatus,
 } from "../../../Services/Superadmin/Superadmin";
 import { delete_Employee } from "../../../Services/Admin/Addmin";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import {
-  CirclePlus,
-  CircleDollarSign,
-  CircleMinus,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { Pencil, Trash2 } from "lucide-react";
 import Swal from "sweetalert2";
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 import Loader from "../../../Utils/Loader/Loader";
+import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const Employee = () => {
   const navigate = useNavigate();
+  const TokenData = getUserFromToken();
 
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
+  const user_id = TokenData?.user_id;
 
   const [data, setData] = useState([]);
   const [balance, setBalance] = useState("");
   const [modal, setModal] = useState(false);
   const [id, setID] = useState("");
-  const [type, setType] = useState("");
   const [search, setSearch] = useState("");
 
   const [loading, setLoading] = useState(true);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  useEffect(() => {
+    getAlluserdata();
+  }, [search]);
 
   const columns = [
     { Header: "FullName", accessor: "FullName" },
@@ -40,68 +38,7 @@ const Employee = () => {
     { Header: "Password", accessor: "Otp" },
     { Header: "Email", accessor: "Email" },
     { Header: "Phone No", accessor: "PhoneNo" },
-    // {
-    //   Header: "Balance",
-    //   accessor: "Balance",
-    //   Cell: ({ cell }) => (
-    //     <div
-    //       style={{
-    //         backgroundColor: "#E1FFED",
-    //         border: "none",
-    //         color: "#33B469",
-    //         padding: "6px 10px",
-    //         textAlign: "center",
-    //         textDecoration: "none",
-    //         display: "inline-block",
-    //         fontSize: "13px",
-    //         cursor: "pointer",
-    //         borderRadius: "10px",
-    //         transition: "background-color 0.3s ease",
-    //       }}
 
-    //     >
-    //     <CircleDollarSign
-    //           style={{
-    //             height: "16px",
-    //             marginBottom: "-4px",
-    //             marginRight: "5px",
-    //             verticalAlign: "middle",
-    //           }}
-    //         />
-
-    //       <span style={{ fontWeight: "bold", verticalAlign: "middle" }}>
-    //         <CirclePlus
-    //           size={20}
-    //           style={{
-    //             marginBottom: "-4px",
-    //             marginRight: "5px",
-    //             verticalAlign: "middle",
-    //           }}
-    //           onClick={() => {
-    //          setModal(true);
-    //          setID(cell.row._id);
-    //          setType("CREDIT")
-    //       }}
-    //         />
-    //          {cell.value}
-    //          <CircleMinus
-    //           size={20}
-    //           style={{
-    //             marginBottom: "-4px",
-    //             marginRight: "5px",
-    //             verticalAlign: "middle",
-    //           }}
-    //           onClick={() => {
-    //          setModal(true);
-    //          setID(cell.row._id);
-    //          setType("DEBIT")
-    //       }}
-    //         />
-
-    //       </span>
-    //     </div>
-    //   ),
-    // },
     {
       Header: "ActiveStatus",
       accessor: "ActiveStatus",
@@ -154,14 +91,11 @@ const Employee = () => {
         return fDateTime(cell.value);
       },
     },
-  
   ];
 
   const updateEmploye = (_id, obj) => {
     navigate(`updateemploye/${_id}`, { state: { rowData: obj.row } });
   };
-
-  // delet employee
 
   const DeleteEmployee = async (_id) => {
     try {
@@ -196,7 +130,6 @@ const Employee = () => {
     }
   };
 
-  // update  balance
   const updateBalance = async () => {
     try {
       await Addbalance({
@@ -220,8 +153,6 @@ const Employee = () => {
       });
     }
   };
-
-  // update acctive status
 
   const updateactivestatus = async (event, id) => {
     const user_active_status = event.target.checked ? 1 : 0;
@@ -260,7 +191,6 @@ const Employee = () => {
     }
   };
 
-  // get all admin
   const getAlluserdata = async () => {
     setLoading(true);
     const data = { id: user_id };
@@ -290,13 +220,8 @@ const Employee = () => {
 
       setData(search ? searchfilter : result);
       setLoading(false);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
-
-  useEffect(() => {
-    getAlluserdata();
-  }, [search]);
 
   return (
     <>

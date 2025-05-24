@@ -10,24 +10,24 @@ import { Pencil, Eye } from "lucide-react";
 import Swal from "sweetalert2";
 import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
 import { Modal, Button } from "react-bootstrap";
+import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const Admin = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
+  const TokenData = getUserFromToken();
+  const user_id = TokenData?.user_id;
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilters, setSelectedFilters] = useState([]);
-  const [getActiveInactive, setActiveInactive] = useState(location.state?.status || "all");
+  const [getActiveInactive, setActiveInactive] = useState(
+    location.state?.status || "all"
+  );
   const [logsModalOpen, setLogsModalOpen] = useState(false);
   const [logsData, setLogsData] = useState([]);
-
-
 
   useEffect(() => {
     getAllAdmin();
@@ -116,7 +116,7 @@ const Admin = () => {
         );
       },
     },
-     {
+    {
       Header: "Logs",
       accessor: "",
       Cell: ({ cell }) => {
@@ -244,7 +244,6 @@ const Admin = () => {
 
       setData(finalData);
     } catch (error) {
-
     } finally {
       setLoading(false);
     }
@@ -253,7 +252,12 @@ const Admin = () => {
   return (
     <>
       {/* Logs Modal */}
-      <Modal show={logsModalOpen} onHide={() => setLogsModalOpen(false)} size="lg" centered>
+      <Modal
+        show={logsModalOpen}
+        onHide={() => setLogsModalOpen(false)}
+        size="lg"
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>Admin Logs</Modal.Title>
         </Modal.Header>
@@ -283,9 +287,25 @@ const Admin = () => {
                             <tr key={`${log._id}-${serial}`}>
                               <td>{serial++}</td>
                               <td>{change.field}</td>
-                              <td>{change.oldValue === true ? 'Checked' : change.oldValue === false ? 'Unchecked' : String(change.oldValue)}</td>
-                              <td>{change.newValue === true ? 'Checked' : change.newValue === false ? 'Unchecked' : String(change.newValue)}</td>
-                              <td>{log.timestamp ? fDateTimesec(log.timestamp) : "-"}</td>
+                              <td>
+                                {change.oldValue === true
+                                  ? "Checked"
+                                  : change.oldValue === false
+                                  ? "Unchecked"
+                                  : String(change.oldValue)}
+                              </td>
+                              <td>
+                                {change.newValue === true
+                                  ? "Checked"
+                                  : change.newValue === false
+                                  ? "Unchecked"
+                                  : String(change.newValue)}
+                              </td>
+                              <td>
+                                {log.timestamp
+                                  ? fDateTimesec(log.timestamp)
+                                  : "-"}
+                              </td>
                             </tr>
                           );
                         });
@@ -293,7 +313,9 @@ const Admin = () => {
                         rows.push(
                           <tr key={`${log._id}-nochange`}>
                             <td>{serial++}</td>
-                            <td colSpan={4} className="text-center">No changes</td>
+                            <td colSpan={4} className="text-center">
+                              No changes
+                            </td>
                           </tr>
                         );
                       }

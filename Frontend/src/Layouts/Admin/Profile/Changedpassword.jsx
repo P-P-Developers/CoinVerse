@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { PasswordChanged } from '../../../Services/Auth/Auth';
 import Swal from "sweetalert2";
+import { getUserFromToken } from "../../../Utils/TokenVerify";
+
 
 const Changedpassword = () => {
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
+        const TokenData = getUserFromToken();
+
+  const user_id = TokenData?.user_id;
 
   const [password, setPassword] = useState({
     oldPassword: "",

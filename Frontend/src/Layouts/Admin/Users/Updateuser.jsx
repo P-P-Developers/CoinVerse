@@ -1,6 +1,3 @@
-
-
-
 import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -8,18 +5,20 @@ import Swal from "sweetalert2";
 import Form from "../../../Utils/Form/Formik"; // Assuming this is your custom Form component
 import { updateuserdata } from "../../../Services/Admin/Addmin";
 import { getUserdata } from "../../../Services/Superadmin/Superadmin";
+import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const Updateuser = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const TokenData = getUserFromToken();
+
   const { rowData } = location.state;
-
   const [data, setData] = useState([]);
+  const user_id = TokenData?.user_id;
 
-  // Retrieving user details from localStorage (ensure secure usage)
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const Role = userDetails?.Role;
-  const user_id = userDetails?.user_id;
+  useEffect(() => {
+    getAlluserdata();
+  }, []);
 
   const formik = useFormik({
     initialValues: {
@@ -60,12 +59,20 @@ const Updateuser = () => {
       }
       if (!values.Licence) {
         errors.Licence = "Please Enter Licence";
-      } else if (isNaN(values.Licence) || values.Licence < 0 || values.Licence > 12) {
+      } else if (
+        isNaN(values.Licence) ||
+        values.Licence < 0 ||
+        values.Licence > 12
+      ) {
         errors.Licence = "Licence must be a number between 0 and 12.";
       }
       if (!values.limit) {
         errors.limit = "Please enter a value for Limit";
-      } else if (isNaN(values.limit) || values.limit < 0 || values.limit > 100) {
+      } else if (
+        isNaN(values.limit) ||
+        values.limit < 0 ||
+        values.limit > 100
+      ) {
         errors.limit = "Limit must be a number between 0 and 100.";
       }
       if (!values.selectedOption) {
@@ -132,8 +139,6 @@ const Updateuser = () => {
         return "transactionwise"; // Default to "pertrade" if both are null, undefined, or 0.
       };
 
-
-
       formik.setValues({
         fullName: rowData.FullName || "",
         username: rowData.UserName || "",
@@ -145,10 +150,7 @@ const Updateuser = () => {
         Licence: rowData.Licence || "",
         selectedOption: determineSelectedOption(),
         inputValue:
-          rowData.pertrade ||
-          rowData.perlot ||
-          rowData.transactionwise ||
-          "",
+          rowData.pertrade || rowData.perlot || rowData.transactionwise || "",
         limit: rowData.limit || "",
       });
     }
@@ -170,16 +172,9 @@ const Updateuser = () => {
           return item.Role === "EMPLOYE";
         });
       setData(result);
-    } catch (error) {
-
-    }
+    } catch (error) {}
   };
 
-  useEffect(() => {
-    getAlluserdata();
-  }, []);
-
-  // Form fields configuration
   const fields = [
     {
       name: "fullName",
@@ -230,9 +225,9 @@ const Updateuser = () => {
         { label: "Admin", value: "Admin" },
         ...(data
           ? data.map((item) => ({
-            label: item.UserName,
-            value: item._id,
-          }))
+              label: item.UserName,
+              value: item._id,
+            }))
           : []),
       ],
       label_size: 12,

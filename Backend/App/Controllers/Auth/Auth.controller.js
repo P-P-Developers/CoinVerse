@@ -53,12 +53,25 @@ class Auth {
       }
 
       // JWT Token creation
-      var token = jwt.sign({ id: EmailCheck._id }, process.env.SECRET, {
-        expiresIn: 28800,
-      });
+      var token = jwt.sign(
+        {
+          id: EmailCheck._id,
+          token: token,
+          Role: EmailCheck.Role,
+          user_id: EmailCheck._id,
+          UserName: EmailCheck.UserName,
+          ReferralCode: EmailCheck.ReferralCode,
+          ReferredBy: EmailCheck.ReferredBy,
+          parent_id: EmailCheck.parent_id,
+        },
+        process.env.SECRET,
+        {
+          expiresIn: 28800,
+        }
+      );
 
       res.cookie("token", token, {
-        httpOnly: true,
+        httpOnly: false,
         secure: false, // set to true in production (HTTPS)
         sameSite: "Lax",
         maxAge: 3600000, // 1 hour
@@ -217,7 +230,6 @@ class Auth {
         data: result,
       });
     } catch (error) {
-
       return res.json({
         status: false,
         message: "Internal error",

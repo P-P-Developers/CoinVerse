@@ -5,39 +5,43 @@ import {
   getbroadcastmessageforuser,
 } from "../../Services/Admin/Addmin";
 import { fDateTime } from "../../Utils/Date_format/datefromat";
-import { jwtDecode } from "jwt-decode";
 import { getCompanyApi } from "../../Services/Superadmin/Superadmin";
+
+import { getUserFromToken } from "../../Utils/TokenVerify";
 
 const Header = () => {
   const location = useLocation();
-  const user_role = JSON.parse(localStorage.getItem("user_role"));
-  const user_details = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = user_details?.user_id;
+  const TokenData = getUserFromToken();
+  const user_role = TokenData?.Role?.toUpperCase();
+  const user_id = TokenData?.user_id;
+  const exp = TokenData?.exp;
 
   const [isActive, setIsActive] = useState(false);
   const [notification, setNotification] = useState([]);
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
   const [logo, setLogo] = useState("");
 
+
   useEffect(() => {
     fetchLogo();
   }, []);
 
-  const changeFavicon = (iconPath) => {
-    const link =
-      document.querySelector("favicon") || document.createElement("link");
-    link.type = "image/x-icon";
-    link.rel = "icon";
-    link.href = iconPath;
-    document.getElementsByTagName("head")[0].appendChild(link);
-  };
+  useEffect(() => {
+    if (user_id) getNotifications();
+  }, [user_id]);
 
-  const fetchLogo = async () => {
-    const res = await getCompanyApi();
-    setLogo(res.data.logo);
-    changeFavicon(res.data.favicon);
-    document.title = res.data.panelName;
-  };
+  useEffect(() => {
+    const timeLeft = exp * 1000 - Date.now();
+    if (timeLeft <= 0) return logoutuser();
+    const timeout = setTimeout(logoutuser, timeLeft);
+    return () => clearTimeout(timeout);
+  }, [exp]);
+
+  useEffect(() => {
+    // Apply the theme on page load
+    document.body.setAttribute("data-theme-version", theme);
+    document.body.className = theme === "dark" ? "dark-mode" : "light-mode";
+  }, [theme]);
 
   useEffect(() => {
     const element = document.querySelector(".wallet-open.show");
@@ -51,6 +55,23 @@ const Header = () => {
     } else {
     }
   }, [isActive]); // This effect will run every time `isActive` changes
+
+  const changeFavicon = (iconPath) => {
+    let link = document.querySelector("link[rel*='icon']");
+    if (!link) {
+      link = document.createElement("link");
+      link.rel = "icon";
+      document.head.appendChild(link);
+    }
+    link.href = iconPath;
+  };
+
+  const fetchLogo = async () => {
+    const res = await getCompanyApi();
+    setLogo(res.data.logo);
+    changeFavicon(res.data.favicon);
+    document.title = res.data.panelName;
+  };
 
   const toggleHamburger = () => {
     setIsActive((prev) => !prev);
@@ -73,19 +94,6 @@ const Header = () => {
     localStorage.setItem("theme", newTheme); // Save theme preference to localStorage
   };
 
-  const capitalizeFirstLetter = (str) =>
-    str?.charAt(0).toUpperCase() + str.slice(1);
-
-  const getLastPathSegment = (path) => {
-    const segments = path
-      .split("/")
-      .filter((segment) => isNaN(segment.charAt(0)));
-    return segments[segments.length - 1] || segments[segments.length - 2];
-  };
-
-  const formattedSegment = capitalizeFirstLetter(
-    getLastPathSegment(location.pathname)
-  );
 
   const logoutuser = async () => {
     try {
@@ -101,36 +109,37 @@ const Header = () => {
     } catch (error) {}
   };
 
-  const isTokenExpired = () => {
-    try {
-      const token = user_details?.token;
-      if (!token) return true;
-      const { exp } = jwtDecode(token);
-      return exp * 1000 < Date.now();
-    } catch {
-      return true;
-    }
+
+
+
+  const getLastPathSegment = (path) => {
+    const segments = path
+      .split("/")
+      .filter((segment) => isNaN(segment.charAt(0)));
+    return segments[segments.length - 1] || segments[segments.length - 2];
   };
 
-  useEffect(() => {
-    if (isTokenExpired()) {
-      logoutuser();
-    }
-    const interval = setInterval(() => {
-      if (isTokenExpired()) {
-        logoutuser();
-        clearInterval(interval);
-      }
-    }, 300000);
-    getNotifications();
-    return () => clearInterval(interval);
-  }, [user_id]);
+  const formattedSegment = 
+    getLastPathSegment(location.pathname)?.charAt(0).toUpperCase() + getLastPathSegment(location.pathname)?.slice(1)
+  
 
-  useEffect(() => {
-    // Apply the theme on page load
-    document.body.setAttribute("data-theme-version", theme);
-    document.body.className = theme === "dark" ? "dark-mode" : "light-mode";
-  }, [theme]);
+
+  const pageTitles = {
+    Admin: "Add Admin",
+    Addmin: "Add Admin", // typo fix bhi cover ho gaya
+    Adduser: "Add User",
+    Loginstatus: "Login Status",
+    Adminuser: "Admin Users",
+    Adminemployee: "Admin Employees",
+    Position: "Available Position",
+    Tradehistory: "Trade History",
+    Holdoff: "Hold Off",
+    Changedpassword: "Changed Password",
+    Addemployees: "Add Employee",
+    Basicsetting: "Basic Settings",
+  };
+
+  const title = pageTitles[formattedSegment] || formattedSegment;
 
   return (
     <div>
@@ -182,57 +191,58 @@ const Header = () => {
                   </a>
                 </li>
                 {user_role === "ADMIN" && (
-                 <li className="nav-item dropdown notification_dropdown">
-  <a
-    href="#"
-    className="nav-link"
-    role="button"
-    data-bs-toggle="dropdown"
-    aria-expanded="false"
-  >
-    <i className="fa fa-bell" style={{ color: "white" }} />
-  </a>
-  <div className="dropdown-menu dropdown-menu-end of-visible">
-    <div
-      id="DZ_W_Notification3"
-      className="widget-media dlab-scroll p-3"
-      // style={{ height: 380 }}
-    >
-      <ul className="timeline">
-        {notification.length === 0 ? (
-          <p className="text-center text-muted">No new notifications</p>
-        ) : (
-          notification.map((item) => (
-            <li key={item.id}>
-              <div className="timeline-panel">
-                <div className="media me-2">
-                  <img
-                    alt={`Avatar of ${item.UserName}`}
-                    width={40}
-                    src="/assets/images/avatar/1.png"
-                  />
-                </div>
-                <div className="media-body">
-                  <h6 className="mb-1">{item.message}</h6>
-                  <small className="d-block">
-                    {fDateTime(item.createdAt)}
-                  </small>
-                </div>
-                <h6 className="mb-4">{item.UserName}</h6>
-              </div>
-            </li>
-          ))
-        )}
-      </ul>
-    </div>
-     {notification.length != 0 && (
-    <a href="#" className="all-notification">
-      See all notifications <i className="ti-arrow-end" />
-    </a>
-  ) }
-  </div>
-</li>
-
+                  <li className="nav-item dropdown notification_dropdown">
+                    <a
+                      href="#"
+                      className="nav-link"
+                      role="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
+                      <i className="fa fa-bell" style={{ color: "white" }} />
+                    </a>
+                    <div className="dropdown-menu dropdown-menu-end of-visible">
+                      <div
+                        id="DZ_W_Notification3"
+                        className="widget-media dlab-scroll p-3"
+                        style={{ maxHeight: 380, overflowY: "auto" }}
+                      >
+                        <ul className="timeline">
+                          {notification.length === 0 ? (
+                            <p className="text-center text-muted">
+                              No new notifications
+                            </p>
+                          ) : (
+                            notification.map((item) => (
+                              <li key={item.id}>
+                                <div className="timeline-panel">
+                                  <div className="media me-2">
+                                    <img
+                                      alt={`Avatar of ${item.UserName}`}
+                                      width={40}
+                                      src="/assets/images/avatar/1.png"
+                                    />
+                                  </div>
+                                  <div className="media-body">
+                                    <h6 className="mb-1">{item.message}</h6>
+                                    <small className="d-block">
+                                      {fDateTime(item.createdAt)}
+                                    </small>
+                                  </div>
+                                  <h6 className="mb-4">{item.UserName}</h6>
+                                </div>
+                              </li>
+                            ))
+                          )}
+                        </ul>
+                      </div>
+                      {notification.length != 0 && (
+                        <a href="#" className="all-notification">
+                          See all notifications <i className="ti-arrow-end" />
+                        </a>
+                      )}
+                    </div>
+                  </li>
                 )}
                 <li>
                   <div className="dropdown header-profile2">
@@ -330,33 +340,7 @@ const Header = () => {
         <div className="page-titles">
           <div className="sub-dz-head">
             <div className="d-flex align-items-center dz-head-title">
-              <h2 className="text-white m-0">
-                {formattedSegment === "Admin"
-                  ? "Add Admin"
-                  : formattedSegment === "Addmin"
-                  ? "Add Admin"
-                  : formattedSegment === "Adduser"
-                  ? "Add User"
-                  : formattedSegment === "Loginstatus"
-                  ? "Login Status"
-                  : formattedSegment === "Adminuser"
-                  ? "Admin Users"
-                  : formattedSegment === "Adminemployee"
-                  ? "Admin Employees"
-                  : formattedSegment === "Position"
-                  ? "Available Position"
-                  : formattedSegment === "Tradehistory"
-                  ? "Trade History"
-                  : formattedSegment === "Holdoff"
-                  ? "Hold Off"
-                  : formattedSegment === "Changedpassword"
-                  ? "Changed Password"
-                  : formattedSegment === "Addemployees"
-                  ? "Add Employee"
-                  : formattedSegment == "Basicsetting"
-                  ? "Basic Settings"
-                  : formattedSegment}
-              </h2>
+              <h2 className="text-white m-0">{title}</h2>
             </div>
           </div>
         </div>

@@ -6,17 +6,17 @@ import {
 import Swal from "sweetalert2";
 import Table from "../../../Utils/Table/Table";
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
+import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const Broadcast = () => {
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
-  const Role = userDetails?.Role;
-  const username = userDetails?.UserName;
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const TokenData = getUserFromToken();
 
+  const user_id = TokenData?.user_id;
+  const Role = TokenData?.Role;
+  const username = TokenData?.UserName;
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
-
   const [message, setmessage] = useState({
     message: "",
     title: "",
@@ -24,6 +24,10 @@ const Broadcast = () => {
     Role: "",
     UserName: "",
   });
+
+  useEffect(() => {
+    fetchBroadcastMessages();
+  }, [search]);
 
   const sendmessage = async () => {
     try {
@@ -99,13 +103,8 @@ const Broadcast = () => {
       } else {
         setData([]);
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   };
-
-  useEffect(() => {
-    fetchBroadcastMessages();
-  }, [search]);
 
   return (
     <>

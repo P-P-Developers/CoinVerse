@@ -5,8 +5,7 @@ import Swal from "sweetalert2";
 import { getAllBrokerageDataForEmployee } from "../../Services/Employee/Employee";
 
 const Brokerage = () => {
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
+
 
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");

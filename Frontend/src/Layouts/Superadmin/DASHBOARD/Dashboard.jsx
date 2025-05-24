@@ -1,13 +1,18 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Superadmindashboarddata } from "../../../Services/Superadmin/Superadmin";
 import { useNavigate } from "react-router-dom";
+import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [countdata, setCountdata] = useState([0]);
+  const TokenData = getUserFromToken();
 
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
+  const [countdata, setCountdata] = useState([0]);
+  const user_id = TokenData?.user_id;
+
+  useEffect(() => {
+    getdashboard();
+  }, []);
 
   const getdashboard = async () => {
     try {
@@ -21,14 +26,9 @@ const Dashboard = () => {
     } catch (error) {}
   };
 
-  useEffect(() => {
-    getdashboard();
-  }, []);
-
   const Redirect = (data) => {
-   
-    navigate("/superadmin/admin",{ state:{status:data}});
-  }
+    navigate("/superadmin/admin", { state: { status: data } });
+  };
 
   return (
     <div>
@@ -36,8 +36,7 @@ const Dashboard = () => {
         <div class="row">
           <div class="col-xl-12">
             <div className="row main-card " style={{ marginTop: "100px" }}>
-           
-              <div className="col-md-4" onClick={()=>Redirect("all")}>
+              <div className="col-md-4" onClick={() => Redirect("all")}>
                 <div className="card card-box bg-secondary bg-secondary">
                   <div className="card-header border-0 pb-0">
                     <div className="chart-num">
@@ -260,7 +259,7 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              <div className="col-md-4" onClick={()=>Redirect("Active")}>
+              <div className="col-md-4" onClick={() => Redirect("Active")}>
                 <div className="card card-box bg-secondary bg-pink">
                   <div className="card-header border-0 pb-0">
                     <div className="chart-num">
@@ -277,7 +276,7 @@ const Dashboard = () => {
                     <div className="dlab-swiper-circle">
                       <svg
                         width={50}
-                        height={45} 
+                        height={45}
                         viewBox="0 0 137 137"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
@@ -486,7 +485,7 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              <div className="col-md-4" onClick={()=>Redirect("Inactive")}>
+              <div className="col-md-4" onClick={() => Redirect("Inactive")}>
                 <div className="card card-box bg-secondary bg-dark">
                   <div className="card-header border-0 pb-0">
                     <div className="chart-num">

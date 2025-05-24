@@ -10,9 +10,6 @@ import {
 } from "../../../Services/Superadmin/Superadmin";
 
 const SuperAdminTradeHistory = () => {
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
-
   const [data, setData] = useState([]);
   const [userName, setUserName] = useState();
   const [Userid, setUserId] = useState();
@@ -212,7 +209,6 @@ const SuperAdminTradeHistory = () => {
 
   const GetUserName = async () => {
     try {
-      const admin_id = user_id;
       const response = await getAdminName();
       if (response.status) {
         setUserName(response.data);

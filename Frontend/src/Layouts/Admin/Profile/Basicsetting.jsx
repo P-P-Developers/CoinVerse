@@ -6,12 +6,13 @@ import { getReferClients } from "../../../Services/Admin/Addmin";
 import Table from "../../../Utils/Table/Table";
 import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
 import { useFormik } from "formik"; // Ensure Formik is imported
+import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const Basicsetting = () => {
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
+  const TokenData = getUserFromToken();
 
-  const [referPrice, setReferPrice] = useState("");
+  const user_id = TokenData?.user_id;
+
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -31,7 +32,7 @@ const Basicsetting = () => {
       accessor: "referred_by",
       Cell: ({ cell }) => {
         return cell.value
-          ? cell.value === userDetails.user_id
+          ? cell.value === TokenData.user_id
             ? "ADMIN"
             : "USER"
           : "N/A";
@@ -73,7 +74,6 @@ const Basicsetting = () => {
       const data = { userid: user_id };
       const response = await getAllClient(data);
       if (response.status) {
-        setReferPrice(response?.data?.Refer_Price);
         setRanges({
           range1: response?.data?.Range1 || "",
           range2: response?.data?.Range2 || "",
@@ -81,8 +81,7 @@ const Basicsetting = () => {
           range4: response?.data?.Range4 || "",
         });
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -110,13 +109,12 @@ const Basicsetting = () => {
           text: response.message,
         });
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const getsignupuser = async () => {
     try {
-      const admin_id = userDetails?.user_id;
+      const admin_id = TokenData?.user_id;
       const response = await getReferClients({ admin_id });
       const searchfilter = response.data?.filter((item) => {
         const searchInputMatch =
@@ -126,8 +124,7 @@ const Basicsetting = () => {
         return searchInputMatch;
       });
       setData(search ? searchfilter : response.data);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -143,7 +140,12 @@ const Basicsetting = () => {
     },
     enableReinitialize: true, // Allow reinitialization when state changes
     onSubmit: (values) => {
-      Update_RefferPrice(values.range1, values.range2, values.range3, values.range4);
+      Update_RefferPrice(
+        values.range1,
+        values.range2,
+        values.range3,
+        values.range4
+      );
     },
   });
 
@@ -171,8 +173,12 @@ const Basicsetting = () => {
                     tooltip.style.borderRadius = "5px";
                     tooltip.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.1)";
                     tooltip.style.zIndex = "1000";
-                    tooltip.style.top = `${e.target.getBoundingClientRect().top + window.scrollY + 20}px`;
-                    tooltip.style.left = `${e.target.getBoundingClientRect().left + window.scrollX}px`;
+                    tooltip.style.top = `${
+                      e.target.getBoundingClientRect().top + window.scrollY + 20
+                    }px`;
+                    tooltip.style.left = `${
+                      e.target.getBoundingClientRect().left + window.scrollX
+                    }px`;
                     document.body.appendChild(tooltip);
                     e.target.tooltipElement = tooltip;
                   }}
@@ -249,29 +255,6 @@ const Basicsetting = () => {
                   </form>
                   <div className="row">
                     <div className="col-lg-12">
-                      {/* <div className="mb-3">
-                        <label className="form-label">Refer Price </label>
-                        <div className="row">
-                          <div className="col-lg-6 mb-2">
-                            <input
-                              type="number"
-                              className="form-control "
-                              placeholder="Enter Refer Point Price"
-                              value={referPrice}
-                              onChange={(e) => setReferPrice(e.target.value)}
-                            />
-                          </div>
-                          <div className="col-lg-4 mb-2">
-                            <button
-                              className="btn btn-primary w-100"
-                              onClick={Update_RefferPrice}
-                            >
-                              Update
-                            </button>
-                          </div>
-                        </div>
-                      </div> */}
-
                       <div className="mb-3">
                         <label className="form-label">Search : </label>
                         <input

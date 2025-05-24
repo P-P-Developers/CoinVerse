@@ -1,43 +1,31 @@
 import React, { useEffect } from "react";
 import { useFormik } from "formik";
 import { useLocation, useNavigate } from "react-router-dom";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 import Form from "../../../Utils/Form/Formik";
 import { Update_Employe } from "../../../Services/Admin/Addmin";
-
-
 
 const UpdateEmploye = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { rowData } = location.state;
 
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const Role = userDetails?.Role;
-  const user_id = userDetails?.user_id;
-
-
-
-  
   const formik = useFormik({
     initialValues: {
       fullName: rowData?.FullName || "",
       username: rowData?.UserName || "",
       email: rowData?.Email || "",
       phone: rowData?.PhoneNo || "",
-      // Balance: rowData?.Balance || "",
-      // password: "",
-      // confirmPassword: "",
       all: false,
       addclient: false,
-      Edit:false,
-      trade_history:false,
-      open_position:false,
-      Licence_Edit:false,
-      limit_edit:false,
-      Balance_edit:false,
+      Edit: false,
+      trade_history: false,
+      open_position: false,
+      Licence_Edit: false,
+      limit_edit: false,
+      Balance_edit: false,
     },
-    
+
     validate: (values) => {
       let errors = {};
       if (!values.fullName) {
@@ -56,19 +44,10 @@ const UpdateEmploye = () => {
       } else if (!/^\d{10}$/.test(values.phone)) {
         errors.phone = "Please enter a valid 10-digit phone number.";
       }
-      // if (!values.Balance) {
-      //   errors.Balance = "Please Enter Balance";
-      // }
-      // Add password validation if necessary
-      // if (!values.password) {
-      //   errors.password = "Please Enter Password";
-      // } else if (values.password !== values.confirmPassword) {
-      //   errors.confirmPassword = "Passwords do not match";
-      // }
 
       return errors;
     },
-    
+
     onSubmit: async (values, { setSubmitting }) => {
       const data = {
         id: rowData?._id,
@@ -76,17 +55,16 @@ const UpdateEmploye = () => {
         UserName: values.username,
         Email: values.email,
         PhoneNo: values.phone,
-        // Balance: values.Balance,
-      //  Password: values.password,
-       Employee_permission: {
-        client_add: values.addclient || values.all ? "1" : "0",
-        Edit: values.Edit || values.all ? "1" : "0",
-        trade_history: values.trade_history || values.all ? "1" : "0",
-        open_position: values.open_position || values.all ? "1" : "0",
-        Licence_Edit: values.Licence_Edit || values.all ? "1" : "0",
-        limit_edit: values.limit_edit || values.all ? "1" : "0",
-        Balance_edit: values.Balance_edit || values.all ? "1" : "0",
-      },
+
+        Employee_permission: {
+          client_add: values.addclient || values.all ? "1" : "0",
+          Edit: values.Edit || values.all ? "1" : "0",
+          trade_history: values.trade_history || values.all ? "1" : "0",
+          open_position: values.open_position || values.all ? "1" : "0",
+          Licence_Edit: values.Licence_Edit || values.all ? "1" : "0",
+          limit_edit: values.limit_edit || values.all ? "1" : "0",
+          Balance_edit: values.Balance_edit || values.all ? "1" : "0",
+        },
       };
 
       setSubmitting(false);
@@ -144,21 +122,17 @@ const UpdateEmploye = () => {
       username: rowData?.UserName || "",
       email: rowData?.Email || "",
       phone: rowData?.PhoneNo || "",
-      // Balance: rowData?.Balance || "",
-      // password: "",
-      Password: rowData?.Otp || "",
-      addclient:rowData.permissions[0]?.client_add == 1 ? true : false,
-      Edit:rowData.permissions[0]?.Edit == 1 ? true : false,
-      trade_history:rowData.permissions[0]?.trade_history == 1 ? true : false,
-      open_position:rowData.permissions[0]?.open_position == 1 ? true : false,
-      Licence_Edit:rowData.permissions[0]?.Licence_Edit == 1 ? true : false,
-      limit_edit:rowData.permissions[0]?.limit_edit == 1 ? true : false,
-      Balance_edit:rowData.permissions[0]?.Balance_edit == 1 ? true : false,
 
+      Password: rowData?.Otp || "",
+      addclient: rowData.permissions[0]?.client_add == 1 ? true : false,
+      Edit: rowData.permissions[0]?.Edit == 1 ? true : false,
+      trade_history: rowData.permissions[0]?.trade_history == 1 ? true : false,
+      open_position: rowData.permissions[0]?.open_position == 1 ? true : false,
+      Licence_Edit: rowData.permissions[0]?.Licence_Edit == 1 ? true : false,
+      limit_edit: rowData.permissions[0]?.limit_edit == 1 ? true : false,
+      Balance_edit: rowData.permissions[0]?.Balance_edit == 1 ? true : false,
     });
   }, [rowData]);
-
-
 
   const fields = [
     {
@@ -203,8 +177,6 @@ const UpdateEmploye = () => {
       disable: true,
     },
 
- 
-  
     {
       name: "addclient",
       label: "Add Client",
@@ -220,8 +192,7 @@ const UpdateEmploye = () => {
       type: "checkbox",
       label_size: 12,
       col_size: 3,
-      check_box_true:
-        formik.values.all || formik.values.Edit ? true : false,
+      check_box_true: formik.values.all || formik.values.Edit ? true : false,
     },
     {
       name: "trade_history",
@@ -229,7 +200,8 @@ const UpdateEmploye = () => {
       type: "checkbox",
       label_size: 12,
       col_size: 3,
-      check_box_true: formik.values.all || formik.values.trade_history ? true : false,
+      check_box_true:
+        formik.values.all || formik.values.trade_history ? true : false,
     },
     {
       name: "open_position",

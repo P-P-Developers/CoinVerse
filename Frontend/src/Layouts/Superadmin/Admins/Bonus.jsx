@@ -15,7 +15,6 @@ import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
 
 const Brokerage = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
 
   const [data, setData] = useState([]);
   const [bonusData, setBonusData] = useState([]);
@@ -24,8 +23,6 @@ const Brokerage = () => {
   const [OpenModal, setOpenModal] = useState(false);
   const [rowsPerPage] = useState(10);
   const [refresh, setRefresh] = useState(false);
-  const [totalBrokerage, setTotalBrokerage] = useState(0);
-  const [ProfitBalance, setProfitBalance] = useState(0);
   const [selectedAdminId, setSelectedAdminId] = useState({});
   const [adminUsername, setAdminUsername] = useState([]);
   const [activeTab, setActiveTab] = useState("Brokerage");

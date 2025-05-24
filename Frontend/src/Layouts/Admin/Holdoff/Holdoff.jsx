@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
-import { symbolholdoff, updatesymbolstatus } from "../../../Services/Admin/Addmin";
+import {
+  symbolholdoff,
+  updatesymbolstatus,
+} from "../../../Services/Admin/Addmin";
 import Swal from "sweetalert2";
 
 const Holdoff = () => {
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
-
   const [refresh, setRefresh] = useState(false);
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
- 
-const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
+  useEffect(() => {
+    Symbolholdoff();
+  }, [refresh, search]);
 
   const columns = [
     { Header: "Symbol name", accessor: "symbol" },
@@ -40,11 +42,8 @@ const [rowsPerPage, setRowsPerPage] = useState(10);
     },
   ];
 
-
-
   // Update symbol status
   const updatestatus = async (event, symbol) => {
-    
     const user_active_status = event.target.checked ? 1 : 0;
     const result = await Swal.fire({
       title: "Do you want to save the changes?",
@@ -56,7 +55,10 @@ const [rowsPerPage, setRowsPerPage] = useState(10);
 
     if (result.isConfirmed) {
       try {
-        const response = await updatesymbolstatus({ symbol, user_active_status });
+        const response = await updatesymbolstatus({
+          symbol,
+          user_active_status,
+        });
         if (response.status) {
           Swal.fire({
             title: "Saved!",
@@ -66,18 +68,20 @@ const [rowsPerPage, setRowsPerPage] = useState(10);
           });
           setTimeout(() => {
             Swal.close();
-            setRefresh(!refresh); 
+            setRefresh(!refresh);
           }, 1000);
         }
       } catch (error) {
-        Swal.fire("Error", "There was an error processing your request.", "error");
+        Swal.fire(
+          "Error",
+          "There was an error processing your request.",
+          "error"
+        );
       }
     } else {
-      event.target.checked = !event.target.checked; 
+      event.target.checked = !event.target.checked;
     }
   };
-
-
 
   // Fetching data
   const Symbolholdoff = async () => {
@@ -87,21 +91,14 @@ const [rowsPerPage, setRowsPerPage] = useState(10);
       const searchfilter = response.data?.filter((item) => {
         const searchInputMatch =
           search === "" ||
-          (item.symbol && item.symbol.toLowerCase().includes(search.toLowerCase())) 
-          
+          (item.symbol &&
+            item.symbol.toLowerCase().includes(search.toLowerCase()));
 
         return searchInputMatch;
       });
       setData(search ? searchfilter : response.data);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
-
-  useEffect(() => {
-    Symbolholdoff();
-  }, [refresh,search]);
-
-
 
   return (
     <>
@@ -121,9 +118,10 @@ const [rowsPerPage, setRowsPerPage] = useState(10);
                       className="tab-pane fade show active"
                       id="Week"
                       role="tabpanel"
-                      aria-labelledby="Week-tab">
+                      aria-labelledby="Week-tab"
+                    >
                       <div className="mb-3 ms-4">
-                       🔍 Search :{" "}
+                        🔍 Search :{" "}
                         <input
                           className="ml-2 input-search form-control"
                           style={{ width: "20%" }}
@@ -144,7 +142,8 @@ const [rowsPerPage, setRowsPerPage] = useState(10);
                           marginBottom: "20px",
                           marginLeft: "20px",
                           marginTop: "-48px",
-                        }}>
+                        }}
+                      >
                         Rows per page:{" "}
                         <select
                           className="form-select ml-2"
@@ -152,7 +151,8 @@ const [rowsPerPage, setRowsPerPage] = useState(10);
                           onChange={(e) =>
                             setRowsPerPage(Number(e.target.value))
                           }
-                          style={{ width: "auto", marginLeft: "10px" }}>
+                          style={{ width: "auto", marginLeft: "10px" }}
+                        >
                           <option value={5}>5</option>
                           <option value={10}>10</option>
                           <option value={20}>20</option>

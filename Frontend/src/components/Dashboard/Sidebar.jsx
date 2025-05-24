@@ -6,19 +6,21 @@ import {
   employee_header,
 } from "./Sidebar_path";
 import { getEmployee_permissiondata } from "../../Services/Employee/Employee";
+import { getUserFromToken } from "../../Utils/TokenVerify";
 
 const Sidebar = () => {
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
+  const location = useLocation();
+  const TokenData = getUserFromToken();
 
-  const roles = JSON.parse(localStorage.getItem("user_role"));
+  const user_id = TokenData?.user_id;
+  const roles = TokenData?.Role;
+
   const routes =
     roles === "SUPERADMIN"
       ? superadmin_header
       : roles === "ADMIN"
       ? admin_header
       : employee_header;
-  const location = useLocation();
 
   const [activeRoute, setActiveRoute] = useState(location.pathname);
   const [getaccess, setGetaccess] = useState({});
@@ -30,12 +32,13 @@ const Sidebar = () => {
       if (response.status) {
         setGetaccess(response.data[0]);
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
-    getpermission();
+    if (roles === "EMPLOYE") {
+      getpermission();
+    }
   }, [user_id]);
 
   useEffect(() => {
@@ -54,8 +57,8 @@ const Sidebar = () => {
         return "fa fa-id-badge";
       case "transaction":
         return "fa-solid fa-money-bill-transfer";
-        case "license history":
-          return "fa-solid fa-money-bill-transfer";
+      case "license history":
+        return "fa-solid fa-money-bill-transfer";
       case "withdrawal":
         return "fa-solid fa-money-simple-from-bracket";
       case "deposit":
@@ -80,12 +83,12 @@ const Sidebar = () => {
         return "fa-solid fa-right-to-bracket";
       case "brokerage":
         return "fa fa-hand-holding-usd";
-           case "bonus":
+      case "bonus":
         return "fa fa-hand-holding-usd";
-        case "research":
-          return "fa-solid fa-money-bill-transfer";
-          case "chat-box":
-            return "fa-solid fa-comments";
+      case "research":
+        return "fa-solid fa-money-bill-transfer";
+      case "chat-box":
+        return "fa-solid fa-comments";
       default:
         return "";
     }

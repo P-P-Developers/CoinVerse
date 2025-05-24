@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Admindashboarddata } from "../../../Services/Admin/Addmin";
-import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
 import LivePriceCard from "./Card";
 import { useNavigate } from "react-router-dom";
+import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [countdata, setCountdata] = useState([0]);
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
+  const TokenData = getUserFromToken();
 
-  
+  const [countdata, setCountdata] = useState([0]);
+  const user_id = TokenData?.user_id;
+
   useEffect(() => {
     getdashboard();
   }, []);
@@ -24,19 +24,17 @@ const Dashboard = () => {
         setCountdata(response.data);
       } else {
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   };
-
 
   const RedirectToUser = (path) => {
     console.log(path);
     navigate("/admin/users");
-  }
-   const RedirectToEmp = (path) => {
+  };
+  const RedirectToEmp = (path) => {
     console.log(path);
     navigate("/admin/employee");
-  }
+  };
 
   return (
     <div>
@@ -58,7 +56,7 @@ const Dashboard = () => {
         <div class="row">
           <div class="col-xl-12">
             <div className="row main-card">
-              <div className="col-md-4" onClick={()=>RedirectToUser()} >
+              <div className="col-md-4" onClick={() => RedirectToUser()}>
                 <div className="card card-box bg-secondary bg-secondary">
                   <div className="card-header border-0 pb-0">
                     <div className="chart-num">
@@ -280,7 +278,7 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
-              <div className="col-md-4" onClick={()=>RedirectToUser()}>
+              <div className="col-md-4" onClick={() => RedirectToUser()}>
                 <div className="card card-box bg-secondary bg-pink">
                   <div className="card-header border-0 pb-0">
                     <div className="chart-num">
@@ -505,7 +503,7 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
-              <div className="col-md-4" onClick={()=>RedirectToUser()}>
+              <div className="col-md-4" onClick={() => RedirectToUser()}>
                 <div className="card card-box bg-secondary bg-dark">
                   <div className="card-header border-0 pb-0">
                     <div className="chart-num">
@@ -728,7 +726,7 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
-              <div className="col-md-4" onClick={()=>RedirectToEmp()}>
+              <div className="col-md-4" onClick={() => RedirectToEmp()}>
                 <div className="card card-box bg-secondary bg-warning">
                   <div className="card-header border-0 pb-0">
                     <div className="chart-num">
@@ -951,7 +949,7 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
-              <div className="col-md-4" onClick={()=>RedirectToEmp()}>
+              <div className="col-md-4" onClick={() => RedirectToEmp()}>
                 <div className="card card-box bg-secondary bg-dark">
                   <div className="card-header border-0 pb-0">
                     <div className="chart-num">
@@ -1174,7 +1172,7 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
-              <div className="col-md-4" onClick={()=>RedirectToEmp()}>
+              <div className="col-md-4" onClick={() => RedirectToEmp()}>
                 <div className="card card-box bg-secondary bg-secondary">
                   <div className="card-header border-0 pb-0">
                     <div className="chart-num">
@@ -1397,8 +1395,6 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
-
-             
             </div>
           </div>
         </div>

@@ -1,22 +1,24 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../Utils/Table/Table";
 import { fDateTimesec } from "../../Utils/Date_format/datefromat";
-import { getSignIn,DeleteSignIn } from "../../Services/Admin/Addmin";
-import { Pencil, Trash2 } from "lucide-react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { getSignIn } from "../../Services/Admin/Addmin";
+
 import SweetAlert from "sweetalert2";
+import { getUserFromToken } from "../../Utils/TokenVerify";
 
 const Signup = () => {
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
-  const referralCode = userDetails?.ReferralCode;
+  const TokenData = getUserFromToken();
+
+  const referralCode = TokenData?.ReferralCode;
   const referralLink = `${window.location.origin}/#/register/${referralCode}`;
 
-  const navigate = useNavigate();
   const [data, setData] = useState([]);
-  const [currentClient, setCurrentClient] = useState(null);
   const [search, setSearch] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  useEffect(() => {
+    getsignupuser();
+  }, [search]);
 
   const columns = [
     { Header: "FullName", accessor: "FullName" },
@@ -27,7 +29,7 @@ const Signup = () => {
       accessor: "referred_by",
       Cell: ({ cell }) => {
         return cell.value
-          ? cell.value === userDetails.user_id
+          ? cell.value === TokenData.user_id
             ? "ADMIN"
             : "USER"
           : "N/A";
@@ -41,70 +43,11 @@ const Signup = () => {
         return fDateTimesec(cell.value);
       },
     },
-    // {
-    //   Header: "Action",
-    //   accessor: "Action",
-    //   Cell: ({ cell }) => {
-    //     return (
-    //       <div>
-    //         <Pencil
-    //           style={{ cursor: "pointer", color: "#33B469" }}
-    //           onClick={() => EditClient(cell.row._id)}
-    //         />
-    //         {/* add delete button  */}
-    //         <Trash2
-    //           style={{
-    //             cursor: "pointer",
-    //             marginRight: "10px",
-    //             marginLeft: "3px",
-    //             color: "red",
-    //           }}
-    //           onClick={() => DeleteUser(cell.row._id)}
-    //         />
-    //       </div>
-    //     );
-    //   },
-    // },
   ];
-
-  const DeleteUser = async (rowId) => {
-
-  
-    const ConfirmDelete = await SweetAlert.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    });
-  
-    if (ConfirmDelete.isConfirmed) {
-      try {
-        const response = await DeleteSignIn({ id: rowId });
-        if (response.status) {
-          SweetAlert.fire("Deleted!", "Your file has been deleted.", "success");
-          getsignupuser();
-        } else {
-          SweetAlert.fire("Error!", "Failed to delete the user.", "error");
-        }
-      } catch (error) {
-      }
-    } else {
-      SweetAlert.fire("Cancelled", "Your imaginary file is safe :)", "error");
-    }
-  };
-  
-
-  const EditClient = (rowId) => {
-    const clientData = data.find((item) => item._id === rowId);
-    navigate("/admin/adduser", { state: { clientData } });
-  };
 
   const getsignupuser = async () => {
     try {
-      const admin_id = userDetails?.user_id;
+      const admin_id = TokenData?.user_id;
       const response = await getSignIn({ admin_id });
       const searchfilter = response.data?.filter((item) => {
         const searchInputMatch =
@@ -114,13 +57,8 @@ const Signup = () => {
         return searchInputMatch;
       });
       setData(search ? searchfilter : response.data);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
-
-  useEffect(() => {
-    getsignupuser();
-  }, [search]);
 
   return (
     <>
@@ -144,7 +82,7 @@ const Signup = () => {
                     >
                       <div className="d-flex align-items-center mb-3 ms-4">
                         <div className="me-4">
-                         🔍 Search:{" "}
+                          🔍 Search:{" "}
                           <input
                             className="ml-2 input-search form-control"
                             // style={{ width: "0%" }}

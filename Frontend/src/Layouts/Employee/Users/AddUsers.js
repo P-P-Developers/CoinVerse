@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import Form from "../../../Utils/Form/Formik";
 import {
@@ -8,25 +8,20 @@ import {
   adminWalletBalance,
   TotalcountLicence,
 } from "../../../Services/Admin/Addmin";
-// import { getUserdata } from "../../../Services/Superadmin/Superadmin";
 import { getAllClient } from "../../../Services/Superadmin/Superadmin";
+import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const AddUsers = () => {
-
-
   const navigate = useNavigate();
-  const location = useLocation();
+  const TokenData = getUserFromToken();
 
-  const [checkprice, setCheckprice] = useState("");
   const [dollarPrice, setDollarPrice] = useState(0);
   const [checkdolarprice, setCheckdolarprice] = useState(0);
   const [checkLicence, setCheckLicence] = useState([]);
-  const [getid, setGetid] = useState([])
+  const [getid, setGetid] = useState([]);
 
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const Role = userDetails?.Role;
-  const user_id = userDetails?.user_id;
-  const user_name = userDetails?.UserName
+  const Role = TokenData?.Role;
+  const user_id = TokenData?.user_id;
 
   const formik = useFormik({
     initialValues: {
@@ -68,7 +63,6 @@ const AddUsers = () => {
         errors.Balance = "Balance must be a number";
       }
 
-      
       if (!values.password) {
         errors.password = "Please Enter Password";
       } else if (values.password.length < 6) {
@@ -81,10 +75,13 @@ const AddUsers = () => {
       }
       if (!values.Licence) {
         errors.Licence = "Please Enter Licence";
-      }
-      else if (values.Licence > checkLicence) {
-        errors.Licence = "You Don't have Enough Licence"
-      } else if (isNaN(values.Licence) || values.Licence < 1 || values.Licence > 12) {
+      } else if (values.Licence > checkLicence) {
+        errors.Licence = "You Don't have Enough Licence";
+      } else if (
+        isNaN(values.Licence) ||
+        values.Licence < 1 ||
+        values.Licence > 12
+      ) {
         errors.Licence = "Licence should be a number between 1 and 12";
       }
 
@@ -97,16 +94,18 @@ const AddUsers = () => {
 
       if (!values.limit) {
         errors.limit = "Please enter a value for Limit";
-      } else if (isNaN(values.limit) || values.limit < 0 || values.limit > 100) {
+      } else if (
+        isNaN(values.limit) ||
+        values.limit < 0 ||
+        values.limit > 100
+      ) {
         errors.limit = "Limit should be a number between 0 and 100";
       }
-
 
       return errors;
     },
 
     onSubmit: async (values, { setSubmitting }) => {
-
       if (!values.Licence || values.Licence === "") {
         Swal.fire({
           title: "Error",
@@ -114,7 +113,7 @@ const AddUsers = () => {
           icon: "error",
           timer: 1000,
           timerProgressBar: true,
-        })
+        });
       }
 
       const selectedOption = values.selectedOption;
@@ -134,9 +133,6 @@ const AddUsers = () => {
         Licence: values.Licence,
         [selectedOption]: values.inputValue,
       };
-
-
-
 
       setSubmitting(false);
 
@@ -205,58 +201,38 @@ const AddUsers = () => {
     },
   });
 
-
-
-
   const getadminbalance = async () => {
     const data = { userid: getid };
     try {
       const response = await adminWalletBalance(data);
-      setCheckprice(response.Balance);
+
       setCheckdolarprice(response.dollarPriceDoc.dollarprice);
-    } catch (error) {
-
-    }
+    } catch (error) {}
   };
-
-
 
   const getadminLicence = async () => {
     const data = { userid: getid };
     try {
       const response = await TotalcountLicence(data);
       setCheckLicence(response.data);
-    } catch (error) {
-
-    }
+    } catch (error) {}
   };
-
-
-
-
 
   const getallclient = async () => {
     try {
-      const data = { userid: user_id }
-      const response = await getAllClient(data)
+      const data = { userid: user_id };
+      const response = await getAllClient(data);
       if (response.status) {
-        setGetid(response.data.parent_id)
+        setGetid(response.data.parent_id);
       }
-
-    } catch (error) {
-
-    }
-  }
-
-
+    } catch (error) {}
+  };
 
   useEffect(() => {
     getadminbalance();
     getadminLicence();
-    getallclient()
+    getallclient();
   }, [getid]);
-
-
 
   useEffect(() => {
     const exchangeRate = Number(checkdolarprice);
@@ -266,9 +242,6 @@ const AddUsers = () => {
         : 0
     );
   }, [formik.values.Balance]);
-
-
-
 
   const fields = [
     {
@@ -355,18 +328,21 @@ const AddUsers = () => {
       col_size: 6,
       disable: false,
     },
-    ...(formik.values.selectedOption ? [
-      {
-        name: "inputValue",
-        label: formik.values.selectedOption === "pertrade"
-          ? "Per Trade"
-          : "Per Lot",
-        type: "text",
-        label_size: 12,
-        col_size: 6,
-        disable: false,
-      },
-    ] : []),
+    ...(formik.values.selectedOption
+      ? [
+          {
+            name: "inputValue",
+            label:
+              formik.values.selectedOption === "pertrade"
+                ? "Per Trade"
+                : "Per Lot",
+            type: "text",
+            label_size: 12,
+            col_size: 6,
+            disable: false,
+          },
+        ]
+      : []),
   ];
 
   return (

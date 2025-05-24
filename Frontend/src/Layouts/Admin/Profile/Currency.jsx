@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { MarginpriceRequired, getMarginpriceRequired } from "../../../Services/Admin/Addmin";
 import Swal from 'sweetalert2';
+import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 
 const Setting = () => {
-    const userDetails = JSON.parse(localStorage.getItem("user_details"));
-    const user_id = userDetails?.user_id;
+          const TokenData = getUserFromToken();
+
+    const user_id = TokenData?.user_id;
 
 
 

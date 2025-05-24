@@ -1,23 +1,25 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
-import { fDateTime, fDateTimesec } from "../../../Utils/Date_format/datefromat";
-
+import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
 import { getlicencedetailforsuperadmin } from "../../../Services/Superadmin/Superadmin";
+import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const Transection = () => {
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
+  const TokenData = getUserFromToken();
+  const user_id = TokenData?.user_id;
 
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [adminNames, setAdminNames] = useState([]);
   const [selectedAdminName, setSelectedAdminName] = useState("");
-
   const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  useEffect(() => {
+    getlicensedetail();
+  }, [search, selectedAdminName]);
 
   const columns = [
     { Header: "UserName", accessor: "username" },
-
     { Header: "Licence", accessor: "Licence" },
     {
       Header: "Create Date",
@@ -28,7 +30,7 @@ const Transection = () => {
     },
   ];
 
-    //get license details
+  //get license details
   const getlicensedetail = async () => {
     try {
       const data = { userid: user_id };
@@ -61,10 +63,6 @@ const Transection = () => {
     } catch (error) {}
   };
 
-  useEffect(() => {
-    getlicensedetail();
-  }, [search, selectedAdminName]);
-
   return (
     <>
       <div>
@@ -86,13 +84,11 @@ const Transection = () => {
                       aria-labelledby="Week-tab"
                     >
                       <div className="row mb-3 ms-3 align-items-center">
-                     
-
                         {/* Dropdown */}
                         <div className="col-md-6 col-lg-3 ">
-                         <label className="form-label fw-bold d-block">
-                          Filters
-                        </label>
+                          <label className="form-label fw-bold d-block">
+                            Filters
+                          </label>
                           <select
                             style={{
                               width: "100%",

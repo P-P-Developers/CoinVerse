@@ -13,10 +13,6 @@ const Withdraw = () => {
   const [selectedValues, setSelectedValues] = useState({});
   const [search, setSearch] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
-
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-
-
   const [selectedBankDetails, setSelectedBankDetails] = useState(null);
   const [showModal, setShowModal] = useState(false);
 

@@ -2,19 +2,22 @@ import React, { useEffect, useState } from "react";
 import { getlicencedata } from "../../../Services/Admin/Addmin";
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 import Table from "../../../Utils/Table/Table";
+import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const Report = () => {
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
+  const TokenData = getUserFromToken();
 
-  // Ensure the state is initialized as an array
+  const user_id = TokenData?.user_id;
   const [alllivedata, setAlllivedata] = useState([]);
   const [activedata, setActivedata] = useState([]);
   const [expired, setExpired] = useState([]);
- 
+
   const [rowsPerPage, setRowsPerPage] = useState(10);
-    const [search, setSearch] = useState("");
-  
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    getlicensehistory();
+  }, [search]);
 
   const columns = [
     { Header: "UserName", accessor: "UserName" },
@@ -27,7 +30,6 @@ const Report = () => {
         return fDateTime(cell.value);
       },
     },
-   
   ];
 
   // Fetching license history
@@ -37,50 +39,49 @@ const Report = () => {
       const response = await getlicencedata(data);
 
       // Ensure filters are applied only when `response.data` exists
-      const searchfilter = response?.data?.allData?.filter((item) => {
-        const searchInputMatch =
-          search === "" ||
-          (item.UserName &&
-            item.UserName.toLowerCase().includes(search.toLowerCase())) ||
-          (item.Type && item.Type.toLowerCase().includes(search.toLowerCase())) || 
-          (item.Role && item.Role.toLowerCase().includes(search.toLowerCase()));
+      const searchfilter =
+        response?.data?.allData?.filter((item) => {
+          const searchInputMatch =
+            search === "" ||
+            (item.UserName &&
+              item.UserName.toLowerCase().includes(search.toLowerCase())) ||
+            (item.Type &&
+              item.Type.toLowerCase().includes(search.toLowerCase())) ||
+            (item.Role &&
+              item.Role.toLowerCase().includes(search.toLowerCase()));
 
-        return searchInputMatch;
-      }) || [];
+          return searchInputMatch;
+        }) || [];
 
-      const searchfilter1 = response?.data?.liveData?.filter((item) => {
-        const searchInputMatch =
-          search === "" ||
-          (item.UserName &&
-            item.UserName.toLowerCase().includes(search.toLowerCase())) ||
-          (item.Type && item.Type.toLowerCase().includes(search.toLowerCase()));
+      const searchfilter1 =
+        response?.data?.liveData?.filter((item) => {
+          const searchInputMatch =
+            search === "" ||
+            (item.UserName &&
+              item.UserName.toLowerCase().includes(search.toLowerCase())) ||
+            (item.Type &&
+              item.Type.toLowerCase().includes(search.toLowerCase()));
 
-        return searchInputMatch;
-      }) || [];
+          return searchInputMatch;
+        }) || [];
 
-      const searchfilter2 = response?.data?.expiredData?.filter((item) => {
-        const searchInputMatch =
-          search === "" ||
-          (item.UserName &&
-            item.UserName.toLowerCase().includes(search.toLowerCase())) ||
-          (item.Type && item.Type.toLowerCase().includes(search.toLowerCase()));
+      const searchfilter2 =
+        response?.data?.expiredData?.filter((item) => {
+          const searchInputMatch =
+            search === "" ||
+            (item.UserName &&
+              item.UserName.toLowerCase().includes(search.toLowerCase())) ||
+            (item.Type &&
+              item.Type.toLowerCase().includes(search.toLowerCase()));
 
-        return searchInputMatch;
-      }) || [];
-
-
-
+          return searchInputMatch;
+        }) || [];
 
       setAlllivedata(search ? searchfilter : response?.data?.allData || []);
       setActivedata(search ? searchfilter1 : response?.data?.liveData || []);
       setExpired(search ? searchfilter2 : response?.data?.expiredData || []);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
-
-  useEffect(() => {
-    getlicensehistory();
-  }, [search]);
 
   return (
     <div>
@@ -101,7 +102,8 @@ const Report = () => {
                             <a
                               href="#navpills-1"
                               className="nav-link active navlink"
-                              data-bs-toggle="tab">
+                              data-bs-toggle="tab"
+                            >
                               All Clients
                             </a>
                           </li>
@@ -109,7 +111,8 @@ const Report = () => {
                             <a
                               href="#navpills-2"
                               className="nav-link navlink"
-                              data-bs-toggle="tab">
+                              data-bs-toggle="tab"
+                            >
                               Active Live Clients
                             </a>
                           </li>
@@ -117,7 +120,8 @@ const Report = () => {
                             <a
                               href="#navpills-3"
                               className="nav-link navlink"
-                              data-bs-toggle="tab">
+                              data-bs-toggle="tab"
+                            >
                               Expired Live Clients
                             </a>
                           </li>
@@ -153,7 +157,8 @@ const Report = () => {
                                           marginBottom: "20px",
                                           marginLeft: "20px",
                                           marginTop: "-48px",
-                                        }}>
+                                        }}
+                                      >
                                         Rows per page:{" "}
                                         <select
                                           className="form-select ml-2"
@@ -166,7 +171,8 @@ const Report = () => {
                                           style={{
                                             width: "auto",
                                             marginLeft: "10px",
-                                          }}>
+                                          }}
+                                        >
                                           <option value={5}>5</option>
                                           <option value={10}>10</option>
                                           <option value={20}>20</option>

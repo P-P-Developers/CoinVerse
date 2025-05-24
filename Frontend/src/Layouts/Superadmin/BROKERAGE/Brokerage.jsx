@@ -7,6 +7,11 @@ const Brokerage = () => {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
 
+ useEffect(() => {
+    getBrokerageDataForSuperAdmin();
+  }, []);
+
+
   const columns = [
     { Header: "UserName", accessor: "UserName" },
     { Header: "Symbol", accessor: "symbol" },
@@ -52,9 +57,7 @@ const Brokerage = () => {
     }
   };
 
-  useEffect(() => {
-    getBrokerageDataForSuperAdmin();
-  }, []);
+ 
 
   return (
     <>

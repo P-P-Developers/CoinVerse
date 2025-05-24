@@ -1,14 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-
 import { getUserdata } from "../../../Services/Superadmin/Superadmin";
 import "./Chatbox.css";
 import * as Config from "../../../Utils/Config";
+import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const Users = () => {
-  const userDetails = JSON.parse(localStorage.getItem("user_details"));
-  const user_id = userDetails?.user_id;
-  const adminId = userDetails?.user_id;
+  const TokenData = getUserFromToken();
+
+  const user_id = TokenData?.user_id;
+  const adminId = TokenData?.user_id;
 
   const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
@@ -161,11 +162,11 @@ const Users = () => {
                                   </a>
                                 ))}
                             </div>
-                            {/* chat-list */}
+                           
                           </div>
                         </div>
                       </div>
-                      {/* chat-list */}
+                    
                     </div>
                   </div>
                 </div>
@@ -257,7 +258,7 @@ const Users = () => {
                             onClick={sendMessage}
                             onKeyDown={(e) => {
                               if (e.key === "Enter") {
-                                e.preventDefault(); // prevent form submission if inside a form
+                                e.preventDefault(); 
                                 sendMessage();
                               }
                             }}

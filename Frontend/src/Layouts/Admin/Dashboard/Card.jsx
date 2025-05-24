@@ -83,8 +83,7 @@ const LivePriceCard = () => {
         }
       };
 
-      ws.onerror = (error) => {
-      };
+      ws.onerror = (error) => {};
 
       ws.onclose = () => {
         // Reconnect after 3 seconds
@@ -98,6 +97,7 @@ const LivePriceCard = () => {
       ws.close();
     };
   }, []);
+
   var symbols =
     "ETH/USD,USD/EUR,USD/JPY,BTC/USD,EUR/USD,ETH/BTC,ETH/XRP,ETH/USD,XAU/USD";
 
