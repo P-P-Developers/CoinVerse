@@ -443,7 +443,7 @@ const Brokerage = () => {
               height: "100vh",
               width: "100vw",
               backdropFilter: "blur(6px)",
-              backgroundColor: "rgba(0,0,0,0.3)",
+              // backgroundColor: "rgba(0,0,0,0.3)",
               zIndex: 1040,
             }}
           ></div>
@@ -460,7 +460,7 @@ const Brokerage = () => {
               <div
                 className="modal-content"
                 style={{
-                  background: "rgba(255, 255, 255, 0.85)",
+                  // background: "rgba(255, 255, 255, 0.85)",
                   backdropFilter: "blur(10px)",
                   borderRadius: "16px",
                   boxShadow: "0 8px 24px rgba(0, 0, 0, 0.2)",
@@ -480,7 +480,7 @@ const Brokerage = () => {
                 </div>
                 <div className="modal-body">
                   <table className="table table-hover table-bordered">
-                    <thead className="table-light">
+                    <thead className="">
                       <tr>
                         <th>#</th>
                         <th>Amount</th>

@@ -72,9 +72,9 @@ class Auth {
 
       res.cookie("token", token, {
         httpOnly: false,
-        secure: false, // set to true in production (HTTPS)
+        secure: false, 
         sameSite: "Lax",
-        maxAge: 3600000, // 1 hour
+        maxAge: 12 * 60 * 60 * 1000, 
       });
 
       // Update FCM token if role is USER

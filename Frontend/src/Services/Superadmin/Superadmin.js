@@ -211,11 +211,9 @@ export async function getAllBrokerageData() {
   }
 }
 
-
 export async function AddProfitMarginApi(data1) {
   try {
     let res = await axios.post(`${Config.base_url}AddProfitMargin`, data1);
-
 
     return await res?.data;
   } catch (err) {
@@ -223,13 +221,12 @@ export async function AddProfitMarginApi(data1) {
   }
 }
 
-
 export async function getProfitMarginApi(data) {
   try {
     let res = await axios.post(`${Config.base_url}getProfitMargin`, data);
     return await res?.data;
   } catch (err) {
-    return
+    return;
   }
 }
 
@@ -238,7 +235,7 @@ export async function createOrUpdateCompanyApi(data) {
     let res = await axios.post(`${Config.base_url}createOrUpdateCompany`, data);
     return await res?.data;
   } catch (error) {
-    return
+    return;
   }
 }
 
@@ -247,84 +244,76 @@ export async function getCompanyApi() {
     let res = await axios.get(`${Config.base_url}getCompany`);
     return await res?.data;
   } catch (error) {
-    return
+    return;
   }
 }
-  export async function getAdminName() {
-    try {
-      let res = await axios.get(`${Config.base_url}getAdminName`);
-      return await res?.data;
-    } catch (error) {
-      return
-    }
+export async function getAdminName() {
+  try {
+    let res = await axios.get(`${Config.base_url}getAdminName`);
+    return await res?.data;
+  } catch (error) {
+    return;
   }
-
+}
 
 export async function switchOrderType(data, token) {
   try {
     const res = await axios.post(`${Config.base_url}switchOrderType`, data, {
       data: {},
-    })
+    });
     return await res?.data;
-  }
-  catch (err) {
+  } catch (err) {
     return await err;
-
   }
-
 }
-
 
 export async function GetAdminUsername(data, token) {
   try {
     const res = await axios.get(`${Config.base_url}getAdminName`, data, {
       data: {},
-    })
+    });
     return await res?.data;
-  }
-  catch (err) {
+  } catch (err) {
     return await err;
-
   }
-
 }
 
 export async function getAdminUserName(data, token) {
   try {
     const res = await axios.post(`${Config.base_url}getAdminUserName`, data, {
       data: {},
-    })
+    });
     return await res?.data;
-  }
-  catch (err) {
-    return
-      await err;
+  } catch (err) {
+    return;
+    await err;
   }
 }
 
 export async function GetAdminBalanceWithPosition(data, token) {
   try {
-    const res = await axios.post(`${Config.base_url}GetAdminBalanceWithPosition`, data, {
-      data: {},
-    })
+    const res = await axios.post(
+      `${Config.base_url}GetAdminBalanceWithPosition`,
+      data,
+      {
+        data: {},
+      }
+    );
     return await res?.data;
-  }
-  catch (err) {
-    return
-      await err;
+  } catch (err) {
+    return;
+    await err;
   }
 }
-
 
 export async function getAdminLogsAPI(data, token) {
   try {
     const res = await axios.post(`${Config.base_url}getAdminLogs`, data, {
       data: {},
-    })
+    });
     return await res?.data;
-  }
-  catch (err) {
-    return
-      await err;
+  } catch (err) {
+    return;
+    await err;
   }
 }
