@@ -22,7 +22,7 @@ const BonusSchema = new Schema(
       },
       Type: {
         type: String,
-        enum: ["Fixed_PerClient", "Fund_Add", "Every_Transaction"],  
+        enum: ["Fixed_PerClient", "Fund_Add", "Every_Transaction","NetTransaction"],  
         required: true,
       },
        

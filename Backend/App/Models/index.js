@@ -37,4 +37,5 @@ module.exports = {
   Conversation: require("./Conversation"),
   Message: require("./Message"),
   AdminActivityLog: require("./AdminActivityLogs.model"), 
+  BonusCollection : require("./BonusCollectioni.model"),
 };
