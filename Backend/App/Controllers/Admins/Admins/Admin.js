@@ -1729,16 +1729,16 @@ class Admin {
       }
 
       const { DeviceToken } = GetUser;
-      if (!DeviceToken) {
-        return res.json({
-          status: false,
-          message: "DeviceToken not found",
-        });
-      }
+      // if (!DeviceToken) {
+      //   return res.json({
+      //     status: false,
+      //     message: "DeviceToken not found",
+      //   });
+      // }
 
 
       sendPushNotification(
-        DeviceToken,
+        DeviceToken ? DeviceToken :"",
         "New Message",
         message
       );

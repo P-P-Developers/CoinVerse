@@ -1,20 +1,93 @@
 "use strict";
 
 const db = require("../../Models");
-const { findOne } = require("../../Models/Role.model");
+// const { findOne } = require("../../Models/Role.model");
 const Symbol = db.Symbol;
 const Order = db.Order;
 const User_model = db.user;
 const mainorder_model = db.mainorder_model;
 const BalanceStatement = db.BalanceStatement;
+const moment = require("moment"); // make sure to install it
 
 class Placeorder {
+  async getLedgerReport(req, res) {
+    try {
+      const { userid, filter = "all" } = req.body;
+
+      // Calculate the starting date based on filter
+      let startDate;
+
+      const now = new Date();
+
+      switch (filter) {
+        case "1w":
+          startDate = moment(now).subtract(1, "weeks").toDate();
+          break;
+        case "1m":
+          startDate = moment(now).subtract(1, "months").toDate();
+          break;
+        case "6m":
+          startDate = moment(now).subtract(6, "months").toDate();
+          break;
+        case "1y":
+          startDate = moment(now).subtract(1, "years").toDate();
+          break;
+        default:
+          startDate = null; // means no filter
+      }
+
+      // Build query
+      const query = { userid };
+      if (startDate) {
+        query.createdAt = { $gte: startDate };
+      }
+
+      const GetBalanceStatement = await BalanceStatement.find(query)
+        .select("Amount type message symbol brokerage Exittype createdAt")
+        .sort({ createdAt: -1 });
+
+      return res.status(200).json({
+        status: true,
+        message: "Ledger report fetched successfully",
+        data: GetBalanceStatement,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        status: false,
+        message: "Internal server error",
+        data: [],
+      });
+    }
+  }
+
   // get order book
   async getOrderBook(req, res) {
     try {
-      const { userid } = req.body;
+      const { userid, fromDate, toDate } = req.body;
 
-      const result = await Order.find({ userid }).sort({ createdAt: -1 });
+      const query = { userid };
+
+      if (fromDate && toDate) {
+        // Use provided range
+        query.createdAt = {
+          $gte: new Date(fromDate),
+          $lte: new Date(toDate),
+        };
+      } else {
+        // Default: today's orders
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+
+        const endOfToday = new Date();
+        endOfToday.setHours(23, 59, 59, 999);
+
+        query.createdAt = {
+          $gte: startOfToday,
+          $lte: endOfToday,
+        };
+      }
+
+      const result = await Order.find(query).sort({ createdAt: -1 });
 
       if (!result.length) {
         return res.json({
@@ -24,7 +97,7 @@ class Placeorder {
         });
       }
 
-      // Format the result
+      // Format output
       const formattedResult = result.map((order) => ({
         ...order.toObject(),
         price: order.price?.toFixed(4) || null,
@@ -268,25 +341,30 @@ class Placeorder {
       ];
 
       const finduser = await mainorder_model.aggregate([
-      {
-  $match: {
-    $or: [
-      {
-        userid: userid,
-        createdAt: { $lt: startOfDay },
-        $expr: { $ne: ["$buy_qty", "$sell_qty"] }
-      },
-      {
-        $expr: {
-          $eq: [
-            { $dateToString: { format: "%Y-%m-%d", date: "$holding_dtime" } },
-            { $dateToString: { format: "%Y-%m-%d", date: new Date() } }
-          ]
-        }
-      }
-    ]
-  }
-},
+        {
+          $match: {
+            $or: [
+              {
+                userid: userid,
+                createdAt: { $lt: startOfDay },
+                $expr: { $ne: ["$buy_qty", "$sell_qty"] },
+              },
+              {
+                $expr: {
+                  $eq: [
+                    {
+                      $dateToString: {
+                        format: "%Y-%m-%d",
+                        date: "$holding_dtime",
+                      },
+                    },
+                    { $dateToString: { format: "%Y-%m-%d", date: new Date() } },
+                  ],
+                },
+              },
+            ],
+          },
+        },
 
         {
           $addFields: {
@@ -511,6 +589,11 @@ class Placeorder {
         Exittype,
       } = req.body;
 
+      // if price 0 null undefined empty then return error please provide price
+      if (!price || price <= 0) {
+        return res.json({ status: false, message: "Please provide price" });
+      }
+
       // Parse input values as floating-point numbers to handle decimals
       const priceNum = parseFloat(price);
       const lotNum = parseFloat(lot);
@@ -690,20 +773,17 @@ class Placeorder {
 
       await newstatement.save();
 
- const today = new Date();
+      const today = new Date();
       const startOfDay = new Date(today.setHours(0, 0, 0, 0));
-      
-      const tradehistorydata = await mainorder_model.findOne({ _id: id });
-    
-       if (tradehistorydata.createdAt > startOfDay) {
-      } else {
 
+      const tradehistorydata = await mainorder_model.findOne({ _id: id });
+
+      if (tradehistorydata.createdAt > startOfDay) {
+      } else {
         tradehistorydata.holding_dtime = new Date();
 
         await tradehistorydata.save();
       }
-
-
 
       return res.json({
         status: true,

@@ -42,58 +42,64 @@ class UserSymbol {
   
 
   async addSymbol(req, res) {
-    const condition = {
-      userid: req.body.userid,
-      symbol: req.body.symbolname,
-    };
+  const { userid, symbolname } = req.body;
 
-    try {
-      const userWatchlistRecord = await Userwatchlist.find(condition);
+  if (!Array.isArray(symbolname) || symbolname.length === 0) {
+    return res.status(400).json({
+      status: false,
+      message: "Symbol list is empty or invalid.",
+      data: [],
+    });
+  }
 
-      if (userWatchlistRecord.length > 0) {
-        return res.json({
-          status: false,
-          message: "Symbol already added!",
-          data: [],
-        });
+  try {
+    const addedSymbols = [];
+    const skippedSymbols = [];
+
+    for (const sym of symbolname) {
+      // Check if already added
+      const exists = await Userwatchlist.findOne({ userid, symbol: sym });
+      if (exists) {
+        skippedSymbols.push({ symbol: sym, reason: "Already added" });
+        continue;
       }
 
-      const symbol = await Symbol.findOne({
-        trading_symbol: req.body.symbolname,
-      });
-
+      // Find symbol in master
+      const symbol = await Symbol.findOne({ trading_symbol: sym });
       if (!symbol) {
-        return res.json({
-          status: false,
-          message: "Symbol not found!",
-          data: [],
-        });
+        skippedSymbols.push({ symbol: sym, reason: "Symbol not found" });
+        continue;
       }
 
-      const newUserWatchlist = new Userwatchlist({
-        userid: req.body.userid,
-        symbol: req.body.symbolname,
+      // Save new entry
+      const newEntry = new Userwatchlist({
+        userid,
+        symbol: sym,
         token: symbol.token,
         symbol_name: symbol.symbol,
         exch_seg: symbol.exch_seg,
         lotsize: symbol.lotsize,
       });
 
-      const userWatchlist = await newUserWatchlist.save();
-
-      return res.json({
-        status: true,
-        message: "Symbol added successfully!",
-        data: userWatchlist,
-      });
-    } catch (err) {
-      return res.json({
-        status: false,
-        message: err.message || "Some error occurred while adding the symbol.",
-        data: [],
-      });
+      const saved = await newEntry.save();
+      addedSymbols.push(saved);
     }
+
+    return res.status(201).json({
+      status: true,
+      message: "Symbols processed.",
+      added: addedSymbols,
+      skipped: skippedSymbols,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      status: false,
+      message: err.message || "Server error occurred while adding symbols.",
+      data: [],
+    });
   }
+}
+
 
 
 
