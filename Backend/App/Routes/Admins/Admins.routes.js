@@ -49,7 +49,10 @@ const {
   getmarginprice,
 } = require("../../Controllers/Admins/Admins/MarginReq");
 
-router.post("/admin/GetDashboardData", GetDashboardData);
+
+  const apiLimiter = require("../../Middlewares/apiLimiter");
+
+router.post("/admin/GetDashboardData",apiLimiter , GetDashboardData);
 router.post("/admin/AddUser", AddUser);
 router.post("/admin/UserupdateLicence", updateLicence);
 router.post("/admin/updateUser", updateUser);
