@@ -340,17 +340,38 @@ export async function TotalcountLicence(data, token) {
 
 // manage logs of user logout
 
+
 export async function LogoutUser(data, token) {
   try {
-    localStorage.clear();
-    const res = await axios.post(`${Config.base_url}logoutUser`, data, {
-      data: {},
-    });
-    return await res?.data;
+    const res = await axios.post(
+      `${Config.base_url}logoutUser`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // agar JWT use kar rahe ho
+          "Content-Type": "application/json",
+        },
+        withCredentials: true, // agar cookie-based auth hai
+      }
+    );
+
+    // Success hone ke baad hi clear karo
+    if (res?.data?.status === true) {
+      localStorage.clear();
+      sessionStorage.clear();
+    }
+
+    return res?.data;
   } catch (err) {
-    return await err;
+    console.error("Logout Error:", err);
+    return {
+      status: false,
+      message: "Logout failed",
+      error: err?.message || "Unknown error",
+    };
   }
 }
+
 
 // manage logspanel
 

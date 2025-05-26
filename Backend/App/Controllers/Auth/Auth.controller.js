@@ -307,28 +307,45 @@ class Auth {
     }
   }
 
-  async logoutUser(req, res) {
-    try {
-      const { userid } = req.body;
+ async logoutUser(req, res) {
+  try {
+    const { userid } = req.body;
 
-      const user_detail = await User_model.findOne({ _id: userid });
+    // Optional: Destroy session if using express-session
+    if (req.session) {
+      req.session.destroy();
+    }
 
-      const user_login = new user_logs({
-        user_Id: user_detail._id,
-        admin_Id: user_detail.parent_id,
-        UserName: user_detail.UserName,
-        login_status: "Panel off",
-        role: user_detail.Role,
-      });
-      await user_login.save();
+    // Optional: Clear auth cookie (JWT or session ID)
+    res.clearCookie("token"); // Replace with your actual cookie name
 
-      return res.send({
-        status: true,
-        message: "Logout Succesfully",
-        data: [],
-      });
-    } catch (error) {}
+    // Log the logout
+    const user_detail = await User_model.findOne({ _id: userid });
+
+    const user_login = new user_logs({
+      user_Id: user_detail._id,
+      admin_Id: user_detail.parent_id,
+      UserName: user_detail.UserName,
+      login_status: "Panel off",
+      role: user_detail.Role,
+    });
+    await user_login.save();
+
+    return res.status(200).send({
+      status: true,
+      message: "Logout Successfully",
+      data: [],
+    });
+  } catch (error) {
+    console.error("Logout error:", error);
+    return res.status(500).send({
+      status: false,
+      message: "Logout failed",
+      error: error.message,
+    });
   }
+}
+
 
   async getlogsuser(req, res) {
     try {

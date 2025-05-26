@@ -64,15 +64,21 @@ class Placeorder {
   async getOrderBook(req, res) {
     try {
       const { userid, fromDate, toDate } = req.body;
+ 
 
       const query = { userid };
 
-      if (fromDate && toDate) {
-        // Use provided range
-        query.createdAt = {
-          $gte: new Date(fromDate),
-          $lte: new Date(toDate),
-        };
+     if (fromDate && toDate) {
+  const from = new Date(fromDate);
+  const to = new Date(toDate);
+  to.setDate(to.getDate() + 1); // Include full day of toDate
+
+  query.createdAt = {
+    $gte: from,
+    $lt: to,
+  };
+
+
       } else {
         // Default: today's orders
         const startOfToday = new Date();
