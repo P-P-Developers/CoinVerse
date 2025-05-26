@@ -665,7 +665,7 @@ class Users {
   async matchPin(req, res) {
     try {
       const { user_id, pin, fcm_token } = req.body;
-      console.log("matchPin Auth-", fcm_token)
+    
 
       if (pin && !/^\d{4}$/.test(pin)) {
         return res.send({ status: false, message: "Invalid PIN", data: [] });
@@ -757,7 +757,7 @@ class Users {
   async FingerAuth(req, res) {
     try {
       const { user_id, fcm_token } = req.body;
-      console.log("Login Auth-", fcm_token)
+
 
 
       const user = await User_model.findById(user_id);

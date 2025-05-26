@@ -28,11 +28,11 @@ const Dashboard = () => {
   };
 
   const RedirectToUser = (path) => {
-    console.log(path);
+   
     navigate("/admin/users");
   };
   const RedirectToEmp = (path) => {
-    console.log(path);
+
     navigate("/admin/employee");
   };
 

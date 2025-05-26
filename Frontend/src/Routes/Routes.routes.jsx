@@ -12,8 +12,6 @@ const Routing = () => {
   const navigate = useNavigate();
   const TokenData = getUserFromToken();
 
-  console.log("TokenData", TokenData);
-
   const roles = TokenData?.Role;
 
   useEffect(() => {

@@ -34,7 +34,7 @@ const AdminRoutes = () => {
     <div id="main-wrapper" className={`wallet-open show `}>
       <Header />
       <Sidebar />
-      <div className="content-body">
+      <div className="content-body" style={{ minHeight: "80vh" }}>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/header" element={<Header />} />
