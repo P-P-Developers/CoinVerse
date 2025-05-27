@@ -5,23 +5,30 @@ import { LOGIN_API } from "../../Services/Auth/Auth";
 import { Link } from "react-router-dom";
 import { getCompanyApi } from "../../Services/Superadmin/Superadmin";
 
-
-
 const Login = () => {
+  
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [logo, setLogo] = useState('');
+  const [logo, setLogo] = useState("");
 
-  const navigate = useNavigate();
 
-  const handleUsernameChange = (e) => setUsername(e.target.value.toString().toLowerCase() );
+
+  useEffect(() => {
+    fetchLogo();
+  }, []);
+
+  const handleUsernameChange = (e) => setUsername(e.target.value.toString().toLowerCase());
+
   const handlePasswordChange = (e) => setPassword(e.target.value);
+
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
-  }
+  };
+
   const validate = () => {
     let inputErrors = {};
     if (!username) inputErrors.username = "Username is required";
@@ -30,7 +37,8 @@ const Login = () => {
   };
 
   const changeFavicon = (iconPath) => {
-    const link = document.querySelector("favicon") || document.createElement("link");
+    const link =
+      document.querySelector("favicon") || document.createElement("link");
     link.type = "image/x-icon";
     link.rel = "icon";
     link.href = iconPath;
@@ -38,13 +46,12 @@ const Login = () => {
   };
 
 
-  useEffect(() => {
-    fetchLogo();
-  }, [])
 
   const fetchLogo = async () => {
-    const res = await getCompanyApi()
-    const link = document.querySelector("link[rel*='icon']") || document.createElement("link");
+    const res = await getCompanyApi();
+    const link =
+      document.querySelector("link[rel*='icon']") ||
+      document.createElement("link");
     link.type = "image/x-icon";
     link.rel = "icon";
     link.href = res.data.favicon;
@@ -54,7 +61,7 @@ const Login = () => {
 
     setLogo(res.data.logo);
     changeFavicon(res.data.favicon);
-  }
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     const inputErrors = validate();
@@ -62,10 +69,12 @@ const Login = () => {
       setErrors(inputErrors);
       return;
     }
-    
 
     try {
-      const response = await LOGIN_API({ UserName: username, password: password });
+      const response = await LOGIN_API({
+        UserName: username,
+        password: password,
+      });
 
       const { Role } = response.data;
 
@@ -86,30 +95,29 @@ const Login = () => {
           timer: 1500,
           showConfirmButton: false,
         }).then(() => {
-
-
           if (Role === "SUPERADMIN") {
             navigate("/superadmin/dashboard");
           } else if (Role === "ADMIN") {
             navigate("/admin/dashboard");
-          }
-          else if (Role === "EMPLOYE") {
+          } else if (Role === "EMPLOYE") {
             navigate("/employee/dashboard");
           }
         });
       } else {
         if (response.message === "Password Not Match") {
-
           Swal.fire({
             icon: "error",
             title: "Login failed",
+            timer: 1500,
+
             text: response.message,
           });
-
         } else {
           Swal.fire({
             icon: "error",
             title: "Login failed",
+            timer: 1500,
+
             text: response.message,
           });
         }
@@ -118,9 +126,10 @@ const Login = () => {
       Swal.fire({
         icon: "error",
         title: "Login failed",
+        timer: 1500,
+
         text: error.msg || "An unexpected error occurred",
       });
-
     }
   };
 
@@ -132,10 +141,7 @@ const Login = () => {
             <img src={logo} style={{ height: "100px" }} alt="Logo" />
           </div>
           <h3 className="mb-2 text-white">Welcome back!</h3>
-          {/* <p className="mb-4">
-            User Experience &amp; Interface Design <br />
-            Strategy SaaS Solutions
-          </p> */}
+      
         </div>
 
         <div
@@ -173,10 +179,8 @@ const Login = () => {
                   <form onSubmit={handleSubmit}>
                     <div className="text-center mb-4">
                       <h2 className="text-center mb-2 text-dark">Sign In</h2>
-                     
                     </div>
 
-                   
                     <div className="mb-3">
                       <label
                         htmlFor="exampleFormControlInput1"
@@ -198,7 +202,6 @@ const Login = () => {
                     <div className="mb-3 position-relative">
                       <label className="form-label required">Password</label>
                       <input
-
                         type={isPasswordVisible ? "text" : "password"}
                         id="dlab-password"
                         className="form-control"
@@ -206,8 +209,15 @@ const Login = () => {
                         onChange={handlePasswordChange}
                       />
 
-                      <span className="show-pass eye" onClick={togglePasswordVisibility}>
-                        <i className={isPasswordVisible ? "fa fa-eye" : "fa fa-eye-slash"} />
+                      <span
+                        className="show-pass eye"
+                        onClick={togglePasswordVisibility}
+                      >
+                        <i
+                          className={
+                            isPasswordVisible ? "fa fa-eye" : "fa fa-eye-slash"
+                          }
+                        />
                       </span>
                       {errors.password && (
                         <div className="text-danger">{errors.password}</div>
