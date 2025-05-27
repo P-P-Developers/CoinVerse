@@ -50,9 +50,8 @@ const {
 } = require("../../Controllers/Admins/Admins/MarginReq");
 
 
-  const apiLimiter = require("../../Middlewares/apiLimiter");
 
-router.post("/admin/GetDashboardData",apiLimiter , GetDashboardData);
+router.post("/admin/GetDashboardData" , GetDashboardData);
 router.post("/admin/AddUser", AddUser);
 router.post("/admin/UserupdateLicence", updateLicence);
 router.post("/admin/updateUser", updateUser);

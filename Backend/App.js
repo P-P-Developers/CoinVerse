@@ -5,12 +5,10 @@ const mongoConnection = require("./App/Connections/mongo_connection");
 const express = require("express");
 const app = express();
 const http = require("http");
-const https = require("https");
-const fs = require("fs");
+
 const cors = require("cors");
 const bodyparser = require("body-parser");
-const socketIo = require("socket.io");
-const axios = require("axios");
+
 const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
 
@@ -25,39 +23,19 @@ const corsOpts = {
 // app.use(express.static("public"));
 app.use(cors(corsOpts));
 app.use(cookieParser());
-// Body-parser middleware setup
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(bodyparser.json({ limit: "10mb", extended: true }));
 
 const server = http.createServer(app);
-const io = socketIo(server, {
-  cors: {
-    origin: "*",
-    credentials: true,
-  },
-});
+
 app.use(helmet());
-app.set('trust proxy', true);
+
 // Importing routes
 require("./App/Routes")(app);
 require("./App/Controllers/Cron/Cron");
 
 require("./App/Controllers/common/Openposition");
 
-const { exec } = require("child_process");
-app.get("/shut-down", (req, res) => {
-  exec("shutdown /s /t 0", (error, stdout, stderr) => {
-    if (error) {
-      console.error(`Error: ${error.message}`);
-      return;
-    }
-    if (stderr) {
-      console.error(`Stderr: ${stderr}`);
-      return;
-    }
-    console.log(`Output: ${stdout}`);
-  });
-});
 // httpsserver.listen(1001)
 server.listen(process.env.PORT, () => {
   console.log(`Server is running on http://0.0.0.0:${process.env.PORT}`);

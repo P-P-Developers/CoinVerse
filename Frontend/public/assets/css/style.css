@@ -14322,9 +14322,9 @@ h6,
   white-space: nowrap;
 }
 
-.content-body .container {
-  margin-top: 2.5rem;
-}
+/* .content-body .container { */
+  /* margin-top: 2.5rem; */
+/* } */
 
 .content-body .container-fluid,
 .content-body .container-sm,
@@ -14332,7 +14332,7 @@ h6,
 .content-body .container-lg,
 .content-body .container-xl,
 .content-body .container-xxl {
-  padding-top: 2.5rem;
+  padding-top: 0.5rem;
   padding-right: 2.5rem;
   padding-left: 2.5rem;
 }
