@@ -5,7 +5,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 const Table = ({
   columns,
   data,
-  tableClassName = "table table-responsive-md",
+  tableClassName = "table",
   tableContainerClassName = "table-responsive",
   rowClassName = "",
   headerClassName = "",

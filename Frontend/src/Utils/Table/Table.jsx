@@ -7,7 +7,7 @@ const Table = ({
   columns,
   data,
   rowsPerPage = 10,
-  tableClassName = "table table-responsive-md",
+  tableClassName = "table",
   tableContainerClassName = "table-responsive",
   rowClassName = "",
   headerClassName = "",
