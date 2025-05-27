@@ -37,7 +37,7 @@ const io = socketIo(server, {
   },
 });
 app.use(helmet());
-
+app.set('trust proxy', true);
 // Importing routes
 require("./App/Routes")(app);
 require("./App/Controllers/Cron/Cron");
