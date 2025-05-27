@@ -772,7 +772,7 @@ const Dashboard = () => {
                                                 aria-labelledby="Week-tab"
                                             >
                                                 <div class="table-responsive">
-                                                    <table class="table table-responsive-md">
+                                                    <table class="table">
                                                         <thead>
                                                             <tr>
                                                                 <th>#</th>
@@ -920,7 +920,7 @@ const Dashboard = () => {
                                                 aria-labelledby="month-tab"
                                             >
                                                 <div class="table-responsive">
-                                                    <table class="table table-responsive-md">
+                                                    <table class="table">
                                                         <thead>
                                                             <tr>
                                                                 <th>#</th>
@@ -1068,7 +1068,7 @@ const Dashboard = () => {
                                                 aria-labelledby="year-tab"
                                             >
                                                 <div class="table-responsive">
-                                                    <table class="table table-responsive-md">
+                                                    <table class="table">
                                                         <thead>
                                                             <tr>
                                                                 <th>#</th>
