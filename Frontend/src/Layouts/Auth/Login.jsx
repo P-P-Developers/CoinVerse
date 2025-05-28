@@ -65,10 +65,7 @@ const Login = () => {
       setErrors(inputErrors);
       return;
     }
-    //    requestFcmToken().then((token) => {
-    //     console.log("FCM Token:", token);
-    //   // You can send this token to your backend to subscribe the user
-    // });
+
 
     try {
       const response = await LOGIN_API({

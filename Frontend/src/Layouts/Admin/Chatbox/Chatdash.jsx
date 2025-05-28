@@ -128,45 +128,60 @@ const Users = () => {
                       <div className="chat-lists">
                         <div className="tab-content" id="myTabContent">
                           <div className="tab-pane fade show active" id="Open">
-                            {/* chat-list */}
                             <div className="chat-list">
                               {data &&
-                                data.map((userData, index) => (
-                                  <a
-                                    key={index}
-                                    className="d-flex align-items-center mb-2"
-                                    onClick={() => {
-                                      setSelectedUser(userData);
-                                      fetchMessages(userData);
-                                    }} // 👈 Click se state set karo
-                                  >
-                                    <div className="flex-shrink-0">
-                                      <img
-                                        className="img-fluid"
-                                        src={
-                                          userData.image ||
-                                          "https://avatar.iran.liara.run/public/4"
-                                        }
-                                        style={{
-                                          width: "50px",
-                                          height: "50px",
-                                        }}
-                                        alt="user img"
-                                      />
-                                      <span className="active" />
-                                    </div>
-                                    <div className="flex-grow-1 ms-3">
-                                      <h3>{`${userData.FullName}(${userData.UserName})`}</h3>
-                                      <p>{userData.role}</p>
-                                    </div>
-                                  </a>
-                                ))}
+                                data.map((userData, index) => {
+                                  const isSelected =
+                                    selectedUser &&
+                                    selectedUser._id === userData._id;
+
+                                  return (
+                                    <a
+                                      key={index}
+                                      onClick={() => {
+                                        setSelectedUser(userData);
+                                        fetchMessages(userData);
+                                      }}
+                                      className={`d-flex align-items-center mb-2 p-2  cursor-pointer ${
+                                        isSelected
+                                          ? "bg-primary text-white"
+                                          : ""
+                                      }`}
+                                      style={{
+                                        transition: "background 0.3s ease",
+                                      }}
+                                    >
+                                      <div className="flex-shrink-0">
+                                        <img
+                                          className="img-fluid"
+                                          src={
+                                            userData.image ||
+                                            "https://avatar.iran.liara.run/public/4"
+                                          }
+                                          style={{
+                                            width: "50px",
+                                            height: "50px",
+                                            borderRadius: "50%",
+                                          }}
+                                          alt="user img"
+                                        />
+                                      </div>
+                                      <div className="flex-grow-1 ms-3">
+                                        <h3 className="m-0">{`${userData.FullName} (${userData.UserName})`}</h3>
+                                        <p
+                                          className="m-0 text-muted"
+                                          style={{ fontSize: "0.85rem" }}
+                                        >
+                                          {userData.role}
+                                        </p>
+                                      </div>
+                                    </a>
+                                  );
+                                })}
                             </div>
-                           
                           </div>
                         </div>
                       </div>
-                    
                     </div>
                   </div>
                 </div>
@@ -258,7 +273,7 @@ const Users = () => {
                             onClick={sendMessage}
                             onKeyDown={(e) => {
                               if (e.key === "Enter") {
-                                e.preventDefault(); 
+                                e.preventDefault();
                                 sendMessage();
                               }
                             }}

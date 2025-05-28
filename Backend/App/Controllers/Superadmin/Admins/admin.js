@@ -421,6 +421,7 @@ class Superadmin {
         // STATUS UPDATE SUCCESSFULLY
         var status_msg = user_active_status == "0" ? "DeActivate" : "Activate";
 
+        
         sendPushNotification(
           get_user[0].DeviceToken,
           "Account Status",

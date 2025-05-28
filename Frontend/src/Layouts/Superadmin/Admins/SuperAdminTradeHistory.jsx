@@ -60,8 +60,7 @@ const SuperAdminTradeHistory = () => {
       }
 
       setData(filteredData);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   // Define columns for the table
@@ -214,8 +213,7 @@ const SuperAdminTradeHistory = () => {
         setUserName(response.data);
         setUserId(response.data[0]);
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   // Calculate total profit/loss
@@ -352,19 +350,18 @@ const SuperAdminTradeHistory = () => {
                             Refresh
                           </button>
                         </div>
-                      </div>
-
-                      <div className="px-3 mb-3">
-                        <h3>
-                          💰 Total Profit/Loss:{" "}
-                          <span
-                            style={{
-                              color: totalProfitLoss > 0 ? "green" : "red",
-                            }}
-                          >
-                            {totalProfitLoss}
-                          </span>
-                        </h3>
+                        <div className="col-md-4 d-flex align-items-end">
+                          <h3>
+                            💰 Total Profit/Loss:{" "}
+                            <span
+                              style={{
+                                color: totalProfitLoss > 0 ? "green" : "red",
+                              }}
+                            >
+                              {totalProfitLoss}
+                            </span>
+                          </h3>
+                        </div>
                       </div>
 
                       <div className="px-3">
@@ -374,20 +371,28 @@ const SuperAdminTradeHistory = () => {
                           rowsPerPage={rowsPerPage}
                         />
 
-                        <div className="d-flex align-items-center mt-3">
-                          <span className="me-2">Rows per page:</span>
+                        <div
+                          className="d-flex align-items-center"
+                          style={{
+                            marginBottom: "20px",
+                            marginLeft: "20px",
+                            marginTop: "-48px",
+                          }}
+                        >
+                          Rows per page:{" "}
                           <select
-                            className="form-select w-auto"
+                            className="form-select ml-2"
                             value={rowsPerPage}
                             onChange={(e) =>
                               setRowsPerPage(Number(e.target.value))
                             }
+                            style={{ width: "auto", marginLeft: "10px" }}
                           >
                             <option value={5}>5</option>
                             <option value={10}>10</option>
                             <option value={20}>20</option>
                             <option value={50}>50</option>
-                            <option value={100}>100</option>
+                            <option value={50}>100</option>
                           </select>
                         </div>
                       </div>

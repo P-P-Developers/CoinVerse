@@ -363,7 +363,7 @@ export async function LogoutUser(data, token) {
 
     return res?.data;
   } catch (err) {
-    console.error("Logout Error:", err);
+
     return {
       status: false,
       message: "Logout failed",

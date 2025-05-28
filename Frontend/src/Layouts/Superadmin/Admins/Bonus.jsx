@@ -237,7 +237,7 @@ const Brokerage = () => {
   };
 
   return (
-    <div className="container-fluid py-4">
+    <div className="container-fluid ">
       <div className="card shadow-sm">
         {/* Header */}
         <div

@@ -94,7 +94,7 @@ const UpdateEmploye = () => {
           });
         }
       } catch (error) {
-        console.error("Update error:", error);
+
         setSubmitting(false);
         Swal.fire({
           title: "Server Error",
@@ -129,11 +129,12 @@ const UpdateEmploye = () => {
         try {
           const data = { id: rowData._id };
           const response = await getEmployee_permissiondata(data);
-          const permissions = response?.data?.[0] || rowData?.permissions?.[0] || {};
+          const permissions =
+            response?.data?.[0] || rowData?.permissions?.[0] || {};
 
-          console.log("Permissions data:", permissions);
-
-          const allChecked = Object.values(permissions).every((val) => val === "1");
+          const allChecked = Object.values(permissions).every(
+            (val) => val === "1"
+          );
 
           formik.setValues({
             fullName: rowData.FullName || "",
@@ -151,7 +152,7 @@ const UpdateEmploye = () => {
             all: allChecked,
           });
         } catch (error) {
-          console.error("Failed to load permissions:", error);
+     
           Swal.fire({
             title: "Error",
             text: "Failed to load employee permissions.",
@@ -169,15 +170,63 @@ const UpdateEmploye = () => {
     { name: "username", label: "Username", type: "text", col_size: 6 },
     { name: "email", label: "Email", type: "text", col_size: 6 },
     { name: "phone", label: "Phone Number", type: "text3", col_size: 6 },
-    { name: "Password", label: "Password", type: "text", col_size: 6, disable: true },
+    {
+      name: "Password",
+      label: "Password",
+      type: "text",
+      col_size: 6,
+      disable: true,
+    },
 
-    { name: "addclient", label: "Add Client", type: "checkbox", col_size: 3, check_box_true: formik.values.all || formik.values.addclient },
-    { name: "Edit", label: "Edit", type: "checkbox", col_size: 3, check_box_true: formik.values.all || formik.values.Edit },
-    { name: "trade_history", label: "Trade History", type: "checkbox", col_size: 3, check_box_true: formik.values.all || formik.values.trade_history },
-    { name: "open_position", label: "Open Position", type: "checkbox", col_size: 3, check_box_true: formik.values.all || formik.values.open_position },
-    { name: "Licence_Edit", label: "Licence Edit", type: "checkbox", col_size: 3, check_box_true: formik.values.all || formik.values.Licence_Edit },
-    { name: "limit_edit", label: "Limit Edit", type: "checkbox", col_size: 3, check_box_true: formik.values.all || formik.values.limit_edit },
-    { name: "Balance_edit", label: "Balance Edit", type: "checkbox", col_size: 3, check_box_true: formik.values.all || formik.values.Balance_edit },
+    {
+      name: "addclient",
+      label: "Add Client",
+      type: "checkbox",
+      col_size: 3,
+      check_box_true: formik.values.all || formik.values.addclient,
+    },
+    {
+      name: "Edit",
+      label: "Edit",
+      type: "checkbox",
+      col_size: 3,
+      check_box_true: formik.values.all || formik.values.Edit,
+    },
+    {
+      name: "trade_history",
+      label: "Trade History",
+      type: "checkbox",
+      col_size: 3,
+      check_box_true: formik.values.all || formik.values.trade_history,
+    },
+    {
+      name: "open_position",
+      label: "Open Position",
+      type: "checkbox",
+      col_size: 3,
+      check_box_true: formik.values.all || formik.values.open_position,
+    },
+    {
+      name: "Licence_Edit",
+      label: "Licence Edit",
+      type: "checkbox",
+      col_size: 3,
+      check_box_true: formik.values.all || formik.values.Licence_Edit,
+    },
+    {
+      name: "limit_edit",
+      label: "Limit Edit",
+      type: "checkbox",
+      col_size: 3,
+      check_box_true: formik.values.all || formik.values.limit_edit,
+    },
+    {
+      name: "Balance_edit",
+      label: "Balance Edit",
+      type: "checkbox",
+      col_size: 3,
+      check_box_true: formik.values.all || formik.values.Balance_edit,
+    },
   ];
 
   return (

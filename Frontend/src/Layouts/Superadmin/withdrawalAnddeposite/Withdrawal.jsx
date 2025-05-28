@@ -313,22 +313,30 @@ const Withdraw = () => {
         rowsPerPage={rowsPerPage}
       />
 
-      {/* Rows Per Page Selector */}
-      <div className="d-flex align-items-center mt-3 ms-2">
-        <label className="me-2 fw-medium">Rows per page:</label>
-        <select
-          className="form-select"
-          value={rowsPerPage}
-          onChange={(e) => setRowsPerPage(Number(e.target.value))}
-          style={{ width: "100px" }}
-        >
-          {[5, 10, 20, 50, 100].map((num) => (
-            <option value={num} key={num}>
-              {num}
-            </option>
-          ))}
-        </select>
-      </div>
+ <div
+                      className="d-flex align-items-center"
+                      style={{
+                        marginBottom: "20px",
+                        marginLeft: "20px",
+                        marginTop: "-48px",
+                      }}
+                    >
+                      Rows per page:{" "}
+                      <select
+                        className="form-select ml-2"
+                        value={rowsPerPage}
+                        onChange={(e) => setRowsPerPage(Number(e.target.value))}
+                        style={{ width: "auto", marginLeft: "10px" }}
+                      >
+                        <option value={5}>5</option>
+                        <option value={10}>10</option>
+                        <option value={20}>20</option>
+                        <option value={50}>50</option>
+                        <option value={50}>100</option>
+                      </select>
+                    </div>
+
+     
     </div>
   );
 };

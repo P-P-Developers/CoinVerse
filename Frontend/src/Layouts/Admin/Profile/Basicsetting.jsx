@@ -162,6 +162,7 @@ const Basicsetting = () => {
                   style={{ cursor: "pointer" }}
                   onMouseEnter={(e) => {
                     const tooltip = document.createElement("div");
+                
                     tooltip.className = "custom-tooltip";
                     tooltip.innerText =
                       "We have a functionality to set referral bonuses. For example: if the referred user's balance is between $50–$100 and you set it to $10, then you will earn $10 as a referral bonus. Similarly, you can set bonuses for balances between $100–$500, $500–$1000, and above $1000.";
@@ -199,9 +200,9 @@ const Basicsetting = () => {
                   <form onSubmit={formik.handleSubmit}>
                     <div className="row">
                       <div className="col-lg-6 mb-3">
-                        <label className="form-label" htmlFor="range1">
-                          50 &lt; 100
-                        </label>
+                        <label className="form-label fw-bold" htmlFor="range1">
+      Earn ($) when user deposits between 50 and 99
+    </label>
                         <input
                           id="range1"
                           type="number"
@@ -211,8 +212,8 @@ const Basicsetting = () => {
                         />
                       </div>
                       <div className="col-lg-6 mb-3">
-                        <label className="form-label" htmlFor="range2">
-                          100 &lt; 500
+                        <label className="form-label fw-bold" htmlFor="range2">
+                          Earn ($) when user deposits between 100 and 499
                         </label>
                         <input
                           id="range2"
@@ -223,8 +224,8 @@ const Basicsetting = () => {
                         />
                       </div>
                       <div className="col-lg-6 mb-3">
-                        <label className="form-label" htmlFor="range3">
-                          500 &lt; 1000
+                        <label className="form-label fw-bold" htmlFor="range3">
+                            Earn ($) when user deposits between 500 and 999
                         </label>
                         <input
                           id="range3"
@@ -235,8 +236,8 @@ const Basicsetting = () => {
                         />
                       </div>
                       <div className="col-lg-6 mb-3">
-                        <label className="form-label" htmlFor="range4">
-                          &gt; 1000
+                        <label className="form-label fw-bold" htmlFor="range4">
+                           Earn ($) when user deposits 1000 or more
                         </label>
                         <input
                           id="range4"

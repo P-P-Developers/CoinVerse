@@ -123,52 +123,51 @@ const Deposit = () => {
               page={page}
               isPage={false}
             />
-            <div
-              className="d-flex align-items-center"
-              style={{
-                marginBottom: "20px",
-                marginLeft: "20px",
-                // marginTop: "-48px",
-              }}
-            >
-              Rows per page:{" "}
-              <select
-                className="form-select ml-2"
-                value={rowsPerPage}
-                onChange={(e) => setRowsPerPage(Number(e.target.value))}
-                style={{ width: "auto", marginLeft: "10px" }}
-              >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-              </select>
-            </div>
+         <div
+  className="d-flex justify-content-between align-items-center px-3 py-2"
+  style={{ marginBottom: "20px" }}
+>
+  {/* Rows per page */}
+  <div className="d-flex align-items-center">
+    <span>Rows per page:</span>
+    <select
+      className="form-select ms-2"
+      value={rowsPerPage}
+      onChange={(e) => setRowsPerPage(Number(e.target.value))}
+      style={{ width: "auto" }}
+    >
+      <option value={5}>5</option>
+      <option value={10}>10</option>
+      <option value={20}>20</option>
+      <option value={50}>50</option>
+      <option value={100}>100</option>
+    </select>
+  </div>
 
-            <div className="d-flex justify-content-end align-items-center gap-2 px-3 py-2">
-              <button
-                className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
-                onClick={() => handlePageChange(page - 1)}
-                disabled={page === 1}
-              >
-                <i className="bi bi-chevron-left"></i>
-                <span>Prev</span>
-              </button>
+  {/* Pagination controls */}
+  <div className="d-flex align-items-center gap-2">
+    <button
+      className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
+      onClick={() => handlePageChange(page - 1)}
+      disabled={page === 1}
+    >
+      <i className="bi bi-chevron-left"></i>
+      <span>Prev</span>
+    </button>
+    <span className="fw-semibold text-secondary small">
+      Page {page} of {totalCount}
+    </span>
+    <button
+      className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
+      onClick={() => handlePageChange(page + 1)}
+      disabled={page >= totalCount}
+    >
+      <span>Next</span>
+      <i className="bi bi-chevron-right"></i>
+    </button>
+  </div>
+</div>
 
-              <span className="fw-semibold text-secondary small">
-                Page {page} of {totalCount}
-              </span>
-
-              <button
-                className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
-                onClick={() => handlePageChange(page + 1)}
-                disabled={page >= totalCount}
-              >
-                <span>Next</span>
-                <i className="bi bi-chevron-right"></i>
-              </button>
-            </div>
           </>
         )}
       </div>
