@@ -118,7 +118,7 @@ class Dashboard {
         data: Count,
       });
     } catch (error) {
-      res.status(500).send({
+      res.send({
         status: false,
         message: "Internal Server Error",
       });
@@ -132,9 +132,7 @@ class Dashboard {
     const { symbol, day } = req.query;
 
     if (!symbol) {
-      return res
-        .status(400)
-        .json({ error: "Symbol is required in the query." });
+      return res.json({ error: "Symbol is required in the query." });
     }
 
     // Calculate the date range (from 50 days before yesterday to yesterday)
@@ -170,9 +168,7 @@ class Dashboard {
             .json({ error: `Error: Received status code ${response.status}` });
         }
       } catch (error) {
-        return res
-          .status(500)
-          .json({ error: "An error occurred while fetching data." });
+        return res.json({ error: "An error occurred while fetching data." });
       }
     };
 

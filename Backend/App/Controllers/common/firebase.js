@@ -13,6 +13,9 @@ if (!admin.apps.length) {
 // Function to send push notifications Single User
 const sendPushNotification = async (firebaseToken, title, message) => {
   try {
+    if(firebaseToken === null || firebaseToken === undefined || firebaseToken === "") {
+      return { success: false, error: "Invalid firebase token" };
+    }
     const payload = {
       notification: {
         title: title,
@@ -22,10 +25,9 @@ const sendPushNotification = async (firebaseToken, title, message) => {
     };
 
     const response = await admin.messaging().send(payload);
-    console.log("Successfully sent message:", response);
+   
     return { success: true };
   } catch (error) {
-    console.error("Error sending message:", error);
     return { success: false, error };
   }
 };
@@ -51,7 +53,6 @@ const sendMultiplePushNotification = async (firebaseTokens, title, message) => {
         await admin.messaging().send(payload);
         return { success: true };
       } catch (error) {
-        console.error("Failed for token:", token, error);
         return { success: false, error };
       }
     })

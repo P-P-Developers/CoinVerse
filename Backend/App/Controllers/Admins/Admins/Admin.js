@@ -394,20 +394,16 @@ class Admin {
       const result = await User_model.findOneAndDelete({ _id: id });
 
       if (!result) {
-        return res
-          .status(404)
-          .json({ success: false, message: "User not found", data: [] });
+        return res.json({ success: false, message: "User not found", data: [] });
       }
 
-      return res.status(200).json({
+      return res.json({
         success: true,
         message: "User deleted successfully",
         data: result,
       });
     } catch (error) {
-      return res
-        .status(500)
-        .json({ success: false, message: "Internal server error", data: [] });
+      return res.json({ success: false, message: "Internal server error", data: [] });
     }
   }
 
@@ -484,7 +480,7 @@ class Admin {
 
       // Validation
       if (!adminid || type === "" || !activeTab) {
-        return res.status(400).json({
+        return res.json({
           status: false,
           message: "adminid, type, and activeTab are required",
           data: [],
@@ -1954,7 +1950,7 @@ class Admin {
 
       // Apply ActiveStatus filter if provided
       if (ActiveStatus === "Active" || ActiveStatus === "Inactive") {
-        filter.status = ActiveStatus == "Active" ? "1" : "0";
+        filter.ActiveStatus = ActiveStatus == "Active" ? "1" : "0";
       }
 
       if (search) {

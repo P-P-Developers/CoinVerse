@@ -13,7 +13,7 @@ const helmet = require("helmet");
 
 // Setting up CORS options
 const corsOpts = {
-  origin: "http://localhost:3000",
+  origin: ["http://localhost:3000","*"],
   credentials: true,
   methods: ["GET", "POST"],
   allowedHeaders: ["Content-Type", "Authorization", "x-access-token"],
@@ -34,12 +34,12 @@ require("./App/Controllers/common/Openposition");
 // ✅ Error handler - should be AFTER routes
 app.use((err, req, res, next) => {
   console.error("Server Error:", err);
-  res.status(500).json({ error: "Internal Server Error" });
+  res.json({ error: "Internal Server Error" });
 });
 
 // ✅ 404 handler - catch unmatched routes
 app.use((req, res) => {
-  res.status(404).send("Not Found");
+  res.send("Not Found");
 });
 
 const server = http.createServer(app);
