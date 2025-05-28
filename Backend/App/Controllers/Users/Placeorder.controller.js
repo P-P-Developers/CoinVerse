@@ -64,21 +64,18 @@ class Placeorder {
   async getOrderBook(req, res) {
     try {
       const { userid, fromDate, toDate } = req.body;
- 
 
       const query = { userid };
 
-     if (fromDate && toDate) {
-  const from = new Date(fromDate);
-  const to = new Date(toDate);
-  to.setDate(to.getDate() + 1); // Include full day of toDate
+      if (fromDate && toDate) {
+        const from = new Date(fromDate);
+        const to = new Date(toDate);
+        to.setDate(to.getDate() + 1); // Include full day of toDate
 
-  query.createdAt = {
-    $gte: from,
-    $lt: to,
-  };
-
-
+        query.createdAt = {
+          $gte: from,
+          $lt: to,
+        };
       } else {
         // Default: today's orders
         const startOfToday = new Date();
@@ -349,9 +346,9 @@ class Placeorder {
       const finduser = await mainorder_model.aggregate([
         {
           $match: {
+            userid: userid,
             $or: [
               {
-                userid: userid,
                 createdAt: { $lt: startOfDay },
                 $expr: { $ne: ["$buy_qty", "$sell_qty"] },
               },

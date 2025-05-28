@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
 
 import {
-  getUserdata,
+  getAllUser,
   Addbalance,
   updateActivestatus,
 } from "../../../Services/Superadmin/Superadmin";
@@ -13,7 +13,6 @@ import Swal from "sweetalert2";
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 import Loader from "../../../Utils/Loader/Loader";
 import { getUserFromToken } from "../../../Utils/TokenVerify";
-
 
 const Users = () => {
   const navigate = useNavigate();
@@ -27,20 +26,23 @@ const Users = () => {
   const [modal, setModal] = useState(false);
   const [id, setID] = useState("");
   const [type, setType] = useState("");
-  const [refresh, setrefresh] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [employeename, setEmployeename] = useState([]);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
-  const [getActiveInactive,setActiveInactive]=useState("all")
+  const [getActiveInactive, setActiveInactive] = useState("all");
 
   const columns = [
     { Header: "FullName", accessor: "FullName" },
     { Header: "UserName", accessor: "UserName" },
     { Header: "Password", accessor: "Otp" },
-      { Header: "pin", accessor: "pin" ,  Cell: ({ cell }) => <span>{cell.value ? cell.value :"-"}</span>},
+    {
+      Header: "pin",
+      accessor: "pin",
+      Cell: ({ cell }) => <span>{cell.value ? cell.value : "-"}</span>,
+    },
     { Header: "Email", accessor: "Email" },
     { Header: "Phone No", accessor: "PhoneNo" },
     {
@@ -111,7 +113,7 @@ const Users = () => {
         </label>
       ),
     },
-  
+
     {
       Header: "Action",
       accessor: "Action",
@@ -133,7 +135,6 @@ const Users = () => {
         return fDateTime(cell.value);
       },
     },
-   
 
     {
       Header: "Trade History",
@@ -271,68 +272,65 @@ const Users = () => {
         );
       }
     } else if (result.dismiss === Swal.DismissReason.cancel) {
-      // setrefresh(!refresh)
-
       getAlluserdata();
     }
   };
 
-const getAlluserdata = async () => {
-  setLoading(true);
+  const getAlluserdata = async () => {
+    setLoading(true);
 
-  const params = {
-    id: user_id,
-    page,
-    limit: rowsPerPage,
+    const params = {
+      id: user_id,
+      page,
+      limit: rowsPerPage,
+      search: search || "",
+      ActiveStatus: getActiveInactive,
+    };
+
+    try {
+      const response = await getAllUser(params);
+      const allUsers = response?.data || [];
+
+      // Extract all usernames
+      const userNames = allUsers.map((user) => user.UserName);
+
+      // Filter by search and status
+      const filteredData = allUsers.filter((user) => {
+        const searchMatch =
+          !search ||
+          (user.FullName &&
+            user.FullName.toLowerCase().includes(search.toLowerCase())) ||
+          (user.UserName &&
+            user.UserName.toLowerCase().includes(search.toLowerCase())) ||
+          (user.Email &&
+            user.Email.toLowerCase().includes(search.toLowerCase()));
+
+        const statusMatch =
+          getActiveInactive === "all" ||
+          (getActiveInactive === "Active" && user.ActiveStatus === "1") ||
+          (getActiveInactive === "Inactive" && user.ActiveStatus === "0");
+
+        return searchMatch && statusMatch;
+      });
+
+      setData(filteredData);
+      setEmployeename(userNames);
+      setTotalCount(response?.pagination?.totalPages || 0);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      // Optionally show toast or UI message here
+    } finally {
+      setLoading(false);
+    }
   };
 
-  try {
-    const response = await getUserdata(params);
-    const allUsers = response?.data || [];
+  useEffect(() => {
+    getAlluserdata();
+  }, [search, page, rowsPerPage, getActiveInactive]);
 
-    // Filter by role
-    const userRoleData = allUsers.filter(user => user.Role === "USER");
-
-    // Extract all usernames (_id present check seems redundant here)
-    const userNames = allUsers.filter(user => user._id);
-
-
-    // Filter by search and status
-    const filteredData = userRoleData.filter(user => {
-      const searchMatch =
-        !search || (
-          (user.FullName && user.FullName.toLowerCase().includes(search.toLowerCase())) ||
-          (user.UserName && user.UserName.toLowerCase().includes(search.toLowerCase())) ||
-          (user.Email && user.Email.toLowerCase().includes(search.toLowerCase()))
-        );
-
-      const statusMatch =
-        getActiveInactive === "all" ||
-        (getActiveInactive === "Active" && user.ActiveStatus === "1") ||
-        (getActiveInactive === "Inactive" && user.ActiveStatus === "0");
-
-      return searchMatch && statusMatch;
-    });
-
-    // Set filtered results and other states
-    setData(filteredData || []);
-    setEmployeename(userNames);
-    setTotalCount(response?.pagination?.totalPages || 0);
-  } catch (error) {
-    console.error("Error fetching user data:", error);
-  } finally {
-    setLoading(false);
-  }
-};
-
-// Call on dependency change
-useEffect(() => {
-  getAlluserdata();
-}, [search, refresh, page, rowsPerPage, getActiveInactive]);
-
-
-
-
+  useEffect(() => {
+    setPage(1); // Reset to first page when search or filter changes
+  }, [search, getActiveInactive]);
 
   return (
     <>
@@ -397,7 +395,7 @@ useEffect(() => {
                           <option value="Inactive">Inactive</option>
                         </select>
                       </div>
-                      </div>
+                    </div>
 
                     {loading ? (
                       <Loader />
@@ -529,8 +527,6 @@ useEffect(() => {
           </div>
         </div>
       )}
-
- 
     </>
   );
 };

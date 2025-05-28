@@ -253,7 +253,6 @@ class Admin {
         data: newUser,
       });
     } catch (error) {
-     
       return res.json({
         status: false,
         message: "Failed to add User",
@@ -328,7 +327,6 @@ class Admin {
         data: updatedUser,
       });
     } catch (error) {
-    
       return res.send({
         status: false,
         message: "Internal server error",
@@ -700,7 +698,7 @@ class Admin {
               "Withdrawal Accepted",
               "Your withdrawal request has been accepted successfully."
             );
-          } 
+          }
 
           return res.json({
             status: true,
@@ -829,7 +827,6 @@ class Admin {
         return res.json({ status: false, message: "Invalid status provided" });
       }
     } catch (error) {
-     
       return res.json({
         status: false,
         message: "Internal server error",
@@ -936,7 +933,6 @@ class Admin {
         data: formattedData,
       });
     } catch (error) {
-     
       return res.json({
         status: false,
         message: "Internal error",
@@ -968,7 +964,6 @@ class Admin {
         data: result,
       });
     } catch (error) {
-    
       return res.json({ message: "An error occurred while updating margin." });
     }
   }
@@ -1123,7 +1118,6 @@ class Admin {
         },
       });
     } catch (error) {
-   
       return res.json({
         status: false,
         message: "Internal Server Error",
@@ -1174,7 +1168,6 @@ class Admin {
 
       return res.json({ status: true, message: "user found", data: result });
     } catch (error) {
-     
       return res.json({ status: false, message: "internal error", data: [] });
     }
   }
@@ -1343,7 +1336,6 @@ class Admin {
         data: newResearch,
       });
     } catch (error) {
-  
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1371,7 +1363,6 @@ class Admin {
         data: GetAllResearch,
       });
     } catch (error) {
-
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1420,9 +1411,7 @@ class Admin {
         message: "Research updated successfully",
         data: research,
       });
-    } catch (error) {
-
-    }
+    } catch (error) {}
   }
 
   async DeleteResearch(req, res) {
@@ -1442,9 +1431,7 @@ class Admin {
         message: "Research deleted successfully",
         data: result,
       });
-    } catch (error) {
-     
-    }
+    } catch (error) {}
   }
 
   async UpdatStatus(req, res) {
@@ -1470,7 +1457,6 @@ class Admin {
         data: result,
       });
     } catch (error) {
- 
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1520,7 +1506,6 @@ class Admin {
         data: updatedUpiDetails,
       });
     } catch (error) {
-
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1544,7 +1529,6 @@ class Admin {
         data: GetData,
       });
     } catch (error) {
-    
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1579,7 +1563,6 @@ class Admin {
         data: updatedPrimaryBank,
       });
     } catch (error) {
-
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1602,7 +1585,6 @@ class Admin {
         data: bankDetail,
       });
     } catch (error) {
-
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1674,7 +1656,6 @@ class Admin {
         data: updatedBankDetails,
       });
     } catch (error) {
-
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1694,7 +1675,6 @@ class Admin {
       }
       res.json({ success: true, conversation: convo });
     } catch (error) {
-   
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1717,10 +1697,9 @@ class Admin {
       });
       await newMsg.save();
 
-
-
       const GetUser = await User_model.findById(receiverId).select(
-        "DeviceToken" );
+        "DeviceToken"
+      );
       if (!GetUser) {
         return res.json({
           status: false,
@@ -1736,16 +1715,14 @@ class Admin {
       //   });
       // }
 
-
       sendPushNotification(
-        DeviceToken ? DeviceToken :"",
+        DeviceToken ? DeviceToken : "",
         "New Message",
         message
       );
 
       res.json({ success: true, message: newMsg });
     } catch (error) {
-
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1762,7 +1739,6 @@ class Admin {
       }).sort({ timestamp: 1 });
       res.json({ success: true, messages });
     } catch (error) {
-   
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1780,7 +1756,6 @@ class Admin {
       });
       res.json({ success: true, conversations: convos });
     } catch (error) {
-     
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1824,7 +1799,6 @@ class Admin {
         url: GetCompany[0]?.loginUrl + "/" + referralCode,
       });
     } catch (error) {
-  
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1862,7 +1836,6 @@ class Admin {
         data: user,
       });
     } catch (error) {
-     
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1878,18 +1851,17 @@ class Admin {
   //     }
   //   });
   // }
-  
+
   async Downloadapk(req, res) {
+    // Optionally, set content type header (APK ka mime type hai application/vnd.android.package-archive)
+    res.setHeader("Content-Type", "application/vnd.android.package-archive");
 
-  // Optionally, set content type header (APK ka mime type hai application/vnd.android.package-archive)
-  res.setHeader("Content-Type", "application/vnd.android.package-archive");
-
-  res.download(apkPath, "application.apk", (err) => {
-    if (err) {
-      return res.send("Error downloading file");
-    }
-  });
-}
+    res.download(apkPath, "application.apk", (err) => {
+      if (err) {
+        return res.send("Error downloading file");
+      }
+    });
+  }
 
   async GetBonusDetails(req, res) {
     try {
@@ -1955,7 +1927,6 @@ class Admin {
         CompletedBrokrageandBonus: ProfitBalanceTotal?.ProfitBalance || 0,
       });
     } catch (error) {
- 
       return res.json({
         status: false,
         message: "Internal server error",
@@ -1964,8 +1935,65 @@ class Admin {
     }
   }
 
+  async getAllUser(req, res) {
+    try {
+      const { id, search, ActiveStatus } = req.body;
+      const page = parseInt(req.body.page) || 1;
+      const limit = parseInt(req.body.limit) || 1000;
+      const skip = (page - 1) * limit;
 
+      if (!id) {
+        return res
+          .status(400)
+          .json({ status: false, message: "Parent ID is required", data: [] });
+      }
+      const filter = {
+        parent_id: id,
+        Role: "USER",
+      };
 
+      // Apply ActiveStatus filter if provided
+      if (ActiveStatus === "Active" || ActiveStatus === "Inactive") {
+        filter.status = ActiveStatus == "Active" ? "1" : "0";
+      }
+
+      if (search) {
+        const regex = new RegExp(search, "i");
+        filter.$or = [
+          { FullName: regex },
+          { Email: regex },
+          { UserName: regex },
+        ];
+      }
+
+      console.log("Filter:", filter);
+
+      // Fetch filtered and paginated users
+      const result = await User_model.find(filter)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+
+      const totalCount = await User_model.countDocuments(filter);
+
+      return res.json({
+        status: true,
+        message: "Data fetched successfully",
+        data: result,
+        pagination: {
+          totalCount,
+          currentPage: page,
+          totalPages: Math.ceil(totalCount / limit),
+          limit,
+        },
+      });
+    } catch (error) {
+      console.error("Error in getAllUser:", error);
+      return res
+        .status(500)
+        .json({ status: false, message: "Internal server error", data: [] });
+    }
+  }
 }
 
 module.exports = new Admin();

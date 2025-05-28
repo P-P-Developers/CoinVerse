@@ -4,9 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { LOGIN_API } from "../../Services/Auth/Auth";
 import { Link } from "react-router-dom";
 import { getCompanyApi } from "../../Services/Superadmin/Superadmin";
+// import { requestFcmToken } from "../../Utils/firebase-config";
 
 const Login = () => {
-  
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -14,16 +14,14 @@ const Login = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [logo, setLogo] = useState("");
 
-
-
   useEffect(() => {
     fetchLogo();
   }, []);
 
-  const handleUsernameChange = (e) => setUsername(e.target.value.toString().toLowerCase());
+  const handleUsernameChange = (e) =>
+    setUsername(e.target.value.toString().toLowerCase());
 
   const handlePasswordChange = (e) => setPassword(e.target.value);
-
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
@@ -44,8 +42,6 @@ const Login = () => {
     link.href = iconPath;
     document.getElementsByTagName("head")[0].appendChild(link);
   };
-
-
 
   const fetchLogo = async () => {
     const res = await getCompanyApi();
@@ -69,6 +65,10 @@ const Login = () => {
       setErrors(inputErrors);
       return;
     }
+    //    requestFcmToken().then((token) => {
+    //     console.log("FCM Token:", token);
+    //   // You can send this token to your backend to subscribe the user
+    // });
 
     try {
       const response = await LOGIN_API({
@@ -141,7 +141,6 @@ const Login = () => {
             <img src={logo} style={{ height: "100px" }} alt="Logo" />
           </div>
           <h3 className="mb-2 text-white">Welcome back!</h3>
-      
         </div>
 
         <div

@@ -42,7 +42,8 @@ const {
   GetBonusDetails,
   setPrimaryBank,
   deleteBankDetails,
-  updateBankDetails
+  updateBankDetails,
+  getAllUser
 } = require("../../Controllers/Admins/Admins/Admin");
 const {
   marginupdate,
@@ -63,6 +64,8 @@ router.post("/admin/Updatestatus", UpdateStatus);
 router.post("/admin/getUsersName", getUsersName);
 
 router.get("/api/prices", apiPrice);
+
+router.post("/admin/getAllUser", getAllUser); // Get all users
 
 // margin required
 

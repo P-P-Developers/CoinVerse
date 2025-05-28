@@ -42938,7 +42938,7 @@ ul.nav.nav-pills.mb-4.light {
 .table-responsive {
   overflow-x: auto;   /* for horizontal scroll */
   overflow-y: visible; /* allow sticky to work on Y */
-  max-height: 400px;   /* or any height for vertical scroll */
+  max-height: 560px;   /* or any height for vertical scroll */
 }
 
 
