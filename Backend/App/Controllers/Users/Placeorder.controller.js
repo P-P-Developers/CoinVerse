@@ -1,7 +1,6 @@
 "use strict";
 
 const db = require("../../Models");
-// const { findOne } = require("../../Models/Role.model");
 const Symbol = db.Symbol;
 const Order = db.Order;
 const User_model = db.user;
@@ -612,6 +611,9 @@ class Placeorder {
       if (!price || price <= 0) {
         return res.json({ status: false, message: "Please provide price" });
       }
+      if(price == undefined || price == null || price == ""){
+        return res.json({ status: false, message: "Please provide price" });
+      }
 
       // Parse input values as floating-point numbers to handle decimals
       const priceNum = parseFloat(price);
@@ -833,7 +835,10 @@ class Placeorder {
         token,
         type,
         lotsize,
+        With_Margin
       } = req.body;
+
+      console.log("req.body",req.body.With_Margin)
 
       if (price <= 0 || !price) {
         return res.json({ status: false, message: "Please provide price" });
@@ -876,7 +881,7 @@ class Placeorder {
       }
 
       const totalamount =
-        parseFloat(requiredFund) / parseFloat(checkadmin.limit);
+        parseFloat(requiredFund) / With_Margin ? parseFloat(checkadmin.limit) : 1;
 
       let brokerageFund = parseFloat(totalamount) + parseFloat(brokerage);
 
@@ -925,7 +930,7 @@ class Placeorder {
         perlot: checkadmin.perlot,
         turn_over_percentage: checkadmin.turn_over_percentage,
         brokerage: brokerage,
-        limit: checkadmin.limit,
+        limit: With_Margin ? parseFloat(checkadmin.limit) : 1,
         requiredFund,
         token: SymbolToken?.token,
         type,
@@ -945,7 +950,8 @@ class Placeorder {
           checkadmin,
           SymbolToken,
           brokerage,
-          totalamount
+          totalamount,
+          With_Margin
         );
       } else if (type === "sell") {
         await ExitTrade(
@@ -955,7 +961,8 @@ class Placeorder {
           checkadmin,
           SymbolToken,
           brokerage,
-          totalamount
+          totalamount,
+          With_Margin
         );
       } else {
         return res.json({ status: false, message: "Invalid request" });
@@ -978,7 +985,8 @@ const EntryTrade = async (
   checkadmin,
   SymbolToken,
   brokerage,
-  totalamount
+  totalamount,
+  With_Margin
 ) => {
   try {
     const { userid, symbol, price, lot, qty, requiredFund, lotsize, type } =
@@ -988,7 +996,7 @@ const EntryTrade = async (
     const qtyNum = parseFloat(qty, 10);
 
     const limitclaculation =
-      parseFloat(requiredFund) / parseFloat(checkadmin.limit);
+      parseFloat(requiredFund) /With_Margin ? parseFloat(checkadmin.limit) : 1;
 
     let ActualFun = limitclaculation / qty;
 
@@ -1035,7 +1043,7 @@ const EntryTrade = async (
       perlot: checkadmin.perlot,
       turn_over_percentage: checkadmin.turn_over_percentage,
       brokerage: brokerage,
-      limit: checkadmin.limit,
+      limit: With_Margin ? parseFloat(checkadmin.limit) : 1,
       status: "Completed",
       createdAt: currentTime,
       signal_type: "buy_sell",
@@ -1082,7 +1090,8 @@ const ExitTrade = async (
   checkadmin,
   SymbolToken,
   brokerage,
-  totalamount
+  totalamount,
+  With_Margin
 ) => {
   const { userid, symbol, price, type, lot, qty, lotsize, requiredFund } =
     req.body;
@@ -1092,7 +1101,7 @@ const ExitTrade = async (
 
   const currentTime = new Date();
   const limitclaculation =
-    parseFloat(requiredFund) / parseFloat(checkadmin.limit);
+    parseFloat(requiredFund) / With_Margin ? parseFloat(checkadmin.limit) : 1;
 
   let ActualFun = limitclaculation / qty;
 
@@ -1115,7 +1124,7 @@ const ExitTrade = async (
       },
     });
 
-    const checkbalance = checkadmin.Balance * checkadmin.limit;
+    const checkbalance = checkadmin.Balance * With_Margin ? parseFloat(checkadmin.limit) : 1;
 
     const updateuserbalance =
       parseFloat(checkadmin.Balance) - parseFloat(limitclaculation);
@@ -1166,7 +1175,7 @@ const ExitTrade = async (
       perlot: checkadmin.perlot,
       turn_over_percentage: checkadmin.turn_over_percentage,
       brokerage: brokerage,
-      limit: checkadmin.limit,
+      limit: With_Margin ? parseFloat(checkadmin.limit) : 1,
       status: "Completed",
       createdAt: currentTime,
       signal_type: "sell_buy",

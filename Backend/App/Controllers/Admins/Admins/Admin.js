@@ -393,10 +393,12 @@ class Admin {
       const { id } = req.body;
       // const result = await User_model.findOneAndDelete({ _id: id });
 
-
-
       if (!result) {
-        return res.json({ success: false, message: "User not found", data: [] });
+        return res.json({
+          success: false,
+          message: "User not found",
+          data: [],
+        });
       }
 
       return res.json({
@@ -405,7 +407,11 @@ class Admin {
         data: result,
       });
     } catch (error) {
-      return res.json({ success: false, message: "Internal server error", data: [] });
+      return res.json({
+        success: false,
+        message: "Internal server error",
+        data: [],
+      });
     }
   }
 
@@ -1344,9 +1350,14 @@ class Admin {
 
   async getResearch(req, res) {
     try {
-      const GetAllResearch = await ResearchModel.find({}).sort({
+      const { id } = req.query;
+
+      const GetAllResearch = await ResearchModel.find({
+        user_id: id,
+      }).sort({
         createdAt: -1,
       });
+
       if (!GetAllResearch || GetAllResearch.length === 0) {
         return res.json({
           status: false,

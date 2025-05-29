@@ -144,6 +144,10 @@ const mainorderSchema = new mongoose.Schema({
       ref: "Order",
     },
   ],
+  With_Margin: {
+    type: Boolean,
+    default: true,
+  },
 
   createdAt: {
     type: Date,

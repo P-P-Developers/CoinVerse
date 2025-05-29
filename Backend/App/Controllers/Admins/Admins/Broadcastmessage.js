@@ -3,10 +3,12 @@ const mongoose = require("mongoose");
 const db = require("../../../Models");
 const User_model = db.user;
 const broadcasting = db.broadcasting;
-const { sendPushNotification ,sendMultiplePushNotification} = require("../../common/firebase");
+const {
+  sendPushNotification,
+  sendMultiplePushNotification,
+} = require("../../common/firebase");
 
 class broadcastingmessage {
-
   async broadcastmessage(req, res) {
     try {
       const { message, title, adminid, Role, UserName } = req.body;
@@ -22,20 +24,21 @@ class broadcastingmessage {
 
       const result = await newBroadcast.save();
 
-      const firebaseToken = await User_model.find({ parent_id: adminid ,DeviceToken:{$ne:"",$ne: null} }).select("DeviceToken");
-
+      const firebaseToken = await User_model.find({
+        parent_id: adminid,
+        DeviceToken: { $ne: "", $ne: null },
+      }).select("DeviceToken");
 
       const firebaseTokenArray = firebaseToken.map((item) => item.DeviceToken);
 
-
-
-      const SendNotification = await sendMultiplePushNotification(firebaseTokenArray, title, message);
-
+      const SendNotification = await sendMultiplePushNotification(
+        firebaseTokenArray,
+        title,
+        message
+      );
 
       return res.json({ status: true, message: "Mesaage send", data: result });
     } catch (error) {
-      
-
       return res.json({
         status: false,
         message: "Failed to save broadcast message",
@@ -88,7 +91,5 @@ class broadcastingmessage {
     }
   }
 }
-
-
 
 module.exports = new broadcastingmessage();
