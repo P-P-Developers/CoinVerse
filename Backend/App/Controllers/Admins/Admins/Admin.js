@@ -391,7 +391,9 @@ class Admin {
   async DeleteUser(req, res) {
     try {
       const { id } = req.body;
-      const result = await User_model.findOneAndDelete({ _id: id });
+      // const result = await User_model.findOneAndDelete({ _id: id });
+
+
 
       if (!result) {
         return res.json({ success: false, message: "User not found", data: [] });

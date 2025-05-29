@@ -131,25 +131,25 @@ export const admin_header = [
   },
 
   {
-    id: 12,
+    id: 13,
     name: "Bonus",
     icon: "fe fe-arrow-up-circle",
     route: "/admin/bonus",
   },
   {
-    id: 13,
+    id: 14,
     name: "Sign Up",
     icon: "fa fa-dollar-sign",
     route: "/admin/signup",
   },
   {
-    id: 14,
+    id: 15,
     name: "Research",
     icon: "fe fe-check-square",
     route: "/admin/research",
   },
   {
-    id: 15,
+    id: 16,
     name: "Chat-Box",
     icon: "fe fe-check-square",
     route: "/admin/chatbox",

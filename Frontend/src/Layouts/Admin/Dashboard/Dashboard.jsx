@@ -38,13 +38,13 @@ const Dashboard = () => {
 
   return (
     <div>
-      <div class="container-fluid">
-        <div class="row" style={{ height: "180px" }}>
-          <div class="col-lg-12">
-            <div class="card transaction-table">
-              <div class="card-header border-0 flex-wrap pb-0">
-                <div class="mb-2">
-                  <h4 class="card-title">Live Price Updates</h4>
+      <div className="container-fluid">
+        <div className="row" style={{ height: "180px" }}>
+          <div className="col-lg-12">
+            <div className="card transaction-table">
+              <div className="card-header border-0 flex-wrap pb-0">
+                <div className="mb-2">
+                  <h4 className="card-title">Live Price Updates</h4>
 
                   <LivePriceCard />
                 </div>
@@ -53,8 +53,8 @@ const Dashboard = () => {
           </div>
         </div>
         <br />
-        <div class="row">
-          <div class="col-xl-12">
+        <div className="row">
+          <div className="col-xl-12">
             <div className="row main-card">
               <div className="col-md-4" onClick={() => RedirectToUser()}>
                 <div className="card card-box bg-secondary bg-secondary">

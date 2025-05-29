@@ -321,11 +321,12 @@ const DynamicForm = ({
                                   aria-describedby="basic-addon1"
                                   disabled={field.disable}
                                   id={field.name}
-                                  {...formik.getFieldProps(field.name)}
+                                  name={field.name}
+                                  value={formik.values[field.name]} // Controlled component
+                                  onChange={formik.handleChange}
+                                  onBlur={formik.handleBlur}
                                 >
-                                  <option value="" selected>
-                                    Select {field.label}
-                                  </option>
+                                  <option value="">Select {field.label}</option>
                                   {field.options.map((option) => (
                                     <option
                                       key={option.value}
@@ -376,11 +377,12 @@ const DynamicForm = ({
                                   aria-describedby="basic-addon1"
                                   disabled={field.disable}
                                   id={field.name}
-                                  {...formik.getFieldProps(field.name)}
+                                  value={formik.values[field.name]} // ✅ Controlled select
+                                  onChange={formik.handleChange} // ✅ Controlled input handler
+                                  onBlur={formik.handleBlur}
+                                  name={field.name} // ✅ Important for Formik tracking
                                 >
-                                  <option value="" selected>
-                                    Select {field.label}
-                                  </option>
+                                  <option value="">Select {field.label}</option>
                                   {field.options.map((option) => (
                                     <option
                                       key={option.value}

@@ -54,7 +54,7 @@ const Deposit = () => {
 
   const getAllfundsstatus = async () => {
     try {
-      setLoading(true); // Start loading
+      setLoading(true); 
 
       const data = {
         adminid: user_id,

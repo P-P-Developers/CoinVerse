@@ -27,9 +27,9 @@ const Dashboard = () => {
 
   return (
     <div>
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-xl-12">
+      <div className="container-fluid">
+        <div className="row">
+          <div className="col-xl-12">
             <div className="row main-card">
               <div className="col-md-4">
                 <div className="card card-box bg-secondary bg-secondary">

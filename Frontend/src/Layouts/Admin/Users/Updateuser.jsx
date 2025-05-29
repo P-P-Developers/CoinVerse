@@ -20,6 +20,8 @@ const Updateuser = () => {
     getAlluserdata();
   }, []);
 
+
+
   const formik = useFormik({
     initialValues: {
       fullName: "",
@@ -28,7 +30,7 @@ const Updateuser = () => {
       phone: "",
       Balance: "",
       employee_id: "",
-      Licence: "",
+  
       limit: "",
       selectedOption: "",
       inputValue: "",
@@ -57,15 +59,7 @@ const Updateuser = () => {
       } else if (isNaN(values.Balance)) {
         errors.Balance = "Balance must be a number";
       }
-      if (!values.Licence) {
-        errors.Licence = "Please Enter Licence";
-      } else if (
-        isNaN(values.Licence) ||
-        values.Licence < 0 ||
-        values.Licence > 12
-      ) {
-        errors.Licence = "Licence must be a number between 0 and 12.";
-      }
+    
       if (!values.limit) {
         errors.limit = "Please enter a value for Limit";
       } else if (
@@ -90,7 +84,7 @@ const Updateuser = () => {
         id: rowData && rowData._id,
         limit: values.limit,
         employee_id: values.employee_id,
-        Licence: values.Licence,
+
         [selectedOption]: values.inputValue,
       };
       setSubmitting(false);
@@ -128,6 +122,7 @@ const Updateuser = () => {
     },
   });
 
+
   useEffect(() => {
     if (rowData) {
       const determineSelectedOption = () => {
@@ -147,7 +142,7 @@ const Updateuser = () => {
         Password: rowData.Otp || "",
         Balance: rowData.Balance || "",
         employee_id: rowData.employee_id || "",
-        Licence: rowData.Licence || "",
+     
         selectedOption: determineSelectedOption(),
         inputValue:
           rowData.pertrade || rowData.perlot || rowData.transactionwise || "",
@@ -234,14 +229,7 @@ const Updateuser = () => {
       col_size: 6,
       disable: false,
     },
-    // {
-    //   name: "Licence",
-    //   label: "Licence (0-12)",
-    //   type: "number",
-    //   label_size: 12,
-    //   col_size: 6,
-    //   disable: true,
-    // },
+
     {
       name: "limit",
       label: "Margin (0-100%)",

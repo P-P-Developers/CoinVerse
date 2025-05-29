@@ -434,6 +434,7 @@ class Placeorder {
         return res.json({ status: false, message: "Order not found" });
       }
 
+
       const isDoubleOrder = trade.orderid.length === 2;
 
       // Swap helpers
@@ -480,6 +481,13 @@ class Placeorder {
         trade.signal_type = isBuySell ? "sell_buy" : "buy_sell";
 
         if (isBuySell) {
+          let DifrencePrice =
+            trade.buy_price - parseFloat(trade.Sl_price_percentage);
+
+
+          trade.Sl_price_percentage = trade.buy_price + DifrencePrice;
+
+
           trade.sell_price = trade.buy_price;
           trade.buy_price = null;
 
@@ -495,6 +503,14 @@ class Placeorder {
           trade.sell_type = trade.buy_type;
           trade.buy_type = null;
         } else {
+
+          let DifrencePrice =
+            parseFloat(trade.Sl_price_percentage) - trade.sell_price;
+         
+
+          trade.Sl_price_percentage = trade.sell_price - DifrencePrice;
+         
+
           trade.buy_price = trade.sell_price;
           trade.sell_price = null;
 
@@ -819,6 +835,14 @@ class Placeorder {
         lotsize,
       } = req.body;
 
+      if (price <= 0 || !price) {
+        return res.json({ status: false, message: "Please provide price" });
+      }
+
+      if (price == undefined || price == null || price == "") {
+        return res.json({ status: false, message: "Please provide price" });
+      }
+
       const checkadmin = await User_model.findOne({
         _id: userid,
         Role: "USER",
@@ -961,11 +985,21 @@ const EntryTrade = async (
       req.body;
 
     const priceNum = parseFloat(price);
-    const lotNum = parseFloat(lot, 10);
     const qtyNum = parseFloat(qty, 10);
-    const requiredFundNum = parseFloat(requiredFund);
 
-    const currentTime = new Date();
+    const limitclaculation =
+      parseFloat(requiredFund) / parseFloat(checkadmin.limit);
+
+    let ActualFun = limitclaculation / qty;
+
+    const EathyPercent = ActualFun * 0.8;
+
+    let multypl = 2;
+    if (checkadmin.transactionwise == null) {
+      multypl = 2;
+    } else {
+      multypl = 1;
+    }
 
     let tradehistory = await mainorder_model.findOne({
       userid,
@@ -976,27 +1010,13 @@ const EntryTrade = async (
       },
     });
 
-    const limitclaculation =
-      parseFloat(requiredFund) / parseFloat(checkadmin.limit);
+    const currentTime = new Date();
 
     const updateuserbalance =
       parseFloat(checkadmin.Balance) - parseFloat(limitclaculation);
 
-    let multypl = 2;
-    if (checkadmin.transactionwise == null) {
-      multypl = 2;
-    } else {
-      multypl = 1;
-    }
-
     const Totalupdateuserbalance =
       parseFloat(updateuserbalance) - parseFloat(brokerage) * multypl;
-
-    let ActualFun = limitclaculation;
-    if (qty > 1) {
-      ActualFun = limitclaculation / qty;
-    }
-    const seventyPercent = (ActualFun * 70) / 100;
 
     tradehistory = new mainorder_model({
       orderid: orderdata._id,
@@ -1020,7 +1040,7 @@ const EntryTrade = async (
       createdAt: currentTime,
       signal_type: "buy_sell",
       totalamount: totalamount / qtyNum,
-      Sl_price_percentage: parseFloat(price) - parseFloat(seventyPercent),
+      Sl_price_percentage: parseFloat(price) - parseFloat(EathyPercent),
     });
 
     await tradehistory.save();
@@ -1049,6 +1069,7 @@ const EntryTrade = async (
       message: "Order placed",
     });
   } catch (error) {
+    console.error("Error in EntryTrade:", error);
     return res.json({ status: false, message: "internal error", data: [] });
   }
 };
@@ -1070,6 +1091,19 @@ const ExitTrade = async (
   const qtyNum = parseFloat(qty, 10);
 
   const currentTime = new Date();
+  const limitclaculation =
+    parseFloat(requiredFund) / parseFloat(checkadmin.limit);
+
+  let ActualFun = limitclaculation / qty;
+
+  const EathyPercent = ActualFun * 0.8;
+
+  let multypl = 2;
+  if (checkadmin.transactionwise == null) {
+    multypl = 2;
+  } else {
+    multypl = 1;
+  }
 
   try {
     let tradehistory = await mainorder_model.findOne({
@@ -1082,6 +1116,12 @@ const ExitTrade = async (
     });
 
     const checkbalance = checkadmin.Balance * checkadmin.limit;
+
+    const updateuserbalance =
+      parseFloat(checkadmin.Balance) - parseFloat(limitclaculation);
+
+    const Totalupdateuserbalance =
+      parseFloat(updateuserbalance) - parseFloat(brokerage) * multypl;
 
     if (checkbalance < requiredFund) {
       const rejectedOrder = new Order({
@@ -1109,27 +1149,6 @@ const ExitTrade = async (
       });
     }
 
-    const limitclaculation =
-      parseFloat(requiredFund) / parseFloat(checkadmin.limit);
-    const updateuserbalance =
-      parseFloat(checkadmin.Balance) - parseFloat(limitclaculation);
-
-    let multypl = 2;
-    if (checkadmin.transactionwise == null) {
-      multypl = 2;
-    } else {
-      multypl = 1;
-    }
-
-    const Totalupdateuserbalance =
-      parseFloat(updateuserbalance) - parseFloat(brokerage) * multypl;
-
-    let ActualFun = limitclaculation;
-    if (qty > 1) {
-      ActualFun = limitclaculation / qty;
-    }
-    const seventyPercent = (ActualFun * 70) / 100;
-
     tradehistory = new mainorder_model({
       orderid: orderdata._id,
       userid,
@@ -1152,7 +1171,7 @@ const ExitTrade = async (
       createdAt: currentTime,
       signal_type: "sell_buy",
       totalamount: totalamount / qty,
-      Sl_price_percentage: parseFloat(price) + parseFloat(seventyPercent),
+      Sl_price_percentage: parseFloat(price) + parseFloat(EathyPercent),
     });
 
     await tradehistory.save();
