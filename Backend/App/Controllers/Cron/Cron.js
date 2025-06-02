@@ -29,10 +29,8 @@ cron.schedule("1 5 * * *", () => {
 
 let GetAdminWeeklyProfit = async () => {
   try {
-    console.log("GetAdminWeeklyProfit Cron Job Started");
 
     const { from, to } = getLastWeekRange();
-    console.log("Weekly Range:", from, "to", to);
 
     let GetAdmins = await user
       .find({ Role: "ADMIN", NetTransactionPercent: true })
@@ -40,7 +38,6 @@ let GetAdminWeeklyProfit = async () => {
       .lean();
 
     if (!GetAdmins || GetAdmins.length === 0) {
-      console.log("No Admins found with NetTransactionPercent set to true.");
       return;
     }
 
@@ -100,25 +97,14 @@ let GetAdminWeeklyProfit = async () => {
             ? (Math.abs(totalPnL) * netTransaction) / 100
             : null;
 
-        console.log(`Admin ID: ${admin._id}`);
-        console.log(`Total PnL: ${Math.abs(totalPnL)}`);
-        console.log(`Net Transaction: ${netTransaction}`);
-        console.log(`Loss %: ${Math.round(lossPercentage)}`);
+        const newBonus = new BonusCollectioniModel({
+          admin_id: admin._id,
+          user_id: admin._id,
+          Bonus: Math.round(lossPercentage),
+          Type: "NetTransaction",
+        });
 
-
-
- const newBonus = new BonusCollectioniModel({
-            admin_id: admin._id,
-            user_id: admin._id,
-            Bonus: Math.round(lossPercentage),
-            Type: "NetTransaction",
-          });
-
-          await newBonus.save();
-
-
-
-
+        await newBonus.save();
       }
     }
   } catch (err) {

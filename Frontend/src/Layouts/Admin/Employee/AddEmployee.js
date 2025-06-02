@@ -29,7 +29,6 @@ const AddEmployee = () => {
       Edit: false,
       trade_history: false,
       open_position: false,
-      Licence_Edit: false,
       limit_edit: false,
       Balance_edit: false,
     },
@@ -82,7 +81,7 @@ const AddEmployee = () => {
           Edit: values.Edit || values.all ? "1" : "0",
           trade_history: values.trade_history || values.all ? "1" : "0",
           open_position: values.open_position || values.all ? "1" : "0",
-          Licence_Edit: values.Licence_Edit || values.all ? "1" : "0",
+     
           limit_edit: values.limit_edit || values.all ? "1" : "0",
           Balance_edit: values.Balance_edit || values.all ? "1" : "0",
         },
@@ -123,7 +122,7 @@ const AddEmployee = () => {
         formik.setFieldValue("Edit", checked);
         formik.setFieldValue("trade_history", checked);
         formik.setFieldValue("open_position", checked);
-        formik.setFieldValue("Licence_Edit", checked);
+
         formik.setFieldValue("limit_edit", checked);
         formik.setFieldValue("Balance_edit", checked);
       }
@@ -136,7 +135,7 @@ const AddEmployee = () => {
       Edit,
       trade_history,
       open_position,
-      Licence_Edit,
+     
       limit_edit,
       Balance_edit,
     } = formik.values;
@@ -146,7 +145,7 @@ const AddEmployee = () => {
       Edit &&
       trade_history &&
       open_position &&
-      Licence_Edit &&
+
       limit_edit &&
       Balance_edit;
 
@@ -158,7 +157,7 @@ const AddEmployee = () => {
     formik.values.Edit,
     formik.values.trade_history,
     formik.values.open_position,
-    formik.values.Licence_Edit,
+   
     formik.values.limit_edit,
     formik.values.Balance_edit,
     formik.values.all,
@@ -258,15 +257,7 @@ const AddEmployee = () => {
       check_box_true:
         formik.values.all || formik.values.open_position ? true : false,
     },
-    {
-      name: "Licence_Edit",
-      label: "Licence Edit",
-      type: "checkbox",
-      label_size: 12,
-      col_size: 3,
-      check_box_true:
-        formik.values.all || formik.values.Licence_Edit ? true : false,
-    },
+  
     {
       name: "limit_edit",
       label: "Limit Edit",

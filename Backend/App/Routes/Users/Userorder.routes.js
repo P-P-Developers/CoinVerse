@@ -47,11 +47,11 @@ router.post('/getuserorderdata', getuserorderdata);
 router.post('/Squareoff', Squareoff);
 
 router.post('/balanceStatementForUser', balanceStatementForUser);
-router.post('/tradeStatementForUser', tradeStatementForUser);
+router.post('/tradeStatementForUser', tradeStatementForUser);   // Trade Statnment
 router.post('/tradeStatementForUser1', tradeStatementForUser1);
 
 
-router.post('/tradeStatementForOrder', tradeStatementForOrder);
+router.post('/tradeStatementForOrder', tradeStatementForOrder);   //Position par
 router.post('/todaysBroadcastMessage', todaysBroadcastMessage);
 
 

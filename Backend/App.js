@@ -5,7 +5,7 @@ const mongoConnection = require("./App/Connections/mongo_connection");
 const express = require("express");
 const app = express();
 const http = require("http");
-
+const winston = require('winston');
 const cors = require("cors");
 const bodyparser = require("body-parser");
 const cookieParser = require("cookie-parser");
@@ -26,6 +26,32 @@ app.use(bodyparser.urlencoded({ extended: true }));
 app.use(bodyparser.json({ limit: "10mb", extended: true }));
 app.use(helmet());
 
+
+const logger = winston.createLogger({
+  level: 'warn',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.printf(({ timestamp, level, message }) => `${timestamp} [${level}]: ${message}`)
+  ),
+  transports: [
+    new winston.transports.File({ filename: 'slow-requests.log' }),
+    new winston.transports.Console()
+  ],
+});
+
+
+// ✅ Request timing logger (Move it here)
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on("finish", () => {
+    const duration = Date.now() - start;
+    if (duration > 200) {
+      logger.warn(`SLOW API: [${req.method}] ${req.originalUrl} - ${duration}ms`);
+    }
+  });
+  next();
+});
+
 // Load routes/controllers AFTER middleware
 require("./App/Routes")(app);
 require("./App/Controllers/Cron/Cron");
@@ -41,6 +67,8 @@ app.use((err, req, res, next) => {
 app.use((req, res) => {
   res.send("Not Found");
 });
+
+
 
 const server = http.createServer(app);
 

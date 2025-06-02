@@ -287,7 +287,6 @@ class Placeorder {
             Exittype: 1,
           },
         },
-        // { $sort: { createdAt: -1 } },
       ]);
 
       if (!finduser.length) {
@@ -312,9 +311,15 @@ class Placeorder {
         };
       });
 
+      PositionData.sort((a, b) => {
+        const aHasBoth = a.buy_type !== null && a.sell_type !== null;
+        const bHasBoth = b.buy_type !== null && b.sell_type !== null;
+
+        return aHasBoth - bHasBoth; // false(0) - true(1) = -1 → keep a before b
+      });
+
       res.json({ status: true, data: PositionData });
     } catch (error) {
-      console.error("Error fetching positions:", error);
       res.json({ status: false, error: "Internal Server Error", data: [] });
     }
   }
@@ -433,7 +438,6 @@ class Placeorder {
         return res.json({ status: false, message: "Order not found" });
       }
 
-
       const isDoubleOrder = trade.orderid.length === 2;
 
       // Swap helpers
@@ -483,9 +487,7 @@ class Placeorder {
           let DifrencePrice =
             trade.buy_price - parseFloat(trade.Sl_price_percentage);
 
-
           trade.Sl_price_percentage = trade.buy_price + DifrencePrice;
-
 
           trade.sell_price = trade.buy_price;
           trade.buy_price = null;
@@ -502,13 +504,10 @@ class Placeorder {
           trade.sell_type = trade.buy_type;
           trade.buy_type = null;
         } else {
-
           let DifrencePrice =
             parseFloat(trade.Sl_price_percentage) - trade.sell_price;
-         
 
           trade.Sl_price_percentage = trade.sell_price - DifrencePrice;
-         
 
           trade.buy_price = trade.sell_price;
           trade.sell_price = null;
@@ -611,9 +610,6 @@ class Placeorder {
       if (!price || price <= 0) {
         return res.json({ status: false, message: "Please provide price" });
       }
-      if(price == undefined || price == null || price == ""){
-        return res.json({ status: false, message: "Please provide price" });
-      }
 
       // Parse input values as floating-point numbers to handle decimals
       const priceNum = parseFloat(price);
@@ -646,7 +642,6 @@ class Placeorder {
       if (checkadmin.pertrade) {
         brokerage = parseFloat(checkadmin.pertrade);
       } else if (checkadmin.perlot) {
-        // brokerage = parseFloat(checkadmin.perlot) * lotNum;
         brokerage = 0;
       }
       let totalQty = 0;
@@ -724,7 +719,7 @@ class Placeorder {
         turn_over_percentage: checkadmin.turn_over_percentage,
         brokerage: brokerage,
         totalamount: totalamountCal,
-        limit: checkadmin.limit,
+        limit: tradehistory?.With_Margin == false ? 1 : checkadmin.limit,
         requiredFund: totalamountCal,
         type,
         status: "Completed",
@@ -835,10 +830,8 @@ class Placeorder {
         token,
         type,
         lotsize,
-        With_Margin
+        With_Margin,
       } = req.body;
-
-      console.log("req.body",req.body.With_Margin)
 
       if (price <= 0 || !price) {
         return res.json({ status: false, message: "Please provide price" });
@@ -856,6 +849,8 @@ class Placeorder {
       if (!checkadmin) {
         return res.json({ status: false, message: "User not found", data: [] });
       }
+
+      let NewLimit = With_Margin ? parseFloat(checkadmin.limit) : 1;
 
       const SymbolToken = await Symbol.findOne({ symbol: symbol });
       if (SymbolToken == null) {
@@ -880,8 +875,7 @@ class Placeorder {
         brokerage = brokerage.toFixed(2);
       }
 
-      const totalamount =
-        parseFloat(requiredFund) / With_Margin ? parseFloat(checkadmin.limit) : 1;
+      const totalamount = parseFloat(requiredFund) / NewLimit;
 
       let brokerageFund = parseFloat(totalamount) + parseFloat(brokerage);
 
@@ -930,7 +924,7 @@ class Placeorder {
         perlot: checkadmin.perlot,
         turn_over_percentage: checkadmin.turn_over_percentage,
         brokerage: brokerage,
-        limit: With_Margin ? parseFloat(checkadmin.limit) : 1,
+        limit: NewLimit,
         requiredFund,
         token: SymbolToken?.token,
         type,
@@ -951,7 +945,8 @@ class Placeorder {
           SymbolToken,
           brokerage,
           totalamount,
-          With_Margin
+          With_Margin,
+          NewLimit
         );
       } else if (type === "sell") {
         await ExitTrade(
@@ -962,7 +957,8 @@ class Placeorder {
           SymbolToken,
           brokerage,
           totalamount,
-          With_Margin
+          With_Margin,
+          NewLimit
         );
       } else {
         return res.json({ status: false, message: "Invalid request" });
@@ -986,7 +982,8 @@ const EntryTrade = async (
   SymbolToken,
   brokerage,
   totalamount,
-  With_Margin
+  With_Margin,
+  NewLimit
 ) => {
   try {
     const { userid, symbol, price, lot, qty, requiredFund, lotsize, type } =
@@ -995,8 +992,7 @@ const EntryTrade = async (
     const priceNum = parseFloat(price);
     const qtyNum = parseFloat(qty, 10);
 
-    const limitclaculation =
-      parseFloat(requiredFund) /With_Margin ? parseFloat(checkadmin.limit) : 1;
+    const limitclaculation = parseFloat(requiredFund) / NewLimit;
 
     let ActualFun = limitclaculation / qty;
 
@@ -1043,7 +1039,7 @@ const EntryTrade = async (
       perlot: checkadmin.perlot,
       turn_over_percentage: checkadmin.turn_over_percentage,
       brokerage: brokerage,
-      limit: With_Margin ? parseFloat(checkadmin.limit) : 1,
+      limit: NewLimit,
       status: "Completed",
       createdAt: currentTime,
       signal_type: "buy_sell",
@@ -1077,7 +1073,6 @@ const EntryTrade = async (
       message: "Order placed",
     });
   } catch (error) {
-    console.error("Error in EntryTrade:", error);
     return res.json({ status: false, message: "internal error", data: [] });
   }
 };
@@ -1091,7 +1086,8 @@ const ExitTrade = async (
   SymbolToken,
   brokerage,
   totalamount,
-  With_Margin
+  With_Margin,
+  NewLimit
 ) => {
   const { userid, symbol, price, type, lot, qty, lotsize, requiredFund } =
     req.body;
@@ -1100,8 +1096,7 @@ const ExitTrade = async (
   const qtyNum = parseFloat(qty, 10);
 
   const currentTime = new Date();
-  const limitclaculation =
-    parseFloat(requiredFund) / With_Margin ? parseFloat(checkadmin.limit) : 1;
+  const limitclaculation = parseFloat(requiredFund) / NewLimit;
 
   let ActualFun = limitclaculation / qty;
 
@@ -1124,7 +1119,7 @@ const ExitTrade = async (
       },
     });
 
-    const checkbalance = checkadmin.Balance * With_Margin ? parseFloat(checkadmin.limit) : 1;
+    const checkbalance = checkadmin.Balance * NewLimit;
 
     const updateuserbalance =
       parseFloat(checkadmin.Balance) - parseFloat(limitclaculation);
@@ -1175,7 +1170,7 @@ const ExitTrade = async (
       perlot: checkadmin.perlot,
       turn_over_percentage: checkadmin.turn_over_percentage,
       brokerage: brokerage,
-      limit: With_Margin ? parseFloat(checkadmin.limit) : 1,
+      limit: NewLimit,
       status: "Completed",
       createdAt: currentTime,
       signal_type: "sell_buy",

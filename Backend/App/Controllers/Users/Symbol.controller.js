@@ -4,7 +4,7 @@ const db = require("../../Models");
 const Symbol = db.Symbol;
 const Userwatchlist = db.Userwatchlist;
 const Favouritelist = db.Favouritelist;
- const { isArray } = require("lodash"); // Assuming lodash is being used
+const { isArray } = require("lodash"); // Assuming lodash is being used
 
 class UserSymbol {
   //user search symbol
@@ -20,7 +20,8 @@ class UserSymbol {
 
       const symbols = await Symbol.find(condition)
         .select("-symbol")
-        .sort({ trading_symbol: "asc" });
+        .sort({ trading_symbol: "asc" })
+        .lean();
 
       // If no symbols are found or the first symbol has status 0, return not found
       if (symbols.length === 0 || symbols[0].status == 0) {
@@ -41,71 +42,80 @@ class UserSymbol {
     }
   }
 
+  async addSymbol(req, res) {
+    const { userid, symbolname } = req.body;
 
-async addSymbol(req, res) {
-  const { userid, symbolname } = req.body;
+    let SymbolsArr = isArray(symbolname) ? symbolname : [symbolname];
 
-  let SymbolsArr = isArray(symbolname) ? symbolname : [symbolname];
-
-  if (!SymbolsArr.length) {
-    return res.status(400).json({
-      status: false,
-      message: "Symbol list is empty or invalid.",
-      data: [],
-    });
-  }
-
-  try {
-    const addedSymbols = [];
-    const skippedSymbols = [];
-
-    for (const sym of SymbolsArr) {
-      const symbolTrimmed = sym.trim();
-
-      // Check if already exists in user's watchlist
-      const exists = await Userwatchlist.findOne({ userid, symbol: symbolTrimmed });
-      if (exists) {
-        skippedSymbols.push({ symbol: symbolTrimmed, reason: "Already added" });
-        continue;
-      }
-
-      // Check if symbol exists in master symbol list
-      const symbol = await Symbol.findOne({ trading_symbol: symbolTrimmed });
-      if (!symbol) {
-        skippedSymbols.push({ symbol: symbolTrimmed, reason: "Symbol not found" });
-        continue;
-      }
-
-      // Save new entry to watchlist
-      const newEntry = new Userwatchlist({
-        userid,
-        symbol: symbolTrimmed,
-        token: symbol.token,
-        symbol_name: symbol.symbol,
-        exch_seg: symbol.exch_seg,
-        lotsize: symbol.lotsize,
+    if (!SymbolsArr.length) {
+      return res.status(400).json({
+        status: false,
+        message: "Symbol list is empty or invalid.",
+        data: [],
       });
-
-      const saved = await newEntry.save();
-      addedSymbols.push(saved);
     }
 
-    return res.status(201).json({
-      status: true,
-      message: "Symbols processed.",
-      added: addedSymbols,
-      skipped: skippedSymbols,
-    });
-  } catch (err) {
-    console.error("Error in addSymbol:", err);
-    return res.status(500).json({
-      status: false,
-      message: "Server error occurred while adding symbols.",
-      data: [],
-    });
-  }
-}
+    try {
+      const addedSymbols = [];
+      const skippedSymbols = [];
 
+      for (const sym of SymbolsArr) {
+        const symbolTrimmed = sym.trim();
+
+        // Check if already exists in user's watchlist
+        const exists = await Userwatchlist.findOne({
+          userid,
+          symbol: symbolTrimmed,
+        });
+        if (exists) {
+          skippedSymbols.push({
+            symbol: symbolTrimmed,
+            reason: "Already added",
+          });
+          continue;
+        }
+
+        // Check if symbol exists in master symbol list
+        const symbol = await Symbol.findOne({
+          trading_symbol: symbolTrimmed,
+        }).lean();
+        if (!symbol) {
+          skippedSymbols.push({
+            symbol: symbolTrimmed,
+            reason: "Symbol not found",
+          });
+          continue;
+        }
+
+        // Save new entry to watchlist
+        const newEntry = new Userwatchlist({
+          userid,
+          symbol: symbolTrimmed,
+          token: symbol.token,
+          symbol_name: symbol.symbol,
+          exch_seg: symbol.exch_seg,
+          lotsize: symbol.lotsize,
+        });
+
+        const saved = await newEntry.save();
+        addedSymbols.push(saved);
+      }
+
+      return res.status(201).json({
+        status: true,
+        message: "Symbols processed.",
+        added: addedSymbols,
+        skipped: skippedSymbols,
+      });
+    } catch (err) {
+      console.error("Error in addSymbol:", err);
+      return res.status(500).json({
+        status: false,
+        message: "Server error occurred while adding symbols.",
+        data: [],
+      });
+    }
+  }
 
   // Userwatchlist with favourite status new code
   async userSymbollist(req, res) {
@@ -231,7 +241,7 @@ async addSymbol(req, res) {
     };
 
     try {
-      const userWatchlistRecord = await Favouritelist.find(condition);
+      const userWatchlistRecord = await Favouritelist.find(condition).lean();
 
       if (userWatchlistRecord.length > 0) {
         return res.json({
@@ -286,7 +296,7 @@ async addSymbol(req, res) {
     };
 
     try {
-      const userWatchlistRecord = await Favouritelist.findOne(condition);
+      const userWatchlistRecord = await Favouritelist.findOne(condition).lean();
       if (!userWatchlistRecord) {
         return res.json({
           status: false,

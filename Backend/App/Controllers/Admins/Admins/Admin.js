@@ -1975,7 +1975,6 @@ class Admin {
         ];
       }
 
-      console.log("Filter:", filter);
 
       // Fetch filtered and paginated users
       const result = await User_model.find(filter)

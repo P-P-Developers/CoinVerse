@@ -71,15 +71,7 @@ const Employee = () => {
                 updateEmploye(cell.row._id, cell || cell.permissions)
               }
             />
-            <Trash2
-              style={{
-                cursor: "pointer",
-                marginLeft: "3px",
-                color: "red",
-                marginRight: "10px",
-              }}
-              onClick={() => DeleteEmployee(cell.row._id)}
-            />
+           
           </div>
         );
       },
