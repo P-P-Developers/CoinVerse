@@ -17,7 +17,7 @@ const Updateuser = () => {
       email: "",
       phone: "",
       employee_id: "",
-      Licence: "",
+   
       limit: "",
       selectedOption: "",
       inputValue: "",
@@ -49,17 +49,7 @@ const Updateuser = () => {
         errors.phone = "Please enter a valid 10-digit phone number.";
       }
 
-      // Licence validation
-      if (!values.Licence) {
-        errors.Licence = "Please Enter Licence";
-      } else if (
-        isNaN(values.Licence) ||
-        values.Licence < 1 ||
-        values.Licence > 12
-      ) {
-        errors.Licence = "Licence must be a number between 1 and 12.";
-      }
-
+     
       // Limit validation
       if (!values.limit) {
         errors.limit = "Please enter a value for Limit";
@@ -85,17 +75,7 @@ const Updateuser = () => {
     },
 
     onSubmit: async (values, { setSubmitting }) => {
-      if (values.Licence < 1 || values.Licence > 12) {
-        Swal.fire({
-          title: "Invalid Input",
-          text: "Licence must be a number between 1 and 12.",
-          icon: "warning",
-          timer: 2000,
-          timerProgressBar: true,
-        });
-        setSubmitting(false);
-        return;
-      }
+  
 
       if (values.limit < 0 || values.limit > 100) {
         Swal.fire({
@@ -112,7 +92,6 @@ const Updateuser = () => {
       const data = {
         id: rowData && rowData._id,
         limit: values.limit,
-        Licence: values.Licence,
         [values.selectedOption]: values.inputValue,
       };
 
@@ -167,7 +146,6 @@ const Updateuser = () => {
         username: rowData.UserName || "",
         email: rowData.Email || "",
         phone: rowData.PhoneNo || "",
-        Licence: rowData.Licence || "",
         selectedOption: rowData.selectedOption || determineSelectedOption(),
         inputValue: rowData.pertrade || rowData.perlot || "",
         limit: rowData.limit || "",
@@ -216,19 +194,10 @@ const Updateuser = () => {
       disable: true,
     },
 
-    {
-      name: "Licence",
-      label: "Licence",
-      type: "text",
-      label_size: 12,
-      col_size: 6,
-      disable: false,
-      min: 1,
-      max: 12,
-    },
+   
     {
       name: "limit",
-      label: "number",
+      label: "Margin",
       type: "text",
       label_size: 12,
       col_size: 6,

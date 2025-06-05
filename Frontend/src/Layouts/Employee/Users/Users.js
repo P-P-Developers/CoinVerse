@@ -4,10 +4,7 @@ import {
   Addbalance,
   getAllClient,
 } from "../../../Services/Superadmin/Superadmin";
-import {
-  updateuserLicence,
-  DeleteUserdata,
-} from "../../../Services/Admin/Addmin";
+import { DeleteUserdata } from "../../../Services/Admin/Addmin";
 
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -37,9 +34,7 @@ const Users = () => {
   const [modal, setModal] = useState(false);
   const [id, setID] = useState("");
   const [type, setType] = useState("");
-  const [license, setLicence] = useState(false);
-  const [licenseid, setLicenceId] = useState("");
-  const [licencevalue, setLicencevalue] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [getaccess, setGetaccess] = useState({});
   const [getid, setGetid] = useState([]);
@@ -97,58 +92,7 @@ const Users = () => {
         </div>
       ),
     },
-    {
-      Header: "Status",
-      accessor: "ActiveStatus",
-      Cell: ({ cell }) => (
-        <span
-          style={{
-            color: cell.row.ActiveStatus == 1 ? "green" : "red",
-            fontWeight: "bold",
-          }}
-        >
-          {cell.row.ActiveStatus == 1 ? "Approved" : "Pending"}
-        </span>
-      ),
-    },
-
-    getaccess.Licence_Edit === 1 && {
-      Header: "Licence",
-      accessor: "Licence",
-      Cell: ({ cell }) => (
-        <div
-          style={{
-            backgroundColor: "#E1FFED",
-            border: "none",
-            color: "#33B469",
-            padding: "6px 10px",
-            textAlign: "center",
-            textDecoration: "none",
-            display: "inline-block",
-            fontSize: "13px",
-            cursor: "pointer",
-            borderRadius: "10px",
-            transition: "background-color 0.3s ease",
-          }}
-          onClick={() => {
-            setLicence(true);
-            setLicenceId(cell.row._id);
-          }}
-        >
-          <span style={{ fontWeight: "bold", verticalAlign: "middle" }}>
-            <CirclePlus
-              size={20}
-              style={{
-                marginRight: "5px",
-                verticalAlign: "middle",
-              }}
-            />
-            {cell.value}
-          </span>
-        </div>
-      ),
-    },
-
+ 
     {
       Header: "Create Date",
       accessor: "Create_Date",
@@ -239,31 +183,6 @@ const Users = () => {
         icon: "error",
         title: "Deletion Failed",
         text: "There was an error deleting the user. Please try again.",
-      });
-    }
-  };
-
-  // update Licence
-  const updateLicence = async () => {
-    try {
-      await updateuserLicence({
-        id: licenseid,
-        Licence: licencevalue,
-        parent_Id: user_id,
-      });
-
-      Swal.fire({
-        icon: "success",
-        title: "Licence Updated",
-        text: "The Licence has been updated successfully.",
-      });
-      getAlluserdata();
-      setLicence(false);
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Update Failed",
-        text: "There was an error updating the Licence. Please try again.",
       });
     }
   };
@@ -492,69 +411,6 @@ const Users = () => {
                     data-bs-dismiss="modal"
                     className="btn btn-primary paid-continue-btn"
                     onClick={updateBalance}
-                  >
-                    Submit
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {license && (
-        <div
-          className="modal custom-modal d-block"
-          id="add_vendor"
-          role="dialog"
-        >
-          <div className="modal-dialog modal-dialog-centered modal-md">
-            <div className="modal-content">
-              <div className="modal-header border-0 pb-0">
-                <div className="form-header modal-header-title text-start mb-0">
-                  <h4 className="mb-0">Add Licence</h4>
-                </div>
-                <button
-                  type="button"
-                  className="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                  onClick={() => setLicence(false)}
-                ></button>
-              </div>
-              <div>
-                <div className="modal-body">
-                  <div className="row">
-                    <div className="col-lg-12 col-sm-12">
-                      <div className="input-block mb-3">
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="Enter Licence"
-                          onChange={(e) => {
-                            const value = e.target.value.replace(/\D/g, "");
-                            setLicencevalue(value);
-                          }}
-                          value={licencevalue}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    data-bs-dismiss="modal"
-                    className="btn btn-back cancel-btn me-2"
-                    onClick={() => setLicence(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    data-bs-dismiss="modal"
-                    className="btn btn-primary paid-continue-btn"
-                    onClick={updateLicence}
                   >
                     Submit
                   </button>

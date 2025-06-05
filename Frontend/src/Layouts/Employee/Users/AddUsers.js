@@ -6,7 +6,6 @@ import Form from "../../../Utils/Form/Formik";
 import {
   AddUser,
   adminWalletBalance,
-  TotalcountLicence,
 } from "../../../Services/Admin/Addmin";
 import { getAllClient } from "../../../Services/Superadmin/Superadmin";
 import { getUserFromToken } from "../../../Utils/TokenVerify";
@@ -17,7 +16,7 @@ const AddUsers = () => {
 
   const [dollarPrice, setDollarPrice] = useState(0);
   const [checkdolarprice, setCheckdolarprice] = useState(0);
-  const [checkLicence, setCheckLicence] = useState([]);
+
   const [getid, setGetid] = useState([]);
 
   const Role = TokenData?.Role;
@@ -33,7 +32,7 @@ const AddUsers = () => {
       Balance: "",
       password: "",
       confirmPassword: "",
-      Licence: "",
+     
       limit: "",
       selectedOption: "",
       inputValue: "",
@@ -73,17 +72,7 @@ const AddUsers = () => {
       } else if (values.password !== values.confirmPassword) {
         errors.confirmPassword = "Passwords do not match";
       }
-      if (!values.Licence) {
-        errors.Licence = "Please Enter Licence";
-      } else if (values.Licence > checkLicence) {
-        errors.Licence = "You Don't have Enough Licence";
-      } else if (
-        isNaN(values.Licence) ||
-        values.Licence < 1 ||
-        values.Licence > 12
-      ) {
-        errors.Licence = "Licence should be a number between 1 and 12";
-      }
+    
 
       if (!values.selectedOption) {
         errors.selectedOption = "Please select an option";
@@ -106,15 +95,7 @@ const AddUsers = () => {
     },
 
     onSubmit: async (values, { setSubmitting }) => {
-      if (!values.Licence || values.Licence === "") {
-        Swal.fire({
-          title: "Error",
-          text: "Licence is required",
-          icon: "error",
-          timer: 1000,
-          timerProgressBar: true,
-        });
-      }
+  
 
       const selectedOption = values.selectedOption;
 
@@ -130,7 +111,7 @@ const AddUsers = () => {
         parent_id: getid,
         Role: "USER",
         limit: values.limit,
-        Licence: values.Licence,
+   
         [selectedOption]: values.inputValue,
       };
 
@@ -154,17 +135,7 @@ const AddUsers = () => {
       }
       setSubmitting(false);
 
-      if (parseInt(checkLicence.CountLicence) < parseInt(values.Licence)) {
-        Swal.fire({
-          title: "Alert",
-          text: "Licence is required",
-          icon: "warning",
-          timer: 1000,
-          timerProgressBar: true,
-        });
-        setSubmitting(false);
-        return;
-      }
+    
       setSubmitting(false);
 
       try {
@@ -210,13 +181,7 @@ const AddUsers = () => {
     } catch (error) {}
   };
 
-  const getadminLicence = async () => {
-    const data = { userid: getid };
-    try {
-      const response = await TotalcountLicence(data);
-      setCheckLicence(response.data);
-    } catch (error) {}
-  };
+
 
   const getallclient = async () => {
     try {
@@ -230,7 +195,6 @@ const AddUsers = () => {
 
   useEffect(() => {
     getadminbalance();
-    getadminLicence();
     getallclient();
   }, [getid]);
 
@@ -300,14 +264,7 @@ const AddUsers = () => {
       col_size: 6,
       disable: false,
     },
-    {
-      name: "Licence",
-      label: "Licence(1-12)",
-      type: "text3",
-      label_size: 12,
-      col_size: 6,
-      disable: false,
-    },
+  
     {
       name: "limit",
       label: "Margin(0-100%)",

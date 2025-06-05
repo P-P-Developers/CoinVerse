@@ -201,7 +201,7 @@ const UpdateEmploye = () => {
     },
     {
       name: "open_position",
-      label: "Open Position",
+      label: "Available Position",
       type: "checkbox",
       col_size: 3,
       check_box_true: formik.values.all || formik.values.open_position,

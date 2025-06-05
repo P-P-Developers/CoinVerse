@@ -18,7 +18,7 @@ const AddEmployee = () => {
       username: "",
       email: "",
       phone: "",
-      Licence: 0,
+
       password: "",
       confirmPassword: "",
       parent_id: "",
@@ -51,9 +51,7 @@ const AddEmployee = () => {
       } else if (!/^\d{10}$/.test(values.phone)) {
         errors.phone = "Please enter a valid 10-digit phone number.";
       }
-      // if (!values.Licence) {
-      //   errors.Licence = "Please Enter Licence";
-      // }
+   
       if (!values.password) {
         errors.password = "Please Enter Password";
       }
@@ -71,7 +69,7 @@ const AddEmployee = () => {
         UserName: values.username,
         Email: values.email,
         PhoneNo: values.phone,
-        Licence: 0,
+        
         password: values.password,
         parent_role: Role || "ADMIN",
         parent_id: user_id,
