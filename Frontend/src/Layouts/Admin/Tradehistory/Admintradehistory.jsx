@@ -26,6 +26,8 @@ const Tradehistory = () => {
   }, [Userid, search]);
 
   const columns1 = [
+    { Header: "userName", accessor: "userName" },
+
     { Header: "Symbol", accessor: "symbol" },
     {
       Header: "Entry Price",
@@ -152,13 +154,7 @@ const Tradehistory = () => {
         }
       },
     },
-    {
-      Header: "Create Date",
-      accessor: "createdAt",
-      Cell: ({ cell }) => {
-        return fDateTimesec(cell.value);
-      },
-    },
+    
     {
       Header: "switch",
       accessor: "switch",

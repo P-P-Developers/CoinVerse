@@ -13,21 +13,33 @@ const Tradehistory = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const columns = [
+    { Header: "userName", accessor: "userName" },
+
     { Header: "Symbol", accessor: "symbol" },
-    {
-      Header: "Buy Price",
+      {
+      Header: "Entry Price",
       accessor: "buy_price",
       Cell: ({ cell }) => {
         const buy_price = cell.row.buy_price;
-        return buy_price ? buy_price : "-";
+        const signal_type = cell.row.signal_type;
+        if (signal_type === "buy_sell") {
+          return buy_price ? buy_price.toFixed(3) : "-";
+        } else {
+          return cell.row.sell_price ? cell.row.sell_price.toFixed(3) : "-";
+        }
       },
     },
     {
-      Header: "Sell Price",
+      Header: "Exit Price",
       accessor: "sell_price",
       Cell: ({ cell }) => {
-        const sell_price = cell.row.sell_price;
-        return sell_price ? sell_price.toFixed(4) : "-";
+        const buy_price = cell.row.buy_price;
+        const signal_type = cell.row.signal_type;
+        if (signal_type === "sell_buy") {
+          return buy_price ? buy_price.toFixed(3) : "-";
+        } else {
+          return cell.row.sell_price ? cell.row.sell_price.toFixed(3) : "-";
+        }
       },
     },
     {
@@ -46,7 +58,8 @@ const Tradehistory = () => {
 
           return (
             <span style={{ color }}>
-              <DollarSign /> {formattedProfitLoss}
+              {/* <DollarSign /> */}
+               {formattedProfitLoss}
             </span>
           );
         }
@@ -55,61 +68,76 @@ const Tradehistory = () => {
       },
     },
     {
-      Header: "Buy lot",
+      Header: "Entry lot",
       accessor: "buy_lot",
       Cell: ({ cell }) => {
-        const buy_lot = cell.row.buy_lot;
-        return buy_lot ? buy_lot : "-";
+        const signal_type = cell.row.signal_type;
+        if (signal_type === "buy_sell") {
+          return cell.row.buy_lot ? cell.row.buy_lot : "-";
+        } else {
+          return cell.row.sell_lot ? cell.row.sell_lot : "-";
+        }
       },
     },
     {
-      Header: "Sell lot",
+      Header: "Exit lot",
       accessor: "sell_lot",
       Cell: ({ cell }) => {
-        const sell_lot = cell.row.sell_lot;
-        return sell_lot ? sell_lot : "-";
+        const signal_type = cell.row.signal_type;
+        if (signal_type === "sell_buy") {
+          return cell.row.buy_lot ? cell.row.buy_lot : "-";
+        } else {
+          return cell.row.sell_lot ? cell.row.sell_lot : "-";
+        }
       },
     },
+   {
+      Header: "Signal Type",
+      accessor: "signal_type",
+      Cell: ({ cell }) => {
+        const signal_type = cell.row.signal_type;
 
-    {
-      Header: "Buy qty",
-      accessor: "buy_qty",
-      Cell: ({ cell }) => {
-        const buy_qty = cell.row.buy_qty;
-        return buy_qty ? buy_qty : "-";
+        // return signal_type ? signal_type == "buy_sell" ? "BUY" :"SELL" : "-";
+        return (
+          <>
+            {signal_type === "buy_sell" ? (
+              <span style={{ color: "green" }}> BUY</span>
+            ) : signal_type === "sell_buy" ? (
+              <span style={{ color: "red" }}> SELL</span>
+            ) : (
+              <span style={{ color: "blue" }}> {signal_type}</span>
+            )}
+          </>
+        );
       },
     },
-    {
-      Header: "Sell qty",
-      accessor: "sell_qty",
-      Cell: ({ cell }) => {
-        const sell_qty = cell.row.sell_qty;
-        return sell_qty ? sell_qty : "-";
+   {
+        Header: "Entry Time",
+        accessor: "buy_time",
+        Cell: ({ cell }) => {
+          const signal_type = cell.row.signal_type;
+  
+          if (signal_type === "buy_sell") {
+            return cell.row.buy_time ? fDateTimesec(cell.row.buy_time) : "-";
+          } else {
+            return cell.row.sell_time ? fDateTimesec(cell.row.sell_time) : "-";
+          }
+        },
       },
-    },
-    {
-      Header: "Buy Time",
-      accessor: "buy_time",
-      Cell: ({ cell }) => {
-        const buyTime = cell.row.buy_time;
-        return buyTime ? fDateTime(buyTime) : "-";
+      {
+        Header: "Exit time",
+        accessor: "sell_time",
+        Cell: ({ cell }) => {
+          const signal_type = cell.row.signal_type;
+  
+          if (signal_type === "sell_buy") {
+            return cell.row.buy_time ? fDateTimesec(cell.row.buy_time) : "-";
+          } else {
+            return cell.row.sell_time ? fDateTimesec(cell.row.sell_time) : "-";
+          }
+        },
       },
-    },
-    {
-      Header: "Sell time",
-      accessor: "sell_time",
-      Cell: ({ cell }) => {
-        const sell_time = cell.row.sell_time;
-        return sell_time ? fDateTime(sell_time) : "-";
-      },
-    },
-    {
-      Header: "Create Date",
-      accessor: "createdAt",
-      Cell: ({ cell }) => {
-        return fDateTimesec(cell.value);
-      },
-    },
+  
   ];
 
   const getuserallhistory = async () => {

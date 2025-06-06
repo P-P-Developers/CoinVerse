@@ -94,7 +94,38 @@ const DynamicForm = ({
                             </label>
                           </div>
                         </div>
-                      ) : field.type === "text" ? (
+                      ) : 
+  field.name === "username" && field.type === "text" ? (
+    <div className={`col-lg-${field.col_size}`}>
+      <div className="input-block mb-3 flex-column">
+        <label className={`col-lg-${field.label_size}`}>
+          {field.label}
+          <span className="text-danger">*</span>
+        </label>
+
+        <input
+          type="text"
+          autoComplete="off"
+          className="form-control"
+          placeholder={`Enter ${field.label}`}
+          readOnly={field.disable}
+          id={field.name}
+          name={field.name}
+          value={formik.values[field.name]}
+          onChange={(e) => {
+            // Allow only lowercase a-z and numbers, no spaces
+            const value = e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '');
+            formik.setFieldValue(field.name, value);
+          }}
+        />
+
+        {formik.touched[field.name] && formik.errors[field.name] && (
+          <div style={{ color: "red" }}>{formik.errors[field.name]}</div>
+        )}
+      </div>
+    </div>
+  ) :
+ field.type === "text" ? (
                         <>
                           <div className={` col-lg-${field.col_size}`}>
                             <div className="input-block mb-3 flex-column">

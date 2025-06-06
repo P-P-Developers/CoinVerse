@@ -16,47 +16,136 @@ const Position = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const columns = [
-    { Header: "symbol", accessor: "symbol" },
+    { Header: "userName", accessor: "username" },
+
+    { Header: "Symbol", accessor: "symbol" },
     {
-      Header: "UserName",
-      accessor: "username",
+      Header: "Entry Price",
+      accessor: "buy_price",
       Cell: ({ cell }) => {
-        const username = cell.row.username;
-        return username ? username : "-";
+        const buy_price = cell.row.buy_price;
+        const signal_type = cell.row.signal_type;
+        if (signal_type === "buy_sell") {
+          return buy_price ? buy_price.toFixed(3) : "-";
+        } else {
+          return cell.row.sell_price ? cell.row.sell_price.toFixed(3) : "-";
+        }
       },
     },
     {
-      Header: "Buy qty",
-      accessor: "buy_qty",
+      Header: "Exit Price",
+      accessor: "sell_price",
       Cell: ({ cell }) => {
-        const buy_qty = cell.row.buy_qty;
-        return buy_qty ? buy_qty : "-";
+        const buy_price = cell.row.buy_price;
+        const signal_type = cell.row.signal_type;
+        if (signal_type === "sell_buy") {
+          return buy_price ? buy_price.toFixed(3) : "-";
+        } else {
+          return cell.row.sell_price ? cell.row.sell_price.toFixed(3) : "-";
+        }
       },
     },
     {
-      Header: "Sell qty",
-      accessor: "sell_qty",
+      Header: "P/L",
+      accessor: "P/L",
       Cell: ({ cell }) => {
-        const sell_qty = cell.row.sell_qty;
-        return sell_qty ? sell_qty : "-";
+        const signal_type = cell.row.signal_type;
+        const sellPrice = cell.row.sell_price;
+        const buyPrice = cell.row.buy_price;
+        const buyQty = cell.row.buy_qty;
+
+        if (sellPrice && buyPrice && buyQty) {
+          // if(signal_type === "buy_sell"){
+          const profitLoss = (sellPrice - buyPrice) * buyQty;
+          const formattedProfitLoss = profitLoss.toFixed(4);
+
+          const color = profitLoss > 0 ? "green" : "red";
+
+          return (
+            <span style={{ color }}>
+              {/* <DollarSign /> */}
+              {formattedProfitLoss}
+            </span>
+          );
+        }
+
+        return "-";
       },
     },
     {
-      Header: "Position Avg",
-      accessor: "Position Avg",
+      Header: "Entry lot",
+      accessor: "buy_lot",
       Cell: ({ cell }) => {
-        const { sell_qty, buy_qty } = cell.row;
-        const availablePosition = buy_qty - sell_qty;
-        return <span>{availablePosition}</span>;
+        const signal_type = cell.row.signal_type;
+        if (signal_type === "buy_sell") {
+          return cell.row.buy_lot ? cell.row.buy_lot : "-";
+        } else {
+          return cell.row.sell_lot ? cell.row.sell_lot : "-";
+        }
       },
     },
     {
-      Header: "Create Date",
-      accessor: "createdAt",
+      Header: "Exit lot",
+      accessor: "sell_lot",
       Cell: ({ cell }) => {
-        return fDateTimesec(cell.value);
+        const signal_type = cell.row.signal_type;
+        if (signal_type === "sell_buy") {
+          return cell.row.buy_lot ? cell.row.buy_lot : "-";
+        } else {
+          return cell.row.sell_lot ? cell.row.sell_lot : "-";
+        }
       },
     },
+
+    {
+      Header: "Signal Type",
+      accessor: "signal_type",
+      Cell: ({ cell }) => {
+        const signal_type = cell.row.signal_type;
+
+        // return signal_type ? signal_type == "buy_sell" ? "BUY" :"SELL" : "-";
+        return (
+          <>
+            {signal_type === "buy_sell" ? (
+              <span style={{ color: "green" }}> BUY</span>
+            ) : signal_type === "sell_buy" ? (
+              <span style={{ color: "red" }}> SELL</span>
+            ) : (
+              <span style={{ color: "blue" }}> {signal_type}</span>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Entry Time",
+      accessor: "buy_time",
+      Cell: ({ cell }) => {
+        const signal_type = cell.row.signal_type;
+
+        if (signal_type === "buy_sell") {
+          return cell.row.buy_time ? fDateTimesec(cell.row.buy_time) : "-";
+        } else {
+          return cell.row.sell_time ? fDateTimesec(cell.row.sell_time) : "-";
+        }
+      },
+    },
+    {
+      Header: "Exit time",
+      accessor: "sell_time",
+      Cell: ({ cell }) => {
+        const signal_type = cell.row.signal_type;
+
+        if (signal_type === "sell_buy") {
+          return cell.row.buy_time ? fDateTimesec(cell.row.buy_time) : "-";
+        } else {
+          return cell.row.sell_time ? fDateTimesec(cell.row.sell_time) : "-";
+        }
+      },
+    },
+    
+   
   ];
 
   const getuserallhistory = async () => {
@@ -64,34 +153,8 @@ const Position = () => {
       const data = { userid: user_id, Role: Role };
       const response = await getpositionhistory(data);
 
-      // Filter data based on buy_qty !== sell_qty
-      const filterdata =
-        response.data &&
-        response.data.filter((item) => item.buy_qty !== item.sell_qty);
 
-      let UniqueUsernames = filterdata.map((item) => item.username);
-      UniqueUsernames = [...new Set(UniqueUsernames)]; // Remove duplicates
-
-      // Store original data (unfiltered)
-      setOriginalData(UniqueUsernames);
-
-      // Apply search filter if needed
-      const searchfilter = filterdata?.filter((item) => {
-        const searchInputMatch =
-          search === "" ||
-          (item.symbol &&
-            item.symbol.toLowerCase().includes(search.toLowerCase())) ||
-          (item.username &&
-            item.username.toLowerCase().includes(search.toLowerCase())); // Added username to search filter
-        return searchInputMatch;
-      });
-
-      // Apply filter for selected user
-      const finalFilter = searchfilter?.filter((item) => {
-        return selectedUserName ? item.username === selectedUserName : true; // Filter by selected username
-      });
-
-      setData(finalFilter || filterdata);
+      setData(response.data || []);
     } catch (error) {}
   };
 

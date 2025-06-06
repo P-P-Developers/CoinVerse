@@ -3,9 +3,10 @@ import Table from "../../../Utils/Table/Table";
 import {
   getAdminName,
   getavailableposition,
-  getAdminUserName,
 } from "../../../Services/Superadmin/Superadmin";
 import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
+import socket from "../../../Utils/socketClient";
+import $ from "jquery";
 
 const Position = () => {
   const [data, setData] = useState([]);
@@ -16,7 +17,19 @@ const Position = () => {
   const [selectedUser, setSelectedUser] = useState([]);
   const [selectedUserName, setSelectedUserName] = useState("");
 
-useEffect(() => {
+  useEffect(() => {
+    socket.on("receive_data_forex", (data) => {
+      if (data.data[1] && data.data[5]) {
+        const formattedPrice = Number(data.data[5]).toFixed(3);
+        $(`.exit-price-${data.data[1]}`).text(formattedPrice);
+      }
+    });
+    return () => {
+      socket.off("receive_data_forex");
+    };
+  }, []);
+
+  useEffect(() => {
     getuserallhistory();
   }, [search, selectedAdmin, selectedUserName]);
 
@@ -24,68 +37,123 @@ useEffect(() => {
     GetAdminUserName();
   }, []);
 
-
   const columns = [
-    { Header: "UserName", accessor: "userName" },
+    { Header: "User", accessor: "userName" },
+    { Header: "Symbol", accessor: "symbol" },
+    {
+      Header: "Entry Price",
+      accessor: "buy_price",
+      Cell: ({ cell }) => {
+        const original = cell?.row;
+        if (!original) return <span>-</span>;
+        const { buy_price, sell_price, signal_type } = original;
+        return signal_type === "buy_sell"
+          ? buy_price?.toFixed(3) ?? "-"
+          : sell_price?.toFixed(3) ?? "-";
+      },
+    },
+    {
+      Header: "Exit Price",
+      accessor: "sell_price",
+      Cell: ({ cell }) => {
+        const original = cell?.row;
+        if (!original) return <span>-</span>;
+        const { buy_price, sell_price, signal_type, token } = original;
+        const rowId = token || "unknown";
+        const price = signal_type === "sell_buy"
+          ? buy_price?.toFixed(3) ?? "-"
+          : sell_price?.toFixed(3) ?? "-";
+        return <span className={`exit-price-${rowId}`}>{price}</span>;
+      },
+    },
+    {
+      Header: "P/L",
+      accessor: "pl",
+      Cell: ({ cell }) => {
+        const original = cell?.row;
 
-    { Header: "symbol", accessor: "symbol" },
-    {
-      Header: "Buy qty",
-      accessor: "buy_qty",
-      Cell: ({ cell }) => {
-        const buy_qty = cell.row.buy_qty;
-        return buy_qty ? buy_qty : "-";
+        if (!original) return <span>-</span>;
+        const { buy_price,sell_price, buy_qty, token ,signal_type} = original;
+
+      const price = signal_type === "buy_sell"
+          ? buy_price?.toFixed(3) ?? "-"
+          : sell_price?.toFixed(3) ?? "-";
+
+        const getLivePrice = $(`.exit-price-${token}`).text();
+
+        if (!getLivePrice) return <span>-</span>;
+
+        const profitLoss = (parseFloat(getLivePrice) - price) * buy_qty;
+        const formatted = profitLoss.toFixed(4);
+        const color = profitLoss > 0 ? "green" : "red";
+        return <span style={{ color }}>{formatted}</span>;
       },
     },
     {
-      Header: "Sell qty",
-      accessor: "sell_qty",
+      Header: "Entry Lot",
+      accessor: "buy_lot",
       Cell: ({ cell }) => {
-        const sell_qty = cell.row.sell_qty;
-        return sell_qty ? sell_qty : "-";
+        const original = cell?.row;
+        if (!original) return <span>-</span>;
+        const { buy_lot, sell_lot, signal_type } = original;
+        return signal_type === "buy_sell" ? buy_lot || "-" : sell_lot || "-";
       },
     },
     {
-      Header: "Position Avg",
-      accessor: "Position Avg",
+      Header: "Exit Lot",
+      accessor: "sell_lot",
       Cell: ({ cell }) => {
-        const { sell_qty, buy_qty } = cell.row;
-        const availablePosition = buy_qty - sell_qty;
-        return <span>{availablePosition}</span>;
+        const original = cell?.row;
+        if (!original) return <span>-</span>;
+        const { buy_lot, sell_lot, signal_type } = original;
+        return signal_type === "sell_buy" ? buy_lot || "-" : sell_lot || "-";
       },
     },
-      {
-          Header: "Create Date",
-          accessor: "createdAt",
-          Cell: ({ cell }) => {
-            return fDateTimesec(cell.value);
-          },
-        },
+    {
+      Header: "Signal Type",
+      accessor: "signal_type",
+      Cell: ({ cell }) => {
+        const signal = cell?.row?.signal_type;
+        if (!signal) return <span>-</span>;
+        return (
+          <span style={{ color: signal === "buy_sell" ? "green" : signal === "sell_buy" ? "red" : "blue" }}>
+            {signal === "buy_sell" ? "BUY" : signal === "sell_buy" ? "SELL" : signal}
+          </span>
+        );
+      },
+    },
+    {
+      Header: "Entry Time",
+      accessor: "buy_time",
+      Cell: ({ cell }) => {
+        const { buy_time, sell_time, signal_type } = cell?.row || {};
+        return signal_type === "buy_sell"
+          ? buy_time ? fDateTimesec(buy_time):"-" || "-"
+          : sell_time ? fDateTimesec(sell_time):"-" || "-";
+      },
+    },
+    {
+      Header: "Exit Time",
+      accessor: "sell_time",
+      Cell: ({ cell }) => {
+        const { buy_time, sell_time, signal_type } = cell?.row || {};
+        return signal_type === "sell_buy"
+          ? buy_time ? fDateTimesec(buy_time): "-" || "-"
+          : sell_time ? fDateTimesec(sell_time) :"-" || "-";
+      },
+    },
   ];
 
-  // getting data
   const getuserallhistory = async () => {
     try {
       const response = await getavailableposition({ adminid: selectedAdmin });
-
       const userNames = response.data.map((item) => item.userName);
-
       setSelectedUser([...new Set(userNames)]);
 
       const searchfilter = response.data?.filter((item) => {
-        const searchInputMatch =
-          search === "" ||
-          (item.symbol &&
-            item.symbol.toLowerCase().includes(search.toLowerCase()));
-
-        const selectedUserNameMatch =
-          selectedUserName === "" ||
-          (item.userName &&
-            item.userName
-              .toLowerCase()
-              .includes(selectedUserName.toLowerCase()));
-
-        return selectedUserNameMatch && searchInputMatch;
+        const matchesSearch = search === "" || (item.symbol?.toLowerCase().includes(search.toLowerCase()));
+        const matchesUser = selectedUserName === "" || (item.userName?.toLowerCase().includes(selectedUserName.toLowerCase()));
+        return matchesSearch && matchesUser;
       });
 
       setData(search || selectedAdmin ? searchfilter : response.data);
@@ -96,119 +164,82 @@ useEffect(() => {
     try {
       const res = await getAdminName();
       setAdminNames(res.data);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
-  
-
   return (
-    <>
-      <div>
-        <div className="container-fluid">
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="card transaction-table">
-                <div className="card-header border-0 flex-wrap pb-0">
-                  <div className="mb-4">
-                    <h4 className="card-title">📈 Open Positions </h4>
-                  </div>
-                </div>
-                <div className="card-body p-0">
-                  <div className="tab-content" id="myTabContent1">
-                    <div
-                      className="tab-pane fade show active"
-                      id="Week"
-                      role="tabpanel"
-                      aria-labelledby="Week-tab"
-                    >
-                      <div className="d-flex flex-wrap gap-3 p-3 rounded shadow-sm ">
-                        {/* Search Input */}
-                        <div>
-                          <label className="form-label mb-1">🔍 Search</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Type to search..."
-                            style={{ width: "220px" }}
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                          />
-                        </div>
-
-                        {/* Admin Dropdown */}
-                        <div>
-                          <label className="form-label mb-1">🛡️ Admins</label>
-                          <select
-                            className="form-select"
-                            style={{ width: "220px" }}
-                            value={selectedAdmin}
-                            onChange={(e) => setSelectedAdmin(e.target.value)}
-                          >
-                            <option value="">Select Admin</option>
-                            {adminNames.map((item, index) => (
-                              <option key={index} value={item._id}>
-                                {item.UserName}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-
-                        {/* User Dropdown */}
-                        <div>
-                          <label className="form-label mb-1">👤 Users</label>
-                          <select
-                            className="form-select"
-                            style={{ width: "220px" }}
-                            value={selectedUserName}
-                            onChange={(e) =>
-                              setSelectedUserName(e.target.value)
-                            }
-                          >
-                            <option value="">Select User</option>
-                            {selectedUser.map((item, index) => (
-                              <option key={index} value={item}>
-                                {item}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-
-                        <div>
-                          {" "}
-                          <Table
-                            columns={columns}
-                            data={data && data}
-                            rowsPerPage={rowsPerPage}
-                          />
-                          <div
-                            className="d-flex align-items-center"
-                            style={{
-                              marginBottom: "20px",
-                              marginLeft: "20px",
-                              marginTop: "-48px",
-                            }}
-                          >
-                            Rows per page:{" "}
-                            <select
-                              className="form-select ml-2"
-                              value={rowsPerPage}
-                              onChange={(e) =>
-                                setRowsPerPage(Number(e.target.value))
-                              }
-                              style={{ width: "auto", marginLeft: "10px" }}
-                            >
-                              <option value={5}>5</option>
-                              <option value={10}>10</option>
-                              <option value={20}>20</option>
-                              <option value={50}>50</option>
-                              <option value={100}>100</option>
-                            </select>
-                          </div>
-                        </div>
-                     
+    <div className="container-fluid">
+      <div className="row">
+        <div className="col-lg-12">
+          <div className="card transaction-table">
+            <div className="card-header border-0 flex-wrap pb-0">
+              <h4 className="card-title">📈 Open Positions</h4>
+            </div>
+            <div className="card-body p-0">
+              <div className="tab-content">
+                <div className="tab-pane fade show active">
+                  <div className="d-flex flex-wrap gap-3 p-3 rounded shadow-sm">
+                    <div>
+                      <label className="form-label mb-1">🔍 Search</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Type to search..."
+                        style={{ width: "220px" }}
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                      />
                     </div>
+                    <div>
+                      <label className="form-label mb-1">🛡️ Admins</label>
+                      <select
+                        className="form-select"
+                        style={{ width: "220px" }}
+                        value={selectedAdmin}
+                        onChange={(e) => setSelectedAdmin(e.target.value)}
+                      >
+                        <option value="">Select Admin</option>
+                        {adminNames.map((item, index) => (
+                          <option key={index} value={item._id}>
+                            {item.UserName}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="form-label mb-1">👤 Users</label>
+                      <select
+                        className="form-select"
+                        style={{ width: "220px" }}
+                        value={selectedUserName}
+                        onChange={(e) => setSelectedUserName(e.target.value)}
+                      >
+                        <option value="">Select User</option>
+                        {selectedUser.map((item, index) => (
+                          <option key={index} value={item}>
+                            {item}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <Table columns={columns} data={data} rowsPerPage={rowsPerPage} />
+
+                  <div className="d-flex align-items-center" style={{ margin: "20px" }}>
+                    Rows per page:
+                    <select
+                      className="form-select ml-2"
+                      value={rowsPerPage}
+                      onChange={(e) => setRowsPerPage(Number(e.target.value))}
+                      style={{ width: "auto", marginLeft: "10px" }}
+                    >
+                      <option value={5}>5</option>
+                      <option value={10}>10</option>
+                      <option value={20}>20</option>
+                      <option value={50}>50</option>
+                      <option value={100}>100</option>
+                    </select>
                   </div>
                 </div>
               </div>
@@ -216,7 +247,7 @@ useEffect(() => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
