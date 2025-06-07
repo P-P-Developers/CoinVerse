@@ -737,49 +737,87 @@ class Superadmin {
     try {
       const { adminid } = req.body;
 
-      let result = await mainorder_model
-        .find({
-          adminid: adminid,
-          $expr: { $ne: ["$buy_lot", "$sell_lot"] },
-        })
-        .sort({ createdAt: -1 });
+
+      const pipeline = [
+        {
+          $match: {
+            adminid: adminid ? adminid : { $exists: true },
+            $expr: { $ne: ["$buy_lot", "$sell_lot"] },
+          },
+        },
+        {
+          $addFields: {
+            useridObjectId: { $toObjectId: "$userid" },
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "useridObjectId",
+            foreignField: "_id",
+            as: "user",
+          },
+        },
+
+        { $unwind: "$user" },
+        {
+          $project: {
+            symbol: 1,
+            signal_type: 1,
+            buy_lot: 1,
+            sell_lot: 1,
+            buy_price: 1,
+            sell_price: 1,
+            buy_qty: 1,
+            sell_qty: 1,
+            createdAt: 1,
+            adminid: 1,
+            userid: 1,
+            userName: "$user.UserName",
+            Target_price:1,
+            stoploss_price:1,
+            Sl_price_percentage:1,
+
+          },
+        },
+        {
+          $group: {
+            _id: {
+              symbol: "$symbol",
+              signal_type: "$signal_type",
+            },
+            records: { $push: "$$ROOT" },
+            count: { $sum: 1 },
+
+            avg_buy_price: { $avg: "$buy_price" },
+            avg_sell_price: { $avg: "$sell_price" },
+            avg_buy_lot: { $avg: "$buy_lot" },
+            avg_sell_lot: { $avg: "$sell_lot" },
+            avg_buy_qty: { $avg: "$buy_qty" },
+            avg_sell_qty: { $avg: "$sell_qty" },
+     
+          },
+        },
+        {
+          $sort: {
+            "_id.symbol": 1,
+            "_id.signal_type": 1,
+          },
+        },
+      ];
+
+      const result = await mainorder_model.aggregate(pipeline);
+      
+      const UserName = await User_model.find({ parent_id: adminid }, { UserName: 1 });
+
 
       if (!result || result.length === 0) {
         return res.json({ status: false, message: "Data not found", data: [] });
       }
 
-      const adminIds = result.map((item) => item.adminid);
-      const userIds = result.map((item) => item.userid);
-
-      const adminUsers = await User_model.find({ _id: { $in: adminIds } });
-      const users = await User_model.find({ _id: { $in: userIds } });
-
-      // Create a mapping of adminid to username
-      const adminUsernameMap = adminUsers.reduce((acc, user) => {
-        acc[user._id] = user.UserName; // Assuming 'UserName' is the key for usernames
-        return acc;
-      }, {});
-
-      // Create a mapping of userid to username
-      const userUsernameMap = users.reduce((acc, user) => {
-        acc[user._id] = user.UserName; // Assuming 'UserName' is the key for usernames
-        return acc;
-      }, {});
-
-      // Add the adminName and userName to each result based on adminid and userid
-      result = result.map((item) => {
-        return {
-          ...item.toObject(),
-          adminName: adminUsernameMap[item.adminid] || "Unknown", // Default to "Unknown" if not found
-          userName: userUsernameMap[item.userid] || "Unknown", // Default to "Unknown" if not found
-        };
-      });
-      result = result.filter(
-        (item) => item.adminName !== "Unknown" && item.userName !== "Unknown"
-      );
-
-      return res.json({ status: true, message: "Data found", data: result });
+      return res.json({ status: true, message: "Data found", data: result,User:UserName });
     } catch (error) {
+      console.log("Error at getPosition_detail", error);
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
@@ -1016,8 +1054,6 @@ class Superadmin {
         message: "Company settings found",
         data: company,
       });
-
-      
     } catch (error) {
       console.error("Error at getCompany", error);
       return res.json({

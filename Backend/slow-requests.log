@@ -4,3 +4,11 @@
 2025-06-05T07:10:07.971Z [warn]: SLOW API: [POST] /superadmin/getAdminDetail - 297ms
 2025-06-05T09:01:33.642Z [warn]: SLOW API: [POST] /broadcastmessage - 366ms
 2025-06-06T05:07:29.155Z [warn]: SLOW API: [POST] /getPosition_detail - 807ms
+2025-06-06T07:10:17.555Z [warn]: SLOW API: [POST] /getPosition_detail - 37531ms
+2025-06-06T11:33:30.172Z [warn]: SLOW API: [GET] /getCompany - 350ms
+2025-06-06T11:33:30.259Z [warn]: SLOW API: [GET] /getAdminName - 317ms
+2025-06-06T11:33:30.352Z [warn]: SLOW API: [POST] /getPosition_detail - 405ms
+2025-06-06T11:33:30.429Z [warn]: SLOW API: [POST] /getbroadcastmessageforuser - 499ms
+2025-06-07T04:42:49.685Z [warn]: SLOW API: [POST] /admin/getuserpaymentstatus - 1559ms
+2025-06-07T04:43:15.216Z [warn]: SLOW API: [POST] /admin/getuserpaymentstatus - 820ms
+2025-06-07T04:43:24.438Z [warn]: SLOW API: [POST] /admin/getuserpaymentstatus - 604ms

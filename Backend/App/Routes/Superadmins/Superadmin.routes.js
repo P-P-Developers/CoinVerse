@@ -30,6 +30,8 @@ const {
 
 const {
   GetAdminUserName,
+  AddCondition,
+  GetConditions
 } = require("../../Controllers/Superadmin/Comman/commanapis");
 
 const auth = require("../../Middlewares/authMiddleware"); // adjust path
@@ -61,5 +63,8 @@ router.post("/getAdminUserName", GetAdminUserName);
 router.post("/GetAdminBalanceWithPosition", GetAdminBalanceWithPosition);
 
 router.post("/getAdminLogs", getAdminLogs);
+
+router.post("/AddCondition", AddCondition);
+router.get("/GetConditions", GetConditions);
 
 module.exports = router;

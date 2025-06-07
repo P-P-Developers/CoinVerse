@@ -1,34 +1,54 @@
 const mongoose = require('mongoose');
 
-const TradeLogsActivitySchema = new mongoose.Schema({
-    user_Id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "USER"
-    },
-    admin_Id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "USER",
-        default: null
-    },
-    UserName: {
-        type: String,
-        default: null
-    },
-    login_status:{
-         type: String,
-         default: null
-    },
-   
-  
-
-    createdAt: {
+const ConditionSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  symbol: {
+    type: String,
+    required: true // e.g., "BTCUSDT"
+  },
+  initialPrice: {
+    type: Number,
+    required: true // e.g., 100000
+  },
+  dropThreshold: {
+    type: Number,
+    required: true, // e.g., 1000 (drop amount)
+    default: 1000
+  },
+  timeWindow: {
+    type: Number,
+    required: true, // in seconds
+    default: 60 // 1 minute
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  isActive: {
+    type: Boolean,
+    default: true
+  },
+  triggered: {
+    type: Boolean,
+    default: false
+  },
+  triggeredAt: {
+    type: Date,
+    default: null
+  },
+  logs: [
+    {
+      price: Number,
+      time: {
         type: Date,
         default: Date.now
+      }
     }
-}, {
-    
-    _id: true,
+  ]
 });
 
-const trade_logs = mongoose.model('trade_logs', TradeLogsActivitySchema);
-module.exports = trade_logs;
+module.exports = mongoose.model('Condition', ConditionSchema);

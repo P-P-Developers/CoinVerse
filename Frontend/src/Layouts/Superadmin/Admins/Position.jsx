@@ -1,162 +1,42 @@
 import React, { useEffect, useState } from "react";
-import Table from "../../../Utils/Table/Table";
 import {
   getAdminName,
   getavailableposition,
 } from "../../../Services/Superadmin/Superadmin";
+import AggregatedPosition from "./AggregatedPosition";
+import {
+  AddCondition,
+  GetConditions,
+} from "../../../Services/Superadmin/Superadmin";
 import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
-import socket from "../../../Utils/socketClient";
-import $ from "jquery";
+
+import Dropdown from "react-bootstrap/Dropdown";
 
 const Position = () => {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [adminNames, setAdminNames] = useState([]);
   const [selectedAdmin, setSelectedAdmin] = useState("");
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [selectedUser, setSelectedUser] = useState([]);
-  const [selectedUserName, setSelectedUserName] = useState("");
 
-  useEffect(() => {
-    socket.on("receive_data_forex", (data) => {
-      if (data.data[1] && data.data[5]) {
-        const formattedPrice = Number(data.data[5]).toFixed(3);
-        $(`.exit-price-${data.data[1]}`).text(formattedPrice);
-      }
-    });
-    return () => {
-      socket.off("receive_data_forex");
-    };
-  }, []);
+  // Modal states
+  const [showModal, setShowModal] = useState(false);
+  const [logsData, setLogsData] = useState([]);
 
   useEffect(() => {
     getuserallhistory();
-  }, [search, selectedAdmin, selectedUserName]);
+  }, [search, selectedAdmin]);
 
   useEffect(() => {
     GetAdminUserName();
   }, []);
 
-  const columns = [
-    { Header: "User", accessor: "userName" },
-    { Header: "Symbol", accessor: "symbol" },
-    {
-      Header: "Entry Price",
-      accessor: "buy_price",
-      Cell: ({ cell }) => {
-        const original = cell?.row;
-        if (!original) return <span>-</span>;
-        const { buy_price, sell_price, signal_type } = original;
-        return signal_type === "buy_sell"
-          ? buy_price?.toFixed(3) ?? "-"
-          : sell_price?.toFixed(3) ?? "-";
-      },
-    },
-    {
-      Header: "Exit Price",
-      accessor: "sell_price",
-      Cell: ({ cell }) => {
-        const original = cell?.row;
-        if (!original) return <span>-</span>;
-        const { buy_price, sell_price, signal_type, token } = original;
-        const rowId = token || "unknown";
-        const price = signal_type === "sell_buy"
-          ? buy_price?.toFixed(3) ?? "-"
-          : sell_price?.toFixed(3) ?? "-";
-        return <span className={`exit-price-${rowId}`}>{price}</span>;
-      },
-    },
-    {
-      Header: "P/L",
-      accessor: "pl",
-      Cell: ({ cell }) => {
-        const original = cell?.row;
-
-        if (!original) return <span>-</span>;
-        const { buy_price,sell_price, buy_qty, token ,signal_type} = original;
-
-      const price = signal_type === "buy_sell"
-          ? buy_price?.toFixed(3) ?? "-"
-          : sell_price?.toFixed(3) ?? "-";
-
-        const getLivePrice = $(`.exit-price-${token}`).text();
-
-        if (!getLivePrice) return <span>-</span>;
-
-        const profitLoss = (parseFloat(getLivePrice) - price) * buy_qty;
-        const formatted = profitLoss.toFixed(4);
-        const color = profitLoss > 0 ? "green" : "red";
-        return <span style={{ color }}>{formatted}</span>;
-      },
-    },
-    {
-      Header: "Entry Lot",
-      accessor: "buy_lot",
-      Cell: ({ cell }) => {
-        const original = cell?.row;
-        if (!original) return <span>-</span>;
-        const { buy_lot, sell_lot, signal_type } = original;
-        return signal_type === "buy_sell" ? buy_lot || "-" : sell_lot || "-";
-      },
-    },
-    {
-      Header: "Exit Lot",
-      accessor: "sell_lot",
-      Cell: ({ cell }) => {
-        const original = cell?.row;
-        if (!original) return <span>-</span>;
-        const { buy_lot, sell_lot, signal_type } = original;
-        return signal_type === "sell_buy" ? buy_lot || "-" : sell_lot || "-";
-      },
-    },
-    {
-      Header: "Signal Type",
-      accessor: "signal_type",
-      Cell: ({ cell }) => {
-        const signal = cell?.row?.signal_type;
-        if (!signal) return <span>-</span>;
-        return (
-          <span style={{ color: signal === "buy_sell" ? "green" : signal === "sell_buy" ? "red" : "blue" }}>
-            {signal === "buy_sell" ? "BUY" : signal === "sell_buy" ? "SELL" : signal}
-          </span>
-        );
-      },
-    },
-    {
-      Header: "Entry Time",
-      accessor: "buy_time",
-      Cell: ({ cell }) => {
-        const { buy_time, sell_time, signal_type } = cell?.row || {};
-        return signal_type === "buy_sell"
-          ? buy_time ? fDateTimesec(buy_time):"-" || "-"
-          : sell_time ? fDateTimesec(sell_time):"-" || "-";
-      },
-    },
-    {
-      Header: "Exit Time",
-      accessor: "sell_time",
-      Cell: ({ cell }) => {
-        const { buy_time, sell_time, signal_type } = cell?.row || {};
-        return signal_type === "sell_buy"
-          ? buy_time ? fDateTimesec(buy_time): "-" || "-"
-          : sell_time ? fDateTimesec(sell_time) :"-" || "-";
-      },
-    },
-  ];
-
   const getuserallhistory = async () => {
     try {
       const response = await getavailableposition({ adminid: selectedAdmin });
-      const userNames = response.data.map((item) => item.userName);
-      setSelectedUser([...new Set(userNames)]);
+      setData(response.data);
 
-      const searchfilter = response.data?.filter((item) => {
-        const matchesSearch = search === "" || (item.symbol?.toLowerCase().includes(search.toLowerCase()));
-        const matchesUser = selectedUserName === "" || (item.userName?.toLowerCase().includes(selectedUserName.toLowerCase()));
-        return matchesSearch && matchesUser;
-      });
-
-      setData(search || selectedAdmin ? searchfilter : response.data);
+      const responseData = await GetConditions();
+      setLogsData(responseData.data);
     } catch (error) {}
   };
 
@@ -167,13 +47,23 @@ const Position = () => {
     } catch (error) {}
   };
 
+  // Dummy log data
+  const openLogsModal = () => {
+    setShowModal(true);
+  };
+
+  const closeLogsModal = () => setShowModal(false);
+
   return (
     <div className="container-fluid">
       <div className="row">
         <div className="col-lg-12">
           <div className="card transaction-table">
-            <div className="card-header border-0 flex-wrap pb-0">
+            <div className="card-header border-0 flex-wrap pb-0 d-flex justify-content-between align-items-center">
               <h4 className="card-title">📈 Open Positions</h4>
+              <button className="btn btn-dark" onClick={openLogsModal}>
+                📋 Show Logs
+              </button>
             </div>
             <div className="card-body p-0">
               <div className="tab-content">
@@ -206,47 +96,93 @@ const Position = () => {
                         ))}
                       </select>
                     </div>
-                    <div>
-                      <label className="form-label mb-1">👤 Users</label>
-                      <select
-                        className="form-select"
-                        style={{ width: "220px" }}
-                        value={selectedUserName}
-                        onChange={(e) => setSelectedUserName(e.target.value)}
-                      >
-                        <option value="">Select User</option>
-                        {selectedUser.map((item, index) => (
-                          <option key={index} value={item}>
-                            {item}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
                   </div>
 
-                  <Table columns={columns} data={data} rowsPerPage={rowsPerPage} />
-
-                  <div className="d-flex align-items-center" style={{ margin: "20px" }}>
-                    Rows per page:
-                    <select
-                      className="form-select ml-2"
-                      value={rowsPerPage}
-                      onChange={(e) => setRowsPerPage(Number(e.target.value))}
-                      style={{ width: "auto", marginLeft: "10px" }}
-                    >
-                      <option value={5}>5</option>
-                      <option value={10}>10</option>
-                      <option value={20}>20</option>
-                      <option value={50}>50</option>
-                      <option value={100}>100</option>
-                    </select>
-                  </div>
+                  <AggregatedPosition groupedData={data} />
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Logs Modal */}
+   {showModal && (
+  <div
+    className="modal fade show d-block"
+    tabIndex="-1"
+    style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+  >
+    <div className="modal-dialog modal-xl modal-dialog-centered">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h5 className="modal-title">📋 Logs</h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={closeLogsModal}
+          ></button>
+        </div>
+        <div className="modal-body">
+          <table className="table table-bordered">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>symbol</th>
+                <th>initialPrice</th>
+                <th>dropThreshold</th>
+                <th>timeWindow</th>
+                <th>isActive</th>
+                <th>triggered</th>
+                <th>createdAt</th>
+                <th>Logs</th>
+              </tr>
+            </thead>
+            <tbody>
+              {logsData.map((log, i) => (
+                <tr key={log.id}>
+                  <td>{i + 1}</td>
+                  <td>{log.symbol}</td>
+                  <td>{log.initialPrice}</td>
+                  <td>{log.dropThreshold}</td>
+                  <td>{log.timeWindow}</td>
+                  <td>{log.isActive ? "On" : "Off"}</td>
+                  <td>{log.triggered ? "On" : "Off"}</td>
+                  <td>{log.createdAt ? fDateTimesec(log.createdAt) : "-"}</td>
+                  <td>
+                    <Dropdown>
+                      <Dropdown.Toggle variant="outline-primary" size="sm">
+                        View Logs ({log.logs.length})
+                      </Dropdown.Toggle>
+                      <Dropdown.Menu
+                        style={{ maxHeight: "500px", overflowY: "auto" }}
+                      >
+                        {log.logs.map((data) => (
+                          <Dropdown.Item key={data._id}>
+                            <p className="mb-0">💵 Price: {data.price}</p>
+                            <small className="text-muted">
+                              🕒 {fDateTimesec(data.time)}
+                            </small>
+                          </Dropdown.Item>
+                        ))}
+                      </Dropdown.Menu>
+                    </Dropdown>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="modal-footer">
+          <button className="btn btn-secondary" onClick={closeLogsModal}>
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

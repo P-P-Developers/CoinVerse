@@ -1,0 +1,65 @@
+/* Card animation on load */
+.animated-card {
+  animation: fadeInUp 0.5s ease;
+  border-radius: 0.75rem;
+}
+
+/* Header hover + spacing */
+.custom-header {
+  /* background-color: #f8f9fa; */
+  transition: all 0.3s ease;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+/* Header text scaling on hover */
+.custom-header:hover .header-symbol {
+  transform: scale(1.02);
+  transition: transform 0.2s ease;
+}
+
+/* Buttons */
+.animate-btn {
+  transition: transform 0.2s ease;
+  font-weight: 500;
+}
+
+.animate-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Font size for better visibility */
+.header-symbol {
+  font-size: 1.5rem;
+}
+
+.averages-text {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #555;
+}
+
+/* Entry animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.averages-text {
+  font-size: 1.1rem;
+  font-weight: 500;
+  line-height: 1.7;
+}
+
+.averages-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 1.05rem;
+}

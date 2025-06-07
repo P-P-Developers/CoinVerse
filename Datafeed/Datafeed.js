@@ -8,20 +8,19 @@ const socketIo = require("socket.io");
 const WebSocket = require("ws");
 const { MongoClient } = require("mongodb");
 
+
 // Constants
-// const API_KEY = process.env.TIINGO_API_KEY || "e533600bac1b5195c93e19a99b72720043ba3d79";
-// const API_KEY = "f63ec5fbc480c499640b7c880982fb65213326a9";
-const API_KEY = "6c89bf7d4e3c6d0e1eff47ad7c8f8b5781ee990b";
+// const API_KEY = process.env.API_TOKEN;
+const API_KEY = "6c89bf7d4e3c6d0e1eff47ad7c8f8b5781ee990b"; // Replace with your actual API key
 
-
-const PORT = process.env.PORT || 5008;
-const databaseURLs =
-"mongodb://testing:MWQ5RP%26k5T567Gy%26Maa@185.209.75.198:27017/"
+const PORT = process.env.PORT || 9000;
+const databaseURLs = process.env.MONGO_URL;
 
 // MongoDB Variables
 let client;
 let db;
 let collection;
+let conditions;
 
 // Initialize MongoDB Connection
 const initializeDatabase = async () => {
@@ -30,10 +29,95 @@ const initializeDatabase = async () => {
     await client.connect();
     db = client.db();
     collection = db.collection("live_prices");
-    console.log("MongoDB connected successfully.");
+    conditions = db.collection("conditions");
+ 
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
     process.exit(1); // Exit the process if the database connection fails
+  }
+};
+const simulatePriceMovement = async (formattedData, type, typ) => {
+  const activeConditions = await conditions
+    .find({
+      symbol: { $regex: new RegExp(formattedData[1], "i") }, // "i" = case-insensitive
+      isActive: true,
+    })
+    .toArray();
+
+  if (activeConditions.length === 0) {
+    io.emit("receive_data_forex", { data: formattedData, type });
+    if (typ == 1) {
+      await updateDatabaseCrypto(formattedData);
+    } else {
+      await updateDatabaseCrypto(formattedData);
+    }
+    return;
+  }
+  const now = new Date();
+
+  for (const condition of activeConditions) {
+    let UpdatedPrice =
+      condition.logs.length == 0
+        ? condition.initialPrice
+        : condition.logs[condition.logs.length - 1].price;
+
+    const dropAmount = Math.abs(condition.dropThreshold * 0.1); // 10% of threshold
+    let simulatedDrop;
+
+    if (condition.logs.length < 12)
+      simulatedDrop =
+        condition.dropThreshold > 0
+          ? UpdatedPrice + dropAmount
+          : UpdatedPrice - dropAmount;
+    else {
+      simulatedDrop =
+        condition.dropThreshold > 0
+          ? UpdatedPrice - dropAmount
+          : UpdatedPrice + dropAmount;
+    }
+
+    // Step 1: Push log entries and set `triggered: true`
+    await conditions.updateOne(
+      { _id: condition._id },
+      {
+        $set: {
+          triggered: true,
+        },
+        $push: {
+          logs: {
+            $each: [{ price: simulatedDrop, time: new Date() }],
+          },
+        },
+      }
+    );
+
+    formattedData[4] = simulatedDrop;
+    formattedData[5] = simulatedDrop;
+
+    io.emit("receive_data_forex", { data: formattedData, type });
+    if (typ == 1) {
+      await updateDatabaseCrypto(formattedData);
+    } else {
+      await updateDatabaseCrypto(formattedData);
+    }
+
+    // Step 2: Get updated document to check logs count
+    const updatedCondition = await conditions.findOne({ _id: condition._id });
+
+    if (updatedCondition.logs.length >= 22) {
+      // Step 3: Auto-close condition
+      await conditions.updateOne(
+        { _id: condition._id },
+        {
+          $set: {
+            isActive: false,
+            triggered: false,
+          },
+        }
+      );
+    }
+
+   
   }
 };
 
@@ -41,25 +125,12 @@ const initializeDatabase = async () => {
 const formatNumber = (num) => {
   if (typeof num !== "number" || isNaN(num)) return num;
 
-  const parts = num.toString().split(".");
-  const integerLength = parts[0].length;
-
-  const precisionMap = {
-    1: 5,
-    2: 3,
-    3: 3,
-    4: 3,
-    default: 2,
-  };
-
-  return parseFloat(
-    num.toFixed(precisionMap[integerLength] || precisionMap.default)
-  );
+  return num < 50 ? parseFloat(num.toFixed(5)) : parseFloat(num.toFixed(2));
 };
 
 const formatPrices = (data) => {
   if (Array.isArray(data)) {
-    return data.map((item) => {
+    data.map((item) => {
       item[4] = formatNumber(item[4]);
       item[5] = formatNumber(item[5]);
       item[6] = formatNumber(item[6]);
@@ -67,6 +138,16 @@ const formatPrices = (data) => {
       return item;
     });
   }
+  if (data[4] != null && data[4] !== 0) {
+    data[4] = formatNumber(data[4]);
+  }
+  if (data[5] != null && data[5] !== 0) {
+    data[5] = formatNumber(data[5]);
+  }
+  if (data[6] != null && data[6] !== 0) {
+    data[6] = formatNumber(data[6]);
+  }
+
   return data;
 };
 
@@ -78,7 +159,7 @@ const updateDatabaseCrypto = async (data) => {
         .getMinutes()
         .toString()
         .padStart(2, "0")}`;
-        
+
       await collection.updateOne(
         { ticker: data[1] },
         {
@@ -97,11 +178,8 @@ const updateDatabaseCrypto = async (data) => {
         { upsert: true }
       );
     }
-  } catch (error) {
-    console.error("Error updating database:", error);
-  }
+  } catch (error) {}
 };
-
 
 const updateDatabaseforex = async (data) => {
   try {
@@ -128,9 +206,7 @@ const updateDatabaseforex = async (data) => {
         { upsert: true }
       );
     }
-  } catch (error) {
-    console.error("Error updating database:", error);
-  }
+  } catch (error) {}
 };
 
 // Initialize WebSocket Connections
@@ -156,15 +232,27 @@ const initializeWebSocket = (url, tickers, type) => {
         if (response.service == "crypto_data") {
           if (response.data[5]) {
             const formattedData = formatPrices(response.data);
+            // console.log("crypto_data 5:", formattedData);
+            let getConditionsData = await simulatePriceMovement(
+              formattedData,
+              type,
+              1
+            );
 
-            io.emit("receive_data_forex", { data: formattedData, type });
-            await updateDatabaseCrypto(formattedData);
+            // io.emit("receive_data_forex", { data: formattedData, type });
+            // await updateDatabaseCrypto(formattedData);
           }
         } else if (response.service == "fx") {
           if (response.data[4]) {
             const formattedData = formatPrices(response.data);
-            io.emit("receive_data_forex", { data: formattedData, type });
-            await updateDatabaseforex(formattedData);
+            let getConditionsData = await simulatePriceMovement(
+              formattedData,
+              type,
+              2
+            );
+
+            // io.emit("receive_data_forex", { data: formattedData, type });
+            // await updateDatabaseforex(formattedData);
           }
         }
       }
@@ -203,7 +291,7 @@ const startSockets = () => {
       "eurnzd",
       "audcad",
       "gbpchf",
-      "xauusd"
+      "xauusd",
     ],
     "forex"
   );
@@ -223,8 +311,7 @@ const startSockets = () => {
       "xrpusd",
       "daiusd",
       "dogeusd",
-      "xauusd"
-
+      "xauusd",
     ],
     "crypto"
   );
@@ -253,19 +340,12 @@ app.use(
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
-
-  
-
-
-
 // Create Api To check socket connection
 app.get("/", (req, res) => {
   res.send("Socket connection is working!");
 });
 
-
-require("./Socket")(app, io); // Import routes
+// require("./Socket")(app, io); // Import routes
 
 // Start Server
 server.listen(PORT, async () => {

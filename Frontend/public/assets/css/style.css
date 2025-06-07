@@ -42943,3 +42943,19 @@ ul.nav.nav-pills.mb-4.light {
 
 
 
+.header-animated {
+  transition: all 0.3s ease-in-out;
+}
+
+.header-animated:hover {
+  background-color: #f8f9fa;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.animate-btn {
+  transition: transform 0.2s ease;
+}
+
+.animate-btn:hover {
+  transform: scale(1.05);
+}

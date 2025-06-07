@@ -336,3 +336,37 @@ export async function getAllUser(data, token) {
   }
 }
 
+
+
+
+
+export async function AddCondition(data, token) {
+  try {
+    const res = await axios.post(
+      `${Config.base_url}AddCondition`,
+      data,
+      {
+        data: {},
+      }
+    );
+    return await res?.data;
+  } catch (err) {
+    return await err;
+  }
+}
+
+export async function GetConditions(data, token) {
+  try {
+    const res = await axios.get(
+      `${Config.base_url}GetConditions`,
+      data,
+      {
+        data: {},
+      }
+    );
+    return await res?.data;
+  } catch (err) {
+    return await err;
+  }
+}
+
