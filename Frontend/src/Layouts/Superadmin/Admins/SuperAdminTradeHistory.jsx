@@ -8,6 +8,8 @@ import {
   getAdminName,
   switchOrderType,
 } from "../../../Services/Superadmin/Superadmin";
+import socket from "../../../Utils/socketClient";
+
 
 const SuperAdminTradeHistory = () => {
   const [data, setData] = useState([]);
@@ -19,6 +21,29 @@ const SuperAdminTradeHistory = () => {
   const [userNamed, setUserNamed] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+  const [livePrices, setLivePrices] = useState({});
+  const [prevPrices, setPrevPrices] = useState({});
+
+
+ useEffect(() => {
+    socket.on("receive_data_forex", (data) => {
+      const symbol = data.data[1]?.toLowerCase();
+      const price = Number(data.data[5]);
+      if (symbol && !isNaN(price)) {
+        setPrevPrices((prev) => ({
+          ...prev,
+          [symbol]: livePrices[symbol],
+        }));
+        setLivePrices((prev) => ({
+          ...prev,
+          [symbol]: price.toFixed(3),
+        }));
+      }
+    });
+    return () => {
+      socket.off("receive_data_forex");
+    };
+  }, [livePrices]);
 
   useEffect(() => {
     GetUserName();
@@ -63,7 +88,7 @@ const SuperAdminTradeHistory = () => {
     } catch (error) {}
   };
 
-  // Define columns for the table
+
   const columns = [
     { Header: "UserName", accessor: "userName" },
 
@@ -88,9 +113,13 @@ const SuperAdminTradeHistory = () => {
         const buy_price = cell.row.buy_price;
         const signal_type = cell.row.signal_type;
         if (signal_type === "sell_buy") {
-          return buy_price ? buy_price.toFixed(4) : "-";
+          return buy_price ? buy_price.toFixed(4) : livePrices[
+                                          cell.row.symbol?.toLowerCase()
+                                        ];
         } else {
-          return cell.row.sell_price ? cell.row.sell_price.toFixed(4) : "-";
+          return cell.row.sell_price ? cell.row.sell_price.toFixed(4) : livePrices[
+                                          cell.row.symbol?.toLowerCase()
+                                        ];
         }
       },
     },
@@ -104,7 +133,7 @@ const SuperAdminTradeHistory = () => {
         const buyQty = cell.row.buy_qty;
 
         if (sellPrice && buyPrice && buyQty) {
-          // if(signal_type === "buy_sell"){
+       
           const profitLoss = (sellPrice - buyPrice) * buyQty;
           const formattedProfitLoss = profitLoss.toFixed(4);
 
@@ -112,10 +141,26 @@ const SuperAdminTradeHistory = () => {
 
           return (
             <span style={{ color }}>
-              {/* <DollarSign /> */}
+            
               {formattedProfitLoss}
             </span>
           );
+        }else if (signal_type === "buy_sell") {
+          const livePrice = livePrices[cell.row.symbol?.toLowerCase()];
+          if (livePrice) {
+            const profitLoss = (livePrice - buyPrice) * cell.row.buy_qty;
+            const formattedProfitLoss = profitLoss.toFixed(4);
+            const color = profitLoss > 0 ? "green" : "red";
+            return <span style={{ color }}>{formattedProfitLoss}</span>;
+          }
+        }else if (signal_type === "sell_buy") {
+          const livePrice = livePrices[cell.row.symbol?.toLowerCase()];
+          if (livePrice) {
+            const profitLoss = (cell.row.sell_price - livePrice) * cell.row.sell_lot;
+            const formattedProfitLoss = profitLoss.toFixed(4);
+            const color = profitLoss > 0 ? "green" : "red";
+            return <span style={{ color }}>{formattedProfitLoss}</span>;
+          }
         }
 
         return "-";
@@ -204,7 +249,6 @@ const SuperAdminTradeHistory = () => {
     },
   ];
 
-  // Function to get user history
 
   const GetUserName = async () => {
     try {
@@ -216,7 +260,7 @@ const SuperAdminTradeHistory = () => {
     } catch (error) {}
   };
 
-  // Calculate total profit/loss
+
   const calculateTotalProfitLoss = () => {
     return data
       .reduce((total, row) => {
@@ -226,16 +270,13 @@ const SuperAdminTradeHistory = () => {
         const signal_type = row.signal_type;
         if (sellPrice && buyPrice && buyQty) {
           return total + (sellPrice - buyPrice) * buyQty;
-          // if(signal_type === "buy_sell"){
-
-          // }else{
-          //   return total + (buyPrice - sellPrice) * buyQty;
-          // }
+       
         }
         return total;
       }, 0)
       .toFixed(4);
   };
+
 
   const totalProfitLoss = calculateTotalProfitLoss();
 

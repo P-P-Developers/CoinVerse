@@ -7,6 +7,8 @@ import { GetUsersName, switchOrderType } from "../../../Services/Admin/Addmin";
 import { ArrowLeftRight } from "lucide-react";
 import { getUserFromToken } from "../../../Utils/TokenVerify";
 
+import socket from "../../../Utils/socketClient";
+
 const Tradehistory = () => {
   const TokenData = getUserFromToken();
 
@@ -16,6 +18,28 @@ const Tradehistory = () => {
   const [userName, setUserName] = useState();
   const [Userid, setUserId] = useState();
   const [search, setSearch] = useState("");
+  const [livePrices, setLivePrices] = useState({});
+  const [prevPrices, setPrevPrices] = useState({});
+
+  useEffect(() => {
+    socket.on("receive_data_forex", (data) => {
+      const symbol = data.data[1]?.toLowerCase();
+      const price = Number(data.data[5]);
+      if (symbol && !isNaN(price)) {
+        setPrevPrices((prev) => ({
+          ...prev,
+          [symbol]: livePrices[symbol],
+        }));
+        setLivePrices((prev) => ({
+          ...prev,
+          [symbol]: price.toFixed(3),
+        }));
+      }
+    });
+    return () => {
+      socket.off("receive_data_forex");
+    };
+  }, [livePrices]);
 
   useEffect(() => {
     GetUserName();
@@ -49,9 +73,13 @@ const Tradehistory = () => {
         const buy_price = cell.row.buy_price;
         const signal_type = cell.row.signal_type;
         if (signal_type === "sell_buy") {
-          return buy_price ? buy_price.toFixed(3) : "-";
+          return buy_price
+            ? buy_price.toFixed(3)
+            : livePrices[cell.row.symbol.toLowerCase()] || "-";
         } else {
-          return cell.row.sell_price ? cell.row.sell_price.toFixed(3) : "-";
+          return cell.row.sell_price
+            ? cell.row.sell_price.toFixed(3)
+            : livePrices[cell.row.symbol.toLowerCase()] || "-";
         }
       },
     },
@@ -77,6 +105,23 @@ const Tradehistory = () => {
               {formattedProfitLoss}
             </span>
           );
+        } else if (signal_type === "buy_sell") {
+          const livePrice = livePrices[cell.row.symbol?.toLowerCase()];
+          if (livePrice) {
+            const profitLoss = (livePrice - buyPrice) * cell.row.buy_qty;
+            const formattedProfitLoss = profitLoss.toFixed(4);
+            const color = profitLoss > 0 ? "green" : "red";
+            return <span style={{ color }}>{formattedProfitLoss}</span>;
+          }
+        } else if (signal_type === "sell_buy") {
+          const livePrice = livePrices[cell.row.symbol?.toLowerCase()];
+          if (livePrice) {
+            const profitLoss =
+              (cell.row.sell_price - livePrice) * cell.row.sell_lot;
+            const formattedProfitLoss = profitLoss.toFixed(4);
+            const color = profitLoss > 0 ? "green" : "red";
+            return <span style={{ color }}>{formattedProfitLoss}</span>;
+          }
         }
 
         return "-";
@@ -154,7 +199,7 @@ const Tradehistory = () => {
         }
       },
     },
-    
+
     {
       Header: "switch",
       accessor: "switch",

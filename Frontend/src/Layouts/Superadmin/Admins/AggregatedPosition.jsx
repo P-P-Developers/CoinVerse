@@ -1,13 +1,13 @@
 import { Accordion, Card } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
 import socket from "../../../Utils/socketClient";
-import "./AggregatedPosition.css";
 import Swal from "sweetalert2";
 import { getUserFromToken } from "../../../Utils/TokenVerify";
-
 import { AddCondition } from "../../../Services/Superadmin/Superadmin";
+import "./AggregatedPosition.css";
+import { commandAlert } from "../../../Utils/Commanalert";
 
-const AggregatedPosition = ({ groupedData }) => {
+const AggregatedPosition = ({ groupedData, search = "" }) => {
   const [cardPage, setCardPage] = useState(0);
   const [pageStates, setPageStates] = useState({});
   const [livePrices, setLivePrices] = useState({});
@@ -22,11 +22,10 @@ const AggregatedPosition = ({ groupedData }) => {
     socket.on("receive_data_forex", (data) => {
       const symbol = data.data[1]?.toLowerCase();
       const price = Number(data.data[5]);
-
       if (symbol && !isNaN(price)) {
         setPrevPrices((prev) => ({
           ...prev,
-          [symbol]: livePrices[symbol], // store the previous price
+          [symbol]: livePrices[symbol],
         }));
         setLivePrices((prev) => ({
           ...prev,
@@ -34,18 +33,35 @@ const AggregatedPosition = ({ groupedData }) => {
         }));
       }
     });
-
     return () => {
       socket.off("receive_data_forex");
     };
   }, [livePrices]);
 
-  const totalCardPages = Math.ceil(groupedData.length / cardPageSize);
-  const displayedGroups = groupedData.slice(
+  // Filter logic for search
+  const filteredGroups = React.useMemo(() => {
+    if (!search?.trim()) return groupedData;
+    const lower = search.trim().toLowerCase();
+    return groupedData.filter((group) => {
+      const symbol = group._id?.symbol?.toLowerCase() || "";
+      if (symbol.includes(lower)) return true;
+      if (
+        group.records?.some((r) =>
+          (r.userName || "").toLowerCase().includes(lower)
+        )
+      )
+        return true;
+      return false;
+    });
+  }, [groupedData, search]);
+
+  const totalCardPages = Math.ceil(filteredGroups.length / cardPageSize);
+  const displayedGroups = filteredGroups.slice(
     cardPage * cardPageSize,
     (cardPage + 1) * cardPageSize
   );
 
+  // SweetAlert for trading
   const SetConditions = async (type, symbol, livePrice, avgPrice) => {
     const { value: inputDrop } = await Swal.fire({
       title: "Enter Drop Threshold",
@@ -57,53 +73,75 @@ const AggregatedPosition = ({ groupedData }) => {
         step: 1,
       },
       showCancelButton: true,
+      customClass: { popup: "swal2-trading-popup" },
+      background: "#f8fafc",
+      color: "#1e293b",
     });
 
     if (!inputDrop) {
-      Swal.fire("Cancelled", "You cancelled the condition setup", "info");
+      commandAlert({
+        type: "info",
+        title: "Cancelled",
+        text: "You cancelled the condition setup",
+        icon: "warn",
+      });
       return;
     }
 
     const dropValue = parseFloat(inputDrop);
     if (isNaN(dropValue)) {
-      Swal.fire("Error", "Invalid drop amount", "error");
+      commandAlert({
+        type: "error",
+        title: "Error",
+        text: "Invalid drop amount",
+        icon: "error",
+      });
       return;
     }
 
     const dropThreshold = type === "up" ? dropValue : -Math.abs(dropValue);
 
-    Swal.fire({
+    commandAlert({
+      type: "info",
       title: "Setting Condition",
       text: `Setting ${type} condition for ${symbol} at price ${livePrice} with threshold ${dropThreshold}`,
-      showConfirmButton: false,
-      timer: 2000,
-      didOpen: () => {
-        Swal.showLoading();
-      },
+      icon: "trade",
+      showLoading: true,
     });
 
     const data = {
       userId: user_id,
       symbol: symbol,
       initialPrice: livePrice,
-      dropThreshold: type == "up" ? dropThreshold : -Math.abs(dropThreshold), // Ensure negative for down condition
-      timeWindow: 60, // in seconds
+      dropThreshold: type == "up" ? dropThreshold : -Math.abs(dropThreshold),
+      timeWindow: 60,
     };
 
     try {
       const response = await AddCondition(data);
 
       if (response.status) {
-        Swal.fire("Success", "Condition set successfully!", "success");
+        commandAlert({
+          type: "success",
+          title: "Success",
+          text: "Condition set successfully!",
+          icon: "success",
+        });
       } else {
-        Swal.fire(
-          "Error",
-          response.error || "Failed to set condition",
-          "error"
-        );
+        commandAlert({
+          type: "error",
+          title: "Error",
+          text: response.error || "Failed to set condition",
+          icon: "error",
+        });
       }
     } catch (error) {
-      Swal.fire("Error", error.message || "Network error", "error");
+      commandAlert({
+        type: "error",
+        title: "Error",
+        text: error.message || "Network error",
+        icon: "error",
+      });
     }
   };
 
@@ -118,8 +156,7 @@ const AggregatedPosition = ({ groupedData }) => {
           avg_sell_price,
           avg_buy_lot,
           avg_sell_lot,
-          avg_buy_qty,
-          avg_sell_qty,
+
           records,
         } = group;
 
@@ -135,12 +172,10 @@ const AggregatedPosition = ({ groupedData }) => {
         const symbolKey = symbol?.toLowerCase();
         const livePrice = livePrices[symbolKey];
         const prevPrice = prevPrices[symbolKey];
-        let priceColor = "#0d6efd"; // default blue
-
+        let priceColor = "#0d6efd";
         if (prevPrice && livePrice) {
           const current = parseFloat(livePrice);
           const previous = parseFloat(prevPrice);
-
           if (current >= previous) priceColor = "green";
           else if (current < previous) priceColor = "red";
         }
@@ -150,94 +185,78 @@ const AggregatedPosition = ({ groupedData }) => {
             className="mb-4 shadow animated-card border-0"
             key={actualIndex}
           >
-            <Card.Header className="custom-header py-3 px-4">
-              <div className="d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <Card.Header
+              className="custom-header py-3 px-4 agp-header"
+              // style removed, now handled by CSS
+            >
+              {/* Professional, stock-market style header */}
+              <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 agp-header-row">
                 <div className="flex-grow-1">
-                  <div className="d-flex align-items-center flex-wrap mb-2">
-                    <h4 className="mb-0 fw-bold text-dark me-2 header-symbol">
-                      {symbol}
+                  <div className="d-flex align-items-center flex-wrap mb-2 agp-header-symbol-row">
+                    <h4 className="mb-0 fw-bold me-3 header-symbol agp-symbol-title">
+                      <span className="agp-symbol-badge">{symbol}</span>
                       <span
-                        style={{ color: signalColor }}
-                        className="ms-2 fw-semibold"
+                        className={`ms-2 agp-signal-type-badge ${
+                          signal_type === "buy_sell"
+                            ? "agp-buy"
+                            : signal_type === "sell_buy"
+                            ? "agp-sell"
+                            : "agp-neutral"
+                        }`}
                       >
-                        (
                         {signal_type.toUpperCase() === "BUY_SELL"
                           ? "BUY"
                           : "SELL"}
-                        )
                       </span>
                     </h4>
-                    <span className="badge bg-dark ms-3 fs-6">
+                    <span className="badge ms-3 fs-6 agp-count-badge">
                       Count: {count}
                     </span>
                   </div>
-
+                  {/* Averages */}
                   <div className="averages-text mt-2">
-                    <span className="fw-semibold text-secondary me-2">
+                    <span className="fw-semibold text-secondary me-2 agp-avg-label">
                       🎯 Averages:
                     </span>
-                    <div className="d-flex flex-wrap gap-4 text-muted averages-row mt-1">
-                      <span className="text-primary fs-6">
-                        Buy: <strong>{avg_buy_price?.toFixed(3) ?? "-"}</strong>
+                    <div className="d-flex flex-wrap gap-3 averages-row mt-1">
+                      <span className="agp-avg agp-avg-buy">
+                        Buy Price:{" "}
+                        <strong>{avg_buy_price?.toFixed(3) ?? "-"}</strong>
                       </span>
-                      <span className="text-danger fs-6">
+                      <span className="agp-avg agp-avg-sell">
                         Sell:{" "}
                         <strong>{avg_sell_price?.toFixed(3) ?? "-"}</strong>
                       </span>
-                      <span className="fs-6">
-                        Buy Lot:{" "}
-                        <strong className="text-dark">
-                          {avg_buy_lot ?? "0"}
-                        </strong>
+                      <span className="agp-avg agp-avg-lot">
+                        Buy Lot: <strong>{avg_buy_lot ?? "0"}</strong>
                       </span>
-                      <span className="fs-6">
-                        Sell Lot:{" "}
-                        <strong className="text-dark">
-                          {avg_sell_lot ?? "0"}
-                        </strong>
-                      </span>
-                      <span className="fs-6">
-                        Buy Qty:{" "}
-                        <strong className="text-dark">
-                          {avg_buy_qty ?? "0"}
-                        </strong>
-                      </span>
-                      <span className="fs-6">
-                        Sell Qty:{" "}
-                        <strong className="text-dark">
-                          {avg_sell_qty ?? "0"}
-                        </strong>
+                      <span className="agp-avg agp-avg-lot">
+                        Sell Lot: <strong>{avg_sell_lot ?? "0"}</strong>
                       </span>
                     </div>
                   </div>
-
+                  {/* Live Price */}
                   <div className="d-flex align-items-center gap-2 mt-3">
-                    <span className="text-muted fs-6 fw-semibold">
+                    <span className="text-muted fs-6 fw-semibold agp-live-label">
                       <strong>Live Price:</strong>
                     </span>
                     <span
-                      style={{
-                        fontWeight: 700,
-                        fontSize: "1.1em",
-                        color: priceColor,
-                        minWidth: 60,
-                        display: "inline-block",
-                        background: "#f1f8ff",
-                        borderRadius: "6px",
-                        padding: "2px 10px",
-                      }}
+                      className={`agp-live-price ${
+                        priceColor === "green"
+                          ? "agp-live-green"
+                          : priceColor === "red"
+                          ? "agp-live-red"
+                          : ""
+                      }`}
                     >
                       {livePrice ?? "-"}
                     </span>
                   </div>
                 </div>
-
-                <div
-                  className="d-flex flex-row gap-2"
-                  style={{ minWidth: "250px" }}
-                >
+                {/* Action Buttons */}
+                <div className="d-flex flex-row gap-2 agp-btn-row">
                   <button
-                    className="btn btn-sm btn-outline-success animate-btn w-100"
+                    className="btn btn-sm btn-outline-success animate-btn w-100 agp-btn agp-btn-up"
                     onClick={() =>
                       SetConditions(
                         "up",
@@ -247,10 +266,10 @@ const AggregatedPosition = ({ groupedData }) => {
                       )
                     }
                   >
-                    🔼 Up Error
+                    🔼 Up Side
                   </button>
                   <button
-                    className="btn btn-sm btn-outline-danger animate-btn w-100"
+                    className="btn btn-sm btn-outline-danger animate-btn w-100 agp-btn agp-btn-down"
                     onClick={() =>
                       SetConditions(
                         "down",
@@ -260,35 +279,54 @@ const AggregatedPosition = ({ groupedData }) => {
                       )
                     }
                   >
-                    🔽 Down Error
+                    🔽 Down Side
                   </button>
                 </div>
               </div>
             </Card.Header>
-
             <Accordion defaultActiveKey={null}>
               <Accordion.Item eventKey="0">
                 <Accordion.Header>📂 View All Records</Accordion.Header>
                 <Accordion.Body>
-                  <div className="table-responsive">
-                    <table className="table table-striped table-bordered table-sm align-middle text-center mb-0">
-                      <thead className="">
+                  <div
+                    className="table-responsive animated-table"
+                    style={{
+                      animation: "fadeInUp 0.5s cubic-bezier(0.23, 1, 0.32, 1)",
+                    }}
+                  >
+                    <table
+                      className="table table-striped table-bordered table-sm align-middle text-center mb-0"
+                      style={{
+                        borderRadius: "12px",
+                        overflow: "hidden",
+                        boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+                        background: "#fff",
+                      }}
+                    >
+                      <thead
+                        className=""
+                        style={{
+                          position: "sticky",
+                          top: 0,
+                          zIndex: 2,
+                          background: "#f1f3f6",
+                          boxShadow: "0 2px 4px rgba(0,0,0,0.02)",
+                        }}
+                      >
                         <tr>
                           <th>#</th>
                           <th>User Name</th>
                           <th>symbol</th>
-
                           <th>Buy Price</th>
                           <th>Sell Price</th>
+                          <td>P/L</td>
+
                           <th>Buy Lot</th>
                           <th>Sell Lot</th>
-                          <th>Buy Qty</th>
-                          <th>Sell Qty</th>
+
                           <th>Target</th>
                           <th>Stop Loss</th>
-
                           <th>Max Loss</th>
-
                           <th>Created At</th>
                         </tr>
                       </thead>
@@ -299,21 +337,75 @@ const AggregatedPosition = ({ groupedData }) => {
                             (currentPage + 1) * tablePageSize
                           )
                           .map((item, idx) => (
-                            <tr key={idx}>
+                            <tr
+                              key={idx}
+                              className="table-row-animate"
+                              style={{
+                                transition: "background 0.2s, box-shadow 0.2s",
+                                cursor: "pointer",
+                              }}
+                              onMouseEnter={(e) =>
+                                (e.currentTarget.style.background = "#f8fafd")
+                              }
+                              onMouseLeave={(e) =>
+                                (e.currentTarget.style.background = "")
+                              }
+                            >
                               <td>{currentPage * tablePageSize + idx + 1}</td>
                               <td>{item.userName}</td>
                               <td>{item.symbol}</td>
+                              <td>
+                                {item.buy_price ?? (
+                                  <span
+                                    className={` ${
+                                      priceColor === "green"
+                                        ? "agp-live-green"
+                                        : priceColor === "red"
+                                        ? "agp-live-red"
+                                        : ""
+                                    }`}
+                                  >
+                                    {livePrices[item.symbol?.toLowerCase()]}
+                                  </span>
+                                )}
+                              </td>
+                              <td>
+                                {item.sell_price ?? (
+                                  <span
+                                    className={` ${
+                                      priceColor === "green"
+                                        ? "agp-live-green"
+                                        : priceColor === "red"
+                                        ? "agp-live-red"
+                                        : ""
+                                    }`}
+                                  >
+                                    {livePrices[item.symbol?.toLowerCase()]}
+                                  </span>
+                                )}
+                              </td>
+                              <td>
+                                {signal_type === "buy_sell"
+                                  ? (
+                                      (livePrices[item.symbol?.toLowerCase()] -
+                                        item.buy_price) *
+                                      item.buy_lot
+                                    ).toFixed(3)
+                                  : (
+                                      (item.sell_price -
+                                        livePrices[
+                                          item.symbol?.toLowerCase()
+                                        ]) *
+                                      item.sell_lot
+                                    ).toFixed(3)}
+                              </td>
 
-                              <td>{item.buy_price ?? livePrices[item.symbol?.toLowerCase()]}</td>
-                              <td>{item.sell_price ?? livePrices[item.symbol?.toLowerCase()]}</td>
                               <td>{item.buy_lot ?? "-"}</td>
                               <td>{item.sell_lot ?? "-"}</td>
-                              <td>{item.buy_qty ?? "-"}</td>
-                              <td>{item.sell_qty ?? "-"}</td>
+
                               <td>{item.Target_price ?? "-"}</td>
                               <td>{item.stoploss_price ?? "-"}</td>
                               <td>{item.Sl_price_percentage ?? "-"}</td>
-
                               <td>
                                 {new Date(item.createdAt).toLocaleString()}
                               </td>
@@ -322,12 +414,21 @@ const AggregatedPosition = ({ groupedData }) => {
                       </tbody>
                     </table>
                   </div>
-
                   {/* Table Pagination */}
-                  <div className="d-flex justify-content-end align-items-center mt-3">
+                  <div
+                    className="d-flex justify-content-end align-items-center mt-3"
+                    style={{
+                      animation: "fadeIn 0.3s",
+                      gap: "0.5rem",
+                    }}
+                  >
                     <button
                       className="btn btn-sm btn-outline-primary me-2"
                       disabled={currentPage === 0}
+                      style={{
+                        transition: "all 0.2s",
+                        opacity: currentPage === 0 ? 0.5 : 1,
+                      }}
                       onClick={() =>
                         setPageStates((prev) => ({
                           ...prev,
@@ -337,12 +438,16 @@ const AggregatedPosition = ({ groupedData }) => {
                     >
                       ◀ Prev
                     </button>
-                    <span>
+                    <span style={{ fontWeight: 500 }}>
                       Page {currentPage + 1} of {totalPages}
                     </span>
                     <button
                       className="btn btn-sm btn-outline-primary ms-2"
                       disabled={currentPage + 1 >= totalPages}
+                      style={{
+                        transition: "all 0.2s",
+                        opacity: currentPage + 1 >= totalPages ? 0.5 : 1,
+                      }}
                       onClick={() =>
                         setPageStates((prev) => ({
                           ...prev,
@@ -353,13 +458,28 @@ const AggregatedPosition = ({ groupedData }) => {
                       Next ▶
                     </button>
                   </div>
+                  {/* Animation keyframes */}
+                  <style>
+                    {`
+        @keyframes fadeInUp {
+          0% { opacity: 0; transform: translateY(30px);}
+          100% { opacity: 1; transform: translateY(0);}
+        }
+        @keyframes fadeIn {
+          0% { opacity: 0;}
+          100% { opacity: 1;}
+        }
+        .table-row-animate {
+          animation: fadeIn 0.3s;
+        }
+        `}
+                  </style>
                 </Accordion.Body>
               </Accordion.Item>
             </Accordion>
           </Card>
         );
       })}
-
       {/* Card Pagination */}
       <div className="d-flex justify-content-center align-items-center my-4">
         <button

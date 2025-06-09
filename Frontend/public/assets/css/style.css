@@ -42959,3 +42959,56 @@ ul.nav.nav-pills.mb-4.light {
 .animate-btn:hover {
   transform: scale(1.05);
 }
+.swal2-trading-popup {
+  border-radius: 14px !important;
+  box-shadow: 0 8px 32px 0 rgba(37,99,235,0.10) !important;
+  border: 1.5px solid #2563eb22 !important;
+  padding-bottom: 10px !important;
+}
+.animated-card {
+  transition: box-shadow 0.2s;
+}
+.animated-card:hover {
+  box-shadow: 0 8px 32px 0 rgba(37,99,235,0.13) !important;
+}
+.averages-row span {
+  transition: background 0.2s, color 0.2s;
+}
+.table-row-animate {
+  animation: fadeIn 0.3s;
+}
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(30px);}
+  100% { opacity: 1; transform: translateY(0);}
+}
+@keyframes fadeIn {
+  0% { opacity: 0;}
+  100% { opacity: 1;}
+}
+
+.swal2-trading-popup {
+  border-radius: 14px !important;
+  box-shadow: 0 8px 32px 0 rgba(37,99,235,0.10) !important;
+  border: 1.5px solid #2563eb22 !important;
+  padding-bottom: 10px !important;
+}
+.animated-card {
+  transition: box-shadow 0.2s;
+}
+.animated-card:hover {
+  box-shadow: 0 8px 32px 0 rgba(37,99,235,0.13) !important;
+}
+.averages-row span {
+  transition: background 0.2s, color 0.2s;
+}
+.table-row-animate {
+  animation: fadeIn 0.3s;
+}
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(30px);}
+  100% { opacity: 1; transform: translateY(0);}
+}
+@keyframes fadeIn {
+  0% { opacity: 0;}
+  100% { opacity: 1;}
+}

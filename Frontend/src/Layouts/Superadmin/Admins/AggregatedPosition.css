@@ -1,65 +1,145 @@
-/* Card animation on load */
+/* AGP (AggregatedPosition) custom classes for header, averages, live price, and buttons */
+.agp-header {
+  border-bottom: 1.5px solid #e5e7eb !important;
+  border-top-left-radius: 12px !important;
+  border-top-right-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+  background: #f9fafb !important;
+  min-height: 80px;
+  margin-bottom: 0 !important;
+  transition: background 0.2s;
+}
+.agp-header-row { }
+.agp-header-symbol-row { }
+.agp-symbol-title { color: #1e293b; font-size: 1.45rem; letter-spacing: 1px; }
+.agp-symbol-badge {
+  background: #f1f5f9;
+  color: #2563eb;
+  border-radius: 8px;
+  padding: 4px 14px;
+  font-weight: 700;
+  font-size: 1.1em;
+  margin-right: 0.5rem;
+  box-shadow: 0 1px 4px rgba(37,99,235,0.07);
+  display: inline-block;
+}
+.agp-signal-type-badge {
+  font-weight: 700;
+  font-size: 1.08em;
+  letter-spacing: 0.5px;
+  background: #f1f5f9;
+  border-radius: 8px;
+  padding: 2px 12px;
+  margin-left: 0.2rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  display: inline-block;
+}
+.agp-buy { color: #16a34a; }
+.agp-sell { color: #dc2626; }
+.agp-neutral { color: #2563eb; }
+.agp-count-badge {
+  background: #f1f5f9;
+  color: #0f172a;
+  font-weight: 600;
+  font-size: 1em;
+  border-radius: 8px;
+  padding: 6px 16px;
+  margin-left: 1rem;
+  box-shadow: 0 1px 4px rgba(37,99,235,0.07);
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+
+.agp-avg-label { color: #334155; }
+.agp-avg {
+  background: #f1f5f9;
+  border-radius: 999px;
+  font-weight: 500;
+  font-size: 1em;
+  min-width: 90px;
+  display: inline-block;
+  padding: 8px 18px;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.agp-avg-buy { color: #2563eb; font-weight: 600; }
+.agp-avg-sell { color: #dc2626; font-weight: 600; }
+.agp-avg-lot { color: #0f172a; }
+
+.agp-live-label { color: #334155; }
+.agp-live-price {
+  font-weight: 700;
+  font-size: 1.1em;
+  color: #0f172a;
+  min-width: 70px;
+  display: inline-block;
+  background: #fff;
+  border-radius: 999px;
+  padding: 4px 18px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  letter-spacing: 0.5px;
+  transition: color 0.2s;
+  border: none;
+}
+.agp-live-green { color: #16a34a !important; }
+.agp-live-red { color: #dc2626 !important; }
+
+.agp-btn-row { }
+.agp-btn {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(16,185,129,0.07);
+  transition: background 0.15s, color 0.15s;
+  border: none !important;
+  background: #fff !important;
+}
+.agp-btn-up { color: #16a34a !important; }
+.agp-btn-down { color: #dc2626 !important; }
+
+/* Animation, table, etc. */
 .animated-card {
   animation: fadeInUp 0.5s ease;
   border-radius: 0.75rem;
 }
-
-/* Header hover + spacing */
 .custom-header {
-  /* background-color: #f8f9fa; */
   transition: all 0.3s ease;
   padding: 1rem 1.5rem;
   border-bottom: 1px solid #dee2e6;
 }
-
-/* Header text scaling on hover */
 .custom-header:hover .header-symbol {
   transform: scale(1.02);
   transition: transform 0.2s ease;
 }
-
-/* Buttons */
 .animate-btn {
   transition: transform 0.2s ease;
   font-weight: 500;
 }
-
 .animate-btn:hover {
   transform: scale(1.1);
 }
-
-/* Font size for better visibility */
 .header-symbol {
   font-size: 1.5rem;
-}
-
-.averages-text {
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: #555;
-}
-
-/* Entry animation */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 .averages-text {
   font-size: 1.1rem;
   font-weight: 500;
   line-height: 1.7;
 }
-
 .averages-row {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
   font-size: 1.05rem;
+}
+.table-row-animate {
+  animation: fadeIn 0.3s;
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+@keyframes fadeIn {
+  0% { opacity: 0;}
+  100% { opacity: 1;}
 }
