@@ -4,7 +4,6 @@ import socket from "../../../Utils/socketClient";
 import Swal from "sweetalert2";
 import { getUserFromToken } from "../../../Utils/TokenVerify";
 import { AddCondition } from "../../../Services/Superadmin/Superadmin";
-import "./AggregatedPosition.css";
 import { commandAlert } from "../../../Utils/Commanalert";
 
 const AggregatedPosition = ({ groupedData, search = "" }) => {
@@ -187,26 +186,24 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
           >
             <Card.Header
               className="custom-header py-3 px-4 agp-header"
-              // style removed, now handled by CSS
+       
             >
-              {/* Professional, stock-market style header */}
+
               <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 agp-header-row">
                 <div className="flex-grow-1">
                   <div className="d-flex align-items-center flex-wrap mb-2 agp-header-symbol-row">
                     <h4 className="mb-0 fw-bold me-3 header-symbol agp-symbol-title">
-                      <span className="agp-symbol-badge">{symbol}</span>
+                      <span className="">{symbol}</span>
                       <span
-                        className={`ms-2 agp-signal-type-badge ${
-                          signal_type === "buy_sell"
-                            ? "agp-buy"
-                            : signal_type === "sell_buy"
-                            ? "agp-sell"
-                            : "agp-neutral"
-                        }`}
-                      >
+                       style={{
+                          color: signalColor,
+                          fontWeight: "bold",
+                          marginLeft: "0.5rem",
+                        }}
+                      >{"("}
                         {signal_type.toUpperCase() === "BUY_SELL"
                           ? "BUY"
-                          : "SELL"}
+                          : "SELL"} {")"}
                       </span>
                     </h4>
                     <span className="badge ms-3 fs-6 agp-count-badge">
@@ -215,7 +212,7 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                   </div>
                   {/* Averages */}
                   <div className="averages-text mt-2">
-                    <span className="fw-semibold text-secondary me-2 agp-avg-label">
+                    <span className=" text-secondary me-2 agp-avg-label">
                       🎯 Averages:
                     </span>
                     <div className="d-flex flex-wrap gap-3 averages-row mt-1">
@@ -256,7 +253,7 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                 {/* Action Buttons */}
                 <div className="d-flex flex-row gap-2 agp-btn-row">
                   <button
-                    className="btn btn-sm btn-outline-success animate-btn w-100 agp-btn agp-btn-up"
+                    className="btn btn-sm btn-outline-success animate-btn  agp-btn agp-btn-up"
                     onClick={() =>
                       SetConditions(
                         "up",
@@ -269,7 +266,7 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                     🔼 Up Side
                   </button>
                   <button
-                    className="btn btn-sm btn-outline-danger animate-btn w-100 agp-btn agp-btn-down"
+                    className="btn btn-sm btn-outline-danger animate-btn  agp-btn agp-btn-down"
                     onClick={() =>
                       SetConditions(
                         "down",
@@ -319,7 +316,9 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                           <th>symbol</th>
                           <th>Buy Price</th>
                           <th>Sell Price</th>
-                          <td>P/L</td>
+                    
+
+                          <th>P/L</th>
 
                           <th>Buy Lot</th>
                           <th>Sell Lot</th>

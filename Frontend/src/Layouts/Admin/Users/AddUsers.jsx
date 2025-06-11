@@ -84,15 +84,14 @@ const AddUsers = () => {
         errors.confirmPassword = "Passwords do not match";
       }
 
-      // Limit validation (should be between 0 and 100 and in percentage format)
       if (!values.limit) {
         errors.limit = "Please enter a value for Limit";
       } else if (
         isNaN(values.limit) ||
         values.limit < 0 ||
-        values.limit > 100
+        values.limit > 10000
       ) {
-        errors.limit = "Limit should be a number between 0 and 100";
+        errors.limit = "Limit should be a number between 0 and 10000";
       }
 
       // Option validation
@@ -256,7 +255,7 @@ const AddUsers = () => {
 
     {
       name: "limit",
-      label: "Margin(0-100%)",
+      label: "Margin",
       type: "percentage",
       label_size: 12,
       col_size: 6,

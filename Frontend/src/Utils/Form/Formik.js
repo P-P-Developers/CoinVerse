@@ -173,11 +173,11 @@ const DynamicForm = ({
                             <input
                               type="number"
                               min={1}
-                              max={100}
+                              max={10000}
                               autoComplete="off"
                               aria-describedby="basic-addon1"
                               className="form-control"
-                              placeholder={`Enter ${field.label} (1–100)`}
+                              placeholder={`Enter ${field.label} `}
                               readOnly={field.disable}
                               id={field.name}
                               name={field.name}
@@ -185,7 +185,7 @@ const DynamicForm = ({
                               onInput={(e) => {
                                 const val = Math.max(
                                   1,
-                                  Math.min(100, Number(e.target.value))
+                                  Math.min(10000, Number(e.target.value))
                                 );
                                 e.target.value = val;
                                 formik.setFieldValue(field.name, val);

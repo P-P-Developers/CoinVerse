@@ -8,6 +8,7 @@ const {
   sendMultiplePushNotification,
 } = require("../../common/firebase");
 
+      const axios = require("axios");
 class broadcastingmessage {
   async broadcastmessage(req, res) {
     try {
@@ -86,6 +87,58 @@ class broadcastingmessage {
       return res.json({
         status: "false",
         message: "Internal server error",
+        data: [],
+      });
+    }
+  }
+
+  async GetNews(req, res) {
+    try {
+      const {} = req.params;
+
+      const today = new Date();
+      const threeDaysAgo = new Date();
+      threeDaysAgo.setDate(today.getDate() - 3);
+
+      const formatDate = (date) => date.toISOString().split("T")[0];
+
+      const apiKey = "deceb57ee655304effbdd94be68981d9ed128efa"; 
+
+      try {
+        const response = await axios.get("https://api.tiingo.com/tiingo/news", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${apiKey}`,
+          },
+          params: {
+            tags: "bitcoin,ethereum,crypto",
+            startDate: formatDate(threeDaysAgo),
+            endDate: formatDate(today),
+            limit: 10,
+          },
+        });
+        if (!response.data || response.data.length === 0) {
+          console.log("No news found for the specified criteria.");
+          return [];
+        }
+
+        return res.send({
+          status: true,
+          message: "News found",
+          data: response.data,
+        });
+
+        return response.data;
+      } catch (error) {
+        console.error(
+          "Error fetching Tiingo crypto news:",
+          error.response?.data || error.message
+        );
+      }
+    } catch (error) {
+      return res.json({
+        status: false,
+        message: "Failed to fetch news",
         data: [],
       });
     }

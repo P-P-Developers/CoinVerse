@@ -99,12 +99,12 @@ export const admin_header = [
     route: "/admin/loginstatus",
   },
 
-  {
-    id: 8,
-    name: "Available Positions",
-    icon: "fe fe-target",
-    route: "/admin/position",
-  },
+    // {
+    //   id: 8,
+    //   name: "Available Positions",
+    //   icon: "fe fe-target",
+    //   route: "/admin/position",
+    // },
   {
     id: 9,
     name: "Withdrawal",
