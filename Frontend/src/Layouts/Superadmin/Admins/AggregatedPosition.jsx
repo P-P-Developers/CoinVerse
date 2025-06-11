@@ -206,7 +206,7 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                           : "SELL"} {")"}
                       </span>
                     </h4>
-                    <span className="badge ms-3 fs-6 agp-count-badge">
+                    <span className="">
                       Count: {count}
                     </span>
                   </div>

@@ -171,7 +171,7 @@ const DynamicForm = ({
                             </label>
 
                             <input
-                              type="number"
+                              type="text"
                               min={1}
                               max={10000}
                               autoComplete="off"
@@ -183,12 +183,13 @@ const DynamicForm = ({
                               name={field.name}
                               {...formik.getFieldProps(field.name)}
                               onInput={(e) => {
-                                const val = Math.max(
-                                  1,
-                                  Math.min(10000, Number(e.target.value))
+                                 const val =  e.target.value
+                                 Math.max(
+                                  0,
+                                  Math.min(10000, e.target.value)
                                 );
                                 e.target.value = val;
-                                formik.setFieldValue(field.name, val);
+                                formik.setFieldValue(field.name,  e.target.value);
                               }}
                             />
 
