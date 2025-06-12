@@ -144,6 +144,21 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
     }
   };
 
+
+  function formatDecimal(value) {
+  if (value == null) return "0";
+  const strVal = value.toString();
+  if (strVal.includes(".")) {
+    const [intPart, decimalPart] = strVal.split(".");
+    if (decimalPart.length > 4) {
+      return parseFloat(value).toFixed(4);
+    } else {
+      return strVal;
+    }
+  }
+  return strVal;
+}
+
   return (
     <div className="container-fluid px-3">
       {displayedGroups.map((group, index) => {
@@ -224,12 +239,13 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                         Sell:{" "}
                         <strong>{avg_sell_price?.toFixed(3) ?? "-"}</strong>
                       </span>
-                      <span className="agp-avg agp-avg-lot">
-                        Buy Lot: <strong>{avg_buy_lot ?? "0"}</strong>
-                      </span>
-                      <span className="agp-avg agp-avg-lot">
-                        Sell Lot: <strong>{avg_sell_lot ?? "0"}</strong>
-                      </span>
+                  <span className="agp-avg agp-avg-lot">
+  Buy Lot: <strong>{formatDecimal(avg_buy_lot)}</strong>
+</span>
+<span className="agp-avg agp-avg-lot">
+  Sell Lot: <strong>{formatDecimal(avg_sell_lot)}</strong>
+</span>
+
                     </div>
                   </div>
                   {/* Live Price */}

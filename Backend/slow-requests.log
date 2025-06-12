@@ -63,3 +63,6 @@
 2025-06-11T10:29:43.419Z [warn]: SLOW API: [POST] /Squareoff - 217ms
 2025-06-11T11:37:51.788Z [warn]: SLOW API: [GET] /getCompany - 229ms
 2025-06-11T12:13:44.126Z [warn]: SLOW API: [POST] /admin/AddUser - 259ms
+2025-06-11T12:38:29.301Z [warn]: SLOW API: [POST] /broadcastmessage - 659ms
+2025-06-11T12:43:09.514Z [warn]: SLOW API: [GET] /GetNews - 899ms
+2025-06-11T13:24:11.949Z [warn]: SLOW API: [POST] /Squareoff - 217ms
