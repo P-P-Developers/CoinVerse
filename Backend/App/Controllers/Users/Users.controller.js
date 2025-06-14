@@ -689,17 +689,7 @@ class Users {
         const currentDate = new Date();
         const endDate = new Date(user.End_Date);
 
-        if (
-          endDate.getDate() === currentDate.getDate() &&
-          endDate.getMonth() === currentDate.getMonth() &&
-          endDate.getFullYear() === currentDate.getFullYear()
-        ) {
-          return res.send({
-            status: false,
-            message: "Account is expired",
-            data: [],
-          });
-        }
+      
       }
 
       // If pin_status is false, return a message to generate the pin first
@@ -778,17 +768,7 @@ class Users {
         const currentDate = new Date();
         const endDate = new Date(user.End_Date);
 
-        if (
-          endDate.getDate() === currentDate.getDate() &&
-          endDate.getMonth() === currentDate.getMonth() &&
-          endDate.getFullYear() === currentDate.getFullYear()
-        ) {
-          return res.send({
-            status: false,
-            message: "Account is expired",
-            data: [],
-          });
-        }
+       
       }
 
       // If pin_status is false, return a message to generate the pin first
