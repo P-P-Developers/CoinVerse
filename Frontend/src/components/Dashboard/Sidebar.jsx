@@ -19,8 +19,8 @@ const Sidebar = () => {
     roles === "SUPERADMIN"
       ? superadmin_header
       : roles === "ADMIN"
-      ? admin_header
-      : employee_header;
+        ? admin_header
+        : employee_header;
 
   const [activeRoute, setActiveRoute] = useState(location.pathname);
   const [getaccess, setGetaccess] = useState({});
@@ -32,7 +32,7 @@ const Sidebar = () => {
       if (response.status) {
         setGetaccess(response.data[0]);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -89,7 +89,10 @@ const Sidebar = () => {
         return "fa-solid fa-money-bill-transfer";
       case "chat-box":
         return "fa-solid fa-comments";
+      case "user detail":
+        return "fa fa-user";
       default:
+
         return "";
     }
   };
@@ -115,9 +118,8 @@ const Sidebar = () => {
                 return (
                   <li
                     key={data.id}
-                    className={`mm ${
-                      activeRoute === data.route ? "mm-active" : ""
-                    }`}
+                    className={`mm ${activeRoute === data.route ? "mm-active" : ""
+                      }`}
                     onClick={() => setActiveRoute(data.route)}
                   >
                     <Link to={data.route} aria-expanded="false">

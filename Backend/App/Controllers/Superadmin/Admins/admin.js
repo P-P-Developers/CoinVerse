@@ -430,7 +430,7 @@ class Superadmin {
           data: result,
         });
       }
-    } catch (error) {}
+    } catch (error) { }
   }
 
   // admin history
@@ -519,8 +519,7 @@ class Superadmin {
       const message = changes
         .map(
           (c) =>
-            `${c.field}: 'Old Value : ${c.oldValue ?? ""}' → 'Updated Value : ${
-              c.newValue ?? ""
+            `${c.field}: 'Old Value : ${c.oldValue ?? ""}' → 'Updated Value : ${c.newValue ?? ""
             }'`
         )
         .join(", ");
@@ -774,9 +773,9 @@ class Superadmin {
             adminid: 1,
             userid: 1,
             userName: "$user.UserName",
-            Target_price:1,
-            stoploss_price:1,
-            Sl_price_percentage:1,
+            Target_price: 1,
+            stoploss_price: 1,
+            Sl_price_percentage: 1,
 
           },
         },
@@ -795,7 +794,7 @@ class Superadmin {
             avg_sell_lot: { $avg: "$sell_lot" },
             avg_buy_qty: { $avg: "$buy_qty" },
             avg_sell_qty: { $avg: "$sell_qty" },
-     
+
           },
         },
         {
@@ -807,7 +806,7 @@ class Superadmin {
       ];
 
       const result = await mainorder_model.aggregate(pipeline);
-      
+
       const UserName = await User_model.find({ parent_id: adminid }, { UserName: 1 });
 
 
@@ -815,7 +814,7 @@ class Superadmin {
         return res.json({ status: false, message: "Data not found", data: [] });
       }
 
-      return res.json({ status: true, message: "Data found", data: result,User:UserName });
+      return res.json({ status: true, message: "Data found", data: result, User: UserName });
     } catch (error) {
       console.log("Error at getPosition_detail", error);
       return res.json({ status: false, message: "Internal error", data: [] });
@@ -1159,20 +1158,16 @@ class Superadmin {
     try {
       const { adminid, fromDate, toDate } = req.body;
 
-      // Build query filter object
       const query = { adminid };
-
-      // Add date filter if fromDate or toDate exists
       if (fromDate || toDate) {
         query.createdAt = {};
         if (fromDate) {
-          query.createdAt.$gte = new Date(fromDate); // greater or equal fromDate
+          query.createdAt.$gte = new Date(fromDate);
         }
         if (toDate) {
-          // To include the entire toDate day, set time to end of day
           const toDateObj = new Date(toDate);
           toDateObj.setHours(23, 59, 59, 999);
-          query.createdAt.$lte = toDateObj; // less or equal to toDate
+          query.createdAt.$lte = toDateObj;
         }
       }
 
@@ -1206,6 +1201,7 @@ class Superadmin {
       return res.json({ status: false, message: "internal error", data: [] });
     }
   }
+
 
   async GetAdminBalanceWithPosition(req, res) {
     try {
@@ -1379,6 +1375,146 @@ class Superadmin {
       });
     }
   }
+
+
+
+  async getUserlist(req, res) {
+    try {
+      const { adminid } = req.body;
+
+      if (!adminid) {
+        return res.json({ status: false, message: "adminid is required", data: [] });
+      }
+
+      const users = await User_model.find({ parent_id: adminid }).select("UserName _id").sort({ createdAt: -1 });
+
+      if (!users || users.length === 0) {
+        return res.json({ status: false, message: "No users found", data: [] });
+      }
+
+
+
+      const walletData = await Wallet_model.aggregate([
+        {
+          $match: {
+            user_Id: userObjectId,
+          },
+        },
+        {
+          $group: {
+            _id: "$Type",
+            totalAmount: { $sum: "$Balance" },
+          },
+        },
+      ]);
+
+
+      let credit = 0;
+      let debit = 0;
+
+      walletData.forEach((entry) => {
+        if (entry._id === "CREDIT") credit = entry.totalAmount;
+        if (entry._id === "DEBIT") debit = entry.totalAmount;
+      });
+
+      const result = {
+        ...user.toObject(),
+        totalCredit: credit,
+        totalDebit: debit,
+        remainingBalance: credit - debit,
+      };
+
+      return res.json({
+        status: true,
+        message: "Wallet data fetched successfully",
+        data: [result],
+      });
+
+
+      return res.json({
+        status: true,
+        message: "Users fetched successfully",
+        data: users,
+      });
+
+    } catch (error) {
+      console.error(error);
+      return res.json({ status: false, message: "Internal error", data: [] });
+    }
+  }
+
+
+
+  async allUersDetails(req, res) {
+    try {
+      const { userIds } = req.body;
+
+
+      if (!userIds) {
+        return res.json({
+          status: false,
+          message: "No userId provided",
+          data: [],
+        });
+      }
+
+      const userObjectId = new mongoose.Types.ObjectId(userIds);
+
+      const user = await User_model.findOne({ _id: userObjectId }).select("UserName _id");
+
+      if (!user) {
+        return res.json({
+          status: false,
+          message: "User not found",
+          data: [],
+        });
+      }
+
+
+      const walletData = await Wallet_model.aggregate([
+        {
+          $match: {
+            user_Id: userObjectId,
+          },
+        },
+        {
+          $group: {
+            _id: "$Type",
+            totalAmount: { $sum: "$Balance" },
+          },
+        },
+      ]);
+
+
+      let credit = 0;
+      let debit = 0;
+
+      walletData.forEach((entry) => {
+        if (entry._id === "CREDIT") credit = entry.totalAmount;
+        if (entry._id === "DEBIT") debit = entry.totalAmount;
+      });
+
+      const result = {
+        ...user.toObject(),
+        totalCredit: credit,
+        totalDebit: debit,
+        remainingBalance: credit - debit,
+      };
+
+      return res.json({
+        status: true,
+        message: "Wallet data fetched successfully",
+        data: [result],
+      });
+    } catch (error) {
+      console.error("Error in allUersDetails:", error);
+      return res.json({ status: false, message: "Internal error", data: [] });
+    }
+  }
+
+
+
+
 }
 
 module.exports = new Superadmin();
