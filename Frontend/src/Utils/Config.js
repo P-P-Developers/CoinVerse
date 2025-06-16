@@ -5,6 +5,3 @@ export const base_url = `http://localhost:8800/`;
 // export const base_url = `${window.location.origin}/backend/`;
 
 
-
-
-export const socket_url = `http://185.209.75.198:9000/`;

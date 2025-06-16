@@ -112,7 +112,7 @@ const Position = () => {
                         <option value="" style={{ color: "#64748b" }}>
                           Select Admin
                         </option>
-                        {adminNames.map((item, index) => (
+                        {adminNames?.map((item, index) => (
                           <option
                             key={index}
                             value={item._id}

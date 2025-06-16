@@ -66,3 +66,6 @@
 2025-06-11T12:38:29.301Z [warn]: SLOW API: [POST] /broadcastmessage - 659ms
 2025-06-11T12:43:09.514Z [warn]: SLOW API: [GET] /GetNews - 899ms
 2025-06-11T13:24:11.949Z [warn]: SLOW API: [POST] /Squareoff - 217ms
+2025-06-14T09:53:08.836Z [warn]: SLOW API: [POST] /getPosition_detail - 267ms
+2025-06-14T09:53:09.100Z [warn]: SLOW API: [POST] /getPosition_detail - 531ms
+2025-06-14T10:10:16.836Z [warn]: SLOW API: [POST] /switchOrderType - 240ms

@@ -144,20 +144,19 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
     }
   };
 
-
   function formatDecimal(value) {
-  if (value == null) return "0";
-  const strVal = value.toString();
-  if (strVal.includes(".")) {
-    const [intPart, decimalPart] = strVal.split(".");
-    if (decimalPart.length > 4) {
-      return parseFloat(value).toFixed(4);
-    } else {
-      return strVal;
+    if (value == null) return "0";
+    const strVal = value.toString();
+    if (strVal.includes(".")) {
+      const [intPart, decimalPart] = strVal.split(".");
+      if (decimalPart.length > 4) {
+        return parseFloat(value).toFixed(4);
+      } else {
+        return strVal;
+      }
     }
+    return strVal;
   }
-  return strVal;
-}
 
   return (
     <div className="container-fluid px-3">
@@ -199,31 +198,27 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
             className="mb-4 shadow animated-card border-0"
             key={actualIndex}
           >
-            <Card.Header
-              className="custom-header py-3 px-4 agp-header"
-       
-            >
-
+            <Card.Header className="custom-header py-3 px-4 agp-header">
               <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 agp-header-row">
                 <div className="flex-grow-1">
                   <div className="d-flex align-items-center flex-wrap mb-2 agp-header-symbol-row">
                     <h4 className="mb-0 fw-bold me-3 header-symbol agp-symbol-title">
                       <span className="">{symbol}</span>
                       <span
-                       style={{
+                        style={{
                           color: signalColor,
                           fontWeight: "bold",
                           marginLeft: "0.5rem",
                         }}
-                      >{"("}
+                      >
+                        {"("}
                         {signal_type.toUpperCase() === "BUY_SELL"
                           ? "BUY"
-                          : "SELL"} {")"}
+                          : "SELL"}{" "}
+                        {")"}
                       </span>
                     </h4>
-                    <span className="">
-                      Count: {count}
-                    </span>
+                    <span className="">Count: {count}</span>
                   </div>
                   {/* Averages */}
                   <div className="averages-text mt-2">
@@ -239,13 +234,12 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                         Sell:{" "}
                         <strong>{avg_sell_price?.toFixed(3) ?? "-"}</strong>
                       </span>
-                  <span className="agp-avg agp-avg-lot">
-  Buy Lot: <strong>{formatDecimal(avg_buy_lot)}</strong>
-</span>
-<span className="agp-avg agp-avg-lot">
-  Sell Lot: <strong>{formatDecimal(avg_sell_lot)}</strong>
-</span>
-
+                      <span className="agp-avg agp-avg-lot">
+                        Buy Lot: <strong>{formatDecimal(avg_buy_lot)}</strong>
+                      </span>
+                      <span className="agp-avg agp-avg-lot">
+                        Sell Lot: <strong>{formatDecimal(avg_sell_lot)}</strong>
+                      </span>
                     </div>
                   </div>
                   {/* Live Price */}
@@ -332,7 +326,6 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                           <th>symbol</th>
                           <th>Buy Price</th>
                           <th>Sell Price</th>
-                    
 
                           <th>P/L</th>
 
