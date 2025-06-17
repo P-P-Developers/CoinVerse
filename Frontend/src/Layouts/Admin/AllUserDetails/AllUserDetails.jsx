@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../../Utils/Table/Table";
 import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
-import { Getuserlistdata } from "../../../Services/Admin/Addmin";
+import { AllUserDetail, GetAllUserDeatailsdata } from "../../../Services/Admin/Addmin";
 import { Link } from "react-router-dom";
 import { ArrowLeftRight, Eye, RotateCcw } from "lucide-react";
 import {
@@ -11,7 +11,8 @@ import {
 import socket from "../../../Utils/socketClient";
 
 
-const UserDetails = () => {
+const AllUserDetails = () => {
+
     const [data, setData] = useState([]);
     const [userName, setUserName] = useState([]);
     const [Userid, setUserId] = useState(null);
@@ -30,32 +31,17 @@ const UserDetails = () => {
     }
 
 
-    useEffect(() => {
-        fetchAdminList();
-    }, []);
-
-
-    const fetchAdminList = async () => {
-        try {
-            const response = await getAdminName();
-            if (response.status) {
-                setUserName(response.data);
-            }
-        } catch (error) {
-            console.error("Admin list fetch error:", error);
-        }
-    };
 
 
     useEffect(() => {
-        fetchUserList(Userid)
+        fetchUserList()
     }, [Userid, userNamed, input, status])
 
 
-    const fetchUserList = async (Userid) => {
+    const fetchUserList = async () => {
         try {
-            const data = { adminid: Userid, userId: userNamed || "", status: Number(status), input: Number(input) || "" }
-            const response = await Getuserlistdata(data);
+            const data = { userId: userNamed || "", status: Number(status), input: Number(input) || "" }
+            const response = await GetAllUserDeatailsdata(data);
             if (response?.status) {
                 setUserNameList(response.data);
                 setData(response.data);
@@ -118,7 +104,7 @@ const UserDetails = () => {
             Cell: ({ cell }) => {
                 return (
                     <Link
-                        to={`/superadmin/user-Trade-history/${cell.row._id}`}
+                        to={`/admin/User-tradehistory/${cell.row._id}`}
 
                     >
                         <Eye style={{ cursor: "pointer", color: "#33B469" }} />
@@ -136,7 +122,7 @@ const UserDetails = () => {
                     <div className="card transaction-table">
                         <div className="card-header border-0 flex-wrap pb-0 d-flex justify-content-between align-items-center">
                             <h4 className="card-title mb-0">All Users</h4>
-                            <Link to="/admin/users" className="btn btn-primary">
+                            <Link to="/admin/all-users-detail" className="btn btn-primary">
                                 <i className="fa-solid fa-arrow-left me-2"></i>Back
                             </Link>
                         </div>
@@ -151,31 +137,11 @@ const UserDetails = () => {
                                     <div className="row gx-3 gy-2 p-3">
 
                                         <div className="col-md-3">
-                                            <label className="fw-bold mb-1">🛡️ Admin</label>
-                                            <select
-                                                className="form-select"
-                                                onChange={(e) => { setUserId(e.target.value); setUserNamed("") }}
-                                                value={Userid || ""}
-                                            >
-                                                <option value="">Select an admin</option>
-                                                {userName.map((admin) => (
-                                                    <option key={admin._id} value={admin._id}>
-                                                        {admin.UserName}
-                                                    </option>
-                                                ))}
-                                            </select>
-
-                                        </div>
-
-
-                                        <div className="col-md-3">
                                             <label className="fw-bold mb-1">👤 User</label>
                                             <select
                                                 className="form-select"
                                                 onChange={(e) => {
                                                     setUserNamed(e.target.value);
-
-
                                                 }}
                                                 value={userNamed}
                                             >
@@ -258,4 +224,4 @@ const UserDetails = () => {
     );
 };
 
-export default UserDetails;
+export default AllUserDetails;

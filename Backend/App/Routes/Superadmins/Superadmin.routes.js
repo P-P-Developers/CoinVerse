@@ -26,8 +26,8 @@ const {
   GetAdminBalanceWithPosition,
   getAdminName,
   getAdminLogs,
-  allUersDetails,
-  getUserlist
+  getUserlist,
+  UserWisetradehistory
 } = require("../../Controllers/Superadmin/Admins/admin");
 
 const {
@@ -60,8 +60,8 @@ router.get("/getAdminName", getAdminName);
 router.delete("/deleteCompany", deleteCompany);
 
 router.post("/gettradehistory", gettradehistory);
-router.post("/allUersDetails", allUersDetails);
 router.post("/getUserlist", getUserlist);
+router.post("/UserWisetradehistory", UserWisetradehistory);
 
 router.post("/getAdminUserName", GetAdminUserName);
 router.post("/GetAdminBalanceWithPosition", GetAdminBalanceWithPosition);

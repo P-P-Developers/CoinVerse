@@ -651,3 +651,14 @@ export async function Getuserlistdata(data, token) {
   }
 }
 
+
+export async function GetAllUserDeatailsdata(data, token) {
+  try {
+    const res = await axios.post(`${Config.base_url}admin/getUserDetails`, data, {
+      data: {},
+    });
+    return await res?.data;
+  } catch (err) {
+    return await err;
+  }
+}

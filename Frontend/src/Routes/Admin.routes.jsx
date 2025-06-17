@@ -28,6 +28,8 @@ import AdminTradehistory from "../Layouts/Admin/Tradehistory/Admintradehistory";
 import Research from "../Layouts/Admin/Research/Research";
 import Basicsetting from "../Layouts/Admin/Profile/Basicsetting";
 import Chatbox from "../Layouts/Admin/Chatbox/Chatdash";
+import AllUserDetails from "../Layouts/Admin/AllUserDetails/AllUserDetails";
+import UserTradeHistory from "../Layouts/Admin/AllUserDetails/UserTradeHistory";
 
 const AdminRoutes = () => {
   return (
@@ -65,6 +67,11 @@ const AdminRoutes = () => {
           <Route path="/signup" element={<Signup />} />
           <Route path="/tradehistory" element={<AdminTradehistory />} />
           <Route path="/bonus" element={<Brokerage />} />
+
+
+          <Route path="/all-users-detail" element={<AllUserDetails />} />
+          <Route path="/User-tradehistory/:id" element={<UserTradeHistory />} />
+
 
           <Route path="/research" element={<Research />} />
           <Route path="/basicsetting" element={<Basicsetting />} />

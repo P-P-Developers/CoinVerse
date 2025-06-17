@@ -19,6 +19,7 @@ const BonusCollectioniModel = require("../../../Models/BonusCollectioni.model");
 const { sendPushNotification } = require("../../common/firebase");
 const open_position = db.open_position;
 const AdminActivityLog = db.AdminActivityLog;
+
 class Superadmin {
   async AddAdmin(req, res) {
     try {
@@ -1378,139 +1379,406 @@ class Superadmin {
 
 
 
+
+  // async getUserlist(req, res) {
+  //   try {
+  //     const { adminid, userId } = req.body;
+
+  //     let users = [];
+
+
+  //     if (userId) {
+  //       const user = await User_model.findOne({ _id: userId }).select("UserName _id Balance");
+
+  //       if (!user) {
+  //         return res.json({
+  //           status: false,
+  //           message: "User not found",
+  //           data: [],
+  //         });
+  //       }
+
+  //       users = [user];
+  //     }
+
+
+  //     else if (adminid) {
+  //       users = await User_model.find({ parent_id: adminid })
+  //         .select("UserName _id Balance")
+  //         .sort({ createdAt: -1 });
+  //     } else {
+  //       return res.json({
+  //         status: false,
+  //         message: "userId or adminid is required",
+  //         data: [],
+  //       });
+  //     }
+
+  //     if (!users.length) {
+  //       return res.json({
+  //         status: false,
+  //         message: "No users found",
+  //         data: [],
+  //       });
+  //     }
+
+  //     const userIdStrings = users.map((u) => u._id.toString());
+
+
+  //     const creditData = await BalanceStatement.aggregate([
+  //       {
+  //         $match: {
+  //           userid: { $in: userIdStrings },
+  //           type: "CREDIT",
+  //           message: "Balance Added",
+  //         },
+  //       },
+  //       {
+  //         $group: {
+  //           _id: "$userid",
+  //           totalCredit: { $sum: { $abs: "$Amount" } },
+  //         },
+  //       },
+  //     ]);
+
+
+  //     const debitData = await BalanceStatement.aggregate([
+  //       {
+  //         $match: {
+  //           userid: { $in: userIdStrings },
+  //           type: "DEBIT",
+  //           message: "Balance used for withdrawal",
+  //         },
+  //       },
+  //       {
+  //         $group: {
+  //           _id: "$userid",
+  //           totalDebit: { $sum: { $abs: "$Amount" } },
+  //         },
+  //       },
+  //     ]);
+
+
+  //     const brokerageData = await BalanceStatement.aggregate([
+  //       {
+  //         $match: {
+  //           userid: { $in: userIdStrings },
+  //           type: "DEBIT",
+  //           brokerage: { $ne: null },
+  //         },
+  //       },
+  //       {
+  //         $group: {
+  //           _id: "$userid",
+  //           totalBrokerage: { $sum: { $abs: "$brokerage" } },
+  //         },
+  //       },
+  //     ]);
+
+  //     const creditMap = {};
+  //     creditData.forEach((entry) => {
+  //       creditMap[entry._id] = entry.totalCredit;
+  //     });
+
+  //     const debitMap = {};
+  //     debitData.forEach((entry) => {
+  //       debitMap[entry._id] = entry.totalDebit;
+  //     });
+
+  //     const brokerageMap = {};
+  //     brokerageData.forEach((entry) => {
+  //       brokerageMap[entry._id] = entry.totalBrokerage;
+  //     });
+
+
+  //     const result = users.map((user) => {
+  //       const id = user._id.toString();
+
+  //       const totalCredit = creditMap[id] || 0;
+  //       const totalDebit = debitMap[id] || 0;
+  //       const totalBrokerage = brokerageMap[id] || 0;
+
+  //       const remainingBalance = totalCredit - totalDebit - totalBrokerage;
+
+  //       return {
+  //         _id: user._id,
+  //         UserName: user.UserName,
+  //         Balance: user.Balance,
+  //         totalCredit,
+  //         totalDebit,
+  //         totalBrokerage,
+  //         remainingBalance,
+  //       };
+  //     });
+
+  //     return res.json({
+  //       status: true,
+  //       message: "Wallet and brokerage data fetched successfully",
+  //       data: result,
+  //     });
+
+  //   } catch (error) {
+  //     console.error("Error in getUserlist:", error);
+  //     return res.json({
+  //       status: false,
+  //       message: "Internal server error",
+  //       data: [],
+  //     });
+  //   }
+  // }
+
+
   async getUserlist(req, res) {
     try {
-      const { adminid } = req.body;
+      const { adminid, userId, status, input } = req.body;
+      let users = [];
 
-      if (!adminid) {
-        return res.json({ status: false, message: "adminid is required", data: [] });
+      if (userId) {
+        const user = await User_model.findOne({ _id: userId }).select("UserName _id Balance");
+        if (!user) {
+          return res.json({ status: false, message: "User not found", data: [] });
+        }
+        users = [user];
+      } else if (adminid) {
+        users = await User_model.find({ parent_id: adminid })
+          .select("UserName _id Balance")
+          .sort({ createdAt: -1 });
+      } else {
+        return res.json({ status: false, message: "userId or adminid is required", data: [] });
       }
 
-      const users = await User_model.find({ parent_id: adminid }).select("UserName _id").sort({ createdAt: -1 });
-
-      if (!users || users.length === 0) {
+      if (!users.length) {
         return res.json({ status: false, message: "No users found", data: [] });
       }
 
+      const userIdStrings = users.map((u) => u._id.toString());
 
-
-      const walletData = await Wallet_model.aggregate([
+      // Credit
+      const creditData = await BalanceStatement.aggregate([
         {
           $match: {
-            user_Id: userObjectId,
+            userid: { $in: userIdStrings },
+            type: "CREDIT",
+            message: "Balance Added",
           },
         },
         {
           $group: {
-            _id: "$Type",
-            totalAmount: { $sum: "$Balance" },
+            _id: "$userid",
+            totalCredit: { $sum: { $abs: "$Amount" } },
           },
         },
       ]);
 
+      // Debit
+      const debitData = await BalanceStatement.aggregate([
+        {
+          $match: {
+            userid: { $in: userIdStrings },
+            type: "DEBIT",
+            message: "Balance used for withdrawal",
+          },
+        },
+        {
+          $group: {
+            _id: "$userid",
+            totalDebit: { $sum: { $abs: "$Amount" } },
+          },
+        },
+      ]);
 
-      let credit = 0;
-      let debit = 0;
+      // Brokerage
+      const brokerageData = await BalanceStatement.aggregate([
+        {
+          $match: {
+            userid: { $in: userIdStrings },
+            type: "DEBIT",
+            brokerage: { $ne: null },
+          },
+        },
+        {
+          $group: {
+            _id: "$userid",
+            totalBrokerage: { $sum: { $abs: "$brokerage" } },
+          },
+        },
+      ]);
 
-      walletData.forEach((entry) => {
-        if (entry._id === "CREDIT") credit = entry.totalAmount;
-        if (entry._id === "DEBIT") debit = entry.totalAmount;
-      });
+      // Completed Orders
+      const allOrders = await mainorder_model.find({
+        userid: { $in: userIdStrings },
+        status: "Completed",
+      }).select("userid symbol buy_price sell_price buy_qty sell_qty");
 
-      const result = {
-        ...user.toObject(),
-        totalCredit: credit,
-        totalDebit: debit,
-        remainingBalance: credit - debit,
+      const symbolPriceMap = {
+        BTCUSD: 106600,
+        ETHUSD: 3050,
       };
 
-      return res.json({
-        status: true,
-        message: "Wallet data fetched successfully",
-        data: [result],
+      const plMap = {};
+
+      for (const order of allOrders) {
+        const userId = order.userid.toString();
+        const symbol = order.symbol;
+
+        const buyQty = parseFloat(order.buy_qty || 0);
+        const sellQty = parseFloat(order.sell_qty || 0);
+        const buyPrice = parseFloat(order.buy_price || 0);
+        const sellPrice = order.sell_price !== null ? parseFloat(order.sell_price) : null;
+
+        const qtyMatched = Math.min(buyQty, sellQty);
+
+        // ✅ Realized
+        const realized = sellPrice !== null
+          ? parseFloat((sellPrice - buyPrice) * qtyMatched)
+          : 0;
+
+        // ✅ Unrealized
+        let unrealized = 0;
+        if (sellPrice === null && buyQty > sellQty) {
+          const currentPrice = parseFloat(symbolPriceMap[symbol] || buyPrice);
+          const openQty = parseFloat(buyQty - sellQty);
+          unrealized = parseFloat((currentPrice - buyPrice) * openQty);
+        }
+
+        if (!plMap[userId]) {
+          plMap[userId] = { realized: 0, unrealized: 0 };
+        }
+
+        plMap[userId].realized += realized;
+        plMap[userId].unrealized += unrealized;
+      }
+
+      const creditMap = {};
+      creditData.forEach((entry) => {
+        creditMap[entry._id] = parseFloat(entry.totalCredit);
       });
 
+      const debitMap = {};
+      debitData.forEach((entry) => {
+        debitMap[entry._id] = parseFloat(entry.totalDebit);
+      });
+
+      const brokerageMap = {};
+      brokerageData.forEach((entry) => {
+        brokerageMap[entry._id] = parseFloat(entry.totalBrokerage);
+      });
+
+      const result = users.map((user) => {
+        const id = user._id.toString();
+        const totalCredit = parseFloat(creditMap[id] || 0);
+        const totalDebit = parseFloat(debitMap[id] || 0);
+        const totalBrokerage = parseFloat(brokerageMap[id] || 0);
+        const remainingBalance = parseFloat(totalCredit - totalDebit - totalBrokerage);
+
+        const pl = plMap[id] || { realized: 0, unrealized: 0 };
+
+        return {
+          _id: user._id,
+          UserName: user.UserName,
+          Balance: parseFloat(user.Balance || 0).toFixed(2),
+          totalCredit: totalCredit.toFixed(2),
+          totalDebit: totalDebit.toFixed(2),
+          totalBrokerage: totalBrokerage.toFixed(2),
+          remainingBalance: remainingBalance.toFixed(2),
+          realizedPL: parseFloat(pl.realized).toFixed(2),
+          unrealizedPL: parseFloat(pl.unrealized).toFixed(2),
+        };
+      });
+
+      let finalResult = result;
+
+      if (status !== undefined && input !== undefined && input !== "") {
+        const numericInput = parseFloat(input);
+        if (!isNaN(numericInput)) {
+          if (status == 0) {
+            finalResult = result.filter((user) => parseFloat(user.realizedPL) < numericInput);
+          } else if (status == 1) {
+            finalResult = result.filter((user) => parseFloat(user.realizedPL) > numericInput);
+          }
+        }
+      }
 
       return res.json({
         status: true,
-        message: "Users fetched successfully",
-        data: users,
+        message: "Wallet, brokerage, and P&L data fetched successfully",
+        data: finalResult,
       });
+    } catch (error) {
+      console.error("Error in getUserlist:", error);
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        data: [],
+      });
+    }
+  }
 
+
+
+  async UserWisetradehistory(req, res) {
+    try {
+      const { userid, status, fromDate, toDate } = req.body;
+
+      if (!userid) {
+        return res.json({
+          status: false,
+          message: "userid is required",
+          data: [],
+        });
+      }
+
+      const query = { userid };
+
+      // Apply date range filter if provided
+      if (fromDate || toDate) {
+        query.createdAt = {};
+        if (fromDate) {
+          query.createdAt.$gte = new Date(fromDate);
+        }
+        if (toDate) {
+          const toDateObj = new Date(toDate);
+          toDateObj.setHours(23, 59, 59, 999);
+          query.createdAt.$lte = toDateObj;
+        }
+      }
+
+      let result = await mainorder_model.find(query).sort({ createdAt: -1 });
+
+      if (!result || result.length === 0) {
+        return res.json({ status: false, message: "No trades found", data: [] });
+      }
+
+      // Apply status-based filtering only if status is provided
+      if (status === 0) {
+        result = result.filter(item => item.buy_lot === item.sell_lot);
+      } else if (status === 1) {
+        result = result.filter(item => item.buy_lot !== item.sell_lot);
+      }
+
+      if (result.length === 0) {
+        return res.json({ status: false, message: "No trades found for given status", data: [] });
+      }
+
+      const user = await User_model.findOne({ _id: userid });
+      const userName = user ? user.UserName : "Unknown";
+
+      const mappedResult = result.map((item) => ({
+        ...item.toObject(),
+        userName,
+      }));
+
+      return res.json({
+        status: true,
+        message: "Trade history found",
+        data: mappedResult,
+      });
     } catch (error) {
       console.error(error);
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
 
-
-
-  async allUersDetails(req, res) {
-    try {
-      const { userIds } = req.body;
-
-
-      if (!userIds) {
-        return res.json({
-          status: false,
-          message: "No userId provided",
-          data: [],
-        });
-      }
-
-      const userObjectId = new mongoose.Types.ObjectId(userIds);
-
-      const user = await User_model.findOne({ _id: userObjectId }).select("UserName _id");
-
-      if (!user) {
-        return res.json({
-          status: false,
-          message: "User not found",
-          data: [],
-        });
-      }
-
-
-      const walletData = await Wallet_model.aggregate([
-        {
-          $match: {
-            user_Id: userObjectId,
-          },
-        },
-        {
-          $group: {
-            _id: "$Type",
-            totalAmount: { $sum: "$Balance" },
-          },
-        },
-      ]);
-
-
-      let credit = 0;
-      let debit = 0;
-
-      walletData.forEach((entry) => {
-        if (entry._id === "CREDIT") credit = entry.totalAmount;
-        if (entry._id === "DEBIT") debit = entry.totalAmount;
-      });
-
-      const result = {
-        ...user.toObject(),
-        totalCredit: credit,
-        totalDebit: debit,
-        remainingBalance: credit - debit,
-      };
-
-      return res.json({
-        status: true,
-        message: "Wallet data fetched successfully",
-        data: [result],
-      });
-    } catch (error) {
-      console.error("Error in allUersDetails:", error);
-      return res.json({ status: false, message: "Internal error", data: [] });
-    }
-  }
 
 
 

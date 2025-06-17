@@ -82,6 +82,12 @@ export const admin_header = [
     route: "/admin/users",
   },
   {
+    id: 2,
+    name: "User Detail",
+    icon: "fa fa-users",
+    route: "/admin/all-users-detail",
+  },
+  {
     id: 4,
     name: "Transaction",
     icon: "fe fe-dollar-sign",

@@ -81,8 +81,8 @@ class Admin {
           existingUser.UserName === UserName
             ? "Username"
             : existingUser.Email === Email
-            ? "Email"
-            : "Phone Number";
+              ? "Email"
+              : "Phone Number";
 
         return res.json({
           status: false,
@@ -1420,7 +1420,7 @@ class Admin {
         message: "Research updated successfully",
         data: research,
       });
-    } catch (error) {}
+    } catch (error) { }
   }
 
   async DeleteResearch(req, res) {
@@ -1440,7 +1440,7 @@ class Admin {
         message: "Research deleted successfully",
         data: result,
       });
-    } catch (error) {}
+    } catch (error) { }
   }
 
   async UpdatStatus(req, res) {
@@ -2002,6 +2002,197 @@ class Admin {
         .json({ status: false, message: "Internal server error", data: [] });
     }
   }
+
+
+  async getUserDetails(req, res) {
+    try {
+      const { userId, status, input } = req.body;
+      let users = [];
+
+      if (userId) {
+        const user = await User_model.findOne({ _id: userId }).select("UserName _id Balance");
+        if (!user) {
+          return res.json({ status: false, message: "User not found", data: [] });
+        }
+        users = [user];
+      } else {
+        // Superadmin: Fetch all users
+        users = await User_model.find({})
+          .select("UserName _id Balance")
+          .sort({ createdAt: -1 });
+      }
+
+      if (!users.length) {
+        return res.json({ status: false, message: "No users found", data: [] });
+      }
+
+      const userIdStrings = users.map((u) => u._id.toString());
+
+      // Credit
+      const creditData = await BalanceStatement.aggregate([
+        {
+          $match: {
+            userid: { $in: userIdStrings },
+            type: "CREDIT",
+            message: "Balance Added",
+          },
+        },
+        {
+          $group: {
+            _id: "$userid",
+            totalCredit: { $sum: { $abs: "$Amount" } },
+          },
+        },
+      ]);
+
+      // Debit
+      const debitData = await BalanceStatement.aggregate([
+        {
+          $match: {
+            userid: { $in: userIdStrings },
+            type: "DEBIT",
+            message: "Balance used for withdrawal",
+          },
+        },
+        {
+          $group: {
+            _id: "$userid",
+            totalDebit: { $sum: { $abs: "$Amount" } },
+          },
+        },
+      ]);
+
+      // Brokerage
+      const brokerageData = await BalanceStatement.aggregate([
+        {
+          $match: {
+            userid: { $in: userIdStrings },
+            type: "DEBIT",
+            brokerage: { $ne: null },
+          },
+        },
+        {
+          $group: {
+            _id: "$userid",
+            totalBrokerage: { $sum: { $abs: "$brokerage" } },
+          },
+        },
+      ]);
+
+      // Orders
+      const allOrders = await mainorder_model.find({
+        userid: { $in: userIdStrings },
+        status: "Completed",
+      }).select("userid symbol buy_price sell_price buy_qty sell_qty");
+
+      const symbolPriceMap = {
+        BTCUSD: 106600,
+        ETHUSD: 3050,
+      };
+
+      const plMap = {};
+
+      for (const order of allOrders) {
+        const userId = order.userid.toString();
+        const symbol = order.symbol;
+
+        const buyQty = parseFloat(order.buy_qty || 0);
+        const sellQty = parseFloat(order.sell_qty || 0);
+        const buyPrice = parseFloat(order.buy_price || 0);
+        const sellPrice = order.sell_price !== null ? parseFloat(order.sell_price) : null;
+
+        const qtyMatched = Math.min(buyQty, sellQty);
+
+        const realized = sellPrice !== null
+          ? parseFloat((sellPrice - buyPrice) * qtyMatched)
+          : 0;
+
+        let unrealized = 0;
+        if (sellPrice === null && buyQty > sellQty) {
+          const currentPrice = parseFloat(symbolPriceMap[symbol] || buyPrice);
+          const openQty = parseFloat(buyQty - sellQty);
+          unrealized = parseFloat((currentPrice - buyPrice) * openQty);
+        }
+
+        if (!plMap[userId]) {
+          plMap[userId] = { realized: 0, unrealized: 0 };
+        }
+
+        plMap[userId].realized += realized;
+        plMap[userId].unrealized += unrealized;
+      }
+
+      const creditMap = {};
+      creditData.forEach((entry) => {
+        creditMap[entry._id] = parseFloat(entry.totalCredit);
+      });
+
+      const debitMap = {};
+      debitData.forEach((entry) => {
+        debitMap[entry._id] = parseFloat(entry.totalDebit);
+      });
+
+      const brokerageMap = {};
+      brokerageData.forEach((entry) => {
+        brokerageMap[entry._id] = parseFloat(entry.totalBrokerage);
+      });
+
+      const result = users.map((user) => {
+        const id = user._id.toString();
+        const totalCredit = parseFloat(creditMap[id] || 0);
+        const totalDebit = parseFloat(debitMap[id] || 0);
+        const totalBrokerage = parseFloat(brokerageMap[id] || 0);
+        const remainingBalance = parseFloat(totalCredit - totalDebit - totalBrokerage);
+
+        const pl = plMap[id] || { realized: 0, unrealized: 0 };
+
+        return {
+          _id: user._id,
+          UserName: user.UserName,
+          Balance: parseFloat(user.Balance || 0).toFixed(2),
+          totalCredit: totalCredit.toFixed(2),
+          totalDebit: totalDebit.toFixed(2),
+          totalBrokerage: totalBrokerage.toFixed(2),
+          remainingBalance: remainingBalance.toFixed(2),
+          realizedPL: parseFloat(pl.realized).toFixed(2),
+          unrealizedPL: parseFloat(pl.unrealized).toFixed(2),
+        };
+      });
+
+      let finalResult = result;
+
+      if (status !== undefined && input !== undefined && input !== "") {
+        const numericInput = parseFloat(input);
+        if (!isNaN(numericInput)) {
+          if (status == 0) {
+            finalResult = result.filter((user) => parseFloat(user.realizedPL) < numericInput);
+          } else if (status == 1) {
+            finalResult = result.filter((user) => parseFloat(user.realizedPL) > numericInput);
+          }
+        }
+      }
+
+      return res.json({
+        status: true,
+        message: "Wallet, brokerage, and P&L data fetched successfully",
+        data: finalResult,
+      });
+    } catch (error) {
+      console.error("Error in getUserDetails:", error);
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        data: [],
+      });
+    }
+  }
+
+
+
+
+
+
+
 }
 
 module.exports = new Admin();

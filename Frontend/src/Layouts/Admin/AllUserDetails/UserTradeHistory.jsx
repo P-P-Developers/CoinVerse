@@ -259,7 +259,7 @@ const UserTradeHistory = () => {
                             <div className="card transaction-table">
                                 <div className="card-header border-0 flex-wrap pb-0 d-flex justify-content-between align-items-center">
                                     <h4 className="card-title mb-0">📊 Trade History</h4>
-                                    <Link to="/superadmin/All-users" className="btn btn-primary">
+                                    <Link to="/admin/all-users-detail" className="btn btn-primary">
                                         <i className="fa-solid fa-arrow-left me-2"></i>Back
                                     </Link>
                                 </div>

@@ -50,7 +50,7 @@ const SuperadminRoutes = () => {
           <Route path="/withdrawal" element={<Withdrawal />} />
           <Route path="/deposit" element={<Deposite />} />
           <Route path="/All-users" element={<UserDetails />} />
-          <Route path="/user-Trade-history" element={<UserTradeHistory />} />
+          <Route path="/user-Trade-history/:id" element={<UserTradeHistory />} />
 
 
         </Routes>
