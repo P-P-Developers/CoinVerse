@@ -39,14 +39,14 @@ const Position = () => {
 
       const responseData = await GetConditions();
       setLogsData(responseData.data);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const GetAdminUserName = async () => {
     try {
       const res = await getAdminName();
       setAdminNames(res.data);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   // Dummy log data

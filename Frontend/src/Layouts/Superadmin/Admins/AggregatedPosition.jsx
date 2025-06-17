@@ -146,18 +146,18 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
 
 
   function formatDecimal(value) {
-  if (value == null) return "0";
-  const strVal = value.toString();
-  if (strVal.includes(".")) {
-    const [intPart, decimalPart] = strVal.split(".");
-    if (decimalPart.length > 4) {
-      return parseFloat(value).toFixed(4);
-    } else {
-      return strVal;
+    if (value == null) return "0";
+    const strVal = value.toString();
+    if (strVal.includes(".")) {
+      const [intPart, decimalPart] = strVal.split(".");
+      if (decimalPart.length > 4) {
+        return parseFloat(value).toFixed(4);
+      } else {
+        return strVal;
+      }
     }
+    return strVal;
   }
-  return strVal;
-}
 
   return (
     <div className="container-fluid px-3">
@@ -178,8 +178,8 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
           signal_type === "buy_sell"
             ? "#198754"
             : signal_type === "sell_buy"
-            ? "#dc3545"
-            : "#0d6efd";
+              ? "#dc3545"
+              : "#0d6efd";
 
         const currentPage = pageStates[actualIndex] || 0;
         const totalPages = Math.ceil(records.length / tablePageSize);
@@ -201,7 +201,7 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
           >
             <Card.Header
               className="custom-header py-3 px-4 agp-header"
-       
+
             >
 
               <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 agp-header-row">
@@ -210,7 +210,7 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                     <h4 className="mb-0 fw-bold me-3 header-symbol agp-symbol-title">
                       <span className="">{symbol}</span>
                       <span
-                       style={{
+                        style={{
                           color: signalColor,
                           fontWeight: "bold",
                           marginLeft: "0.5rem",
@@ -239,12 +239,12 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                         Sell:{" "}
                         <strong>{avg_sell_price?.toFixed(3) ?? "-"}</strong>
                       </span>
-                  <span className="agp-avg agp-avg-lot">
-  Buy Lot: <strong>{formatDecimal(avg_buy_lot)}</strong>
-</span>
-<span className="agp-avg agp-avg-lot">
-  Sell Lot: <strong>{formatDecimal(avg_sell_lot)}</strong>
-</span>
+                      <span className="agp-avg agp-avg-lot">
+                        Buy Lot: <strong>{formatDecimal(avg_buy_lot)}</strong>
+                      </span>
+                      <span className="agp-avg agp-avg-lot">
+                        Sell Lot: <strong>{formatDecimal(avg_sell_lot)}</strong>
+                      </span>
 
                     </div>
                   </div>
@@ -254,13 +254,12 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                       <strong>Live Price:</strong>
                     </span>
                     <span
-                      className={`agp-live-price ${
-                        priceColor === "green"
-                          ? "agp-live-green"
-                          : priceColor === "red"
+                      className={`agp-live-price ${priceColor === "green"
+                        ? "agp-live-green"
+                        : priceColor === "red"
                           ? "agp-live-red"
                           : ""
-                      }`}
+                        }`}
                     >
                       {livePrice ?? "-"}
                     </span>
@@ -332,7 +331,7 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                           <th>symbol</th>
                           <th>Buy Price</th>
                           <th>Sell Price</th>
-                    
+
 
                           <th>P/L</th>
 
@@ -372,13 +371,12 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                               <td>
                                 {item.buy_price ?? (
                                   <span
-                                    className={` ${
-                                      priceColor === "green"
-                                        ? "agp-live-green"
-                                        : priceColor === "red"
+                                    className={` ${priceColor === "green"
+                                      ? "agp-live-green"
+                                      : priceColor === "red"
                                         ? "agp-live-red"
                                         : ""
-                                    }`}
+                                      }`}
                                   >
                                     {livePrices[item.symbol?.toLowerCase()]}
                                   </span>
@@ -387,13 +385,12 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                               <td>
                                 {item.sell_price ?? (
                                   <span
-                                    className={` ${
-                                      priceColor === "green"
-                                        ? "agp-live-green"
-                                        : priceColor === "red"
+                                    className={` ${priceColor === "green"
+                                      ? "agp-live-green"
+                                      : priceColor === "red"
                                         ? "agp-live-red"
                                         : ""
-                                    }`}
+                                      }`}
                                   >
                                     {livePrices[item.symbol?.toLowerCase()]}
                                   </span>
@@ -402,17 +399,17 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                               <td>
                                 {signal_type === "buy_sell"
                                   ? (
-                                      (livePrices[item.symbol?.toLowerCase()] -
-                                        item.buy_price) *
-                                      item.buy_lot
-                                    ).toFixed(3)
+                                    (livePrices[item.symbol?.toLowerCase()] -
+                                      item.buy_price) *
+                                    item.buy_lot
+                                  ).toFixed(3)
                                   : (
-                                      (item.sell_price -
-                                        livePrices[
-                                          item.symbol?.toLowerCase()
-                                        ]) *
-                                      item.sell_lot
-                                    ).toFixed(3)}
+                                    (item.sell_price -
+                                      livePrices[
+                                      item.symbol?.toLowerCase()
+                                      ]) *
+                                    item.sell_lot
+                                  ).toFixed(3)}
                               </td>
 
                               <td>{item.buy_lot ?? "-"}</td>
@@ -420,7 +417,11 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
 
                               <td>{item.Target_price ?? "-"}</td>
                               <td>{item.stoploss_price ?? "-"}</td>
-                              <td>{item.Sl_price_percentage ?? "-"}</td>
+                              <td>{item.Sl_price_percentage != null
+                                ? (item.Sl_price_percentage < 50
+                                  ? parseFloat(item.Sl_price_percentage).toFixed(4)
+                                  : parseFloat(item.Sl_price_percentage).toFixed(2))
+                                : "-"}</td>
                               <td>
                                 {new Date(item.createdAt).toLocaleString()}
                               </td>
