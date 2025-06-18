@@ -2034,7 +2034,7 @@ class Admin {
           $match: {
             userid: { $in: userIdStrings },
             type: "CREDIT",
-            message: "Balance Added",
+            message: { $in: ["Balance Added", "Balance used for Deposit", "Balance Credit"] },
           },
         },
         {
@@ -2051,7 +2051,7 @@ class Admin {
           $match: {
             userid: { $in: userIdStrings },
             type: "DEBIT",
-            message: "Balance used for withdrawal",
+            message: { $in: ["Balance used for withdrawal"] },
           },
         },
         {

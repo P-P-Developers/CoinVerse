@@ -733,6 +733,9 @@ class Superadmin {
     }
   }
 
+
+
+
   async getPosition_detail(req, res) {
     try {
       const { adminid } = req.body;
@@ -821,6 +824,14 @@ class Superadmin {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
+
+
+
+
+
+
+
+
 
   //  --------------
   async brokerageDataForSuperAdmin(req, res) {
@@ -1559,7 +1570,7 @@ class Superadmin {
           $match: {
             userid: { $in: userIdStrings },
             type: "CREDIT",
-            message: "Balance Added",
+            message: { $in: ["Balance Added", "Balance used for Deposit", "Balance Credit"] },
           },
         },
         {
@@ -1576,7 +1587,7 @@ class Superadmin {
           $match: {
             userid: { $in: userIdStrings },
             type: "DEBIT",
-            message: "Balance used for withdrawal",
+            message: { $in: ["Balance used for withdrawal"] }
           },
         },
         {

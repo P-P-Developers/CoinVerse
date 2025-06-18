@@ -7,6 +7,9 @@ import { AddCondition } from "../../../Services/Superadmin/Superadmin";
 import { commandAlert } from "../../../Utils/Commanalert";
 
 const AggregatedPosition = ({ groupedData, search = "" }) => {
+
+
+
   const [cardPage, setCardPage] = useState(0);
   const [pageStates, setPageStates] = useState({});
   const [livePrices, setLivePrices] = useState({});
@@ -16,6 +19,10 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
 
   const cardPageSize = 5;
   const tablePageSize = 10;
+
+
+
+
 
   useEffect(() => {
     socket.on("receive_data_forex", (data) => {
@@ -37,6 +44,10 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
     };
   }, [livePrices]);
 
+
+
+
+
   // Filter logic for search
   const filteredGroups = React.useMemo(() => {
     if (!search?.trim()) return groupedData;
@@ -54,11 +65,17 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
     });
   }, [groupedData, search]);
 
+
+
+
   const totalCardPages = Math.ceil(filteredGroups.length / cardPageSize);
   const displayedGroups = filteredGroups.slice(
     cardPage * cardPageSize,
     (cardPage + 1) * cardPageSize
   );
+
+
+
 
   // SweetAlert for trading
   const SetConditions = async (type, symbol, livePrice, avgPrice) => {
@@ -98,6 +115,9 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
       return;
     }
 
+
+
+
     const dropThreshold = type === "up" ? dropValue : -Math.abs(dropValue);
 
     commandAlert({
@@ -107,6 +127,9 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
       icon: "trade",
       showLoading: true,
     });
+
+
+
 
     const data = {
       userId: user_id,
@@ -145,6 +168,9 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
   };
 
 
+
+
+
   function formatDecimal(value) {
     if (value == null) return "0";
     const strVal = value.toString();
@@ -159,9 +185,13 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
     return strVal;
   }
 
+
+
+
+
   return (
     <div className="container-fluid px-3">
-      {displayedGroups.map((group, index) => {
+      {displayedGroups?.map((group, index) => {
         const actualIndex = cardPage * cardPageSize + index;
         const {
           _id: { symbol, signal_type },
