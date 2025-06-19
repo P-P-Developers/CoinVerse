@@ -181,3 +181,6 @@
 2025-06-19T04:59:49.935Z [warn]: SLOW API: [POST] /getPosition_detail - 273ms
 2025-06-19T04:59:50.168Z [warn]: SLOW API: [GET] /GetConditions - 223ms
 2025-06-19T05:18:22.897Z [warn]: SLOW API: [POST] /Squareoff - 217ms
+2025-06-19T05:56:56.390Z [warn]: SLOW API: [POST] /getPosition_detail - 233ms
+2025-06-19T05:56:56.808Z [warn]: SLOW API: [GET] /GetConditions - 410ms
+2025-06-19T06:07:52.778Z [warn]: SLOW API: [POST] /Squareoff - 380ms
