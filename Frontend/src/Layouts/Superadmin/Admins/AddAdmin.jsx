@@ -95,7 +95,6 @@ const AddAdmin = () => {
     },
 
     onSubmit: async (values, { setSubmitting }) => {
-      // Generate Referral Code
       const referralCode = `REF-${values.username}-${Math.random()
         .toString(36)
         .substr(2, 8)}`;
@@ -111,7 +110,7 @@ const AddAdmin = () => {
         parent_id: user_id,
         Role: "ADMIN",
         ProfitMargin: values.ProfitMargin,
-        ReferralCode: referralCode, // Add Referral Code to data
+        ReferralCode: referralCode,
         FixedPerClient: values.FixedPerClient,
         FundAdd: values.FundAdd,
         EveryTransaction: values.EveryTransaction,
@@ -344,25 +343,25 @@ const AddAdmin = () => {
 
   useEffect(() => {
     if (formik.values.FixedPerClient) {
-      formik.setFieldValue("FundAdd", false); // Deselect "First-Time Funding Reward"
+      formik.setFieldValue("FundAdd", false);
     }
   }, [formik.values.FixedPerClient]);
 
   useEffect(() => {
     if (formik.values.FundAdd) {
-      formik.setFieldValue("FixedPerClient", false); // Deselect "Fixed (Per Client)"
+      formik.setFieldValue("FixedPerClient", false);
     }
   }, [formik.values.FundAdd]);
 
   useEffect(() => {
     if (formik.values.EveryTransaction) {
-      formik.setFieldValue("NetTransactionPercent", false); // Deselect "Net Transaction %"
+      formik.setFieldValue("NetTransactionPercent", false);
     }
   }, [formik.values.EveryTransaction]);
 
   useEffect(() => {
     if (formik.values.NetTransactionPercent) {
-      formik.setFieldValue("EveryTransaction", false); // Deselect "Every Transaction %"
+      formik.setFieldValue("EveryTransaction", false);
     }
   }, [formik.values.NetTransactionPercent]);
 

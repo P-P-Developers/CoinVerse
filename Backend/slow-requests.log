@@ -171,3 +171,13 @@
 2025-06-18T10:11:49.543Z [warn]: SLOW API: [GET] /GetConditions - 202ms
 2025-06-18T12:18:36.505Z [warn]: SLOW API: [GET] /GetConditions - 208ms
 2025-06-18T13:19:18.529Z [warn]: SLOW API: [POST] /getPosition_detail - 389ms
+2025-06-19T04:51:48.882Z [warn]: SLOW API: [GET] /GetConditions - 206ms
+2025-06-19T04:57:25.901Z [warn]: SLOW API: [POST] /getPosition_detail - 374ms
+2025-06-19T04:57:30.137Z [warn]: SLOW API: [POST] /getPosition_detail - 298ms
+2025-06-19T04:57:30.456Z [warn]: SLOW API: [POST] /getPosition_detail - 393ms
+2025-06-19T04:57:30.500Z [warn]: SLOW API: [POST] /getPosition_detail - 226ms
+2025-06-19T04:59:49.856Z [warn]: SLOW API: [GET] /getAdminName - 205ms
+2025-06-19T04:59:49.932Z [warn]: SLOW API: [GET] /getCompany - 288ms
+2025-06-19T04:59:49.935Z [warn]: SLOW API: [POST] /getPosition_detail - 273ms
+2025-06-19T04:59:50.168Z [warn]: SLOW API: [GET] /GetConditions - 223ms
+2025-06-19T05:18:22.897Z [warn]: SLOW API: [POST] /Squareoff - 217ms

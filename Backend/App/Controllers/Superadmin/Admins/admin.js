@@ -978,6 +978,139 @@ class Superadmin {
 
 
 
+  // async getPosition_detail(req, res) {
+  //   try {
+  //     const { adminid } = req.body;
+
+  //     const pipeline = [
+  //       {
+  //         $match: {
+  //           adminid: adminid ? adminid : { $exists: true },
+  //           $expr: { $ne: ["$buy_lot", "$sell_lot"] },
+  //         },
+  //       },
+  //       {
+  //         $addFields: {
+  //           useridObjectId: { $toObjectId: "$userid" },
+  //         },
+  //       },
+  //       {
+  //         $lookup: {
+  //           from: "users",
+  //           localField: "useridObjectId",
+  //           foreignField: "_id",
+  //           as: "user",
+  //         },
+  //       },
+  //       {
+  //         $unwind: "$user",
+  //       },
+  //       {
+  //         $addFields: {
+  //           normalized_signal_type: {
+  //             $cond: {
+  //               if: { $in: ["$signal_type", ["buy_sell", "sell_buy"]] },
+  //               then: "buy_sell",
+  //               else: "$signal_type",
+  //             },
+  //           },
+  //         },
+  //       },
+  //       {
+  //         $project: {
+  //           symbol: 1,
+  //           signal_type: 1,
+  //           normalized_signal_type: 1,
+  //           buy_lot: 1,
+  //           sell_lot: 1,
+  //           buy_price: 1,
+  //           sell_price: 1,
+  //           buy_qty: 1,
+  //           sell_qty: 1,
+  //           createdAt: 1,
+  //           adminid: 1,
+  //           userid: 1,
+  //           userName: "$user.UserName",
+  //           Target_price: 1,
+  //           stoploss_price: 1,
+  //           Sl_price_percentage: 1,
+  //         },
+  //       },
+  //       {
+  //         $group: {
+  //           _id: {
+  //             symbol: "$symbol",
+  //             signal_type: "$normalized_signal_type",
+  //           },
+  //           records: { $push: "$$ROOT" },
+  //           count: { $sum: 1 },
+
+  //           avg_buy_price: { $avg: "$buy_price" },
+  //           avg_sell_price: { $avg: "$sell_price" },
+  //           total_buy_lot: { $sum: "$buy_lot" },
+  //           total_sell_lot: { $sum: "$sell_lot" },
+  //           total_buy_qty: { $sum: "$buy_qty" },
+  //           total_sell_qty: { $sum: "$sell_qty" },
+  //         },
+  //       },
+  //       {
+  //         $addFields: {
+  //           records: {
+  //             $map: {
+  //               input: "$records",
+  //               as: "rec",
+  //               in: {
+  //                 $mergeObjects: [
+  //                   "$$rec",
+  //                   {
+  //                     count: "$count",
+  //                     avg_buy_price: "$avg_buy_price",
+  //                     avg_sell_price: "$avg_sell_price",
+  //                     total_buy_lot: "$total_buy_lot",
+  //                     total_sell_lot: "$total_sell_lot",
+  //                     total_buy_qty: "$total_buy_qty",
+  //                     total_sell_qty: "$total_sell_qty",
+  //                   },
+  //                 ],
+  //               },
+  //             },
+  //           },
+  //         },
+  //       },
+  //       {
+  //         $sort: {
+  //           "_id.symbol": 1,
+  //           "_id.signal_type": 1,
+  //         },
+  //       },
+  //     ];
+
+  //     const result = await mainorder_model.aggregate(pipeline);
+
+  //     const UserName = await User_model.find(
+  //       { parent_id: adminid },
+  //       { UserName: 1 }
+  //     );
+
+  //     if (!result || result.length === 0) {
+  //       return res.json({ status: false, message: "Data not found", data: [] });
+  //     }
+
+  //     return res.json({
+  //       status: true,
+  //       message: "Data found",
+  //       data: result,
+  //       User: UserName,
+  //     });
+  //   } catch (error) {
+  //     console.log("Error at getPosition_detail", error);
+  //     return res.json({ status: false, message: "Internal error", data: [] });
+  //   }
+  // }
+
+
+
+
   async getPosition_detail(req, res) {
     try {
       const { adminid } = req.body;
@@ -1014,6 +1147,15 @@ class Superadmin {
                 else: "$signal_type",
               },
             },
+            valid_sell_price: {
+              $cond: [{ $ifNull: ["$sell_price", false] }, "$sell_price", null],
+            },
+            valid_sell_lot: {
+              $cond: [{ $ifNull: ["$sell_lot", false] }, "$sell_lot", null],
+            },
+            valid_sell_qty: {
+              $cond: [{ $ifNull: ["$sell_qty", false] }, "$sell_qty", null],
+            },
           },
         },
         {
@@ -1034,6 +1176,9 @@ class Superadmin {
             Target_price: 1,
             stoploss_price: 1,
             Sl_price_percentage: 1,
+            valid_sell_price: 1,
+            valid_sell_lot: 1,
+            valid_sell_qty: 1,
           },
         },
         {
@@ -1044,13 +1189,12 @@ class Superadmin {
             },
             records: { $push: "$$ROOT" },
             count: { $sum: 1 },
-
             avg_buy_price: { $avg: "$buy_price" },
-            avg_sell_price: { $avg: "$sell_price" },
+            avg_sell_price: { $avg: "$valid_sell_price" },
             total_buy_lot: { $sum: "$buy_lot" },
-            total_sell_lot: { $sum: "$sell_lot" },
+            total_sell_lot: { $sum: "$valid_sell_lot" },
             total_buy_qty: { $sum: "$buy_qty" },
-            total_sell_qty: { $sum: "$sell_qty" },
+            total_sell_qty: { $sum: "$valid_sell_qty" },
           },
         },
         {
@@ -1107,8 +1251,6 @@ class Superadmin {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
-
-
 
 
 

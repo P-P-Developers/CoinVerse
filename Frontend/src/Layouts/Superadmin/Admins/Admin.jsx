@@ -59,7 +59,7 @@ const Admin = () => {
   const isAllSelected = selectedFilters.length === 4;
 
   const columns = [
-    // { Header: "FullName", accessor: "FullName" },
+
     { Header: "UserName", accessor: "UserName" },
     { Header: "Password", accessor: "Otp" },
     { Header: "Email", accessor: "Email" },
@@ -75,7 +75,7 @@ const Admin = () => {
             className="form-check-input"
             type="checkbox"
             onChange={(event) => updateactivestatus(event, cell.row._id)}
-            // defaultChecked={cell.value == 1}
+
 
             checked={cell.value == 1}
           />
@@ -220,7 +220,7 @@ const Admin = () => {
       const response = await getUserdata(data);
 
       const finalData = response.data.filter((item) => {
-        // Search match
+
         const matchesSearch =
           searchTerm.trim() === "" ||
           item.FullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -228,13 +228,13 @@ const Admin = () => {
           item.Email.toLowerCase().includes(searchTerm.toLowerCase()) ||
           item.PhoneNo.toLowerCase().includes(searchTerm.toLowerCase());
 
-        // Status match
+
         const matchesStatus =
           getActiveInactive === "all" ||
           (getActiveInactive === "Active" && item.ActiveStatus == 1) ||
           (getActiveInactive === "Inactive" && item.ActiveStatus == 0);
 
-        // Filter checkbox match
+
         const matchesFilters =
           selectedFilters.length === 0 ||
           selectedFilters.some((filter) => item[filter]);
@@ -251,7 +251,7 @@ const Admin = () => {
 
   return (
     <>
-      {/* Logs Modal */}
+
       <Modal
         show={logsModalOpen}
         onHide={() => setLogsModalOpen(false)}
@@ -291,15 +291,15 @@ const Admin = () => {
                                 {change.oldValue === true
                                   ? "Checked"
                                   : change.oldValue === false
-                                  ? "Unchecked"
-                                  : String(change.oldValue)}
+                                    ? "Unchecked"
+                                    : String(change.oldValue)}
                               </td>
                               <td>
                                 {change.newValue === true
                                   ? "Checked"
                                   : change.newValue === false
-                                  ? "Unchecked"
-                                  : String(change.newValue)}
+                                    ? "Unchecked"
+                                    : String(change.newValue)}
                               </td>
                               <td>
                                 {log.timestamp
@@ -357,7 +357,7 @@ const Admin = () => {
                     aria-labelledby="Week-tab"
                   >
                     <div className="row mb-3 ms-2">
-                      {/* Search Box */}
+
                       <div className="col-md-4 mb-2">
                         <label
                           htmlFor="searchInput"
@@ -375,7 +375,7 @@ const Admin = () => {
                         />
                       </div>
 
-                      {/* Active / Inactive Filter */}
+
                       <div className="col-md-3 mb-2">
                         <label
                           htmlFor="statusSelect"
@@ -395,7 +395,7 @@ const Admin = () => {
                         </select>
                       </div>
 
-                      {/* Filter Dropdown */}
+
                       <div className="col-md-3 mb-2">
                         <label className="form-label fw-bold d-block">
                           Filters
