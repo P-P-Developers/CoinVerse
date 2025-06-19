@@ -36,7 +36,6 @@ const Position = () => {
     try {
       const response = await getavailableposition({ adminid: selectedAdmin });
       setData(response.data);
-      console.log("(response.data", response.data)
       const responseData = await GetConditions();
       setLogsData(responseData.data);
     } catch (error) { }
