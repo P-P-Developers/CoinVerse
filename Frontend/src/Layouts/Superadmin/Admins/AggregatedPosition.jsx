@@ -173,6 +173,14 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
   }
 
 
+
+
+
+
+
+
+
+
   return (
     <div className="container-fluid px-3">
       {displayedGroups.map((group, index) => {
@@ -195,6 +203,7 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
               ? "#dc3545"
               : "#0d6efd";
 
+
         const currentPage = pageStates[actualIndex] || 0;
         const totalPages = Math.ceil(records.length / tablePageSize);
         const symbolKey = symbol?.toLowerCase();
@@ -214,11 +223,11 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
             key={actualIndex}
           >
             <Card.Header
-              className="custom-header py-3 px-4 agp-header"
+              className="custom-header py-3 px-4 agp-header d-block"
 
             >
 
-              <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 agp-header-row">
+              <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 agp-header-row d-block">
                 <div className="flex-grow-1">
                   <div className="d-flex align-items-center flex-wrap mb-2 agp-header-symbol-row">
                     <h4 className="mb-0 fw-bold me-3 header-symbol agp-symbol-title">
@@ -229,10 +238,7 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                           fontWeight: "bold",
                           marginLeft: "0.5rem",
                         }}
-                      >{"("}
-                        {signal_type.toUpperCase() === "BUY_SELL"
-                          ? "BUY"
-                          : "SELL"} {")"}
+                      >
                       </span>
                     </h4>
                     <span className="">
@@ -250,7 +256,7 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                         <strong>{avg_buy_price?.toFixed(3) ?? "-"}</strong>
                       </span>
                       <span className="agp-avg agp-avg-sell">
-                        Sell:{" "}
+                        Sell Price:{" "}
                         <strong>{avg_sell_price?.toFixed(3) ?? "-"}</strong>
                       </span>
                       <span className="agp-avg agp-avg-lot">
@@ -263,21 +269,10 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                     </div>
                   </div>
 
-                  <div className="d-flex align-items-center gap-2 mt-3">
-                    <span className="text-muted fs-6 fw-semibold agp-live-label">
-                      <strong>Live Price:</strong>
-                    </span>
-                    <span
-                      className={`agp-live-price ${priceColor === "green"
-                        ? "agp-live-green"
-                        : priceColor === "red"
-                          ? "agp-live-red"
-                          : ""
-                        }`}
-                    >
-                      {livePrice ?? "-"}
-                    </span>
-                  </div>
+
+
+
+
                 </div>
 
                 <div className="d-flex flex-row gap-2 agp-btn-row">
@@ -308,6 +303,67 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                     🔽 Down Side
                   </button>
                 </div>
+              </div>
+              <div className="d-flex justify-content-between align-items-center gap-2 mt-3">
+                <div className="d-flex align-items-center gap-2">
+                  <span className="text-muted fs-6 fw-semibold agp-live-label">
+                    <strong>Live Price:</strong>
+                  </span>
+                  <span
+                    className={`agp-live-price ${priceColor === "green"
+                      ? "agp-live-green"
+                      : priceColor === "red"
+                        ? "agp-live-red"
+                        : ""
+                      }`}
+                  >
+                    {livePrice ?? "-"}
+                  </span>
+                </div>
+
+
+                <div>
+                  <p className="d-flex align-items-center gap-2" style={{ fontWeight: "bold", margin: 0 }}>
+                    Overall Profit/Loss:{" "}
+                    <span
+                      style={{
+                        color: (() => {
+                          const overall = records?.reduce((acc, item) => {
+                            const symbol = item.symbol?.toLowerCase();
+                            const livePrice = livePrices[symbol] ?? 0;
+
+                            if (item.signal_type === "buy_sell") {
+                              acc += (livePrice - item.buy_price) * item.buy_lot;
+                            } else if (item.signal_type === "sell_buy") {
+                              acc += (item.sell_price - livePrice) * item.sell_lot;
+                            }
+
+                            return acc;
+                          }, 0);
+                          return overall >= 0 ? "green" : "red";
+                        })(),
+                      }}
+                    >
+                      ₹
+                      {(() => {
+                        const overall = records?.reduce((acc, item) => {
+                          const symbol = item.symbol?.toLowerCase();
+                          const livePrice = livePrices[symbol] ?? 0;
+
+                          if (item.signal_type === "buy_sell") {
+                            acc += (livePrice - item.buy_price) * item.buy_lot;
+                          } else if (item.signal_type === "sell_buy") {
+                            acc += (item.sell_price - livePrice) * item.sell_lot;
+                          }
+
+                          return acc;
+                        }, 0);
+                        return overall.toFixed(3);
+                      })()}
+                    </span>
+                  </p>
+                </div>
+
               </div>
             </Card.Header>
             <Accordion defaultActiveKey={null}>
@@ -341,6 +397,7 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                       >
                         <tr>
                           <th>#</th>
+                          <th>Signal Type</th>
                           <th>User Name</th>
                           <th>symbol</th>
                           <th>Buy Price</th>
@@ -376,6 +433,7 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                               }
                             >
                               <td>{currentPage * tablePageSize + idx + 1}</td>
+                              <td>{item.signal_type === "buy_sell" ? "Buy" : "Sell"}</td>
                               <td>{item.userName}</td>
                               <td>{item.symbol}</td>
                               <td>
