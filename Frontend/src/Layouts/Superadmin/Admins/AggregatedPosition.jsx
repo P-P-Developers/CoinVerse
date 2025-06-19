@@ -174,13 +174,6 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
 
 
 
-
-
-
-
-
-
-
   return (
     <div className="container-fluid px-3">
       {displayedGroups.map((group, index) => {
@@ -268,11 +261,6 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
 
                     </div>
                   </div>
-
-
-
-
-
                 </div>
 
                 <div className="d-flex flex-row gap-2 agp-btn-row">
