@@ -1952,8 +1952,6 @@ class Admin {
   async getAllUser(req, res) {
     try {
       const { id, search, ActiveStatus } = req.body;
-
-      console.log("req.body", req.body)
       const page = parseInt(req.body.page) || 1;
       const limit = parseInt(req.body.limit) || 1000;
       const skip = (page - 1) * limit;
@@ -2201,14 +2199,14 @@ class Admin {
       }
 
       if (userId) {
-        const user = await User_model.findOne({ _id: userId, parent_id: adminId })
+        const user = await User_model.findOne({ _id: userId, parent_id: adminId, Role: "USER" })
           .select("UserName _id Balance");
         if (!user) {
           return res.json({ status: false, message: "User not found", data: [] });
         }
         users = [user];
       } else {
-        users = await User_model.find({ parent_id: adminId })
+        users = await User_model.find({ parent_id: adminId, Role: "USER" })
           .select("UserName _id Balance")
           .sort({ createdAt: -1 });
       }
