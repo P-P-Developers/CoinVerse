@@ -9,7 +9,7 @@ import {
     switchOrderType,
 } from "../../../Services/Superadmin/Superadmin";
 import socket from "../../../Utils/socketClient";
-
+import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const AllUserDetails = () => {
 
@@ -21,6 +21,8 @@ const AllUserDetails = () => {
     const [userNamed, setUserNamed] = useState("");
     const [status, setStatus] = useState("")
     const [input, setInput] = useState("")
+
+    const userdata = getUserFromToken()
 
 
     const handlerefresh = () => {
@@ -38,9 +40,10 @@ const AllUserDetails = () => {
     }, [Userid, userNamed, input, status])
 
 
+
     const fetchUserList = async () => {
         try {
-            const data = { userId: userNamed || "", status: Number(status), input: Number(input) || "" }
+            const data = { adminId: userdata?.user_id, userId: userNamed || "", status: Number(status), input: Number(input) || "" }
             const response = await GetAllUserDeatailsdata(data);
             if (response?.status) {
                 setUserNameList(response.data);
@@ -56,7 +59,6 @@ const AllUserDetails = () => {
 
 
 
-    // Table columns
     const columns = [
         { Header: "UserName", accessor: "UserName" },
         {
@@ -114,6 +116,9 @@ const AllUserDetails = () => {
         }
 
     ];
+
+
+
 
     return (
         <div className="container-fluid">

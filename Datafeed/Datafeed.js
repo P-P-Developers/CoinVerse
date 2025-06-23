@@ -7,6 +7,9 @@ const http = require("http");
 const socketIo = require("socket.io");
 const WebSocket = require("ws");
 const { MongoClient } = require("mongodb");
+const dbdata = require("../Backend/App/Models");
+const Symbol = db.Symbol;
+
 
 
 // Constants
@@ -30,7 +33,7 @@ const initializeDatabase = async () => {
     db = client.db();
     collection = db.collection("live_prices");
     conditions = db.collection("conditions");
- 
+
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
     process.exit(1); // Exit the process if the database connection fails
@@ -117,7 +120,7 @@ const simulatePriceMovement = async (formattedData, type, typ) => {
       );
     }
 
-   
+
   }
 };
 
@@ -178,7 +181,7 @@ const updateDatabaseCrypto = async (data) => {
         { upsert: true }
       );
     }
-  } catch (error) {}
+  } catch (error) { }
 };
 
 const updateDatabaseforex = async (data) => {
@@ -206,7 +209,7 @@ const updateDatabaseforex = async (data) => {
         { upsert: true }
       );
     }
-  } catch (error) {}
+  } catch (error) { }
 };
 
 // Initialize WebSocket Connections

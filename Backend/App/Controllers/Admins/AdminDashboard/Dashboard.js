@@ -4,18 +4,18 @@ const User_model = db.user;
 const axios = require("axios");
 
 class Dashboard {
+
+
   async GetDashboardData(req, res) {
     try {
       const { parent_id } = req.body;
 
-      // Fetch total licenses for the given parent_id
       const parentData = await User_model.findOne(
         { _id: parent_id },
         { Licence: 1 }
       );
       const TotalLicence = parentData ? parentData.Licence || 0 : 0;
 
-      // Fetch the sum of Licences from all Users and Employees under the parent_id
       const UsedLicenceData = await User_model.aggregate([
         {
           $match: {
@@ -47,7 +47,7 @@ class Dashboard {
                   Role: "EMPLOYE",
                   ActiveStatus: "1",
                   parent_id: parent_id,
-                  $or: [{ End_Date: { $gte: new Date() } }, { End_Date: null }],
+                  // $or: [{ End_Date: { $gte: new Date() } }, { End_Date: null }],
                 },
               },
               { $count: "count" },
@@ -62,7 +62,7 @@ class Dashboard {
                   Role: "USER",
                   ActiveStatus: "1",
                   parent_id: parent_id,
-                  $or: [{ End_Date: { $gte: new Date() } }, { End_Date: null }],
+                  // $or: [{ End_Date: { $gte: new Date() } }, { End_Date: null }],
                 },
               },
               { $count: "count" },
