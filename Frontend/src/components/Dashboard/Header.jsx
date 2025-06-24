@@ -58,14 +58,6 @@ const Header = () => {
 
 
   useEffect(() => {
-    socket.on("connect", () => {
-      console.log("✅ Socket connected:", socket.id);
-    });
-
-    socket.on("disconnect", () => {
-      console.log("❌ Socket disconnected");
-    });
-
     socket.on("newMessage", (msg) => {
       if (user_id === msg.parent_id) {
         setSocketdata(msg);
@@ -79,20 +71,26 @@ const Header = () => {
           ...prev,
         ]);
 
-        toast.info(`📩 ${msg.senderInfo?.UserName || "User"}: ${msg.message}`, {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          pauseOnHover: true,
-          draggable: true,
-          theme: "colored",
-        });
+        toast.info(
+          <div>
+            <div style={{ fontWeight: "bold", marginBottom: "4px" }}>
+              📩 {msg.senderInfo?.UserName || "User"} Send a Message On chatbox
+            </div>
+            <div>Message : {msg.message}</div>
+          </div>,
+          {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+          }
+        )
       }
     });
 
     return () => {
-      socket.off("connect");
-      socket.off("disconnect");
       socket.off("newMessage");
     };
   }, [user_id]);
@@ -113,10 +111,13 @@ const Header = () => {
 
 
   useEffect(() => {
-    // Apply the theme on page load
+
     document.body.setAttribute("data-theme-version", theme);
     document.body.className = theme === "dark" ? "dark-mode" : "light-mode";
   }, [theme]);
+
+
+
 
   useEffect(() => {
     const element = document.querySelector(".wallet-open.show");
@@ -129,7 +130,9 @@ const Header = () => {
       }
     } else {
     }
-  }, [isActive]); // This effect will run every time `isActive` changes
+  }, [isActive]);
+
+
 
   const changeFavicon = (iconPath) => {
     let link = document.querySelector("link[rel*='icon']");
