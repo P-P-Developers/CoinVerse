@@ -11,11 +11,11 @@ import { getUserFromToken } from "../../Utils/TokenVerify";
 import { io } from "socket.io-client";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import { socket_url, socket_url_web } from "../../Utils/Config";
 
 const Header = () => {
 
-  const socket = io("http://localhost:8800", {
+  const socket = io(socket_url, {
     transports: ["websocket"],
     withCredentials: true,
   });
@@ -34,7 +34,7 @@ const Header = () => {
   const [socketdata, setSocketdata] = useState({})
 
 
-  console.log("socketdata", socketdata)
+
 
   useEffect(() => {
     fetchLogo();
