@@ -216,3 +216,4 @@
 2025-06-24T08:19:55.243Z [warn]: SLOW API: [POST] /admin/getUserDetails - 262ms
 2025-06-24T08:20:09.395Z [warn]: SLOW API: [POST] /admin/message - 252ms
 2025-06-24T08:37:09.417Z [warn]: SLOW API: [POST] /superadmin/getAdminDetail - 250ms
+2025-06-24T09:15:46.545Z [warn]: SLOW API: [POST] /admin/getUserDetails - 209ms
