@@ -1736,8 +1736,6 @@ class Admin {
 
       req.io.emit("newMessage", fullMessage);;
 
-      console.log("populatedMsg", fullMessage)
-
       const GetUser = await User_model.findById(receiverId).select(
         "DeviceToken"
       );
