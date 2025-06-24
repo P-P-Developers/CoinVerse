@@ -1604,6 +1604,8 @@ class Admin {
     }
   }
 
+
+
   async updateBankDetails(req, res) {
     try {
       const {
@@ -1694,11 +1696,14 @@ class Admin {
     }
   }
 
+
+
   // 🔸 Send Message
   async message(req, res) {
     try {
       const { conversationId, senderId, receiverId, senderType, message } =
         req.body;
+
       const newMsg = new Message({
         conversationId,
         senderId,
@@ -1706,7 +1711,32 @@ class Admin {
         senderType,
         message,
       });
+
       await newMsg.save();
+
+
+      const populatedMsg = await User_model.findById({ _id: senderId })
+        .populate("_id FullName UserName");
+
+      const fullMessage = {
+        _id: newMsg._id,
+        message: newMsg.message,
+        conversationId: newMsg.conversationId,
+        senderId: newMsg.senderId,
+        receiverId: newMsg.receiverId,
+        senderType: newMsg.senderType,
+        createdAt: newMsg.createdAt,
+        parent_id: newMsg.receiverId,
+        senderInfo: {
+          FullName: populatedMsg?.FullName || "",
+          UserName: populatedMsg?.UserName || "",
+          _id: populatedMsg?._id || "",
+        },
+      };
+
+      req.io.emit("newMessage", fullMessage);;
+
+      console.log("populatedMsg", fullMessage)
 
       const GetUser = await User_model.findById(receiverId).select(
         "DeviceToken"
@@ -1742,6 +1772,9 @@ class Admin {
     }
   }
 
+
+
+
   // 🔸 Get Messages by Conversation
   async getMessages(req, res) {
     try {
@@ -1757,6 +1790,9 @@ class Admin {
       });
     }
   }
+
+
+
 
   // 🔸 Get Conversations for User/Admin
   async getConversations(req, res) {

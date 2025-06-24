@@ -8,8 +8,19 @@ import { fDateTime } from "../../Utils/Date_format/datefromat";
 import { getCompanyApi } from "../../Services/Superadmin/Superadmin";
 
 import { getUserFromToken } from "../../Utils/TokenVerify";
+import { io } from "socket.io-client";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const Header = () => {
+
+  const socket = io("http://localhost:8800", {
+    transports: ["websocket"],
+    withCredentials: true,
+  });
+
+
   const location = useLocation();
   const TokenData = getUserFromToken();
   const user_role = TokenData?.Role?.toUpperCase();
@@ -20,15 +31,22 @@ const Header = () => {
   const [notification, setNotification] = useState([]);
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
   const [logo, setLogo] = useState("");
+  const [socketdata, setSocketdata] = useState({})
 
+
+  console.log("socketdata", socketdata)
 
   useEffect(() => {
     fetchLogo();
   }, []);
 
+
+
   useEffect(() => {
     if (user_id) getNotifications();
   }, [user_id]);
+
+
 
   useEffect(() => {
     const timeLeft = exp * 1000 - Date.now();
@@ -36,6 +54,63 @@ const Header = () => {
     const timeout = setTimeout(logoutuser, timeLeft);
     return () => clearTimeout(timeout);
   }, [exp]);
+
+
+
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log("✅ Socket connected:", socket.id);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("❌ Socket disconnected");
+    });
+
+    socket.on("newMessage", (msg) => {
+      if (user_id === msg.parent_id) {
+        setSocketdata(msg);
+        setNotification((prev) => [
+          {
+            _id: msg._id || new Date().getTime(),
+            message: msg.message,
+            createdAt: new Date(),
+            UserName: msg.senderInfo?.UserName || "User"
+          },
+          ...prev,
+        ]);
+
+        toast.info(`📩 ${msg.senderInfo?.UserName || "User"}: ${msg.message}`, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
+      }
+    });
+
+    return () => {
+      socket.off("connect");
+      socket.off("disconnect");
+      socket.off("newMessage");
+    };
+  }, [user_id]);
+
+
+
+  const getNotifications = async () => {
+    try {
+      const response = await getbroadcastmessageforuser({ userid: user_id });
+      if (response.status)
+        setNotification(response.data);
+
+    } catch (error) {
+      console.log("error", error)
+    }
+  };
+
+
 
   useEffect(() => {
     // Apply the theme on page load
@@ -99,15 +174,9 @@ const Header = () => {
     try {
       const response = await LogoutUser({ userid: user_id });
       if (response.status) localStorage.clear();
-    } catch (error) {}
+    } catch (error) { }
   };
 
-  const getNotifications = async () => {
-    try {
-      const response = await getbroadcastmessageforuser({ userid: user_id });
-      if (response.status) setNotification(response.data);
-    } catch (error) {}
-  };
 
 
 
@@ -119,9 +188,9 @@ const Header = () => {
     return segments[segments.length - 1] || segments[segments.length - 2];
   };
 
-  const formattedSegment = 
+  const formattedSegment =
     getLastPathSegment(location.pathname)?.charAt(0).toUpperCase() + getLastPathSegment(location.pathname)?.slice(1)
-  
+
 
 
   const pageTitles = {
@@ -150,7 +219,7 @@ const Header = () => {
 
       <div className="nav-header">
         <a href="index.html" className="">
-          <img src={logo} width={"250px"} height={"83px"} alt="" className="w-100"/>
+          <img src={logo} width={"250px"} height={"83px"} alt="" className="w-100" />
 
           <div className="brand-title"></div>
         </a>
@@ -307,9 +376,8 @@ const Header = () => {
                       )}
                       {(user_role === "ADMIN" || user_role === "EMPLOYE") && (
                         <Link
-                          to={`/${
-                            user_role === "ADMIN" ? "admin" : "employee"
-                          }/changedpassword`}
+                          to={`/${user_role === "ADMIN" ? "admin" : "employee"
+                            }/changedpassword`}
                           className="dropdown-item ai-icon"
                         >
                           <i
@@ -345,7 +413,9 @@ const Header = () => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
+
   );
 };
 

@@ -10,14 +10,40 @@ const cors = require("cors");
 const bodyparser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
+const { Server } = require("socket.io");
+
+const server = http.createServer(app);
+
+
+const io = new Server(server, {
+  cors: {
+    origin: ["http://localhost:3000", "*"], // Allow local frontend
+    credentials: true,
+    methods: ["GET", "POST"],
+  },
+});
+
+
+
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
+
+
 
 // Setting up CORS options
 const corsOpts = {
-  origin: ["http://localhost:3000","*"],
+  origin: ["http://localhost:3000", "*"],
   credentials: true,
   methods: ["GET", "POST"],
   allowedHeaders: ["Content-Type", "Authorization", "x-access-token"],
 };
+
+
+
+
+
 
 // Middleware
 app.use(cors(corsOpts));
@@ -70,7 +96,8 @@ app.use((req, res) => {
 
 
 
-const server = http.createServer(app);
+
+
 
 server.listen(process.env.PORT, () => {
   console.log(`Server is running on http://0.0.0.0:${process.env.PORT}`);

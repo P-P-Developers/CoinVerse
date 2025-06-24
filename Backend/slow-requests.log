@@ -211,3 +211,8 @@
 2025-06-23T08:54:24.282Z [warn]: SLOW API: [POST] /admin/getAllUser - 7447ms
 2025-06-23T09:21:19.199Z [warn]: SLOW API: [POST] /admin/getAllUser - 693ms
 2025-06-23T09:34:06.142Z [warn]: SLOW API: [POST] /admin/getuserpaymentstatus - 282ms
+2025-06-23T11:59:38.943Z [warn]: SLOW API: [POST] /admin/getuserpaymentstatus - 407ms
+2025-06-24T07:23:58.737Z [warn]: SLOW API: [POST] /admin/message - 211ms
+2025-06-24T08:19:55.243Z [warn]: SLOW API: [POST] /admin/getUserDetails - 262ms
+2025-06-24T08:20:09.395Z [warn]: SLOW API: [POST] /admin/message - 252ms
+2025-06-24T08:37:09.417Z [warn]: SLOW API: [POST] /superadmin/getAdminDetail - 250ms
