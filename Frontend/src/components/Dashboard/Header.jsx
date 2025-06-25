@@ -31,7 +31,6 @@ const Header = () => {
   const [notification, setNotification] = useState([]);
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
   const [logo, setLogo] = useState("");
-  const [socketdata, setSocketdata] = useState({})
 
 
 
@@ -59,15 +58,13 @@ const Header = () => {
 
   useEffect(() => {
 
-    socket.on("connect", () => {
-      console.log("🚀 Socket connected successfully with ID:", socket.id);
-    })
+    // socket.on("connect", () => {
+    //   console.log("🚀 Socket connected successfully with ID:", socket.id);
+    // })
 
 
     socket.on("newMessage", (msg) => {
-      console.log("newMessage", msg)
       if (user_id === msg.parent_id) {
-        setSocketdata(msg);
         setNotification((prev) => [
           {
             _id: msg._id || new Date().getTime(),
@@ -97,9 +94,44 @@ const Header = () => {
       }
     });
 
+
+
+    socket.on("newTransactionRequest", (msg) => {
+      if (user_id === msg.adminid) {
+        setNotification((prev) => [
+          {
+            _id: msg._id || new Date().getTime(),
+            Amount: msg.amount,
+            createdAt: new Date(),
+            UserName: msg.UserName || "User"
+          },
+          ...prev,
+        ]);
+
+        toast.info(
+          <div>
+            <div style={{ fontWeight: "bold", marginBottom: "4px" }}>
+              📩 {msg.UserName || "User"} Send Request To {msg.type}
+            </div>
+            <div>Amount : {msg.amount}</div>
+          </div>,
+          {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+          }
+        )
+      }
+    });
+
+
+
     return () => {
       socket.off("newMessage");
-      socket.off("connected");
+      socket.off("newTransactionRequest");
     };
   }, [user_id]);
 

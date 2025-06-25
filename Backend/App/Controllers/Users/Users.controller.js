@@ -17,6 +17,8 @@ const bcrypt = require("bcrypt");
 
 
 class Users {
+
+
   async userWithdrawalanddeposite(req, res) {
     try {
       const { userid, Balance, type, transactionId, ScreenShot } = req.body;
@@ -74,6 +76,17 @@ class Users {
 
       await paymentHistory.save();
 
+      req.io.emit("newTransactionRequest", {
+        userid: userid,
+        adminid: userdata.parent_id,
+        username: userdata?.UserName || "",
+        amount: dollarcount,
+        type: type == 1 ? "Deposit" : "Withdrawal",
+        time: new Date(),
+        paymentHistoryId: paymentHistory._id,
+      });
+
+
       return res.json({
         status: true,
         message: "Request sent",
@@ -88,6 +101,9 @@ class Users {
       });
     }
   }
+
+
+
 
   async getpaymenthistory(req, res) {
     try {
@@ -665,7 +681,7 @@ class Users {
   async matchPin(req, res) {
     try {
       const { user_id, pin, fcm_token } = req.body;
-    
+
 
       if (pin && !/^\d{4}$/.test(pin)) {
         return res.send({ status: false, message: "Invalid PIN", data: [] });
@@ -689,7 +705,7 @@ class Users {
         const currentDate = new Date();
         const endDate = new Date(user.End_Date);
 
-      
+
       }
 
       // If pin_status is false, return a message to generate the pin first
@@ -768,7 +784,7 @@ class Users {
         const currentDate = new Date();
         const endDate = new Date(user.End_Date);
 
-       
+
       }
 
       // If pin_status is false, return a message to generate the pin first
