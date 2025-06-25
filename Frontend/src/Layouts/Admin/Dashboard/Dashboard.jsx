@@ -4,9 +4,16 @@ import LivePriceCard from "./Card";
 import { useNavigate } from "react-router-dom";
 import { getUserFromToken } from "../../../Utils/TokenVerify";
 
+
+
+
 const Dashboard = () => {
+
+
   const navigate = useNavigate();
   const TokenData = getUserFromToken();
+
+
 
   const [countdata, setCountdata] = useState([0]);
   const user_id = TokenData?.user_id;
@@ -14,6 +21,8 @@ const Dashboard = () => {
   useEffect(() => {
     getdashboard();
   }, []);
+
+
 
   const getdashboard = async () => {
     try {
@@ -24,17 +33,30 @@ const Dashboard = () => {
         setCountdata(response.data);
       } else {
       }
-    } catch (error) {}
+    } catch (error) { }
   };
+
+
+
 
   const RedirectToUser = (path) => {
-   
-    navigate("/admin/users");
+    if (path === "Totaluser") {
+      navigate("/admin/users/", { state: { path } });
+    } else if (path === "activeuser") {
+      navigate("/admin/users/", { state: { path } });
+    } else {
+      navigate("/admin/users/", { state: { path } });
+    }
+    // navigate("/admin/users");
   };
-  const RedirectToEmp = (path) => {
 
+
+
+  const RedirectToEmp = (path) => {
     navigate("/admin/employee");
   };
+
+
 
   return (
     <div>
@@ -56,7 +78,7 @@ const Dashboard = () => {
         <div className="row">
           <div className="col-xl-12">
             <div className="row main-card">
-              <div className="col-md-4" onClick={() => RedirectToUser()}>
+              <div className="col-md-4" onClick={() => RedirectToUser("Totaluser")}>
                 <div className="card card-box bg-secondary bg-secondary">
                   <div className="card-header border-0 pb-0">
                     <div className="chart-num">
@@ -278,7 +300,7 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
-              <div className="col-md-4" onClick={() => RedirectToUser()}>
+              <div className="col-md-4" onClick={() => RedirectToUser("activeuser")}>
                 <div className="card card-box bg-secondary bg-pink">
                   <div className="card-header border-0 pb-0">
                     <div className="chart-num">
@@ -503,7 +525,7 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
-              <div className="col-md-4" onClick={() => RedirectToUser()}>
+              <div className="col-md-4" onClick={() => RedirectToUser("inactive")}>
                 <div className="card card-box bg-secondary bg-dark">
                   <div className="card-header border-0 pb-0">
                     <div className="chart-num">

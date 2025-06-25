@@ -17,6 +17,8 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
   const cardPageSize = 5;
   const tablePageSize = 10;
 
+
+
   useEffect(() => {
     socket.on("receive_data_forex", (data) => {
       const symbol = data.data[1]?.toLowerCase();
@@ -37,7 +39,9 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
     };
   }, [livePrices]);
 
-  // Filter logic for search
+
+
+
   const filteredGroups = React.useMemo(() => {
     if (!search?.trim()) return groupedData;
     const lower = search.trim().toLowerCase();
@@ -54,13 +58,19 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
     });
   }, [groupedData, search]);
 
+
+
+
+
   const totalCardPages = Math.ceil(filteredGroups.length / cardPageSize);
   const displayedGroups = filteredGroups.slice(
     cardPage * cardPageSize,
     (cardPage + 1) * cardPageSize
   );
 
-  // SweetAlert for trading
+
+
+
   const SetConditions = async (type, symbol, livePrice, avgPrice) => {
     const { value: inputDrop } = await Swal.fire({
       title: "Enter Drop Threshold",
@@ -108,6 +118,7 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
       showLoading: true,
     });
 
+
     const data = {
       userId: user_id,
       symbol: symbol,
@@ -144,6 +155,9 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
     }
   };
 
+
+
+
   function formatDecimal(value) {
     if (value == null) return "0";
     const strVal = value.toString();
@@ -158,6 +172,8 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
     return strVal;
   }
 
+
+
   return (
     <div className="container-fluid px-3">
       {displayedGroups.map((group, index) => {
@@ -167,8 +183,8 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
           count,
           avg_buy_price,
           avg_sell_price,
-          avg_buy_lot,
-          avg_sell_lot,
+          total_buy_lot,
+          total_sell_lot,
 
           records,
         } = group;
@@ -177,8 +193,9 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
           signal_type === "buy_sell"
             ? "#198754"
             : signal_type === "sell_buy"
-            ? "#dc3545"
-            : "#0d6efd";
+              ? "#dc3545"
+              : "#0d6efd";
+
 
         const currentPage = pageStates[actualIndex] || 0;
         const totalPages = Math.ceil(records.length / tablePageSize);
@@ -198,8 +215,12 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
             className="mb-4 shadow animated-card border-0"
             key={actualIndex}
           >
-            <Card.Header className="custom-header py-3 px-4 agp-header">
-              <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 agp-header-row">
+            <Card.Header
+              className="custom-header py-3 px-4 agp-header d-block"
+
+            >
+
+              <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 agp-header-row d-block">
                 <div className="flex-grow-1">
                   <div className="d-flex align-items-center flex-wrap mb-2 agp-header-symbol-row">
                     <h4 className="mb-0 fw-bold me-3 header-symbol agp-symbol-title">
@@ -211,16 +232,11 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                           marginLeft: "0.5rem",
                         }}
                       >
-                        {"("}
-                        {signal_type.toUpperCase() === "BUY_SELL"
-                          ? "BUY"
-                          : "SELL"}{" "}
-                        {")"}
                       </span>
                     </h4>
                     <span className="">Count: {count}</span>
                   </div>
-                  {/* Averages */}
+
                   <div className="averages-text mt-2">
                     <span className=" text-secondary me-2 agp-avg-label">
                       🎯 Averages:
@@ -231,36 +247,20 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                         <strong>{avg_buy_price?.toFixed(3) ?? "-"}</strong>
                       </span>
                       <span className="agp-avg agp-avg-sell">
-                        Sell:{" "}
+                        Sell Price:{" "}
                         <strong>{avg_sell_price?.toFixed(3) ?? "-"}</strong>
                       </span>
                       <span className="agp-avg agp-avg-lot">
-                        Buy Lot: <strong>{formatDecimal(avg_buy_lot)}</strong>
+                        Buy Lot: <strong>{formatDecimal(total_buy_lot)}</strong>
                       </span>
                       <span className="agp-avg agp-avg-lot">
-                        Sell Lot: <strong>{formatDecimal(avg_sell_lot)}</strong>
+                        Sell Lot: <strong>{formatDecimal(total_sell_lot)}</strong>
                       </span>
+
                     </div>
                   </div>
-                  {/* Live Price */}
-                  <div className="d-flex align-items-center gap-2 mt-3">
-                    <span className="text-muted fs-6 fw-semibold agp-live-label">
-                      <strong>Live Price:</strong>
-                    </span>
-                    <span
-                      className={`agp-live-price ${
-                        priceColor === "green"
-                          ? "agp-live-green"
-                          : priceColor === "red"
-                          ? "agp-live-red"
-                          : ""
-                      }`}
-                    >
-                      {livePrice ?? "-"}
-                    </span>
-                  </div>
                 </div>
-                {/* Action Buttons */}
+
                 <div className="d-flex flex-row gap-2 agp-btn-row">
                   <button
                     className="btn btn-sm btn-outline-success animate-btn  agp-btn agp-btn-up"
@@ -289,6 +289,67 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                     🔽 Down Side
                   </button>
                 </div>
+              </div>
+              <div className="d-flex justify-content-between align-items-center gap-2 mt-3">
+                <div className="d-flex align-items-center gap-2">
+                  <span className="text-muted fs-6 fw-semibold agp-live-label">
+                    <strong>Live Price:</strong>
+                  </span>
+                  <span
+                    className={`agp-live-price ${priceColor === "green"
+                      ? "agp-live-green"
+                      : priceColor === "red"
+                        ? "agp-live-red"
+                        : ""
+                      }`}
+                  >
+                    {livePrice ?? "-"}
+                  </span>
+                </div>
+
+
+                <div>
+                  <p className="d-flex align-items-center gap-2" style={{ fontWeight: "bold", margin: 0 }}>
+                    Overall Profit/Loss:{" "}
+                    <span
+                      style={{
+                        color: (() => {
+                          const overall = records?.reduce((acc, item) => {
+                            const symbol = item.symbol?.toLowerCase();
+                            const livePrice = livePrices[symbol] ?? 0;
+
+                            if (item.signal_type === "buy_sell") {
+                              acc += (livePrice - item.buy_price) * item.buy_lot;
+                            } else if (item.signal_type === "sell_buy") {
+                              acc += (item.sell_price - livePrice) * item.sell_lot;
+                            }
+
+                            return acc;
+                          }, 0);
+                          return overall >= 0 ? "green" : "red";
+                        })(),
+                      }}
+                    >
+                      ₹
+                      {(() => {
+                        const overall = records?.reduce((acc, item) => {
+                          const symbol = item.symbol?.toLowerCase();
+                          const livePrice = livePrices[symbol] ?? 0;
+
+                          if (item.signal_type === "buy_sell") {
+                            acc += (livePrice - item.buy_price) * item.buy_lot;
+                          } else if (item.signal_type === "sell_buy") {
+                            acc += (item.sell_price - livePrice) * item.sell_lot;
+                          }
+
+                          return acc;
+                        }, 0);
+                        return overall.toFixed(3);
+                      })()}
+                    </span>
+                  </p>
+                </div>
+
               </div>
             </Card.Header>
             <Accordion defaultActiveKey={null}>
@@ -322,16 +383,14 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                       >
                         <tr>
                           <th>#</th>
+                          <th>Signal Type</th>
                           <th>User Name</th>
                           <th>symbol</th>
                           <th>Buy Price</th>
                           <th>Sell Price</th>
-
                           <th>P/L</th>
-
                           <th>Buy Lot</th>
                           <th>Sell Lot</th>
-
                           <th>Target</th>
                           <th>Stop Loss</th>
                           <th>Max Loss</th>
@@ -360,18 +419,18 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                               }
                             >
                               <td>{currentPage * tablePageSize + idx + 1}</td>
+                              <td>{item.signal_type === "buy_sell" ? "Buy" : "Sell"}</td>
                               <td>{item.userName}</td>
                               <td>{item.symbol}</td>
                               <td>
                                 {item.buy_price ?? (
                                   <span
-                                    className={` ${
-                                      priceColor === "green"
-                                        ? "agp-live-green"
-                                        : priceColor === "red"
+                                    className={` ${priceColor === "green"
+                                      ? "agp-live-green"
+                                      : priceColor === "red"
                                         ? "agp-live-red"
                                         : ""
-                                    }`}
+                                      }`}
                                   >
                                     {livePrices[item.symbol?.toLowerCase()]}
                                   </span>
@@ -380,40 +439,51 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                               <td>
                                 {item.sell_price ?? (
                                   <span
-                                    className={` ${
-                                      priceColor === "green"
-                                        ? "agp-live-green"
-                                        : priceColor === "red"
+                                    className={` ${priceColor === "green"
+                                      ? "agp-live-green"
+                                      : priceColor === "red"
                                         ? "agp-live-red"
                                         : ""
-                                    }`}
+                                      }`}
                                   >
                                     {livePrices[item.symbol?.toLowerCase()]}
                                   </span>
                                 )}
                               </td>
-                              <td>
-                                {signal_type === "buy_sell"
+                              <td
+                                style={{
+                                  color:
+                                    item?.signal_type === "buy_sell"
+                                      ? (livePrices[item.symbol?.toLowerCase()] - item.buy_price) * item.buy_lot >= 0
+                                        ? "green"
+                                        : "red"
+                                      : (item.sell_price - livePrices[item.symbol?.toLowerCase()]) * item.sell_lot >= 0
+                                        ? "green"
+                                        : "red",
+                                }}
+                              >
+                                {item?.signal_type === "buy_sell"
                                   ? (
-                                      (livePrices[item.symbol?.toLowerCase()] -
-                                        item.buy_price) *
-                                      item.buy_lot
-                                    ).toFixed(3)
+                                    (livePrices[item.symbol?.toLowerCase()] - item.buy_price) *
+                                    item.buy_lot
+                                  ).toFixed(3)
                                   : (
-                                      (item.sell_price -
-                                        livePrices[
-                                          item.symbol?.toLowerCase()
-                                        ]) *
-                                      item.sell_lot
-                                    ).toFixed(3)}
+                                    (item.sell_price - livePrices[item.symbol?.toLowerCase()]) *
+                                    item.sell_lot
+                                  ).toFixed(3)}
                               </td>
+
 
                               <td>{item.buy_lot ?? "-"}</td>
                               <td>{item.sell_lot ?? "-"}</td>
 
                               <td>{item.Target_price ?? "-"}</td>
                               <td>{item.stoploss_price ?? "-"}</td>
-                              <td>{item.Sl_price_percentage ?? "-"}</td>
+                              <td>{item.Sl_price_percentage != null
+                                ? (item.Sl_price_percentage < 50
+                                  ? parseFloat(item.Sl_price_percentage).toFixed(4)
+                                  : parseFloat(item.Sl_price_percentage).toFixed(2))
+                                : "-"}</td>
                               <td>
                                 {new Date(item.createdAt).toLocaleString()}
                               </td>
@@ -422,7 +492,7 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                       </tbody>
                     </table>
                   </div>
-                  {/* Table Pagination */}
+
                   <div
                     className="d-flex justify-content-end align-items-center mt-3"
                     style={{
@@ -466,7 +536,7 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                       Next ▶
                     </button>
                   </div>
-                  {/* Animation keyframes */}
+
                   <style>
                     {`
         @keyframes fadeInUp {
@@ -488,7 +558,7 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
           </Card>
         );
       })}
-      {/* Card Pagination */}
+
       <div className="d-flex justify-content-center align-items-center my-4">
         <button
           className="btn btn-outline-secondary me-2"

@@ -8,8 +8,19 @@ import { fDateTime } from "../../Utils/Date_format/datefromat";
 import { getCompanyApi } from "../../Services/Superadmin/Superadmin";
 
 import { getUserFromToken } from "../../Utils/TokenVerify";
+import { io } from "socket.io-client";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { socket_url, socket_url_web, base_url } from "../../Utils/Config";
 
 const Header = () => {
+
+  const socket = io(socket_url_web, {
+    transports: ["websocket"],
+    withCredentials: true,
+  });
+
+
   const location = useLocation();
   const TokenData = getUserFromToken();
   const user_role = TokenData?.Role?.toUpperCase();
@@ -22,13 +33,19 @@ const Header = () => {
   const [logo, setLogo] = useState("");
 
 
+
+
   useEffect(() => {
     fetchLogo();
   }, []);
 
+
+
   useEffect(() => {
     if (user_id) getNotifications();
   }, [user_id]);
+
+
 
   useEffect(() => {
     const timeLeft = exp * 1000 - Date.now();
@@ -37,11 +54,105 @@ const Header = () => {
     return () => clearTimeout(timeout);
   }, [exp]);
 
+
+
   useEffect(() => {
-    // Apply the theme on page load
+
+    // socket.on("connect", () => {
+    //   console.log("🚀 Socket connected successfully with ID:", socket.id);
+    // })
+
+    socket.on("newMessage", (msg) => {
+      if (user_id === msg.parent_id) {
+        setNotification((prev) => [
+          {
+            _id: msg._id || new Date().getTime(),
+            message: msg.message,
+            createdAt: new Date(),
+            UserName: msg.senderInfo?.UserName || "User"
+          },
+          ...prev,
+        ]);
+
+        toast.info(
+          <div>
+            <div style={{ fontWeight: "bold", marginBottom: "4px" }}>
+              📩 {msg.senderInfo?.UserName || "User"} Send a Message On chatbox
+            </div>
+            <div>Message : {msg.message}</div>
+          </div>,
+          {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+          }
+        )
+      }
+    });
+
+
+    socket.on("newTransactionRequest", (msg) => {
+      if (user_id === msg.adminid) {
+        setNotification((prev) => [
+          {
+            _id: msg._id || new Date().getTime(),
+            Amount: msg.amount,
+            createdAt: new Date(),
+            UserName: msg.UserName || "User"
+          },
+          ...prev,
+        ]);
+
+        toast.info(
+          <div>
+            <div style={{ fontWeight: "bold", marginBottom: "4px" }}>
+              📩 {msg.UserName || "User"} Send Request To {msg.type}
+            </div>
+            <div>Amount : {msg.amount}</div>
+          </div>,
+          {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+          }
+        )
+      }
+    });
+    return () => {
+      socket.off("newMessage");
+      socket.off("newTransactionRequest");
+    };
+  }, [user_id]);
+
+
+
+  const getNotifications = async () => {
+    try {
+      const response = await getbroadcastmessageforuser({ userid: user_id });
+      if (response.status)
+        setNotification(response.data);
+
+    } catch (error) {
+      console.log("error", error)
+    }
+  };
+
+
+
+  useEffect(() => {
+
     document.body.setAttribute("data-theme-version", theme);
     document.body.className = theme === "dark" ? "dark-mode" : "light-mode";
   }, [theme]);
+
+
+
 
   useEffect(() => {
     const element = document.querySelector(".wallet-open.show");
@@ -54,7 +165,9 @@ const Header = () => {
       }
     } else {
     }
-  }, [isActive]); // This effect will run every time `isActive` changes
+  }, [isActive]);
+
+
 
   const changeFavicon = (iconPath) => {
     let link = document.querySelector("link[rel*='icon']");
@@ -99,15 +212,9 @@ const Header = () => {
     try {
       const response = await LogoutUser({ userid: user_id });
       if (response.status) localStorage.clear();
-    } catch (error) {}
+    } catch (error) { }
   };
 
-  const getNotifications = async () => {
-    try {
-      const response = await getbroadcastmessageforuser({ userid: user_id });
-      if (response.status) setNotification(response.data);
-    } catch (error) {}
-  };
 
 
 
@@ -119,9 +226,9 @@ const Header = () => {
     return segments[segments.length - 1] || segments[segments.length - 2];
   };
 
-  const formattedSegment = 
+  const formattedSegment =
     getLastPathSegment(location.pathname)?.charAt(0).toUpperCase() + getLastPathSegment(location.pathname)?.slice(1)
-  
+
 
 
   const pageTitles = {
@@ -150,7 +257,7 @@ const Header = () => {
 
       <div className="nav-header">
         <a href="index.html" className="">
-          <img src={logo} width={"250px"} height={"83px"} alt="" className="w-100"/>
+          <img src={logo} width={"250px"} height={"83px"} alt="" className="w-100" />
 
           <div className="brand-title"></div>
         </a>
@@ -307,9 +414,8 @@ const Header = () => {
                       )}
                       {(user_role === "ADMIN" || user_role === "EMPLOYE") && (
                         <Link
-                          to={`/${
-                            user_role === "ADMIN" ? "admin" : "employee"
-                          }/changedpassword`}
+                          to={`/${user_role === "ADMIN" ? "admin" : "employee"
+                            }/changedpassword`}
                           className="dropdown-item ai-icon"
                         >
                           <i
@@ -345,7 +451,9 @@ const Header = () => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
+
   );
 };
 

@@ -41,7 +41,7 @@ const Withdraw = () => {
   const [currentRowId, setCurrentRowId] = useState(null);
 
 
-   useEffect(() => {
+  useEffect(() => {
     getAllfundsstatus();
   }, [search, activeTab, page, rowsPerPage]);
 
@@ -298,50 +298,50 @@ const Withdraw = () => {
               page={page}
               isPage={false} // to remove default pagination --aadi
             />
-           <div
-  className="d-flex justify-content-between align-items-center px-3 py-2"
-  style={{ marginBottom: "20px" }}
->
-  {/* Rows per page */}
-  <div className="d-flex align-items-center">
-    <span>Rows per page:</span>
-    <select
-      className="form-select ms-2"
-      value={rowsPerPage}
-      onChange={(e) => setRowsPerPage(Number(e.target.value))}
-      style={{ width: "auto" }}
-    >
-      <option value={5}>5</option>
-      <option value={10}>10</option>
-      <option value={20}>20</option>
-      <option value={50}>50</option>
-      <option value={100}>100</option>
-    </select>
-  </div>
+            <div
+              className="d-flex justify-content-between align-items-center px-3 py-2"
+              style={{ marginBottom: "20px" }}
+            >
+              {/* Rows per page */}
+              <div className="d-flex align-items-center">
+                <span>Rows per page:</span>
+                <select
+                  className="form-select ms-2"
+                  value={rowsPerPage}
+                  onChange={(e) => setRowsPerPage(Number(e.target.value))}
+                  style={{ width: "auto" }}
+                >
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+              </div>
 
-  {/* Pagination controls */}
-  <div className="d-flex align-items-center gap-2">
-    <button
-      className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
-      onClick={() => handlePageChange(page - 1)}
-      disabled={page === 1}
-    >
-      <i className="bi bi-chevron-left"></i>
-      <span>Prev</span>
-    </button>
-    <span className="fw-semibold text-secondary small">
-      Page {page} of {totalCount}
-    </span>
-    <button
-      className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
-      onClick={() => handlePageChange(page + 1)}
-      disabled={page >= totalCount}
-    >
-      <span>Next</span>
-      <i className="bi bi-chevron-right"></i>
-    </button>
-  </div>
-</div>
+              {/* Pagination controls */}
+              <div className="d-flex align-items-center gap-2">
+                <button
+                  className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
+                  onClick={() => handlePageChange(page - 1)}
+                  disabled={page === 1}
+                >
+                  <i className="bi bi-chevron-left"></i>
+                  <span>Prev</span>
+                </button>
+                <span className="fw-semibold text-secondary small">
+                  Page {page} of {totalCount}
+                </span>
+                <button
+                  className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
+                  onClick={() => handlePageChange(page + 1)}
+                  disabled={page >= totalCount}
+                >
+                  <span>Next</span>
+                  <i className="bi bi-chevron-right"></i>
+                </button>
+              </div>
+            </div>
 
           </>
         )}
@@ -372,9 +372,8 @@ const Withdraw = () => {
                           <li className="nav-item">
                             <a
                               href="#navpills-1"
-                              className={`nav-link navlink ${
-                                activeTab === "Pending" ? "active" : ""
-                              }`}
+                              className={`nav-link navlink ${activeTab === "Pending" ? "active" : ""
+                                }`}
                               data-bs-toggle="tab"
                               aria-expanded="false"
                               onClick={() => handleTabClick("Pending")}
@@ -385,9 +384,8 @@ const Withdraw = () => {
                           <li className="nav-item">
                             <a
                               href="#navpills-2"
-                              className={`nav-link navlink ${
-                                activeTab === "Complete" ? "active" : ""
-                              }`}
+                              className={`nav-link navlink ${activeTab === "Complete" ? "active" : ""
+                                }`}
                               data-bs-toggle="tab"
                               aria-expanded="false"
                               onClick={() => handleTabClick("Complete")}
@@ -398,9 +396,8 @@ const Withdraw = () => {
                           <li className="nav-item">
                             <a
                               href="#navpills-3"
-                              className={`nav-link navlink ${
-                                activeTab === "Reject" ? "active" : ""
-                              }`}
+                              className={`nav-link navlink ${activeTab === "Reject" ? "active" : ""
+                                }`}
                               data-bs-toggle="tab"
                               aria-expanded="true"
                               onClick={() => handleTabClick("Reject")}
@@ -412,9 +409,8 @@ const Withdraw = () => {
                         <div className="tab-content">
                           <div
                             id="navpills-1"
-                            className={`tab-pane ${
-                              activeTab === "Pending" ? "active" : ""
-                            }`}
+                            className={`tab-pane ${activeTab === "Pending" ? "active" : ""
+                              }`}
                           >
                             <div className="row">
                               <div className="col-lg-12">
@@ -440,9 +436,8 @@ const Withdraw = () => {
                           </div>
                           <div
                             id="navpills-2"
-                            className={`tab-pane ${
-                              activeTab === "Complete" ? "active" : ""
-                            }`}
+                            className={`tab-pane ${activeTab === "Complete" ? "active" : ""
+                              }`}
                           >
                             <div className="row">
                               <div className="col-lg-12">
@@ -468,9 +463,8 @@ const Withdraw = () => {
                           </div>
                           <div
                             id="navpills-3"
-                            className={`tab-pane ${
-                              activeTab === "Reject" ? "active" : ""
-                            }`}
+                            className={`tab-pane ${activeTab === "Reject" ? "active" : ""
+                              }`}
                           >
                             <div className="row">
                               <div className="col-lg-12">

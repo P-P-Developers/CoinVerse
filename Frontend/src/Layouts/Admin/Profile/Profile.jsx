@@ -18,7 +18,7 @@ const Profile = () => {
       if (response.status) {
         setClient(response.data);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const gettotallicence = async () => {
@@ -28,7 +28,7 @@ const Profile = () => {
       if (response.status) {
         setCheckLicence(response.data);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -65,27 +65,6 @@ const Profile = () => {
                       <li>
                         <a href="/vite/demo/uc-lightgallery">phone Number</a>
                         <span>{client.PhoneNo && client.PhoneNo}</span>
-                      </li>
-
-                      <li>
-                        <a href="/vite/demo/app-profile">Total Licence </a>
-                        <span>
-                          {checkLicence.userLicence && checkLicence.userLicence}
-                        </span>
-                      </li>
-                      <li>
-                        <a href="/vite/demo/app-profile">Remaining Licence</a>
-                        <span>
-                          {checkLicence.CountLicence &&
-                            checkLicence.CountLicence}
-                        </span>
-                      </li>
-                      <li>
-                        <a href="/vite/demo/app-profile">Total Used Licence</a>
-                        <span>
-                          {checkLicence.totalLicenses &&
-                            checkLicence.totalLicenses}
-                        </span>
                       </li>
                     </ul>
                   </div>

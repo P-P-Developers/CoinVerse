@@ -414,6 +414,9 @@ export async function gettradehistory(data, token) {
   }
 }
 
+
+
+
 // get licence data
 export async function getlicencedata(data, token) {
   try {
@@ -617,6 +620,43 @@ export async function GetBonus(data, token) {
         data: {},
       }
     );
+    return await res?.data;
+  } catch (err) {
+    return await err;
+  }
+}
+
+
+
+export async function AllUserDetails(data, token) {
+  try {
+    const res = await axios.post(`${Config.base_url}allUersDetails`, data, {
+      data: {},
+    });
+    return await res?.data;
+  } catch (err) {
+    return await err;
+  }
+}
+
+
+export async function Getuserlistdata(data, token) {
+  try {
+    const res = await axios.post(`${Config.base_url}getUserlist`, data, {
+      data: {},
+    });
+    return await res?.data;
+  } catch (err) {
+    return await err;
+  }
+}
+
+
+export async function GetAllUserDeatailsdata(data, token) {
+  try {
+    const res = await axios.post(`${Config.base_url}admin/getUserDetails`, data, {
+      data: {},
+    });
     return await res?.data;
   } catch (err) {
     return await err;

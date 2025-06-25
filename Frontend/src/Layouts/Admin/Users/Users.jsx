@@ -6,7 +6,7 @@ import {
   Addbalance,
   updateActivestatus,
 } from "../../../Services/Superadmin/Superadmin";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { CirclePlus, Pencil, CircleDollarSign, Eye } from "lucide-react";
 
 import Swal from "sweetalert2";
@@ -17,6 +17,23 @@ import { getUserFromToken } from "../../../Utils/TokenVerify";
 const Users = () => {
   const navigate = useNavigate();
   const TokenData = getUserFromToken();
+
+  const location = useLocation()
+  const path = location?.state?.path
+
+
+  useEffect(() => {
+    if (path === "Totaluser") {
+      setRedirectstatus("all")
+    } else if (path === "activeuser") {
+      setRedirectstatus("Active")
+    } else if (path === "inactive") {
+      setRedirectstatus("Inactive")
+    } else {
+      setRedirectstatus("")
+    }
+  }, [path])
+
 
   const user_id = TokenData?.user_id;
 
@@ -33,7 +50,9 @@ const Users = () => {
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [getActiveInactive, setActiveInactive] = useState("all");
-const [debouncedSearch, setDebouncedSearch] = useState(search);
+  const [redirectstatus, setRedirectstatus] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
+
 
   const columns = [
     { Header: "FullName", accessor: "FullName" },
@@ -285,7 +304,7 @@ const [debouncedSearch, setDebouncedSearch] = useState(search);
       page,
       limit: rowsPerPage,
       search: search || "",
-      ActiveStatus: getActiveInactive,
+      ActiveStatus: redirectstatus ? redirectstatus : getActiveInactive,
     };
 
     try {
@@ -324,23 +343,33 @@ const [debouncedSearch, setDebouncedSearch] = useState(search);
     }
   };
 
+
+
   useEffect(() => {
     getAlluserdata();
-  }, [debouncedSearch, page, rowsPerPage, getActiveInactive]);
+  }, [debouncedSearch, page, rowsPerPage, getActiveInactive, redirectstatus]);
+
+
+
 
   useEffect(() => {
-    setPage(1); // Reset to first page when search or filter changes
+    setPage(1);
   }, [debouncedSearch, getActiveInactive]);
 
-  useEffect(() => {
-  const handler = setTimeout(() => {
-    setDebouncedSearch(search);
-  }, 500); // Delay in ms
 
-  return () => {
-    clearTimeout(handler);
-  };
-}, [search]);
+
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500);
+
+
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [search]);
 
 
   return (
@@ -421,48 +450,48 @@ const [debouncedSearch, setDebouncedSearch] = useState(search);
                     )}
                   </div>
                   <div className="d-flex justify-content-between align-items-center px-3 py-2" style={{ marginBottom: "20px" }}>
-  {/* Rows per page selector */}
-  <div className="d-flex align-items-center">
-    <span>Rows per page:</span>
-    <select
-      className="form-select ms-2"
-      value={rowsPerPage}
-      onChange={(e) => setRowsPerPage(Number(e.target.value))}
-      style={{ width: "auto" }}
-    >
-      <option value={5}>5</option>
-      <option value={10}>10</option>
-      <option value={20}>20</option>
-      <option value={50}>50</option>
-      <option value={100}>100</option>
-    </select>
-  </div>
+                    {/* Rows per page selector */}
+                    <div className="d-flex align-items-center">
+                      <span>Rows per page:</span>
+                      <select
+                        className="form-select ms-2"
+                        value={rowsPerPage}
+                        onChange={(e) => setRowsPerPage(Number(e.target.value))}
+                        style={{ width: "auto" }}
+                      >
+                        <option value={5}>5</option>
+                        <option value={10}>10</option>
+                        <option value={20}>20</option>
+                        <option value={50}>50</option>
+                        <option value={100}>100</option>
+                      </select>
+                    </div>
 
-  {/* Pagination controls */}
-  <div className="d-flex align-items-center gap-2">
-    <button
-      className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
-      onClick={() => handlePageChange(page - 1)}
-      disabled={page === 1}
-    >
-      <i className="bi bi-chevron-left"></i>
-      <span>Prev</span>
-    </button>
+                    {/* Pagination controls */}
+                    <div className="d-flex align-items-center gap-2">
+                      <button
+                        className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
+                        onClick={() => handlePageChange(page - 1)}
+                        disabled={page === 1}
+                      >
+                        <i className="bi bi-chevron-left"></i>
+                        <span>Prev</span>
+                      </button>
 
-    <span className="fw-semibold text-secondary small">
-      Page {page} of {totalCount}
-    </span>
+                      <span className="fw-semibold text-secondary small">
+                        Page {page} of {totalCount}
+                      </span>
 
-    <button
-      className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
-      onClick={() => handlePageChange(page + 1)}
-      disabled={page >= totalCount}
-    >
-      <span>Next</span>
-      <i className="bi bi-chevron-right"></i>
-    </button>
-  </div>
-</div>
+                      <button
+                        className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
+                        onClick={() => handlePageChange(page + 1)}
+                        disabled={page >= totalCount}
+                      >
+                        <span>Next</span>
+                        <i className="bi bi-chevron-right"></i>
+                      </button>
+                    </div>
+                  </div>
 
                 </div>
               </div>

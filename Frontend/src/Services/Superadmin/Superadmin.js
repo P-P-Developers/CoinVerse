@@ -370,3 +370,19 @@ export async function GetConditions(data, token) {
   }
 }
 
+
+
+export async function UserwiseTradehistory(data, token) {
+  try {
+    const res = await axios.post(
+      `${Config.base_url}UserWisetradehistory`,
+      data,
+      {
+        data: {},
+      }
+    );
+    return await res?.data;
+  } catch (err) {
+    return await err;
+  }
+}

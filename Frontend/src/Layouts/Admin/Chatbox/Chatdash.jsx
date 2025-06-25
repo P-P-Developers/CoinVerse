@@ -5,6 +5,7 @@ import "./Chatbox.css";
 import * as Config from "../../../Utils/Config";
 import { getUserFromToken } from "../../../Utils/TokenVerify";
 
+
 const Users = () => {
   const TokenData = getUserFromToken();
 
@@ -19,6 +20,8 @@ const Users = () => {
   const [conversationId, setConversationId] = useState(null);
 
   const msgBodyRef = useRef(null);
+
+
 
   useEffect(() => {
     if (msgBodyRef.current) {
@@ -62,8 +65,11 @@ const Users = () => {
       });
 
       setData(search ? searchfilter : result);
-    } catch (error) {}
+    } catch (error) { }
   };
+
+
+
 
   const fetchMessages = async (user) => {
     try {
@@ -77,8 +83,11 @@ const Users = () => {
 
       const res = await axios.get(`${Config.base_url}admin/messages/${convId}`);
       setMessages(res.data.messages);
-    } catch (error) {}
+    } catch (error) { }
   };
+
+
+
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -92,13 +101,19 @@ const Users = () => {
       });
       setInput("");
       fetchMessages(selectedUser);
-    } catch (error) {}
+    } catch (error) { }
   };
+
+
+
 
   const formatTime = (timestamp) => {
     const date = new Date(timestamp);
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
+
+
+
 
   return (
     <>
@@ -142,11 +157,10 @@ const Users = () => {
                                         setSelectedUser(userData);
                                         fetchMessages(userData);
                                       }}
-                                      className={`d-flex align-items-center mb-2 p-2  cursor-pointer ${
-                                        isSelected
-                                          ? "bg-primary text-white"
-                                          : ""
-                                      }`}
+                                      className={`d-flex align-items-center mb-2 p-2  cursor-pointer ${isSelected
+                                        ? "bg-primary text-white"
+                                        : ""
+                                        }`}
                                       style={{
                                         transition: "background 0.3s ease",
                                       }}

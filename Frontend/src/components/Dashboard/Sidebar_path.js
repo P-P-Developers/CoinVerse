@@ -12,6 +12,13 @@ export const superadmin_header = [
     icon: "fe fe-users",
     route: "/superadmin/admin",
   },
+  {
+    id: 2,
+    name: "User Detail",
+    icon: "fa fa-users",
+    route: "/superadmin/All-users",
+  },
+
 
   {
     id: 4,
@@ -75,17 +82,23 @@ export const admin_header = [
     route: "/admin/users",
   },
   {
+    id: 2,
+    name: "User Detail",
+    icon: "fa fa-users",
+    route: "/admin/all-users-detail",
+  },
+  {
     id: 4,
     name: "Transaction",
     icon: "fe fe-dollar-sign",
     route: "/admin/transaction",
   },
-  {
-    id: 5,
-    name: "Reports",
-    icon: "fe fe-file-text",
-    route: "/admin/report",
-  },
+  // {
+  //   id: 5,
+  //   name: "Reports",
+  //   icon: "fe fe-file-text",
+  //   route: "/admin/report",
+  // },
   {
     id: 6,
     name: "Trade History",
@@ -99,12 +112,12 @@ export const admin_header = [
     route: "/admin/loginstatus",
   },
 
-    // {
-    //   id: 8,
-    //   name: "Available Positions",
-    //   icon: "fe fe-target",
-    //   route: "/admin/position",
-    // },
+  // {
+  //   id: 8,
+  //   name: "Available Positions",
+  //   icon: "fe fe-target",
+  //   route: "/admin/position",
+  // },
   {
     id: 9,
     name: "Withdrawal",
@@ -184,7 +197,7 @@ export const employee_header = [
     icon: "fe fe-target",
     route: "/employee/brokerage",
   },
-    {
+  {
     id: 5,
     name: "Trade History",
     icon: "fe fe-activity",

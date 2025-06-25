@@ -43,7 +43,8 @@ const {
   setPrimaryBank,
   deleteBankDetails,
   updateBankDetails,
-  getAllUser
+  getAllUser,
+  getUserDetails
 } = require("../../Controllers/Admins/Admins/Admin");
 const {
   marginupdate,
@@ -52,7 +53,7 @@ const {
 
 
 
-router.post("/admin/GetDashboardData" , GetDashboardData);
+router.post("/admin/GetDashboardData", GetDashboardData);
 router.post("/admin/AddUser", AddUser);
 router.post("/admin/UserupdateLicence", updateLicence);
 router.post("/admin/updateUser", updateUser);
@@ -97,11 +98,12 @@ router.post("/admin/updateBankDetails", updateBankDetails);
 
 router.post("/admin/conversation", conversation);
 router.post("/admin/message", message);
-router.get("/admin/messages/:conversationId", getMessages); 
+router.get("/admin/messages/:conversationId", getMessages);
 router.post("/admin/conversations/:id", getConversations);
 router.post("/admin/getreferralcode", GetReferralCode);
 router.post("/admin/updatereferprice", UpdateReferPrice);
-router.post("/admin/getbonusdetails", GetBonusDetails); // Assuming you have a function to get bonus details
+router.post("/admin/getbonusdetails", GetBonusDetails);
+router.post("/admin/getUserDetails", getUserDetails);
 
 router.get("/Downloadapk", Downloadapk);
 

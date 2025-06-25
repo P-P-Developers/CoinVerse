@@ -30,7 +30,7 @@ const Updateuser = () => {
       phone: "",
       Balance: "",
       employee_id: "",
-  
+
       limit: "",
       selectedOption: "",
       inputValue: "",
@@ -59,15 +59,15 @@ const Updateuser = () => {
       } else if (isNaN(values.Balance)) {
         errors.Balance = "Balance must be a number";
       }
-    
+
       if (!values.limit) {
         errors.limit = "Please enter a value for Limit";
       } else if (
         isNaN(values.limit) ||
         values.limit < 0 ||
-        values.limit > 100
+        values.limit > 10000
       ) {
-        errors.limit = "Limit must be a number between 0 and 100.";
+        errors.limit = "Limit must be a number between 0 and 10000.";
       }
       if (!values.selectedOption) {
         errors.selectedOption = "Please select an option";
@@ -142,7 +142,7 @@ const Updateuser = () => {
         Password: rowData.Otp || "",
         Balance: rowData.Balance || "",
         employee_id: rowData.employee_id || "",
-     
+
         selectedOption: determineSelectedOption(),
         inputValue:
           rowData.pertrade || rowData.perlot || rowData.transactionwise || "",
@@ -167,7 +167,7 @@ const Updateuser = () => {
           return item.Role === "EMPLOYE";
         });
       setData(result);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const fields = [
@@ -220,9 +220,9 @@ const Updateuser = () => {
         { label: "Admin", value: "Admin" },
         ...(data
           ? data.map((item) => ({
-              label: item.UserName,
-              value: item._id,
-            }))
+            label: item.UserName,
+            value: item._id,
+          }))
           : []),
       ],
       label_size: 12,
