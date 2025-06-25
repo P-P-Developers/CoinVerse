@@ -11,11 +11,11 @@ import { getUserFromToken } from "../../Utils/TokenVerify";
 import { io } from "socket.io-client";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { socket_url, socket_url_web } from "../../Utils/Config";
+import { socket_url, socket_url_web, base_url } from "../../Utils/Config";
 
 const Header = () => {
 
-  const socket = io(socket_url, {
+  const socket = io(socket_url_web, {
     transports: ["websocket"],
     withCredentials: true,
   });
@@ -58,7 +58,14 @@ const Header = () => {
 
 
   useEffect(() => {
+
+    socket.on("connect", () => {
+      console.log("🚀 Socket connected successfully with ID:", socket.id);
+    })
+
+
     socket.on("newMessage", (msg) => {
+      console.log("newMessage", msg)
       if (user_id === msg.parent_id) {
         setSocketdata(msg);
         setNotification((prev) => [
@@ -92,6 +99,7 @@ const Header = () => {
 
     return () => {
       socket.off("newMessage");
+      socket.off("connected");
     };
   }, [user_id]);
 
