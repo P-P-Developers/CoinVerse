@@ -61,8 +61,6 @@ const Header = () => {
     // socket.on("connect", () => {
     //   console.log("🚀 Socket connected successfully with ID:", socket.id);
     // })
-
-
     socket.on("newMessage", (msg) => {
       if (user_id === msg.parent_id) {
         setNotification((prev) => [
@@ -93,7 +91,6 @@ const Header = () => {
         )
       }
     });
-
 
 
     socket.on("newTransactionRequest", (msg) => {
