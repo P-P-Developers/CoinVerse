@@ -21,22 +21,25 @@ const io = socketIo(server, {
 
 
 
-// Middlewares
+
 app.use(cors());
 app.use(express.json());
 
-// API Route to test connection
+
 app.get("/", (req, res) => {
     res.send("✅ Tiingo WebSocket is running and Socket.IO is working!");
 });
 
-// Format numbers
+
 const formatNumber = (num) => {
     if (typeof num !== "number" || isNaN(num)) return num;
     return num < 50 ? parseFloat(num.toFixed(5)) : parseFloat(num.toFixed(2));
 };
 
-// Format data
+
+
+
+
 const formatPrices = (data) => {
     if (Array.isArray(data)) {
         return data.map((item) => {
@@ -57,7 +60,7 @@ const formatPrices = (data) => {
 
 
 
-// WebSocket Setup
+
 const initializeWebSocket = (url, tickers, type) => {
     const ws = new WebSocket(url);
 
@@ -139,6 +142,6 @@ const startSockets = () => {
 
 // Start Server
 server.listen(PORT, () => {
-    console.log(`✅ Server running on http://localhost:${PORT}`);
+    console.log(`✅ Server running on ${PORT}`);
     startSockets();
 });

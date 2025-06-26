@@ -263,3 +263,5 @@
 2025-06-26T10:00:05.687Z [warn]: SLOW API: [GET] /GetConditions - 291ms
 2025-06-26T10:00:06.062Z [warn]: SLOW API: [GET] /GetConditions - 287ms
 2025-06-26T10:16:40.771Z [warn]: SLOW API: [GET] /GetConditions - 238ms
+2025-06-26T11:19:12.998Z [warn]: SLOW API: [GET] /GetConditions - 255ms
+2025-06-26T12:34:32.480Z [warn]: SLOW API: [GET] /GetConditions - 267ms
