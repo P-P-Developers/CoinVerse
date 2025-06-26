@@ -7,8 +7,7 @@ const http = require("http");
 const socketIo = require("socket.io");
 const WebSocket = require("ws");
 const { MongoClient } = require("mongodb");
-const dbdata = require("../Backend/App/Models");
-const Symbol = db.Symbol;
+
 
 
 
@@ -39,6 +38,9 @@ const initializeDatabase = async () => {
     process.exit(1); // Exit the process if the database connection fails
   }
 };
+
+
+
 const simulatePriceMovement = async (formattedData, type, typ) => {
   const activeConditions = await conditions
     .find({
@@ -123,6 +125,8 @@ const simulatePriceMovement = async (formattedData, type, typ) => {
 
   }
 };
+
+
 
 // Utility Functions
 const formatNumber = (num) => {

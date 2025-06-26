@@ -7,6 +7,8 @@ import { AddCondition } from "../../../Services/Superadmin/Superadmin";
 import { commandAlert } from "../../../Utils/Commanalert";
 
 const AggregatedPosition = ({ groupedData, search = "" }) => {
+
+  
   const [cardPage, setCardPage] = useState(0);
   const [pageStates, setPageStates] = useState({});
   const [livePrices, setLivePrices] = useState({});
