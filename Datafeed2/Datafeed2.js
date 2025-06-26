@@ -188,10 +188,6 @@ const simulatePriceMovement = async (formattedData, type) => {
             let UpdatedPrice = condition.logs.length === 0
                 ? condition.initialPrice
                 : condition.logs[condition.logs.length - 1].price
-
-
-            console.log("UpdatedPrice", UpdatedPrice)
-
             const dropAmount = Math.abs(condition.dropThreshold * 0.1);
 
 
