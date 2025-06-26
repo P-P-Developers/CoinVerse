@@ -28,6 +28,62 @@ app.get("/", (req, res) => {
 });
 
 
+
+let Plan = process.env.PLAN || 20
+
+let pipes = [
+    { "symbol": "usdtusd", "pip": 0.0001 },
+    { "symbol": "btcxrp", "pip": 0.00001 },
+    { "symbol": "btcusd", "pip": 0.01 },
+    { "symbol": "ethxrp", "pip": 0.00001 },
+    { "symbol": "ethusd", "pip": 0.01 },
+    { "symbol": "usdcusd", "pip": 0.0001 },
+    { "symbol": "solusd", "pip": 0.001 },
+    { "symbol": "solbtc", "pip": 0.000001 },
+    { "symbol": "bnbbtc", "pip": 0.000001 },
+    { "symbol": "xrpusd", "pip": 0.0001 },
+    { "symbol": "daiusd", "pip": 0.0001 },
+    { "symbol": "dogeusd", "pip": 0.00001 },
+    { "symbol": "xauusd", "pip": 0.01 },
+    { "symbol": "audcad", "pip": 0.0001 },
+    { "symbol": "audjpy", "pip": 0.01 },
+    { "symbol": "audnzd", "pip": 0.0001 },
+    { "symbol": "audusd", "pip": 0.0001 },
+    { "symbol": "euraud", "pip": 0.0001 },
+    { "symbol": "eurchf", "pip": 0.0001 },
+    { "symbol": "eurgbp", "pip": 0.0001 },
+    { "symbol": "eurjpy", "pip": 0.01 },
+    { "symbol": "eurnzd", "pip": 0.0001 },
+    { "symbol": "eurusd", "pip": 0.0001 },
+    { "symbol": "gbpaud", "pip": 0.0001 },
+    { "symbol": "gbpcad", "pip": 0.0001 },
+    { "symbol": "gbpchf", "pip": 0.0001 },
+    { "symbol": "gbpjpy", "pip": 0.01 },
+    { "symbol": "gbpusd", "pip": 0.0001 },
+    { "symbol": "jpyusd", "pip": 0.0001 },
+    { "symbol": "nzdjpy", "pip": 0.01 },
+    { "symbol": "nzdusd", "pip": 0.0001 },
+    { "symbol": "usdcad", "pip": 0.0001 },
+    { "symbol": "usdchf", "pip": 0.01 },
+    { "symbol": "xauusd", "pip": 0.01 },
+    { "symbol": "wtiousd", "pip": 0.01 },
+    { "symbol": "brentusd", "pip": 0.001 },
+    { "symbol": "natgasusd", "pip": 0.0001 },
+    { "symbol": "rbobusd", "pip": 0.0001 },
+    { "symbol": "heatoilusd", "pip": 0.0001 },
+    { "symbol": "propaneusd", "pip": 0.01 },
+    { "symbol": "coalusd", "pip": 0.01 },
+    { "symbol": "uraniumusd", "pip": 0.0001 },
+    { "symbol": "ethanolusd", "pip": 0.01 },
+    { "symbol": "electricityusd", "pip": 0.01 },
+    { "symbol": "xagusd", "pip": 0.01 },
+    { "symbol": "krwusd", "pip": 0.01 }
+]
+
+
+
+
+
 let client, db, collection, conditions;
 
 const initializeDatabase = async () => {
@@ -46,7 +102,7 @@ const initializeDatabase = async () => {
 
 
 
-const updateDatabase = async (data, type, Plan = 0, pipes = []) => {
+const updateDatabase = async (data, type) => {
     try {
         const now = new Date();
         const curtime = `${now.getHours().toString().padStart(2, "0")}${now
@@ -63,8 +119,8 @@ const updateDatabase = async (data, type, Plan = 0, pipes = []) => {
         const pipValue = GetPip.pip;
 
         if (type === "crypto") {
-            bidPrice = Plan == 0 ? data[5] : (data[5] || 0) - (pipValue / Plan);
-            askPrice = Plan == 0 ? data[8] : (data[8] || 0) + (pipValue / Plan);
+            bidPrice = Plan == 0 ? data[5] : (data[6] || 0) - (Plan * pipValue);
+            askPrice = Plan == 0 ? data[8] : (data[6] || 0) + (Plan * pipValue);
 
             await collection.updateOne(
                 { ticker: data[1] },
@@ -85,8 +141,8 @@ const updateDatabase = async (data, type, Plan = 0, pipes = []) => {
             );
         } else {
 
-            bidPrice = Plan == 0 ? data[4] : (data[4] || 0) - (pipValue / Plan);
-            askPrice = Plan == 0 ? data[7] : (data[7] || 0) + (pipValue / Plan);
+            bidPrice = Plan == 0 ? data[4] : (data[5] || 0) - (Plan * pipValue);
+            askPrice = Plan == 0 ? data[7] : (data[5] || 0) + (Plan * pipValue);
 
             await collection.updateOne(
                 { ticker: data[1] },
