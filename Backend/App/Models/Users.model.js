@@ -219,7 +219,7 @@ const userModel = Schema({
     },
     plan_type: {
         type: Number,
-        enum: [1, 2, 3],
+        enum: [1, 2, 3], // 1: Basic, 2: Standard, 3: Premium
         default: null
     },
     plan: {
