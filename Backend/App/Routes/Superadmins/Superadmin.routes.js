@@ -27,7 +27,8 @@ const {
   getAdminName,
   getAdminLogs,
   getUserlist,
-  UserWisetradehistory
+  UserWisetradehistory,
+  AddCompany
 } = require("../../Controllers/Superadmin/Admins/admin");
 
 const {
@@ -70,5 +71,6 @@ router.post("/getAdminLogs", getAdminLogs);
 
 router.post("/AddCondition", AddCondition);
 router.get("/GetConditions", GetConditions);
+router.post("/AddCompany", AddCompany);
 
 module.exports = router;

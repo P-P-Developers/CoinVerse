@@ -31,6 +31,10 @@ const companySchema = new mongoose.Schema(
     },
     port: {
       type: String,
+    },
+    plan: {
+      type: Number,
+      default: null
     }
   },
   { timestamps: true }

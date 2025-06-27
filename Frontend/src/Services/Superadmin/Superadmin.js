@@ -391,3 +391,19 @@ export async function UserwiseTradehistory(data, token) {
     return await err;
   }
 }
+
+
+export async function Companydata(data, token) {
+  try {
+    const res = await axios.post(
+      `${Config.base_url}AddCompany`,
+      data,
+      {
+        data: {},
+      }
+    );
+    return await res?.data;
+  } catch (err) {
+    return await err;
+  }
+}

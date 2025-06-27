@@ -8,7 +8,7 @@ import { commandAlert } from "../../../Utils/Commanalert";
 
 const AggregatedPosition = ({ groupedData, search = "" }) => {
 
-  
+
   const [cardPage, setCardPage] = useState(0);
   const [pageStates, setPageStates] = useState({});
   const [livePrices, setLivePrices] = useState({});
@@ -23,8 +23,8 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
 
   useEffect(() => {
     socket.on("receive_data_forex", (data) => {
-      const symbol = data.data[1]?.toLowerCase();
-      const price = Number(data.data[5]);
+      const symbol = data?.data?.ticker?.toLowerCase();
+      const price = Number(data?.data?.Mid_Price);
       if (symbol && !isNaN(price)) {
         setPrevPrices((prev) => ({
           ...prev,

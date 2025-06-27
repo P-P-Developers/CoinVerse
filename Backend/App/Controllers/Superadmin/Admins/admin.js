@@ -1220,6 +1220,56 @@ class Superadmin {
     }
   }
 
+
+
+  async AddCompany(req, res) {
+    try {
+      const { plan } = req.body;
+
+      if (!plan) {
+        return res.json({
+          status: false,
+          message: "Plan is required.",
+        });
+      }
+
+      let company = await Company.findOne();
+
+      if (company) {
+        company.plan = plan;
+        const updatedCompany = await company.save();
+
+        return res.json({
+          status: true,
+          message: "Plan updated successfully",
+          data: updatedCompany,
+        });
+      } else {
+        const newCompany = new Company({
+          plan,
+        });
+
+        const savedCompany = await newCompany.save();
+
+        return res.json({
+          status: true,
+          message: "Company created with plan",
+          data: savedCompany,
+        });
+      }
+    } catch (error) {
+      console.error("Error at AddCompany", error);
+      return res.json({
+        status: false,
+        message: "Internal error",
+        data: [],
+      });
+    }
+  }
+
+
+
+
   // DELETE: Delete company settings
   async deleteCompany(req, res) {
     try {

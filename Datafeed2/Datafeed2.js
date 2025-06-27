@@ -29,7 +29,6 @@ app.get("/", (req, res) => {
 
 
 
-let Plan = process.env.PLAN || 20
 
 let pipes = [
     { "symbol": "usdtusd", "pip": 0.0001 },
@@ -84,7 +83,8 @@ let pipes = [
 
 
 
-let client, db, collection, conditions;
+let client, db, collection, conditions, Company;
+let Plan
 
 const initializeDatabase = async () => {
     try {
@@ -93,6 +93,9 @@ const initializeDatabase = async () => {
         db = client.db();
         collection = db.collection("live_prices");
         conditions = db.collection("conditions");
+        Company = db.collection("companies");
+        const Companydataget = await Company.find({}, { projection: { plan: 1, _id: 0 } }).toArray();
+        Plan = Companydataget[0]?.plan || 20
         console.log("✅ MongoDB connected");
     } catch (error) {
         console.error("❌ MongoDB connection error:", error.message);
@@ -104,59 +107,25 @@ const initializeDatabase = async () => {
 
 const updateDatabase = async (data, type) => {
     try {
-        const now = new Date();
-        const curtime = `${now.getHours().toString().padStart(2, "0")}${now
-            .getMinutes().toString().padStart(2, "0")}`;
-
-        let bidPrice = 0;
-        let askPrice = 0;
-
-        let GetPip = pipes.find((item) => item.symbol === data[1]);
-        if (!GetPip) {
-            GetPip = { pip: 0.0001 };
+        if (data.Mid_Price == 0) {
+            return;
         }
 
-        const pipValue = GetPip.pip;
-
         if (type === "crypto") {
-            bidPrice = Plan == 0 ? data[5] : (data[6] || 0) - (Plan * pipValue);
-            askPrice = Plan == 0 ? data[8] : (data[6] || 0) + (Plan * pipValue);
 
             await collection.updateOne(
-                { ticker: data[1] },
+                { ticker: data.ticker },
                 {
-                    $set: {
-                        Ticker: data[1],
-                        Date: data[2],
-                        curtime,
-                        Exchange: data[3],
-                        Bid_Size: data[4] || 0,
-                        Bid_Price: bidPrice || data[5],
-                        Mid_Price: data[6] || 0,
-                        Ask_Size: data[7] || 0,
-                        Ask_Price: askPrice || data[8],
-                    },
+                    $set: data,
                 },
                 { upsert: true }
             );
         } else {
 
-            bidPrice = Plan == 0 ? data[4] : (data[5] || 0) - (Plan * pipValue);
-            askPrice = Plan == 0 ? data[7] : (data[5] || 0) + (Plan * pipValue);
-
             await collection.updateOne(
-                { ticker: data[1] },
+                { ticker: data.ticker },
                 {
-                    $set: {
-                        Ticker: data[1],
-                        Date: data[2],
-                        curtime,
-                        Bid_Size: data[3] || 0,
-                        Bid_Price: bidPrice || data[4],
-                        Mid_Price: data[5] || 0,
-                        Ask_Size: data[6] || 0,
-                        Ask_Price: askPrice || data[7],
-                    },
+                    $set: data,
                 },
                 { upsert: true }
             );
@@ -177,9 +146,89 @@ const simulatePriceMovement = async (formattedData, type) => {
         isActive: true,
     }).toArray();
 
+
+
+
+    const now = new Date();
+    const curtime = `${now.getHours().toString().padStart(2, "0")}${now
+        .getMinutes().toString().padStart(2, "0")}`;
+
+    let bidPrice = 0;
+    let askPrice = 0;
+
+
+    let GetPip = pipes.find((item) => item.symbol === formattedData[1]);
+    if (!GetPip) {
+        GetPip = { pip: 0.0001 };
+    }
+
+    const pipValue = GetPip.pip;
+    let updatedata
+
+
+
+    if (type === "crypto") {
+
+        if (
+            formattedData[5] == null ||
+            formattedData[6] == null ||
+            formattedData[8] == null
+        ) {
+            return;
+        }
+
+
+        bidPrice = Plan == 0 ? formattedData[5] : (formattedData[6] || 0) - (Plan * pipValue);
+        askPrice = Plan == 0 ? formattedData[8] : (formattedData[6] || 0) + (Plan * pipValue);
+
+
+        updatedata = {
+            ticker: formattedData[1],
+            Date: formattedData[2],
+            curtime,
+            Exchange: formattedData[3],
+            Bid_Size: formattedData[4] || 0,
+            Bid_Price: bidPrice || formattedData[5],
+            Mid_Price: formattedData[6] || 0,
+            Ask_Size: formattedData[7] || 0,
+            Ask_Price: askPrice || formattedData[8],
+        }
+
+
+    } else {
+
+        if (
+            formattedData[4] == null ||
+            formattedData[7] == null ||
+            formattedData[5] == null
+        ) {
+            return;
+        }
+
+        bidPrice = Plan == 0 ? formattedData[4] : (formattedData[5] || 0) - (Plan * pipValue);
+        askPrice = Plan == 0 ? formattedData[7] : (formattedData[5] || 0) + (Plan * pipValue);
+        updatedata = {
+            ticker: formattedData[1],
+            Date: formattedData[2],
+            curtime,
+            Bid_Size: formattedData[3] || 0,
+            Bid_Price: bidPrice || formattedData[4],
+            Mid_Price: formattedData[5] || 0,
+            Ask_Size: formattedData[6] || 0,
+            Ask_Price: askPrice || formattedData[7],
+        }
+
+    }
+
+
+
+
+
+
+
     if (activeConditions.length === 0) {
-        await updateDatabase(formattedData, type);
-        serverIo.emit("receive_data_forex", { data: formattedData, type });
+        await updateDatabase(updatedata, type);
+        serverIo.emit("receive_data_forex", { data: updatedata, type });
         return;
     }
 
@@ -210,10 +259,13 @@ const simulatePriceMovement = async (formattedData, type) => {
             );
 
 
-            formattedData[4] = simulatedDrop;
-            formattedData[5] = simulatedDrop;
+            updatedata.Mid_Price = simulatedDrop;
+            updatedata.Mid_Price = simulatedDrop;
 
-            serverIo.emit("receive_data_forex", { data: formattedData, type });
+
+            await updateDatabase(updatedata, type);
+
+            serverIo.emit("receive_data_forex", { data: updatedata, type });
 
             const updatedCondition = await conditions.findOne({ _id: condition._id });
             if (updatedCondition.logs.length >= 22) {

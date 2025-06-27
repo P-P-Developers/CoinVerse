@@ -321,3 +321,14 @@
 2025-06-27T08:46:10.579Z [warn]: SLOW API: [GET] /GetConditions - 212ms
 2025-06-27T08:47:47.726Z [warn]: SLOW API: [GET] /GetConditions - 245ms
 2025-06-27T08:54:17.872Z [warn]: SLOW API: [GET] /GetConditions - 226ms
+2025-06-27T10:21:35.178Z [warn]: SLOW API: [GET] /GetConditions - 244ms
+2025-06-27T10:22:15.895Z [warn]: SLOW API: [GET] /GetConditions - 219ms
+2025-06-27T10:22:26.917Z [warn]: SLOW API: [GET] /GetConditions - 251ms
+2025-06-27T10:22:43.787Z [warn]: SLOW API: [GET] /GetConditions - 317ms
+2025-06-27T10:25:33.638Z [warn]: SLOW API: [GET] /GetConditions - 234ms
+2025-06-27T10:26:18.980Z [warn]: SLOW API: [GET] /GetConditions - 237ms
+2025-06-27T10:30:19.774Z [warn]: SLOW API: [GET] /GetConditions - 320ms
+2025-06-27T11:07:31.623Z [warn]: SLOW API: [GET] /GetConditions - 338ms
+2025-06-27T11:07:42.910Z [warn]: SLOW API: [GET] /GetConditions - 261ms
+2025-06-27T11:08:10.968Z [warn]: SLOW API: [GET] /GetConditions - 263ms
+2025-06-27T11:25:39.854Z [warn]: SLOW API: [POST] /admin/getUpiDetails - 394ms
