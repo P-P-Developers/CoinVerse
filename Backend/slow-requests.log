@@ -309,3 +309,15 @@
 2025-06-27T08:35:34.901Z [warn]: SLOW API: [GET] /GetConditions - 254ms
 2025-06-27T08:36:47.640Z [warn]: SLOW API: [GET] /GetConditions - 214ms
 2025-06-27T08:36:50.123Z [warn]: SLOW API: [GET] /GetConditions - 207ms
+2025-06-27T08:39:01.197Z [warn]: SLOW API: [GET] /GetConditions - 232ms
+2025-06-27T08:40:11.474Z [warn]: SLOW API: [GET] /GetConditions - 291ms
+2025-06-27T08:41:47.517Z [warn]: SLOW API: [GET] /GetConditions - 207ms
+2025-06-27T08:42:39.213Z [warn]: SLOW API: [GET] /GetConditions - 335ms
+2025-06-27T08:42:39.242Z [warn]: SLOW API: [GET] /getCompany - 386ms
+2025-06-27T08:43:01.953Z [warn]: SLOW API: [GET] /GetConditions - 232ms
+2025-06-27T08:43:05.721Z [warn]: SLOW API: [GET] /GetConditions - 208ms
+2025-06-27T08:43:32.726Z [warn]: SLOW API: [GET] /GetConditions - 214ms
+2025-06-27T08:44:03.760Z [warn]: SLOW API: [GET] /GetConditions - 330ms
+2025-06-27T08:46:10.579Z [warn]: SLOW API: [GET] /GetConditions - 212ms
+2025-06-27T08:47:47.726Z [warn]: SLOW API: [GET] /GetConditions - 245ms
+2025-06-27T08:54:17.872Z [warn]: SLOW API: [GET] /GetConditions - 226ms
