@@ -19,7 +19,7 @@ const companySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    loginUrl : {
+    loginUrl: {
       type: String,
       required: true,
     },
@@ -29,6 +29,9 @@ const companySchema = new mongoose.Schema(
     endOfDay: {
       type: Date,
     },
+    port: {
+      type: String,
+    }
   },
   { timestamps: true }
 );

@@ -183,6 +183,7 @@ const Header = () => {
     const res = await getCompanyApi();
     setLogo(res.data.logo);
     changeFavicon(res.data.favicon);
+    localStorage.setItem("Port", res?.data?.port)
     document.title = res.data.panelName;
   };
 

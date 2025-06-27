@@ -1937,8 +1937,6 @@ class Superadmin {
 
 
 
-
-
 }
 
 module.exports = new Superadmin();

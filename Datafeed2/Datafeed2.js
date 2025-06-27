@@ -7,7 +7,7 @@ const { MongoClient } = require("mongodb");
 require("dotenv").config();
 
 
-const PORT = 5080;
+const PORT = 5555;
 const MONGO_URL = process.env.MONGO_URL;
 const SOCKET_URL = "http://82.29.178.147:7777/";
 
@@ -260,6 +260,6 @@ socket.on("disconnect", () => {
 
 // Start server
 server.listen(PORT, async () => {
-    console.log(`✅ datafeed1 listening on http://localhost:${PORT}`);
+    console.log(`✅ datafeed1 listening on ${PORT}`);
     await initializeDatabase();
 });
