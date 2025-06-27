@@ -7,7 +7,7 @@ const { MongoClient } = require("mongodb");
 require("dotenv").config();
 
 
-const PORT = 5555;
+const PORT = 5000;
 const MONGO_URL = process.env.MONGO_URL;
 const SOCKET_URL = "http://82.29.178.147:7777/";
 
