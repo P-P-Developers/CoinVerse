@@ -3,64 +3,72 @@ import { Companydata, getCompanyApi } from '../../../Services/Superadmin/Superad
 import Swal from 'sweetalert2';
 
 const Settings = () => {
+    const [plan, setPlan] = useState({
+        Basic_plan: '',
+        Standard_plan: '',
+        Premium_plan: ''
+    });
 
-
-    const [plan, setPlan] = useState('');
-    const [error, setError] = useState('');
-    const [touched, setTouched] = useState(false);
-
-
+    const [errors, setErrors] = useState({});
+    const [touched, setTouched] = useState({});
 
     useEffect(() => {
         getcompanydata();
     }, []);
 
-
-
     const getcompanydata = async () => {
         try {
             const res = await getCompanyApi();
             if (res?.status) {
-                setPlan(res?.data?.plan || '')
+                setPlan({
+                    Basic_plan: res?.data?.Basic_plan,
+                    Standard_plan: res?.data?.Standard_plan,
+                    Premium_plan: res?.data?.Premium_plan
+                });
             }
         } catch (error) {
             console.error("Failed to fetch company data:", error);
         }
     };
 
-
-
-
     const handleChange = (e) => {
-        setPlan(e.target.value);
-        if (touched) validate(e.target.value);
+        const { name, value } = e.target;
+        setPlan(prev => ({ ...prev, [name]: value }));
+        if (touched[name]) validateField(name, value);
     };
 
-
-
-    const handleBlur = () => {
-        setTouched(true);
-        validate(plan);
+    const handleBlur = (e) => {
+        const { name, value } = e.target;
+        setTouched(prev => ({ ...prev, [name]: true }));
+        validateField(name, value);
     };
 
-
-
-
-    const validate = (value) => {
-        if (!value.trim()) {
-            setError('Plan is required.');
-        } else {
-            setError('');
+    const validateField = (name, value) => {
+        let errorMsg = '';
+        if (!value || value.toString().trim() === '') {
+            errorMsg = 'This field is required.';
         }
+        setErrors(prev => ({ ...prev, [name]: errorMsg }));
     };
-
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const data = { plan: plan };
+
+        const newErrors = {};
+        Object.keys(plan).forEach(key => {
+            if (!plan[key] || plan[key].toString().trim() === '') {
+                newErrors[key] = 'This field is required.';
+            }
+        });
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            setTouched({ Basic_plan: true, Standard_plan: true, Premium_plan: true });
+            return;
+        }
+
         try {
-            const res = await Companydata(data);
+            const res = await Companydata(plan);
             if (res.status) {
                 Swal.fire({
                     title: "Success",
@@ -87,7 +95,6 @@ const Settings = () => {
         }
     };
 
-
     return (
         <div className="container d-flex justify-content-center align-items-center min-vh-100 bg-light">
             <form
@@ -95,30 +102,30 @@ const Settings = () => {
                 className="bg-white border rounded-4 shadow p-5 w-100"
                 style={{ maxWidth: '500px' }}
             >
-                <h2 className="text-center mb-4">Update Plan</h2>
+                <h2 className="text-center mb-4">Update Plans</h2>
 
-                <div className="mb-3">
-                    <label htmlFor="plan" className="form-label fw-semibold">
-                        Plan
-                    </label>
-                    <input
-                        id="plan"
-                        type="number"
-                        value={plan}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        className={`form-control ${error && touched ? 'is-invalid' : ''}`}
-                        placeholder="Enter your plan"
-                    />
-                    {error && touched && (
-                        <div className="invalid-feedback">{error}</div>
-                    )}
-                </div>
+                {["Basic_plan", "Standard_plan", "Premium_plan"].map((field) => (
+                    <div className="mb-3" key={field}>
+                        <label htmlFor={field} className="form-label fw-semibold">
+                            {field.replace("_", " ")}
+                        </label>
+                        <input
+                            id={field}
+                            name={field}
+                            type="number"
+                            value={plan[field]}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            className={`form-control ${errors[field] && touched[field] ? 'is-invalid' : ''}`}
+                            placeholder={`Enter ${field.replace("_", " ")}`}
+                        />
+                        {errors[field] && touched[field] && (
+                            <div className="invalid-feedback">{errors[field]}</div>
+                        )}
+                    </div>
+                ))}
 
-                <button
-                    type="submit"
-                    className="btn btn-primary w-100"
-                >
+                <button type="submit" className="btn btn-primary w-100">
                     Submit
                 </button>
             </form>

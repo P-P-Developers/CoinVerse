@@ -1224,50 +1224,50 @@ class Superadmin {
 
   async AddCompany(req, res) {
     try {
-      const { plan } = req.body;
+      const { Basic_plan, Standard_plan, Premium_plan } = req.body;
 
-      if (!plan) {
-        return res.json({
+      if (!Basic_plan || !Standard_plan || !Premium_plan) {
+        return res.status(400).json({
           status: false,
-          message: "Plan is required.",
+          message: "All plans (Basic, Standard, Premium) are required.",
         });
       }
+
 
       let company = await Company.findOne();
 
       if (company) {
-        company.plan = plan;
+        company.Basic_plan = Basic_plan;
+        company.Standard_plan = Standard_plan;
+        company.Premium_plan = Premium_plan;
+
         const updatedCompany = await company.save();
 
-        return res.json({
+        return res.status(200).json({
           status: true,
-          message: "Plan updated successfully",
+          message: "Plans updated successfully.",
           data: updatedCompany,
         });
-      } else {
-        const newCompany = new Company({
-          plan,
-        });
-
-        const savedCompany = await newCompany.save();
-
-        return res.json({
-          status: true,
-          message: "Company created with plan",
-          data: savedCompany,
-        });
       }
+
+      const newCompany = new Company({ Basic_plan, Standard_plan, Premium_plan });
+      const savedCompany = await newCompany.save();
+
+      return res.status(201).json({
+        status: true,
+        message: "Plans created successfully.",
+        data: savedCompany,
+      });
+
     } catch (error) {
-      console.error("Error at AddCompany", error);
-      return res.json({
+      console.error("Error at AddCompany:", error);
+      return res.status(500).json({
         status: false,
-        message: "Internal error",
+        message: "Internal server error.",
         data: [],
       });
     }
-  }
-
-
+  };
 
 
   // DELETE: Delete company settings

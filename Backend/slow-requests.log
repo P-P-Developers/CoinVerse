@@ -332,3 +332,4 @@
 2025-06-27T11:07:42.910Z [warn]: SLOW API: [GET] /GetConditions - 261ms
 2025-06-27T11:08:10.968Z [warn]: SLOW API: [GET] /GetConditions - 263ms
 2025-06-27T11:25:39.854Z [warn]: SLOW API: [POST] /admin/getUpiDetails - 394ms
+2025-06-27T11:57:56.923Z [warn]: SLOW API: [GET] /getCompany - 350ms

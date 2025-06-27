@@ -32,7 +32,15 @@ const companySchema = new mongoose.Schema(
     port: {
       type: String,
     },
-    plan: {
+    Basic_plan: {
+      type: Number,
+      default: null
+    },
+    Standard_plan: {
+      type: Number,
+      default: null
+    },
+    Premium_plan: {
       type: Number,
       default: null
     }
