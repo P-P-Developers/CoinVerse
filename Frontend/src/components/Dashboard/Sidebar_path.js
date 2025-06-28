@@ -59,6 +59,12 @@ export const superadmin_header = [
     icon: "fe fe-arrow-up-circle",
     route: "/superadmin/deposit",
   },
+    {
+    id: 11,
+    name: "Symbols",
+    icon: "fe fe-arrow-up-circle",
+    route: "/superadmin/symbols",
+  },
 ];
 
 // Admin header configuration

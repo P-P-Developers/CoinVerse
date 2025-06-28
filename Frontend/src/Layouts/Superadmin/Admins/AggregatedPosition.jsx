@@ -175,7 +175,6 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
   }
 
 
-
   return (
     <div className="container-fluid px-3">
       {displayedGroups.map((group, index) => {
@@ -187,6 +186,7 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
           avg_sell_price,
           total_buy_lot,
           total_sell_lot,
+          live_prices,
 
           records,
         } = group;
@@ -307,7 +307,7 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                         : ""
                       }`}
                   >
-                    {livePrice ?? "-"}
+                    {livePrice ?? live_prices.Mid_Price}
                   </span>
                 </div>
 
