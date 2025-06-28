@@ -183,6 +183,7 @@ const Header = () => {
     const res = await getCompanyApi();
     setLogo(res.data.logo);
     changeFavicon(res.data.favicon);
+    localStorage.setItem("Port", res?.data?.port)
     document.title = res.data.panelName;
   };
 
@@ -377,16 +378,28 @@ const Header = () => {
                         </Link>
                       )}
                       {user_role === "SUPERADMIN" && (
-                        <Link
-                          to="/superadmin/bankdetails"
-                          className="dropdown-item ai-icon"
-                        >
-                          <i
-                            className="fas fa-university"
-                            style={{ fontSize: "18px", color: "#000" }}
-                          />
-                          <span className="ms-2">Bank Details</span>
-                        </Link>
+                        <>
+                          <Link
+                            to="/superadmin/bankdetails"
+                            className="dropdown-item ai-icon"
+                          >
+                            <i
+                              className="fas fa-university"
+                              style={{ fontSize: "18px", color: "#000" }}
+                            />
+                            <span className="ms-2">Bank Details</span>
+                          </Link>
+                          <Link
+                            to="/superadmin/settings"
+                            className="dropdown-item ai-icon"
+                          >
+                            <i
+                              className="fas fa-university"
+                              style={{ fontSize: "18px", color: "#000" }}
+                            />
+                            <span className="ms-2">Settings</span>
+                          </Link>
+                        </>
                       )}
                       {user_role === "ADMIN" && (
                         <Link

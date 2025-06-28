@@ -24,6 +24,7 @@ import Deposite from "../Layouts/Superadmin/withdrawalAnddeposite/Deposit";
 import Withdrawal from "../Layouts/Superadmin/withdrawalAnddeposite/Withdrawal";
 import UserDetails from "../Layouts/Superadmin/Admins/UserDetails";
 import UserTradeHistory from "../Layouts/Superadmin/Admins/UserTradeHistory";
+import Settings from "../Layouts/Superadmin/Admins/Settings";
 
 const SuperadminRoutes = () => {
   return (
@@ -52,6 +53,7 @@ const SuperadminRoutes = () => {
           <Route path="/All-users" element={<UserDetails />} />
           <Route path="/user-Trade-history/:id" element={<UserTradeHistory />} />
 
+          <Route path="/settings" element={<Settings />} />
 
         </Routes>
       </div>

@@ -1220,6 +1220,56 @@ class Superadmin {
     }
   }
 
+
+
+  async AddCompany(req, res) {
+    try {
+      const { Basic_plan, Standard_plan, Premium_plan } = req.body;
+
+      if (!Basic_plan || !Standard_plan || !Premium_plan) {
+        return res.status(400).json({
+          status: false,
+          message: "All plans (Basic, Standard, Premium) are required.",
+        });
+      }
+
+
+      let company = await Company.findOne();
+
+      if (company) {
+        company.Basic_plan = Basic_plan;
+        company.Standard_plan = Standard_plan;
+        company.Premium_plan = Premium_plan;
+
+        const updatedCompany = await company.save();
+
+        return res.status(200).json({
+          status: true,
+          message: "Plans updated successfully.",
+          data: updatedCompany,
+        });
+      }
+
+      const newCompany = new Company({ Basic_plan, Standard_plan, Premium_plan });
+      const savedCompany = await newCompany.save();
+
+      return res.status(201).json({
+        status: true,
+        message: "Plans created successfully.",
+        data: savedCompany,
+      });
+
+    } catch (error) {
+      console.error("Error at AddCompany:", error);
+      return res.status(500).json({
+        status: false,
+        message: "Internal server error.",
+        data: [],
+      });
+    }
+  };
+
+
   // DELETE: Delete company settings
   async deleteCompany(req, res) {
     try {
@@ -1934,8 +1984,6 @@ class Superadmin {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
-
-
 
 
 

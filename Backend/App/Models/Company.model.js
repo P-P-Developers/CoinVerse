@@ -19,7 +19,7 @@ const companySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    loginUrl : {
+    loginUrl: {
       type: String,
       required: true,
     },
@@ -29,6 +29,21 @@ const companySchema = new mongoose.Schema(
     endOfDay: {
       type: Date,
     },
+    port: {
+      type: String,
+    },
+    Basic_plan: {
+      type: Number,
+      default: null
+    },
+    Standard_plan: {
+      type: Number,
+      default: null
+    },
+    Premium_plan: {
+      type: Number,
+      default: null
+    }
   },
   { timestamps: true }
 );

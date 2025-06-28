@@ -355,6 +355,11 @@ export async function AddCondition(data, token) {
   }
 }
 
+
+
+
+
+
 export async function GetConditions(data, token) {
   try {
     const res = await axios.get(
@@ -376,6 +381,22 @@ export async function UserwiseTradehistory(data, token) {
   try {
     const res = await axios.post(
       `${Config.base_url}UserWisetradehistory`,
+      data,
+      {
+        data: {},
+      }
+    );
+    return await res?.data;
+  } catch (err) {
+    return await err;
+  }
+}
+
+
+export async function Companydata(data, token) {
+  try {
+    const res = await axios.post(
+      `${Config.base_url}AddCompany`,
       data,
       {
         data: {},

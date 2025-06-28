@@ -19,39 +19,99 @@ const bcrypt = require("bcrypt");
 class Users {
 
 
+  // async userWithdrawalanddeposite(req, res) {
+  //   try {
+  //     const { userid, Balance, type, transactionId, ScreenShot } = req.body;
+
+
+  //     const userdata = await User_model.findById({ _id: userid }).sort({
+  //       createdAt: -1,
+  //     });
+  //     if (!userdata) {
+  //       return res.json({ status: false, message: "User not found", data: [] });
+  //     }
+
+  //     if (Balance > 10000) {
+  //       return res.json({
+  //         status: false,
+  //         message: "You can not " + type == 1 ? "Deposite" : "Withdrawal" + " more than 10000",
+  //         data: [],
+  //       });
+  //     }
+
+
+  //     const dollarPriceData = await MarginRequired.findOne({
+  //       adminid: userdata.parent_id,
+  //     }).select("dollarprice");
+  //     if (!dollarPriceData) {
+  //       return res.json({
+  //         status: false,
+  //         message: "Dollar price data not found",
+  //         data: [],
+  //       });
+  //     }
+
+
+  //     if (isNaN(Balance) || Balance <= 0) {
+  //       return res.json({
+  //         status: false,
+  //         message: "Invalid or negative balance provided",
+  //         data: [],
+  //       });
+  //     }
+
+
+  //     const dollarcount = parseFloat(Balance).toFixed(6);
+
+  //     const paymentHistory = new PaymenetHistorySchema({
+  //       userid: userid,
+  //       adminid: userdata.parent_id,
+  //       Balance: dollarcount,
+  //       type: type,
+  //       status: 0,
+  //       transactionId: transactionId,
+  //       ScreenShot: ScreenShot,
+  //     });
+
+  //     await paymentHistory.save();
+
+  //     req.io.emit("newTransactionRequest", {
+  //       userid: userid,
+  //       adminid: userdata.parent_id,
+  //       username: userdata?.UserName || "",
+  //       amount: dollarcount,
+  //       type: type == 1 ? "Deposit" : "Withdrawal",
+  //       time: new Date(),
+  //       paymentHistoryId: paymentHistory._id,
+  //     });
+
+
+  //     return res.json({
+  //       status: true,
+  //       message: "Request sent",
+  //       message: "Request sent",
+  //       data: paymentHistory,
+  //     });
+  //   } catch (error) {
+  //     return res.json({
+  //       status: false,
+  //       message: "Error to request send",
+  //       data: [],
+  //     });
+  //   }
+  // }
+
+
+
   async userWithdrawalanddeposite(req, res) {
     try {
       const { userid, Balance, type, transactionId, ScreenShot } = req.body;
 
-      // Fetch user data
-      const userdata = await User_model.findById({ _id: userid }).sort({
-        createdAt: -1,
-      });
+      const userdata = await User_model.findById(userid);
       if (!userdata) {
         return res.json({ status: false, message: "User not found", data: [] });
       }
 
-      if (Balance > 10000) {
-        return res.json({
-          status: false,
-          message: "You can not " + type == 1 ? "Deposite" : "Withdrawal" + " more than 10000",
-          data: [],
-        });
-      }
-
-      // Fetch dollar price data
-      const dollarPriceData = await MarginRequired.findOne({
-        adminid: userdata.parent_id,
-      }).select("dollarprice");
-      if (!dollarPriceData) {
-        return res.json({
-          status: false,
-          message: "Dollar price data not found",
-          data: [],
-        });
-      }
-
-      // Validate and convert Balance to dollars
       if (isNaN(Balance) || Balance <= 0) {
         return res.json({
           status: false,
@@ -60,14 +120,59 @@ class Users {
         });
       }
 
-      // const dollarPrice = parseFloat(dollarPriceData.dollarprice);
+      if (Balance > 10000) {
+        return res.json({
+          status: false,
+          message: `You cannot ${type == 1 ? "Deposit" : "Withdraw"} more than 10000`,
+          data: [],
+        });
+      }
+
+      const dollarPriceData = await MarginRequired.findOne({
+        adminid: userdata.parent_id,
+      }).select("dollarprice");
+
+      if (!dollarPriceData) {
+        return res.json({
+          status: false,
+          message: "Dollar price data not found",
+          data: [],
+        });
+      }
+
       const dollarcount = parseFloat(Balance).toFixed(6);
 
-      // Create payment history entry
+
+      if (type == 1) {
+        const existingDeposits = await PaymenetHistorySchema.find({
+          userid: userid,
+          type: 1,
+        }).sort({ createdAt: 1 });
+
+        if (existingDeposits.length === 0) {
+          let planType = null;
+
+          if (Balance == 100) {
+            planType = 1;
+          } else if (Balance == 500) {
+            planType = 2;
+          } else if (Balance == 1000) {
+            planType = 3;
+          }
+
+          if (planType) {
+            await User_model.findByIdAndUpdate(userid, {
+              plan_type: planType,
+              plan_balance: Balance,
+            });
+          }
+        }
+      }
+
       const paymentHistory = new PaymenetHistorySchema({
         userid: userid,
         adminid: userdata.parent_id,
-        Balance: dollarcount, // Store the converted dollar amount
+        Balance: dollarcount,
         type: type,
         status: 0,
         transactionId: transactionId,
@@ -86,14 +191,13 @@ class Users {
         paymentHistoryId: paymentHistory._id,
       });
 
-
       return res.json({
         status: true,
-        message: "Request sent",
         message: "Request sent",
         data: paymentHistory,
       });
     } catch (error) {
+      console.error("Error in withdrawal/deposit:", error);
       return res.json({
         status: false,
         message: "Error to request send",
@@ -101,6 +205,7 @@ class Users {
       });
     }
   }
+
 
 
 

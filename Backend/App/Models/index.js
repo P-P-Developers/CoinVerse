@@ -30,12 +30,13 @@ module.exports = {
   Profitmargin: require("./Profitmargin.model"),
   Company: require("./Company.model"),
   live_priceModal: require("./liveprice"),
-  ResearchModel : require("./Research"),
+  ResearchModel: require("./Research"),
   open_position: open_position,
   UpiDetails: require("./UpiDetails"),
   Useraccount: require("./Useraccount"),
   Conversation: require("./Conversation"),
   Message: require("./Message"),
-  AdminActivityLog: require("./AdminActivityLogs.model"), 
-  BonusCollection : require("./BonusCollectioni.model"),
+  AdminActivityLog: require("./AdminActivityLogs.model"),
+  BonusCollection: require("./BonusCollectioni.model"),
+ 
 };

@@ -64,11 +64,11 @@ const AddUsers = () => {
       }
 
       // Balance validation
-      if (!values.Balance) {
-        errors.Balance = "Please Enter Balance";
-      } else if (isNaN(values.Balance)) {
-        errors.Balance = "Balance must be a number";
-      }
+      // if (!values.Balance) {
+      //   errors.Balance = "Please Enter Balance";
+      // } else if (isNaN(values.Balance)) {
+      //   errors.Balance = "Balance must be a number";
+      // }
 
       // Password validation
       if (!values.password) {
@@ -175,7 +175,7 @@ const AddUsers = () => {
           return item.Role === "EMPLOYE";
         });
       setData(result);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const fields = [
@@ -211,14 +211,14 @@ const AddUsers = () => {
       col_size: 6,
       disable: false,
     },
-    {
-      name: "Balance",
-      label: "Balance",
-      type: "text",
-      label_size: 12,
-      col_size: 6,
-      disable: false,
-    },
+    // {
+    //   name: "Balance",
+    //   label: "Balance",
+    //   type: "text",
+    //   label_size: 12,
+    //   col_size: 6,
+    //   disable: false,
+    // },
     {
       name: "employee_id",
       label: "Employee",
@@ -226,9 +226,9 @@ const AddUsers = () => {
       options: [
         ...(data
           ? data.map((item) => ({
-              label: item.UserName,
-              value: item._id,
-            }))
+            label: item.UserName,
+            value: item._id,
+          }))
           : []),
       ],
       label_size: 12,
@@ -278,20 +278,20 @@ const AddUsers = () => {
     },
     ...(formik.values.selectedOption
       ? [
-          {
-            name: "inputValue",
-            label:
-              formik.values.selectedOption === "pertrade"
-                ? "Per Trade"
-                : formik.values.selectedOption === "transactionwise"
+        {
+          name: "inputValue",
+          label:
+            formik.values.selectedOption === "pertrade"
+              ? "Per Trade"
+              : formik.values.selectedOption === "transactionwise"
                 ? "Transaction-Wise %"
                 : "Per Lot",
-            type: "percentage",
-            label_size: 12,
-            col_size: 6,
-            disable: false,
-          },
-        ]
+          type: "percentage",
+          label_size: 12,
+          col_size: 6,
+          disable: false,
+        },
+      ]
       : []),
   ];
 

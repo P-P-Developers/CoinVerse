@@ -43,9 +43,9 @@ const userModel = Schema({
         default: null
     },
     pin: {
-        type: String, 
+        type: String,
         default: null
-        
+
     },
 
     pin_status: {
@@ -122,7 +122,7 @@ const userModel = Schema({
         type: Number,
         default: null
     },
-    
+
     limit: {
         type: Number,
         default: null
@@ -172,7 +172,7 @@ const userModel = Schema({
         type: Number,
         default: 15
     },
-    
+
     FixedPerClient: {
         type: Boolean,
         default: false
@@ -214,6 +214,15 @@ const userModel = Schema({
         default: false
     },
     NetTransaction: {
+        type: Number,
+        default: null
+    },
+    plan_type: {
+        type: Number,
+        enum: [1, 2, 3], // 1: Basic, 2: Standard, 3: Premium
+        default: null
+    },
+    plan_balance: {
         type: Number,
         default: null
     },

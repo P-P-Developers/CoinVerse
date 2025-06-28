@@ -4,6 +4,9 @@ const Condition = require("../../../Models/Tradelogs.model");
 const live_priceModal = db.live_priceModal;
 
 class CommanApis {
+
+  
+
   async GetAdminUserName(req, res) {
     try {
       const { parent_id } = req.body;
@@ -18,6 +21,8 @@ class CommanApis {
       return res.status(500).json({ message: "Internal server error" });
     }
   }
+
+
 
   async AddCondition(req, res) {
     try {
