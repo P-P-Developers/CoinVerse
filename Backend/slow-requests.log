@@ -337,3 +337,8 @@
 2025-06-27T11:57:56.923Z [warn]: SLOW API: [GET] /getCompany - 350ms
 2025-06-28T04:22:02.336Z [warn]: SLOW API: [GET] /GetConditions - 254ms
 >>>>>>> bee45e042f4f025b8e0dc93fd2f9aea4e0bc4742
+2025-06-28T10:06:54.802Z [warn]: SLOW API: [GET] /GetConditions - 760ms
+2025-06-28T10:08:19.497Z [warn]: SLOW API: [GET] /GetConditions - 231ms
+2025-06-28T10:08:57.150Z [warn]: SLOW API: [POST] /getPosition_detail - 386ms
+2025-06-28T10:08:57.377Z [warn]: SLOW API: [GET] /GetConditions - 218ms
+2025-06-28T10:09:46.321Z [warn]: SLOW API: [GET] /GetConditions - 236ms
