@@ -13,10 +13,14 @@ import { Modal, Button } from "react-bootstrap";
 import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const Admin = () => {
+
+
+
   const navigate = useNavigate();
   const location = useLocation();
   const TokenData = getUserFromToken();
   const user_id = TokenData?.user_id;
+
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -26,6 +30,8 @@ const Admin = () => {
   const [getActiveInactive, setActiveInactive] = useState(
     location.state?.status || "all"
   );
+
+  
   const [logsModalOpen, setLogsModalOpen] = useState(false);
   const [logsData, setLogsData] = useState([]);
 
