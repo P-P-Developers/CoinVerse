@@ -23,7 +23,7 @@ class Users {
     try {
       const { userid, Balance, type, transactionId, ScreenShot } = req.body;
 
-      // Fetch user data
+
       const userdata = await User_model.findById({ _id: userid }).sort({
         createdAt: -1,
       });
@@ -39,7 +39,7 @@ class Users {
         });
       }
 
-      // Fetch dollar price data
+
       const dollarPriceData = await MarginRequired.findOne({
         adminid: userdata.parent_id,
       }).select("dollarprice");
@@ -51,7 +51,7 @@ class Users {
         });
       }
 
-      // Validate and convert Balance to dollars
+
       if (isNaN(Balance) || Balance <= 0) {
         return res.json({
           status: false,
@@ -60,14 +60,13 @@ class Users {
         });
       }
 
-      // const dollarPrice = parseFloat(dollarPriceData.dollarprice);
+
       const dollarcount = parseFloat(Balance).toFixed(6);
 
-      // Create payment history entry
       const paymentHistory = new PaymenetHistorySchema({
         userid: userid,
         adminid: userdata.parent_id,
-        Balance: dollarcount, // Store the converted dollar amount
+        Balance: dollarcount,
         type: type,
         status: 0,
         transactionId: transactionId,
