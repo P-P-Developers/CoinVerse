@@ -1,14 +1,9 @@
 import React, { useEffect } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import Login from "../Layouts/Auth/Login";
-import Superadminroutes from "./Superadmin.routes";
-import Adminroutes from "./Admin.routes";
-import EmployeeRoutes from "./Employee.routes";
-import Register from "../Layouts/Auth/Register";
-import { getUserFromToken } from "../Utils/TokenVerify";
-import Tradehistory  from "../Layouts/Employee/Tradehistory";
+
 
 const Routing = () => {
+
   const location = useLocation();
   const navigate = useNavigate();
   const TokenData = getUserFromToken();
