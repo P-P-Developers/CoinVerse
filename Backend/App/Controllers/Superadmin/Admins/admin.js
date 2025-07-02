@@ -854,6 +854,18 @@ class Superadmin {
         {
           $unwind: "$user",
         },
+           {
+          $lookup: {
+            from: "live_prices",
+            localField: "token",
+            foreignField: "ticker",
+            as: "live_prices",
+          },
+        },
+        {
+          $unwind: "$live_prices",
+        },
+
         {
           $addFields: {
             normalized_signal_type: {
@@ -895,6 +907,11 @@ class Superadmin {
             valid_sell_price: 1,
             valid_sell_lot: 1,
             valid_sell_qty: 1,
+            live_prices: {
+              Mid_Price: "$live_prices.Mid_Price",
+              ticker: "$live_prices.ticker",
+              timestamp: "$live_prices.timestamp",  
+            }
           },
         },
         {
@@ -911,6 +928,7 @@ class Superadmin {
             total_sell_lot: { $sum: "$valid_sell_lot" },
             total_buy_qty: { $sum: "$buy_qty" },
             total_sell_qty: { $sum: "$valid_sell_qty" },
+            live_prices: { $first: "$live_prices" }, // Assuming you want the first live price for each group
           },
         },
         {

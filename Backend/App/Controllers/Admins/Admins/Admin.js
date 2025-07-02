@@ -39,8 +39,6 @@ const apkPath = path.join(
 );
 
 class Admin {
-
-
   async AddUser(req, res) {
     try {
       const {
@@ -83,8 +81,8 @@ class Admin {
           existingUser.UserName === UserName
             ? "Username"
             : existingUser.Email === Email
-              ? "Email"
-              : "Phone Number";
+            ? "Email"
+            : "Phone Number";
 
         return res.json({
           status: false,
@@ -132,7 +130,7 @@ class Admin {
         employee_id,
         parent_id,
         parent_role,
-        Balance: Balance,
+        Balance: 0,
         Otp: password,
         Role,
         pertrade: brokeragepertrade || "",
@@ -197,24 +195,6 @@ class Admin {
         }
       }
 
-      // Create wallet and balance statement
-      const userWallet = new Wallet_model({
-        user_Id: newUser._id,
-        Balance: Balance,
-        parent_Id: parent_id,
-        Type: "CREDIT",
-      });
-      await userWallet.save();
-
-      const newStatement = new BalanceStatement({
-        userid: newUser._id,
-        Amount: Balance,
-        parent_Id: parent_id,
-        type: "CREDIT",
-        message: "Balance Added",
-      });
-      await newStatement.save();
-
       if (parentUser.Role === "ADMIN" && parentUser.FixedPerClient) {
         if (parentUser && Balance >= parentUser.AddClientBonus) {
           const newBonus = new BonusCollectioniModel({
@@ -225,28 +205,6 @@ class Admin {
           });
           await newBonus.save();
         }
-
-        if (parentUser && parentUser.FundAdd && Balance > 0) {
-          let calculatedBonus;
-
-          if (Balance > 0 && Balance < 100) {
-            calculatedBonus = parentUser.FundLessThan100;
-          } else if (Balance < 500) {
-            calculatedBonus = parentUser.FundLessThan500;
-          } else if (Balance < 1000) {
-            calculatedBonus = parentUser.FundLessThan1000;
-          } else {
-            calculatedBonus = parentUser.FundGreaterThan1000;
-          }
-          const newBonus = new BonusCollectioniModel({
-            admin_id: parentUser._id,
-            user_id: newUser._id,
-            Bonus: calculatedBonus,
-            Type: "Fund_Add",
-          });
-
-          await newBonus.save();
-        }
       }
 
       return res.json({
@@ -255,6 +213,7 @@ class Admin {
         data: newUser,
       });
     } catch (error) {
+      console.error("Error adding user:", error);
       return res.json({
         status: false,
         message: "Failed to add User",
@@ -644,6 +603,33 @@ class Admin {
 
       // Handle Status = 1 (Accepted)
       if (status == 1) {
+        const existingDeposits = await BalanceStatement.find({
+          userid: paymentHistoryFind.userid,
+          type: "CREDIT",
+        }).sort({ createdAt: 1 });
+
+        if (existingDeposits.length === 0) {
+          let planType = null;
+
+          if (paymentHistoryFind.Balance < 100) {
+            planType = 1;
+          } else if (
+            paymentHistoryFind.Balance > 100 &&
+            paymentHistoryFind.Balance <= 1000
+          ) {
+            planType = 2;
+          } else if (paymentHistoryFind.Balance > 1000) {
+            planType = 3;
+          }
+
+          if (planType) {
+            await User_model.findByIdAndUpdate(paymentHistoryFind.userid, {
+              plan_type: planType,
+              plan_balance: paymentHistoryFind.Balance,
+            });
+          }
+        }
+
         const parentUser = await User_model.findOne({
           _id: admin_id,
         });
@@ -1422,7 +1408,7 @@ class Admin {
         message: "Research updated successfully",
         data: research,
       });
-    } catch (error) { }
+    } catch (error) {}
   }
 
   async DeleteResearch(req, res) {
@@ -1442,7 +1428,7 @@ class Admin {
         message: "Research deleted successfully",
         data: result,
       });
-    } catch (error) { }
+    } catch (error) {}
   }
 
   async UpdatStatus(req, res) {
@@ -1604,8 +1590,6 @@ class Admin {
     }
   }
 
-
-
   async updateBankDetails(req, res) {
     try {
       const {
@@ -1696,8 +1680,6 @@ class Admin {
     }
   }
 
-
-
   // 🔸 Send Message
   async message(req, res) {
     try {
@@ -1714,9 +1696,9 @@ class Admin {
 
       await newMsg.save();
 
-
-      const populatedMsg = await User_model.findById({ _id: senderId })
-        .populate("_id FullName UserName");
+      const populatedMsg = await User_model.findById({
+        _id: senderId,
+      }).populate("_id FullName UserName");
 
       const fullMessage = {
         _id: newMsg._id,
@@ -1770,9 +1752,6 @@ class Admin {
     }
   }
 
-
-
-
   // 🔸 Get Messages by Conversation
   async getMessages(req, res) {
     try {
@@ -1788,9 +1767,6 @@ class Admin {
       });
     }
   }
-
-
-
 
   // 🔸 Get Conversations for User/Admin
   async getConversations(req, res) {
@@ -1897,8 +1873,6 @@ class Admin {
   //   });
   // }
 
-
-
   async Downloadapk(req, res) {
     // Optionally, set content type header (APK ka mime type hai application/vnd.android.package-archive)
     res.setHeader("Content-Type", "application/vnd.android.package-archive");
@@ -1982,7 +1956,6 @@ class Admin {
     }
   }
 
-
   async getAllUser(req, res) {
     try {
       const { id, search, ActiveStatus } = req.body;
@@ -2014,7 +1987,6 @@ class Admin {
         ];
       }
 
-
       // Fetch filtered and paginated users
       const result = await User_model.find(filter)
         .sort({ createdAt: -1 })
@@ -2041,7 +2013,6 @@ class Admin {
         .json({ status: false, message: "Internal server error", data: [] });
     }
   }
-
 
   // async getUserDetails(req, res) {
   //   try {
@@ -2097,7 +2068,6 @@ class Admin {
   //       },
   //     ]);
 
-
   //     const brokerageData = await BalanceStatement.aggregate([
   //       {
   //         $match: {
@@ -2113,7 +2083,6 @@ class Admin {
   //         },
   //       },
   //     ]);
-
 
   //     const allOrders = await mainorder_model.find({
   //       userid: { $in: userIdStrings },
@@ -2222,21 +2191,31 @@ class Admin {
   //   }
   // }
 
-
   async getUserDetails(req, res) {
     try {
       const { adminId, userId, status, input } = req.body;
       let users = [];
 
       if (!adminId) {
-        return res.json({ status: false, message: "Admin ID is required", data: [] });
+        return res.json({
+          status: false,
+          message: "Admin ID is required",
+          data: [],
+        });
       }
 
       if (userId) {
-        const user = await User_model.findOne({ _id: userId, parent_id: adminId, Role: "USER" })
-          .select("UserName _id Balance");
+        const user = await User_model.findOne({
+          _id: userId,
+          parent_id: adminId,
+          Role: "USER",
+        }).select("UserName _id Balance");
         if (!user) {
-          return res.json({ status: false, message: "User not found", data: [] });
+          return res.json({
+            status: false,
+            message: "User not found",
+            data: [],
+          });
         }
         users = [user];
       } else {
@@ -2256,7 +2235,13 @@ class Admin {
           $match: {
             userid: { $in: userIdStrings },
             type: "CREDIT",
-            message: { $in: ["Balance Added", "Balance used for Deposit", "Balance Credit"] },
+            message: {
+              $in: [
+                "Balance Added",
+                "Balance used for Deposit",
+                "Balance Credit",
+              ],
+            },
           },
         },
         {
@@ -2299,10 +2284,12 @@ class Admin {
         },
       ]);
 
-      const allOrders = await mainorder_model.find({
-        userid: { $in: userIdStrings },
-        status: "Completed",
-      }).select("userid symbol buy_price sell_price buy_qty sell_qty");
+      const allOrders = await mainorder_model
+        .find({
+          userid: { $in: userIdStrings },
+          status: "Completed",
+        })
+        .select("userid symbol buy_price sell_price buy_qty sell_qty");
 
       const symbolPriceMap = {
         BTCUSD: 106600,
@@ -2318,13 +2305,15 @@ class Admin {
         const buyQty = parseFloat(order.buy_qty || 0);
         const sellQty = parseFloat(order.sell_qty || 0);
         const buyPrice = parseFloat(order.buy_price || 0);
-        const sellPrice = order.sell_price !== null ? parseFloat(order.sell_price) : null;
+        const sellPrice =
+          order.sell_price !== null ? parseFloat(order.sell_price) : null;
 
         const qtyMatched = Math.min(buyQty, sellQty);
 
-        const realized = sellPrice !== null
-          ? parseFloat((sellPrice - buyPrice) * qtyMatched)
-          : 0;
+        const realized =
+          sellPrice !== null
+            ? parseFloat((sellPrice - buyPrice) * qtyMatched)
+            : 0;
 
         let unrealized = 0;
         if (sellPrice === null && buyQty > sellQty) {
@@ -2361,7 +2350,9 @@ class Admin {
         const totalCredit = parseFloat(creditMap[id] || 0);
         const totalDebit = parseFloat(debitMap[id] || 0);
         const totalBrokerage = parseFloat(brokerageMap[id] || 0);
-        const remainingBalance = parseFloat(totalCredit - totalDebit - totalBrokerage);
+        const remainingBalance = parseFloat(
+          totalCredit - totalDebit - totalBrokerage
+        );
 
         const pl = plMap[id] || { realized: 0, unrealized: 0 };
 
@@ -2384,9 +2375,13 @@ class Admin {
         const numericInput = parseFloat(input);
         if (!isNaN(numericInput)) {
           if (status == 0) {
-            finalResult = result.filter((user) => parseFloat(user.realizedPL) < numericInput);
+            finalResult = result.filter(
+              (user) => parseFloat(user.realizedPL) < numericInput
+            );
           } else if (status == 1) {
-            finalResult = result.filter((user) => parseFloat(user.realizedPL) > numericInput);
+            finalResult = result.filter(
+              (user) => parseFloat(user.realizedPL) > numericInput
+            );
           }
         }
       }
@@ -2405,14 +2400,6 @@ class Admin {
       });
     }
   }
-
-
-
-
-
-
-
-
 }
 
 module.exports = new Admin();

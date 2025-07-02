@@ -43012,3 +43012,13 @@ ul.nav.nav-pills.mb-4.light {
   0% { opacity: 0;}
   100% { opacity: 1;}
 }
+
+.table thead th {
+  font-size: 18px;
+  padding: 12px;
+}
+
+.table tbody td {
+  font-size: 16px;
+  padding: 10px;
+}

@@ -20,7 +20,7 @@ const serverIo = socketIo(server, {
     },
 });
 
-app.use(cors());
+app.use(cors());   
 app.use(express.json());
 
 app.get("/", (req, res) => {

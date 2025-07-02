@@ -144,29 +144,29 @@ class Users {
 
 
       if (type == 1) {
-        const existingDeposits = await PaymenetHistorySchema.find({
-          userid: userid,
-          type: 1,
-        }).sort({ createdAt: 1 });
+        // const existingDeposits = await PaymenetHistorySchema.find({
+        //   userid: userid,
+        //   type: 1,
+        // }).sort({ createdAt: 1 });
 
-        if (existingDeposits.length === 0) {
-          let planType = null;
+        // if (existingDeposits.length === 0) {
+        //   let planType = null;
 
-          if (Balance == 100) {
-            planType = 1;
-          } else if (Balance == 500) {
-            planType = 2;
-          } else if (Balance == 1000) {
-            planType = 3;
-          }
+        //   if (Balance == 100) {
+        //     planType = 1;
+        //   } else if (Balance == 500) {
+        //     planType = 2;
+        //   } else if (Balance == 1000) {
+        //     planType = 3;
+        //   }
 
-          if (planType) {
-            await User_model.findByIdAndUpdate(userid, {
-              plan_type: planType,
-              plan_balance: Balance,
-            });
-          }
-        }
+        //   if (planType) {
+        //     await User_model.findByIdAndUpdate(userid, {
+        //       plan_type: planType,
+        //       plan_balance: Balance,
+        //     });
+        //   }
+        // }
       }
 
       const paymentHistory = new PaymenetHistorySchema({

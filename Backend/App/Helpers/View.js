@@ -23,8 +23,8 @@ db.createView(
     {
       $lookup: {
         from: "live_prices",
-        localField: "token", // Field in mainorders
-        foreignField: "ticker", // Field in live_prices
+        localField: "token", 
+        foreignField: "ticker",
         as: "livePriceData",
       },
     },
@@ -62,6 +62,7 @@ db.createView(
         status: 1,
         lotsize: 1,
         live_price: "$livePriceData.Bid_Price", 
+        
         checkSlPercent: {
           $switch: {
             branches: [
@@ -119,6 +120,8 @@ db.createView(
             default: false,
           },
         },
+
+
         checkSlPercent_sl: {
           $switch: {
             branches: [
