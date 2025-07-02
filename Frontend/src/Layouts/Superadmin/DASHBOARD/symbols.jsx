@@ -55,6 +55,8 @@ function Symbols() {
   const [prevMidPrices, setPrevMidPrices] = useState({});
 
   useEffect(() => {
+    const myKey = "1"; // ✅ Aapka custom key
+    socket.emit("join_plan", "Basic"); // or "Basic", "Premium","Standard"
     socket.on("receive_data_forex", (data) => {
       const ticker = data?.data?.ticker?.toLowerCase();
       const bid = data?.data?.Bid_Price;
@@ -97,55 +99,54 @@ function Symbols() {
 
               <div className="container mt-4">
                 <h2 className="mb-3">Symbol Live Prices</h2>
-                <table className="table table-bordered table-striped">
-                  <thead className="thead-dark">
+                <table className="table table-bordered table-striped table-hover">
+                  <thead className="bg-dark text-white">
                     <tr>
-                      <th>Symbol</th>
-                      <th>Pip</th>
-                      <th>Type</th>
-                      <th>Bid</th>
-                      <th>Mid</th>
-                      <th>Ask</th>
+                      <th className="text-uppercase fs-5">Symbol</th>
+                      <th className="text-uppercase fs-5">Pip</th>
+                      <th className="text-uppercase fs-5">Type</th>
+                      <th className="text-uppercase fs-5">Bid</th>
+                      <th className="text-uppercase fs-5">Mid</th>
+                      <th className="text-uppercase fs-5">Ask</th>
                     </tr>
                   </thead>
-                 <tbody>
-  {pipes.map((item, index) => {
-    const live = liveData[item.symbol];
-    const prevMid = prevMidPrices[item.symbol];
-    const direction =
-      live?.mid > prevMid
-        ? "↑"
-        : live?.mid < prevMid
-        ? "↓"
-        : "";
+                  <tbody>
+                    {pipes.map((item, index) => {
+                      const live = liveData[item.symbol];
+                      const prevMid = prevMidPrices[item.symbol];
+                      const direction =
+                        live?.mid > prevMid
+                          ? "↑"
+                          : live?.mid < prevMid
+                          ? "↓"
+                          : "";
 
-    // Determine text color class
-    const getColorClass = (field, prev) => {
-      if (!live?.[field]) return "text-muted";
-      if (live?.mid > prev) return "text-success"; // Up
-      if (live?.mid < prev) return "text-danger"; // Down
-      return "";
-    };
+                      // Determine text color class
+                      const getColorClass = (field, prev) => {
+                        if (!live?.[field]) return "text-muted";
+                        if (live?.mid > prev) return "text-success"; // Up
+                        if (live?.mid < prev) return "text-danger"; // Down
+                        return "";
+                      };
 
-    return (
-      <tr key={index}>
-        <td>{item.symbol.toUpperCase()}</td>
-        <td>{item.pip}</td>
-        <td>{live?.type || "-"}</td>
-        <td className={getColorClass("bid", prevMid)}>
-          {live?.bid || "-"}
-        </td>
-        <td className={getColorClass("mid", prevMid)}>
-          {live?.mid || "-"} {direction}
-        </td>
-        <td className={getColorClass("ask", prevMid)}>
-          {live?.ask || "-"}
-        </td>
-      </tr>
-    );
-  })}
-</tbody>
-
+                      return (
+                        <tr key={index}>
+                          <td>{item.symbol.toUpperCase()}</td>
+                          <td>{item.pip}</td>
+                          <td>{live?.type || "-"}</td>
+                          <td className={getColorClass("bid", prevMid)}>
+                            {live?.bid || "-"}
+                          </td>
+                          <td className={getColorClass("mid", prevMid)}>
+                            {live?.mid || "-"} {direction}
+                          </td>
+                          <td className={getColorClass("ask", prevMid)}>
+                            {live?.ask || "-"}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
                 </table>
               </div>
             </div>

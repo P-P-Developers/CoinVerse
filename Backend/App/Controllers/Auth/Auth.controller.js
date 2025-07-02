@@ -14,7 +14,6 @@ class Auth {
   async login(req, res) {
     try {
       const { UserName, password, fcm_token } = req.body;
-     
 
       const EmailCheck = await User_model.findOne({ UserName: UserName });
 
@@ -63,6 +62,12 @@ class Auth {
           ReferralCode: EmailCheck.ReferralCode,
           ReferredBy: EmailCheck.ReferredBy,
           parent_id: EmailCheck.parent_id,
+          plan_type:
+            EmailCheck.plan_type == 3
+              ? "Standard"
+              : EmailCheck.plan_type == 2
+              ? "Premium"
+              : "Basic",
         },
         process.env.SECRET,
         {
@@ -72,9 +77,9 @@ class Auth {
 
       res.cookie("token", token, {
         httpOnly: false,
-        secure: false, 
+        secure: false,
         sameSite: "Lax",
-        maxAge: 12 * 60 * 60 * 1000, 
+        maxAge: 12 * 60 * 60 * 1000,
       });
 
       // Update FCM token if role is USER
@@ -100,6 +105,12 @@ class Auth {
           ReferralCode: EmailCheck.ReferralCode,
           ReferredBy: EmailCheck.ReferredBy,
           parent_id: EmailCheck.parent_id,
+          plan_type:
+            EmailCheck.plan_type == 3
+              ? "Standard"
+              : EmailCheck.plan_type == 2
+              ? "Premium"
+              : "Basic",
         },
       });
     } catch (error) {
@@ -307,45 +318,44 @@ class Auth {
     }
   }
 
- async logoutUser(req, res) {
-  try {
-    const { userid } = req.body;
+  async logoutUser(req, res) {
+    try {
+      const { userid } = req.body;
 
-    // Optional: Destroy session if using express-session
-    if (req.session) {
-      req.session.destroy();
+      // Optional: Destroy session if using express-session
+      if (req.session) {
+        req.session.destroy();
+      }
+
+      // Optional: Clear auth cookie (JWT or session ID)
+      res.clearCookie("token"); // Replace with your actual cookie name
+
+      // Log the logout
+      const user_detail = await User_model.findOne({ _id: userid });
+
+      const user_login = new user_logs({
+        user_Id: user_detail._id,
+        admin_Id: user_detail.parent_id,
+        UserName: user_detail.UserName,
+        login_status: "Panel off",
+        role: user_detail.Role,
+      });
+      await user_login.save();
+
+      return res.status(200).send({
+        status: true,
+        message: "Logout Successfully",
+        data: [],
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+      return res.status(500).send({
+        status: false,
+        message: "Logout failed",
+        error: error.message,
+      });
     }
-
-    // Optional: Clear auth cookie (JWT or session ID)
-    res.clearCookie("token"); // Replace with your actual cookie name
-
-    // Log the logout
-    const user_detail = await User_model.findOne({ _id: userid });
-
-    const user_login = new user_logs({
-      user_Id: user_detail._id,
-      admin_Id: user_detail.parent_id,
-      UserName: user_detail.UserName,
-      login_status: "Panel off",
-      role: user_detail.Role,
-    });
-    await user_login.save();
-
-    return res.status(200).send({
-      status: true,
-      message: "Logout Successfully",
-      data: [],
-    });
-  } catch (error) {
-    console.error("Logout error:", error);
-    return res.status(500).send({
-      status: false,
-      message: "Logout failed",
-      error: error.message,
-    });
   }
-}
-
 
   async getlogsuser(req, res) {
     try {
@@ -525,7 +535,6 @@ class Auth {
   async matchPin(req, res) {
     try {
       const { user_id, pin, fcm_token } = req.body;
- 
 
       if (pin && !/^\d{4}$/.test(pin)) {
         return res.send({ status: false, message: "Invalid PIN", data: [] });
@@ -545,7 +554,6 @@ class Auth {
         });
       }
 
-     
       // If pin_status is false, return a message to generate the pin first
       if (!user.pin_status) {
         return res.send({
@@ -602,7 +610,6 @@ class Auth {
   async FingerAuth(req, res) {
     try {
       const { user_id, fcm_token } = req.body;
-   
 
       const user = await User_model.findById(user_id);
 
@@ -618,7 +625,6 @@ class Auth {
         });
       }
 
-     
       // If pin_status is false, return a message to generate the pin first
       if (!user.pin_status) {
         return res.send({

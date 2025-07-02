@@ -21,25 +21,26 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
 
 
 
-  useEffect(() => {
-    socket.on("receive_data_forex", (data) => {
-      const symbol = data?.data?.ticker?.toLowerCase();
-      const price = Number(data?.data?.Mid_Price);
-      if (symbol && !isNaN(price)) {
-        setPrevPrices((prev) => ({
-          ...prev,
-          [symbol]: livePrices[symbol],
-        }));
-        setLivePrices((prev) => ({
-          ...prev,
-          [symbol]: price.toFixed(3),
-        }));
-      }
-    });
-    return () => {
-      socket.off("receive_data_forex");
-    };
-  }, [livePrices]);
+useEffect(() => {
+  const handleData = (data) => {
+    const symbol = data?.data?.ticker?.toLowerCase();
+    const price = Number(data?.data?.Mid_Price);
+    if (symbol && !isNaN(price)) {
+      setPrevPrices(prev => ({
+        ...prev,
+        [symbol]: livePrices[symbol],
+      }));
+      setLivePrices(prev => ({
+        ...prev,
+        [symbol]: price.toFixed(4),
+      }));
+    }
+  };
+
+  socket.on("receive_data_forex", handleData);
+  return () => socket.off("receive_data_forex", handleData);
+}, []);
+
 
 
 
@@ -248,11 +249,11 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                     <div className="d-flex flex-wrap gap-3 averages-row mt-1">
                       <span className="agp-avg agp-avg-buy">
                         Buy Price:{" "}
-                        <strong>{avg_buy_price?.toFixed(3) ?? "-"}</strong>
+                        <strong>{avg_buy_price?.toFixed(4) ?? "-"}</strong>
                       </span>
                       <span className="agp-avg agp-avg-sell">
                         Sell Price:{" "}
-                        <strong>{avg_sell_price?.toFixed(3) ?? "-"}</strong>
+                        <strong>{avg_sell_price?.toFixed(4) ?? "-"}</strong>
                       </span>
                       <span className="agp-avg agp-avg-lot">
                         Buy Lot: <strong>{formatDecimal(total_buy_lot)}</strong>
@@ -320,12 +321,12 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                         color: (() => {
                           const overall = records?.reduce((acc, item) => {
                             const symbol = item.symbol?.toLowerCase();
-                            const livePrice = livePrices[symbol] ?? 0;
+                            const livePrice1 = livePrices[symbol] ?? live_prices.Mid_Price;
 
                             if (item.signal_type === "buy_sell") {
-                              acc += (livePrice - item.buy_price) * item.buy_lot;
+                              acc += (livePrice1 - item.buy_price) * item.buy_lot;
                             } else if (item.signal_type === "sell_buy") {
-                              acc += (item.sell_price - livePrice) * item.sell_lot;
+                              acc += (item.sell_price - livePrice1) * item.sell_lot;
                             }
 
                             return acc;
@@ -334,21 +335,21 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
                         })(),
                       }}
                     >
-                      ₹
+                      
                       {(() => {
                         const overall = records?.reduce((acc, item) => {
                           const symbol = item.symbol?.toLowerCase();
-                          const livePrice = livePrices[symbol] ?? 0;
+                          const livePrice1 = livePrices[symbol] ?? live_prices.Mid_Price;
 
                           if (item.signal_type === "buy_sell") {
-                            acc += (livePrice - item.buy_price) * item.buy_lot;
+                            acc += (livePrice1 - item.buy_price) * item.buy_lot;
                           } else if (item.signal_type === "sell_buy") {
-                            acc += (item.sell_price - livePrice) * item.sell_lot;
+                            acc += (item.sell_price - livePrice1) * item.sell_lot;
                           }
 
                           return acc;
                         }, 0);
-                        return overall.toFixed(3);
+                        return overall.toFixed(5);
                       })()}
                     </span>
                   </p>
