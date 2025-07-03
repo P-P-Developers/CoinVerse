@@ -1887,35 +1887,20 @@ class Admin {
 
 
 
-  // async uploadApk(req, res) {
-  //   if (!req.file) {
-  //     return res.json({ message: "No APK file uploaded" });
-  //   }
-
-  //   res.json({
-  //     message: "APK uploaded successfully",
-  //     filename: req.file.filename,
-  //     path: req.file.path,
-  //   });
-  // }
-
-
-
   async uploadApk(req, res) {
     try {
       if (!req.file) {
-        return res.status(400).json({ message: "No APK file uploaded" });
+        return res.json({ message: "No APK file uploaded" });
       }
 
-      return res.status(200).json({
+      return res.json({
         message: "APK uploaded successfully",
         filename: req.file.filename,
         path: req.file.path,
       });
 
     } catch (error) {
-      console.error("Upload Error:", error);
-      return res.status(500).json({
+      return res.json({
         message: "Internal Server Error",
         error: error.message,
       });
