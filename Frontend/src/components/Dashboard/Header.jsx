@@ -9,17 +9,15 @@ import { getCompanyApi } from "../../Services/Superadmin/Superadmin";
 
 import { getUserFromToken } from "../../Utils/TokenVerify";
 import { io } from "socket.io-client";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { socket_url, socket_url_web, base_url } from "../../Utils/Config";
 
 const Header = () => {
-
   const socket = io(socket_url_web, {
     transports: ["websocket"],
     withCredentials: true,
   });
-
 
   const location = useLocation();
   const TokenData = getUserFromToken();
@@ -32,20 +30,13 @@ const Header = () => {
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
   const [logo, setLogo] = useState("");
 
-
-
-
   useEffect(() => {
     fetchLogo();
   }, []);
 
-
-
   useEffect(() => {
     if (user_id) getNotifications();
   }, [user_id]);
-
-
 
   useEffect(() => {
     const timeLeft = exp * 1000 - Date.now();
@@ -54,10 +45,7 @@ const Header = () => {
     return () => clearTimeout(timeout);
   }, [exp]);
 
-
-
   useEffect(() => {
-
     // socket.on("connect", () => {
     //   console.log("🚀 Socket connected successfully with ID:", socket.id);
     // })
@@ -69,7 +57,7 @@ const Header = () => {
             _id: msg._id || new Date().getTime(),
             message: msg.message,
             createdAt: new Date(),
-            UserName: msg.senderInfo?.UserName || "User"
+            UserName: msg.senderInfo?.UserName || "User",
           },
           ...prev,
         ]);
@@ -89,10 +77,9 @@ const Header = () => {
             draggable: true,
             theme: "colored",
           }
-        )
+        );
       }
     });
-
 
     socket.on("newTransactionRequest", (msg) => {
       if (user_id === msg.adminid) {
@@ -101,7 +88,7 @@ const Header = () => {
             _id: msg._id || new Date().getTime(),
             Amount: msg.amount,
             createdAt: new Date(),
-            UserName: msg.UserName || "User"
+            UserName: msg.UserName || "User",
           },
           ...prev,
         ]);
@@ -121,7 +108,7 @@ const Header = () => {
             draggable: true,
             theme: "colored",
           }
-        )
+        );
       }
     });
     return () => {
@@ -130,29 +117,19 @@ const Header = () => {
     };
   }, [user_id]);
 
-
-
   const getNotifications = async () => {
     try {
       const response = await getbroadcastmessageforuser({ userid: user_id });
-      if (response.status)
-        setNotification(response.data);
-
+      if (response.status) setNotification(response.data);
     } catch (error) {
-      console.log("error", error)
+      console.log("error", error);
     }
   };
 
-
-
   useEffect(() => {
-
     document.body.setAttribute("data-theme-version", theme);
     document.body.className = theme === "dark" ? "dark-mode" : "light-mode";
   }, [theme]);
-
-
-
 
   useEffect(() => {
     const element = document.querySelector(".wallet-open.show");
@@ -166,8 +143,6 @@ const Header = () => {
     } else {
     }
   }, [isActive]);
-
-
 
   const changeFavicon = (iconPath) => {
     let link = document.querySelector("link[rel*='icon']");
@@ -183,7 +158,7 @@ const Header = () => {
     const res = await getCompanyApi();
     setLogo(res.data.logo);
     changeFavicon(res.data.favicon);
-    localStorage.setItem("Port", res?.data?.port)
+    localStorage.setItem("Port", res?.data?.port);
     document.title = res.data.panelName;
   };
 
@@ -208,17 +183,12 @@ const Header = () => {
     localStorage.setItem("theme", newTheme); // Save theme preference to localStorage
   };
 
-
   const logoutuser = async () => {
     try {
       const response = await LogoutUser({ userid: user_id });
       if (response.status) localStorage.clear();
-    } catch (error) { }
+    } catch (error) {}
   };
-
-
-
-
 
   const getLastPathSegment = (path) => {
     const segments = path
@@ -228,9 +198,8 @@ const Header = () => {
   };
 
   const formattedSegment =
-    getLastPathSegment(location.pathname)?.charAt(0).toUpperCase() + getLastPathSegment(location.pathname)?.slice(1)
-
-
+    getLastPathSegment(location.pathname)?.charAt(0).toUpperCase() +
+    getLastPathSegment(location.pathname)?.slice(1);
 
   const pageTitles = {
     Admin: "Add Admin",
@@ -258,7 +227,13 @@ const Header = () => {
 
       <div className="nav-header">
         <a href="index.html" className="">
-          <img src={logo} width={"250px"} height={"83px"} alt="" className="w-100" />
+          <img
+            src={logo}
+            width={"250px"}
+            height={"83px"}
+            alt=""
+            className="w-100"
+          />
 
           <div className="brand-title"></div>
         </a>
@@ -377,10 +352,10 @@ const Header = () => {
                           <span className="ms-2">Profile</span>
                         </Link>
                       )}
-                      {user_role === "SUPERADMIN" && (
+                      {user_role === "ADMIN" && (
                         <>
                           <Link
-                            to="/superadmin/bankdetails"
+                            to="/admin/bankdetails"
                             className="dropdown-item ai-icon"
                           >
                             <i
@@ -427,8 +402,9 @@ const Header = () => {
                       )}
                       {(user_role === "ADMIN" || user_role === "EMPLOYE") && (
                         <Link
-                          to={`/${user_role === "ADMIN" ? "admin" : "employee"
-                            }/changedpassword`}
+                          to={`/${
+                            user_role === "ADMIN" ? "admin" : "employee"
+                          }/changedpassword`}
                           className="dropdown-item ai-icon"
                         >
                           <i
@@ -466,7 +442,6 @@ const Header = () => {
       </div>
       <ToastContainer />
     </div>
-
   );
 };
 
