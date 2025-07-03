@@ -9,7 +9,9 @@ require("dotenv").config();
 
 const PORT = 5000;
 const MONGO_URL = process.env.MONGO_URL;
-const SOCKET_URL = "http://82.29.178.147:7777/";
+// const SOCKET_URL = "http://82.29.178.147:7777/";
+const SOCKET_URL = "http://localhost:5060/";
+
 
 const app = express();
 const server = http.createServer(app);

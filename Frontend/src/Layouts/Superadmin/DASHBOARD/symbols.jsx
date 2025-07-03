@@ -2,53 +2,90 @@ import React, { useState, useEffect } from "react";
 import socket from "../../../Utils/socketClient";
 
 const pipes = [
-  { symbol: "usdtusd", pip: 0.0001 },
-  { symbol: "btcxrp", pip: 0.00001 },
-  { symbol: "btcusd", pip: 0.01 },
-  { symbol: "ethxrp", pip: 0.00001 },
-  { symbol: "ethusd", pip: 0.01 },
-  { symbol: "usdcusd", pip: 0.0001 },
-  { symbol: "solusd", pip: 0.001 },
-  { symbol: "solbtc", pip: 0.000001 },
-  { symbol: "bnbbtc", pip: 0.000001 },
-  { symbol: "xrpusd", pip: 0.0001 },
-  { symbol: "daiusd", pip: 0.0001 },
-  { symbol: "dogeusd", pip: 0.00001 },
-  { symbol: "xauusd", pip: 0.01 },
-  { symbol: "audcad", pip: 0.0001 },
-  { symbol: "audjpy", pip: 0.01 },
-  { symbol: "audnzd", pip: 0.0001 },
-  { symbol: "audusd", pip: 0.0001 },
-  { symbol: "euraud", pip: 0.0001 },
-  { symbol: "eurchf", pip: 0.0001 },
-  { symbol: "eurgbp", pip: 0.0001 },
-  { symbol: "eurjpy", pip: 0.01 },
-  { symbol: "eurnzd", pip: 0.0001 },
-  { symbol: "eurusd", pip: 0.0001 },
-  { symbol: "gbpaud", pip: 0.0001 },
-  { symbol: "gbpcad", pip: 0.0001 },
-  { symbol: "gbpchf", pip: 0.0001 },
-  { symbol: "gbpjpy", pip: 0.01 },
-  { symbol: "gbpusd", pip: 0.0001 },
-  { symbol: "jpyusd", pip: 0.0001 },
-  { symbol: "nzdjpy", pip: 0.01 },
-  { symbol: "nzdusd", pip: 0.0001 },
-  { symbol: "usdcad", pip: 0.0001 },
-  { symbol: "usdchf", pip: 0.01 },
-  { symbol: "xauusd", pip: 0.01 },
-  { symbol: "wtiousd", pip: 0.01 },
-  { symbol: "brentusd", pip: 0.001 },
-  { symbol: "natgasusd", pip: 0.0001 },
-  { symbol: "rbobusd", pip: 0.0001 },
-  { symbol: "heatoilusd", pip: 0.0001 },
-  { symbol: "propaneusd", pip: 0.01 },
-  { symbol: "coalusd", pip: 0.01 },
-  { symbol: "uraniumusd", pip: 0.0001 },
-  { symbol: "ethanolusd", pip: 0.01 },
-  { symbol: "electricityusd", pip: 0.01 },
-  { symbol: "xagusd", pip: 0.01 },
-  { symbol: "krwusd", pip: 0.01 },
+  // Forex
+  { symbol: "audcad", pip: 0.0001, category: "forex" },
+  { symbol: "audjpy", pip: 0.01, category: "forex" },
+  { symbol: "audnzd", pip: 0.0001, category: "forex" },
+  { symbol: "audusd", pip: 0.0001, category: "forex" },
+  { symbol: "euraud", pip: 0.0001, category: "forex" },
+  { symbol: "eurchf", pip: 0.0001, category: "forex" },
+  { symbol: "eurgbp", pip: 0.0001, category: "forex" },
+  { symbol: "eurjpy", pip: 0.01, category: "forex" },
+  { symbol: "eurnzd", pip: 0.0001, category: "forex" },
+  { symbol: "eurusd", pip: 0.0001, category: "forex" },
+  { symbol: "gbpaud", pip: 0.0001, category: "forex" },
+  { symbol: "gbpcad", pip: 0.0001, category: "forex" },
+  { symbol: "gbpchf", pip: 0.0001, category: "forex" },
+  { symbol: "gbpjpy", pip: 0.01, category: "forex" },
+  { symbol: "gbpusd", pip: 0.0001, category: "forex" },
+  { symbol: "jpyusd", pip: 0.0001, category: "forex" },
+  { symbol: "nzdjpy", pip: 0.01, category: "forex" },
+  { symbol: "nzdusd", pip: 0.0001, category: "forex" },
+  { symbol: "usdcad", pip: 0.0001, category: "forex" },
+  { symbol: "usdchf", pip: 0.0001, category: "forex" },
+
+  // Commodity
+  { symbol: "xauusd", pip: 0.01, category: "commodity" }, // Gold
+  { symbol: "xagusd", pip: 0.01, category: "commodity" }, // Silver
+
+  // Crypto
+  { symbol: "bnbbtc", pip: 0.000001, category: "crypto" },
+  { symbol: "btcusd", pip: 1, category: "crypto" },
+  { symbol: "dogeusd", pip: 0.0001, category: "crypto" },
+  { symbol: "ethusd", pip: 0.01, category: "crypto" },
+  { symbol: "solbtc", pip: 0.000001, category: "crypto" },
+  { symbol: "solusd", pip: 0.01, category: "crypto" },
+  { symbol: "usdtusd", pip: 0.0001, category: "crypto" },
+  { symbol: "xrpusd", pip: 0.0001, category: "crypto" },
+  { symbol: "adausd", pip: 0.0001, category: "crypto" },
+  { symbol: "bchusd", pip: 0.01, category: "crypto" },
+  { symbol: "suiusd", pip: 0.0001, category: "crypto" },
+  { symbol: "linkusd", pip: 0.01, category: "crypto" },
+  { symbol: "xlmusd", pip: 0.0001, category: "crypto" },
+  { symbol: "shibusd", pip: 0.00000001, category: "crypto" },
+  { symbol: "ltcusd", pip: 0.01, category: "crypto" },
+  { symbol: "hbarusd", pip: 0.0001, category: "crypto" },
+  { symbol: "dotusd", pip: 0.01, category: "crypto" },
+  { symbol: "uniusd", pip: 0.01, category: "crypto" },
+  { symbol: "pepeusd", pip: 0.00000001, category: "crypto" },
+  { symbol: "aaveusd", pip: 0.01, category: "crypto" },
+  { symbol: "taousd", pip: 0.01, category: "crypto" },
+  { symbol: "aptusd", pip: 0.01, category: "crypto" },
+  { symbol: "icpusd", pip: 0.01, category: "crypto" },
+  { symbol: "nearusd", pip: 0.0001, category: "crypto" },
+  { symbol: "etcusd", pip: 0.01, category: "crypto" },
+  { symbol: "ondousd", pip: 0.0001, category: "crypto" },
+  { symbol: "usd1usd", pip: 0.0001, category: "crypto" },
+  { symbol: "gtusd", pip: 0.0001, category: "crypto" },
+  { symbol: "mntusd", pip: 0.0001, category: "crypto" },
+  { symbol: "polusd", pip: 0.01, category: "crypto" },
+  { symbol: "vetusd", pip: 0.0001, category: "crypto" },
+  { symbol: "kasusd", pip: 0.0001, category: "crypto" },
+  { symbol: "trumpusd", pip: 0.0001, category: "crypto" },
+  { symbol: "enausd", pip: 0.0001, category: "crypto" },
+  { symbol: "skyusd", pip: 0.0001, category: "crypto" },
+  { symbol: "renderusd", pip: 0.01, category: "crypto" },
+  { symbol: "fetusd", pip: 0.0001, category: "crypto" },
+  { symbol: "filusd", pip: 0.01, category: "crypto" },
+  { symbol: "daiusd", pip: 0.0001, category: "crypto" },
+  { symbol: "usdcusd", pip: 0.0001, category: "crypto" },
+  { symbol: "avaxusd", pip: 0.01, category: "crypto" },
+  
+  { symbol: "bnbusd", pip: 0.01, category: "crypto" },
+  { symbol: "trxusd", pip: 0.0001, category: "crypto" },
+  { symbol: "hypeusd", pip: 0.0001, category: "crypto" },
+  { symbol: "leousd", pip: 0.0001, category: "crypto" },
+  { symbol: "xmrusd", pip: 0.0001, category: "crypto" },
+  { symbol: "usdeusd", pip: 0.0001, category: "crypto" },
+  { symbol: "bgbusd", pip: 0.0001, category: "crypto" },
+  { symbol: "piusd", pip: 0.0001, category: "crypto" },
+  { symbol: "okbusd", pip: 0.01, category: "crypto" },
+  { symbol: "croususd", pip: 0.01, category: "crypto" },
+
 ];
+
+
+
 
 function Symbols() {
   const [liveData, setLiveData] = useState({});
@@ -58,7 +95,7 @@ function Symbols() {
     const myKey = "1"; // ✅ Aapka custom key
     socket.emit("join_plan", "Basic"); // or "Basic", "Premium","Standard"
     socket.on("receive_data_forex", (data) => {
-console.log("Received data:", data?.data);
+      console.log("Received data:", data?.data);
       const ticker = data?.data?.ticker?.toLowerCase();
       const bid = data?.data?.Bid_Price;
       const ask = data?.data?.Ask_Price;
@@ -105,6 +142,8 @@ console.log("Received data:", data?.data);
                 <table className="table table-bordered table-striped table-hover">
                   <thead className="bg-dark text-white">
                     <tr>
+                      <th className="text-uppercase fs-5">No</th>
+
                       <th className="text-uppercase fs-5">Symbol</th>
                       <th className="text-uppercase fs-5">Pip</th>
                       <th className="text-uppercase fs-5">Type</th>
@@ -134,9 +173,11 @@ console.log("Received data:", data?.data);
 
                       return (
                         <tr key={index}>
+                          <td>{index + 1}</td>
+
                           <td>{item.symbol.toUpperCase()}</td>
                           <td>{item.pip}</td>
-                          <td>{live?.type || "-"}</td>
+                          <td>{item?.category || "-"}</td>
                           <td className={getColorClass("bid", prevMid)}>
                             {live?.bid || "-"}
                           </td>
