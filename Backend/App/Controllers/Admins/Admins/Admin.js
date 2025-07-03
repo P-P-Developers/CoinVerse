@@ -25,6 +25,7 @@ const Sign_In = db.Sign_In;
 const crypto = require("crypto");
 const path = require("path");
 const BonusCollectioniModel = require("../../../Models/BonusCollectioni.model");
+const fs = require("fs");
 
 const Company = db.Company;
 
@@ -81,8 +82,8 @@ class Admin {
           existingUser.UserName === UserName
             ? "Username"
             : existingUser.Email === Email
-            ? "Email"
-            : "Phone Number";
+              ? "Email"
+              : "Phone Number";
 
         return res.json({
           status: false,
@@ -1408,7 +1409,7 @@ class Admin {
         message: "Research updated successfully",
         data: research,
       });
-    } catch (error) {}
+    } catch (error) { }
   }
 
   async DeleteResearch(req, res) {
@@ -1428,7 +1429,7 @@ class Admin {
         message: "Research deleted successfully",
         data: result,
       });
-    } catch (error) {}
+    } catch (error) { }
   }
 
   async UpdatStatus(req, res) {
@@ -1471,7 +1472,7 @@ class Admin {
         qrCodeBase64,
       } = req.body;
 
-      const GetData = await UpiDetails.findOne({userId: id });
+      const GetData = await UpiDetails.findOne({ userId: id });
 
       if (!walleturl) {
         return res.json({ status: false, message: "UPI ID is required" });
@@ -1487,7 +1488,7 @@ class Admin {
 
         qrCodeBase64,
       };
-      const updatedUpiDetails = await UpiDetails.updateOne({userId:id}, updatedDetails, {
+      const updatedUpiDetails = await UpiDetails.updateOne({ userId: id }, updatedDetails, {
         upsert: true,
       });
 
@@ -1515,7 +1516,7 @@ class Admin {
     try {
       const { id } = req.body;
 
-      const GetData = await UpiDetails.findOne({userId: id});
+      const GetData = await UpiDetails.findOne({ userId: id });
       if (!GetData) {
         return res.json({ status: false, message: "UPI details not found" });
       }
@@ -1883,6 +1884,44 @@ class Admin {
       }
     });
   }
+
+
+
+  // async uploadApk(req, res) {
+  //   if (!req.file) {
+  //     return res.json({ message: "No APK file uploaded" });
+  //   }
+
+  //   res.json({
+  //     message: "APK uploaded successfully",
+  //     filename: req.file.filename,
+  //     path: req.file.path,
+  //   });
+  // }
+
+
+
+  async uploadApk(req, res) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No APK file uploaded" });
+      }
+
+      return res.status(200).json({
+        message: "APK uploaded successfully",
+        filename: req.file.filename,
+        path: req.file.path,
+      });
+
+    } catch (error) {
+      console.error("Upload Error:", error);
+      return res.status(500).json({
+        message: "Internal Server Error",
+        error: error.message,
+      });
+    }
+  }
+
 
   async GetBonusDetails(req, res) {
     try {

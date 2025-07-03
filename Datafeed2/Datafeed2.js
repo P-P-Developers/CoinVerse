@@ -86,6 +86,8 @@ let pipes = [
 let client, db, collection, conditions, Company;
 let Plan
 
+
+
 const initializeDatabase = async () => {
     try {
         client = new MongoClient(MONGO_URL, { useUnifiedTopology: true });
@@ -102,6 +104,9 @@ const initializeDatabase = async () => {
         process.exit(1);
     }
 };
+
+
+
 
 
 
