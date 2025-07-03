@@ -16,7 +16,8 @@ export const socket_url_web = `https://185.209.75.198:1002/`;
 
 
 
-export const socket_url = `http://82.29.178.147:6002/`;
+// export const socket_url = `http://82.29.178.147:6002/`;
+export const socket_url = `http://localhost:5000/`;
 
 
 

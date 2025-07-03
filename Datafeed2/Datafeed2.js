@@ -20,7 +20,7 @@ const serverIo = socketIo(server, {
     },
 });
 
-app.use(cors());   
+app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -142,17 +142,22 @@ const updateDatabase = async (data, type) => {
 
 
 
+const formatPrice = (num) => {
+    if (typeof num !== "number" || isNaN(num)) return num;
+    const factor = num < 50 ? 1e5 : 1e2;
+    const result = Math.round(num * factor) / factor;
+    // console.log("result", result)
+    return result;
+};
 
 
 
 const simulatePriceMovement = async (formattedData, type) => {
+
     const activeConditions = await conditions.find({
         symbol: { $regex: new RegExp(formattedData[1], "i") },
         isActive: true,
     }).toArray();
-
-
-
 
     const now = new Date();
     const curtime = `${now.getHours().toString().padStart(2, "0")}${now
@@ -193,10 +198,10 @@ const simulatePriceMovement = async (formattedData, type) => {
             curtime,
             Exchange: formattedData[3],
             Bid_Size: formattedData[4] || 0,
-            Bid_Price: bidPrice || formattedData[5],
-            Mid_Price: formattedData[6] || 0,
+            Bid_Price: formatPrice(bidPrice || formattedData[5]),
+            Mid_Price: formatPrice(formattedData[6] || 0),
             Ask_Size: formattedData[7] || 0,
-            Ask_Price: askPrice || formattedData[8],
+            Ask_Price: formatPrice(askPrice || formattedData[8]),
         }
 
 
@@ -217,19 +222,13 @@ const simulatePriceMovement = async (formattedData, type) => {
             Date: formattedData[2],
             curtime,
             Bid_Size: formattedData[3] || 0,
-            Bid_Price: bidPrice || formattedData[4],
-            Mid_Price: formattedData[5] || 0,
+            Bid_Price: formatPrice(bidPrice || formattedData[4]),
+            Mid_Price: formatPrice(formattedData[5] || 0),
             Ask_Size: formattedData[6] || 0,
-            Ask_Price: askPrice || formattedData[7],
+            Ask_Price: formatPrice(askPrice || formattedData[7]),
         }
 
     }
-
-
-
-
-
-
 
     if (activeConditions.length === 0) {
         await updateDatabase(updatedata, type);
@@ -263,9 +262,8 @@ const simulatePriceMovement = async (formattedData, type) => {
                 }
             );
 
-
-            updatedata.Mid_Price = simulatedDrop;
-            updatedata.Mid_Price = simulatedDrop;
+            updatedata.Mid_Price = formatPrice(simulatedDrop);
+            updatedata.Mid_Price = formatPrice(simulatedDrop);
 
 
             await updateDatabase(updatedata, type);
