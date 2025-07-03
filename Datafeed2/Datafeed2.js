@@ -89,20 +89,32 @@ let Plan
 
 
 const initializeDatabase = async () => {
-    try {
-        client = new MongoClient(MONGO_URL, { useUnifiedTopology: true });
-        await client.connect();
-        db = client.db();
-        collection = db.collection("live_prices");
-        conditions = db.collection("conditions");
-        Company = db.collection("companies");
-        const Companydataget = await Company.find({}, { projection: { plan: 1, _id: 0 } }).toArray();
-        Plan = Companydataget[0]?.plan || 20
-        console.log("✅ MongoDB connected");
-    } catch (error) {
-        console.error("❌ MongoDB connection error:", error.message);
-        process.exit(1);
+
+    const DB_NAME = process.env.DB_NAME;
+
+    if (!DB_NAME) {
+        console.error("❌ DB_NAME is not set in the environment variables.");
+        return;
     }
+
+    client = new MongoClient(MONGO_URL, { useUnifiedTopology: true });
+
+    await client.connect();
+
+    db = client.db(DB_NAME);
+
+    collection = db.collection("live_prices");
+    conditions = db.collection("conditions");
+    Company = db.collection("companies");
+
+
+    const companyData = await Company.find({}, {
+        projection: { Basic_plan: 1, Premium_plan: 1, Standard_plan: 1, _id: 0 }
+    }).toArray();
+
+    Basic_plan = companyData[0]?.Basic_plan;
+    Premium_plan = companyData[0]?.Premium_plan;
+    Standard_plan = companyData[0]?.Standard_plan;
 };
 
 
