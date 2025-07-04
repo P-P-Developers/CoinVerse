@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const http = require("http");
+const https = require("https");
+const fs = require("fs");
 const socketIo = require("socket.io");
 const { io: clientSocket } = require("socket.io-client");
 const { MongoClient } = require("mongodb");
@@ -8,26 +10,68 @@ require("dotenv").config();
 
 
 const PORT = 5000;
+const HTTPS_PORT = 1003;
 const MONGO_URL = process.env.MONGO_URL;
 const SOCKET_URL = "http://82.29.178.147:7777/";
 
-const app = express();
-const server = http.createServer(app);
-const serverIo = socketIo(server, {
-    cors: {
-        origin: "*",
-        credentials: true,
-    },
-});
 
+const app = express();
 app.use(cors());
 app.use(express.json());
-
 app.get("/", (req, res) => {
     res.send("Socket connection is working!");
 });
 
 
+
+
+// const credentials = {
+//     key: fs.readFileSync("../crt/privkey.pem", "utf8"),
+//     cert: fs.readFileSync("../crt/fullchain.pem", "utf8"),
+// };
+
+
+
+
+const server = http.createServer(app);
+// const httpsServer = https.createServer(credentials, app);
+
+
+
+const io = socketIo(server, { cors: { origin: "*", credentials: true } });
+// const ioSecure = socketIo(httpsServer, { cors: { origin: "*", credentials: true } });
+
+
+
+
+const socket = clientSocket(SOCKET_URL);
+
+
+
+
+
+const setupSocketHandlers = (ioInstance) => {
+    ioInstance.on("connection", (socket) => {
+        console.log(`🟢 Client connected: ${socket.id}`);
+
+        socket.on("join_plan", (plan) => {
+            if (["Basic", "Standard", "Premium"].includes(plan)) {
+                socket.join(plan);
+                console.log(`🔗 Client ${socket.id} joined ${plan} room`);
+            }
+        });
+
+        socket.on("disconnect", () => {
+            console.log(`🔌 Client disconnected: ${socket.id}`);
+        });
+    });
+};
+
+
+
+
+setupSocketHandlers(io);
+// setupSocketHandlers(ioSecure);
 
 
 let pipes = [
@@ -81,11 +125,8 @@ let pipes = [
 
 
 
-
-
 let client, db, collection, conditions, Company;
-let Plan
-
+let Basic_plan, Premium_plan, Standard_plan;
 
 
 const initializeDatabase = async () => {
@@ -119,42 +160,14 @@ const initializeDatabase = async () => {
 
 
 
+// const formatNumber = (num) => {
+//   if (typeof num !== "number" || isNaN(num)) return num;
+
+//   return num < 50 ? parseFloat(num.toFixed(6)) : parseFloat(num.toFixed(6));
+// };
 
 
-
-const updateDatabase = async (data, type) => {
-    try {
-        if (data.Mid_Price == 0) {
-            return;
-        }
-
-        if (type === "crypto") {
-
-            await collection.updateOne(
-                { ticker: data.ticker },
-                {
-                    $set: data,
-                },
-                { upsert: true }
-            );
-        } else {
-
-            await collection.updateOne(
-                { ticker: data.ticker },
-                {
-                    $set: data,
-                },
-                { upsert: true }
-            );
-        }
-    } catch (error) {
-        console.error("❌ DB update error:", error.message);
-    }
-};
-
-
-
-const formatPrice = (num) => {
+const formatNumber = (num) => {
     if (typeof num !== "number" || isNaN(num)) return num;
     const factor = num < 50 ? 1e5 : 1e2;
     const result = Math.round(num * factor) / factor;
@@ -164,123 +177,141 @@ const formatPrice = (num) => {
 
 
 
-const simulatePriceMovement = async (formattedData, type) => {
-
-    const activeConditions = await conditions.find({
-        symbol: { $regex: new RegExp(formattedData[1], "i") },
-        isActive: true,
-    }).toArray();
-
-    const now = new Date();
-    const curtime = `${now.getHours().toString().padStart(2, "0")}${now
-        .getMinutes().toString().padStart(2, "0")}`;
-
-    let bidPrice = 0;
-    let askPrice = 0;
-
-
-    let GetPip = pipes.find((item) => item.symbol === formattedData[1]);
-    if (!GetPip) {
-        GetPip = { pip: 0.0001 };
+const formatPrices = (data) => {
+    if (Array.isArray(data)) {
+        data.map((item) => {
+            item[4] = formatNumber(item[4]);
+            item[5] = formatNumber(item[5]);
+            item[6] = formatNumber(item[6]);
+            item[7] = formatNumber(item[7]);
+            return item;
+        });
+    }
+    if (data[4] != null && data[4] !== 0) {
+        data[4] = formatNumber(data[4]);
+    }
+    if (data[5] != null && data[5] !== 0) {
+        data[5] = formatNumber(data[5]);
+    }
+    if (data[6] != null && data[6] !== 0) {
+        data[6] = formatNumber(data[6]);
     }
 
-    const pipValue = GetPip.pip;
-    let updatedata
+    return data;
+};
+
+
+const updateDatabase = async (data, type) => {
+    if (data.Mid_Price === 0) return;
+    await collection.updateOne(
+        { ticker: data.ticker },
+        { $set: data },
+        { upsert: true }
+    );
+};
 
 
 
-    if (type === "crypto") {
-
-        if (
-            formattedData[5] == null ||
-            formattedData[6] == null ||
-            formattedData[8] == null
-        ) {
-            return;
-        }
 
 
-        bidPrice = Plan == 0 ? formattedData[5] : (formattedData[6] || 0) - (Plan * pipValue);
-        askPrice = Plan == 0 ? formattedData[8] : (formattedData[6] || 0) + (Plan * pipValue);
 
 
-        updatedata = {
-            ticker: formattedData[1],
-            Date: formattedData[2],
-            curtime,
-            Exchange: formattedData[3],
-            Bid_Size: formattedData[4] || 0,
-            Bid_Price: formatPrice(bidPrice || formattedData[5]),
-            Mid_Price: formatPrice(formattedData[6] || 0),
-            Ask_Size: formattedData[7] || 0,
-            Ask_Price: formatPrice(askPrice || formattedData[8]),
-        }
+const simulatePriceMovement = async (data, type) => {
+    const symbol = data[1];
+    const curTime = new Date();
+    const curtimeStr = `${curTime.getHours().toString().padStart(2, "0")}${curTime.getMinutes().toString().padStart(2, "0")}`;
+    const activeConditions = await conditions.find({ symbol: new RegExp(symbol, "i"), isActive: true }).toArray();
+
+    const pipObj = pipes.find(p => p.symbol === symbol) || { pip: 0.0001 };
+    const pipValue = pipObj.pip;
+
+    let baseMidPrice = data[type === "crypto" ? 6 : 5] || 0;
+    if (baseMidPrice === 0) return;
+
+    const makePriceData = (planOffset) => ({
+        ticker: symbol,
+        Date: data[2],
+        curtime: curtimeStr,
+        Exchange: data[3] || null,
+        Bid_Size: data[4] || data[3] || 0,
+        Bid_Price: baseMidPrice - planOffset * pipValue,
+        Mid_Price: baseMidPrice,
+        Ask_Size: data[7] || data[6] || 0,
+        Ask_Price: baseMidPrice + planOffset * pipValue,
+    });
+
+    const basicData = makePriceData(Basic_plan);
+    const standardData = makePriceData(Standard_plan);
+    const premiumData = makePriceData(Premium_plan);
 
 
-    } else {
 
-        if (
-            formattedData[4] == null ||
-            formattedData[7] == null ||
-            formattedData[5] == null
-        ) {
-            return;
-        }
 
-        bidPrice = Plan == 0 ? formattedData[4] : (formattedData[5] || 0) - (Plan * pipValue);
-        askPrice = Plan == 0 ? formattedData[7] : (formattedData[5] || 0) + (Plan * pipValue);
-        updatedata = {
-            ticker: formattedData[1],
-            Date: formattedData[2],
-            curtime,
-            Bid_Size: formattedData[3] || 0,
-            Bid_Price: formatPrice(bidPrice || formattedData[4]),
-            Mid_Price: formatPrice(formattedData[5] || 0),
-            Ask_Size: formattedData[6] || 0,
-            Ask_Price: formatPrice(askPrice || formattedData[7]),
-        }
+    if (activeConditions.length == 0) {
+        await updateDatabase(basicData, type);
+        await updateDatabase(standardData, type);
+        await updateDatabase(premiumData, type);
+        // Emit to respective rooms
+        io.to("Basic").emit("receive_data_forex", { data: basicData, type });
+        io.to("Standard").emit("receive_data_forex", { data: standardData, type });
+        io.to("Premium").emit("receive_data_forex", { data: premiumData, type });
 
-    }
+        // ioSecure.to("Basic").emit("receive_data_forex", { data: basicData, type });
+        // ioSecure.to("Standard").emit("receive_data_forex", { data: standardData, type });
+        // ioSecure.to("Premium").emit("receive_data_forex", { data: premiumData, type });
 
-    if (activeConditions.length === 0) {
-        await updateDatabase(updatedata, type);
-        serverIo.emit("receive_data_forex", { data: updatedata, type });
         return;
     }
 
+    // === Condition Simulation Logic (Optional) ===
     for (const condition of activeConditions) {
         try {
-            let UpdatedPrice = condition.logs.length === 0
-                ? condition.initialPrice
-                : condition.logs[condition.logs.length - 1].price
+            const lastPrice = condition.logs.at(-1)?.price || condition.initialPrice;
             const dropAmount = Math.abs(condition.dropThreshold * 0.1);
 
-
-            let simulatedDrop = (condition.logs.length < 12)
-                ? (condition.dropThreshold > 0 ? UpdatedPrice + dropAmount : UpdatedPrice - dropAmount)
-                : (condition.dropThreshold > 0 ? UpdatedPrice - dropAmount : UpdatedPrice + dropAmount);
+            const simulated = condition.dropThreshold > 0
+                ? lastPrice + dropAmount
+                : lastPrice - dropAmount;
 
             await conditions.updateOne(
                 { _id: condition._id },
                 {
-                    $set: {
-                        triggered: true,
-                    },
-                    $push: {
-                        logs: {
-                            $each: [{ price: simulatedDrop, time: new Date() }],
-                        },
-                    },
+                    $set: { triggered: true },
+                    $push: { logs: { price: simulated, time: new Date() } }
                 }
             );
 
-            updatedata.Mid_Price = formatPrice(simulatedDrop);
-            updatedata.Mid_Price = formatPrice(simulatedDrop);
+
+            const simData = { ...premiumData, Mid_Price: simulated };
 
 
-            await updateDatabase(updatedata, type);
+            const makePriceData = (planOffset) => ({
+                ticker: symbol,
+                Date: data[2],
+                curtime: curtimeStr,
+                Exchange: data[3] || null,
+                Bid_Size: data[4] || data[3] || 0,
+                Bid_Price: simulated - planOffset * pipValue,
+                Mid_Price: simulated,
+                Ask_Size: data[7] || data[6] || 0,
+                Ask_Price: simulated + planOffset * pipValue,
+            });
 
-            serverIo.emit("receive_data_forex", { data: updatedata, type });
+            const basicData = makePriceData(Basic_plan);
+            const standardData = makePriceData(Standard_plan);
+            const premiumData = makePriceData(Premium_plan);
+
+            await updateDatabase(basicData, type);
+            await updateDatabase(standardData, type);
+            await updateDatabase(premiumData, type);
+            // Emit to respective rooms
+            io.to("Basic").emit("receive_data_forex", { data: basicData, type });
+            io.to("Standard").emit("receive_data_forex", { data: standardData, type });
+            io.to("Premium").emit("receive_data_forex", { data: premiumData, type });
+
+            // ioSecure.to("Basic").emit("receive_data_forex", { data: basicData, type });
+            // ioSecure.to("Standard").emit("receive_data_forex", { data: standardData, type });
+            // ioSecure.to("Premium").emit("receive_data_forex", { data: premiumData, type });
 
             const updatedCondition = await conditions.findOne({ _id: condition._id });
             if (updatedCondition.logs.length >= 22) {
@@ -288,45 +319,43 @@ const simulatePriceMovement = async (formattedData, type) => {
                     { _id: condition._id },
                     { $set: { isActive: false, triggered: false } }
                 );
-                console.log(`🚫 Condition auto-closed for ${condition.symbol}`);
+                console.log(`🚫 Auto-closed condition for ${condition.symbol}`);
             }
-
-        } catch (error) {
-            console.error(`❌ Error handling condition [${condition.symbol}]:`, error.message);
+        } catch (err) {
+            console.error("❌ Condition processing error:", err.message);
         }
     }
-
 };
 
 
 
 
-const socket = clientSocket(SOCKET_URL);
-
 socket.on("connect", () => {
-    console.log("🟢 Connected to datafeed.js via Socket.IO");
+    console.log("🟢 Connected to remote datafeed socket");
 });
-
-
-
 
 socket.on("receive_data_forex", async ({ data, type }) => {
     try {
-        await simulatePriceMovement(data, type);
+        const formattedData = formatPrices(data);
+        await simulatePriceMovement(formattedData, type);
     } catch (err) {
-        console.error("❌ Error in receive_data_forex:", err.message);
+        console.error("❌ receive_data_forex error:", err.message);
     }
 });
-
-
-
 
 socket.on("disconnect", () => {
     console.log("🔌 Disconnected from datafeed.js");
 });
 
-// Start server
+
+
+
+// === START SERVERS ===
 server.listen(PORT, async () => {
-    console.log(`✅ datafeed1 listening on ${PORT}`);
+    console.log(`✅ HTTP Server running on port ${PORT}`);
     await initializeDatabase();
 });
+
+// httpsServer.listen(HTTPS_PORT, () => {
+//     console.log(`✅ HTTPS Server running on port ${HTTPS_PORT}`);
+// });

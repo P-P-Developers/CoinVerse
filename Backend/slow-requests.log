@@ -7,3 +7,4 @@
 2025-07-03T07:07:17.981Z [warn]: SLOW API: [GET] /getCompany - 10010ms
 2025-07-03T07:07:17.983Z [warn]: SLOW API: [POST] /getbroadcastmessageforuser - 10009ms
 2025-07-03T07:07:24.975Z [warn]: SLOW API: [GET] /getAdminName - 10020ms
+2025-07-04T08:36:40.459Z [warn]: SLOW API: [POST] /getbroadcastmessageforuser - 290ms

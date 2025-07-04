@@ -58,14 +58,14 @@ function Symbols() {
     const myKey = "1"; // ✅ Aapka custom key
     socket.emit("join_plan", "Basic"); // or "Basic", "Premium","Standard"
     socket.on("receive_data_forex", (data) => {
-console.log("Received data:", data?.data);
+
       const ticker = data?.data?.ticker?.toLowerCase();
       const bid = data?.data?.Bid_Price;
       const ask = data?.data?.Ask_Price;
       const mid = data?.data?.Mid_Price;
       const type = data?.type;
 
-      // console.log("Ticker:", ticker,"Bid:", bid, "Ask:", ask, "Mid:", mid, "Type:", type);
+
 
       if (ticker && bid && ask && mid) {
         setPrevMidPrices((prev) => ({
@@ -121,8 +121,8 @@ console.log("Received data:", data?.data);
                         live?.mid > prevMid
                           ? "↑"
                           : live?.mid < prevMid
-                          ? "↓"
-                          : "";
+                            ? "↓"
+                            : "";
 
                       // Determine text color class
                       const getColorClass = (field, prev) => {
