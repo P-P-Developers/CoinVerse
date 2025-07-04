@@ -70,7 +70,7 @@ const pipes = [
   { symbol: "daiusd", pip: 0.0001, category: "crypto" },
   { symbol: "usdcusd", pip: 0.0001, category: "crypto" },
   { symbol: "avaxusd", pip: 0.01, category: "crypto" },
-  
+
   { symbol: "bnbusd", pip: 0.01, category: "crypto" },
   { symbol: "trxusd", pip: 0.0001, category: "crypto" },
   { symbol: "hypeusd", pip: 0.0001, category: "crypto" },
@@ -111,9 +111,9 @@ function Symbols() {
         setLiveData((prev) => ({
           ...prev,
           [ticker]: {
-            bid: bid.toFixed(5),
-            ask: ask.toFixed(5),
-            mid: mid.toFixed(5),
+            bid: bid,
+            ask: ask,
+            mid: mid,
             type,
           },
         }));

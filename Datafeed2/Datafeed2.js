@@ -23,17 +23,12 @@ app.get("/", (req, res) => {
 
 
 
-
 const server = http.createServer(app);
-
 const io = socketIo(server, { cors: { origin: "*", credentials: true } });
 
 
 
-
-
 const socket = clientSocket(SOCKET_URL);
-
 const setupSocketHandlers = (ioInstance) => {
     ioInstance.on("connection", (socket) => {
         console.log(`🟢 Client connected: ${socket.id}`);
@@ -58,7 +53,6 @@ setupSocketHandlers(io);
 
 
 const pipes = [
-    // Forex
     { symbol: "audcad", pip: 0.0001, category: "forex" },
     { symbol: "audjpy", pip: 0.01, category: "forex" },
     { symbol: "audnzd", pip: 0.0001, category: "forex" },
@@ -80,11 +74,11 @@ const pipes = [
     { symbol: "usdcad", pip: 0.0001, category: "forex" },
     { symbol: "usdchf", pip: 0.0001, category: "forex" },
 
-    // Commodity
-    { symbol: "xauusd", pip: 0.01, category: "commodity" }, // Gold
-    { symbol: "xagusd", pip: 0.01, category: "commodity" }, // Silver
 
-    // Crypto
+    { symbol: "xauusd", pip: 0.01, category: "commodity" },
+    { symbol: "xagusd", pip: 0.01, category: "commodity" },
+
+
     { symbol: "bnbbtc", pip: 0.000001, category: "crypto" },
     { symbol: "btcusd", pip: 1, category: "crypto" },
     { symbol: "dogeusd", pip: 0.0001, category: "crypto" },
@@ -222,10 +216,10 @@ const simulatePriceMovement = async (data, type) => {
         curtime: curtimeStr,
         Exchange: data[3] || null,
         Bid_Size: data[4] || data[3] || 0,
-        Bid_Price: baseMidPrice - planOffset * pipValue,
+        Bid_Price: formatNumber(baseMidPrice - planOffset * pipValue),
         Mid_Price: formatNumber(baseMidPrice),
         Ask_Size: data[7] || data[6] || 0,
-        Ask_Price: baseMidPrice + planOffset * pipValue,
+        Ask_Price: formatNumber(baseMidPrice + planOffset * pipValue),
     });
 
     const basicData = makePriceData(Basic_plan);
@@ -238,6 +232,7 @@ const simulatePriceMovement = async (data, type) => {
         await updateDatabase(basicData, type);
         await updateDatabase(standardData, type);
         await updateDatabase(premiumData, type);
+
 
 
         io.to("Basic").emit("receive_data_forex", { data: basicData, type });
@@ -275,11 +270,11 @@ const simulatePriceMovement = async (data, type) => {
                 curtime: curtimeStr,
                 Exchange: data[3] || null,
                 Bid_Size: data[4] || data[3] || 0,
-                Bid_Price: simulated - planOffset * pipValue,
+                Bid_Price: formatNumber(simulated - planOffset * pipValue),
 
                 Mid_Price: formatNumber(simulated),
                 Ask_Size: data[7] || data[6] || 0,
-                Ask_Price: simulated + planOffset * pipValue,
+                Ask_Price: formatNumber(simulated) + planOffset * pipValue,
             });
 
             const basicData = makePriceData(Basic_plan);
@@ -331,12 +326,9 @@ socket.on("disconnect", () => {
 
 
 
-// === START SERVERS ===
+
 server.listen(PORT, async () => {
     console.log(`✅ HTTP Server running on port ${PORT}`);
     await initializeDatabase();
 });
 
-// httpsServer.listen(HTTPS_PORT, () => {
-//     console.log(`✅ HTTPS Server running on port ${HTTPS_PORT}`);
-// });
