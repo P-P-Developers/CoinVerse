@@ -1,3 +1,5 @@
 .env
 /node_modules
 
+slow-requests.log
+/slow-requests.log

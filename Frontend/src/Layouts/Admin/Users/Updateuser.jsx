@@ -28,7 +28,6 @@ const Updateuser = () => {
       username: "",
       email: "",
       phone: "",
-      Balance: "",
       employee_id: "",
 
       limit: "",
@@ -54,11 +53,7 @@ const Updateuser = () => {
       } else if (!/^\d{10}$/.test(values.phone)) {
         errors.phone = "Please enter a valid 10-digit phone number.";
       }
-      if (!values.Balance) {
-        errors.Balance = "Please Enter Balance";
-      } else if (isNaN(values.Balance)) {
-        errors.Balance = "Balance must be a number";
-      }
+    
 
       if (!values.limit) {
         errors.limit = "Please enter a value for Limit";
@@ -140,7 +135,6 @@ const Updateuser = () => {
         email: rowData.Email || "",
         phone: rowData.PhoneNo || "",
         Password: rowData.Otp || "",
-        Balance: rowData.Balance || "",
         employee_id: rowData.employee_id || "",
 
         selectedOption: determineSelectedOption(),

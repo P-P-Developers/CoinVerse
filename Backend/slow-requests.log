@@ -1,2 +1,13 @@
 2025-07-02T13:05:27.974Z [warn]: SLOW API: [POST] /admin/getUserDetails - 225ms
 2025-07-03T03:57:50.969Z [warn]: SLOW API: [POST] /admin/getuserpaymentstatus - 813ms
+2025-07-04T11:47:16.374Z [warn]: SLOW API: [GET] /getCompany - 1562ms
+2025-07-04T11:47:16.416Z [warn]: SLOW API: [POST] /getbroadcastmessageforuser - 1511ms
+2025-07-04T11:47:16.701Z [warn]: SLOW API: [GET] /getCompany - 314ms
+2025-07-04T11:47:16.968Z [warn]: SLOW API: [POST] /SuperadminGetDashboardData - 2052ms
+2025-07-04T11:47:18.758Z [warn]: SLOW API: [GET] /getCompany - 619ms
+2025-07-04T11:47:18.832Z [warn]: SLOW API: [POST] /logoutUser - 709ms
+2025-07-04T11:47:23.354Z [warn]: SLOW API: [POST] /superadmin/getAdminDetail - 939ms
+2025-07-04T11:47:39.173Z [warn]: SLOW API: [POST] /login - 253ms
+
+
+d

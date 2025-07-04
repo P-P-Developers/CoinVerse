@@ -52,7 +52,6 @@ class Admin {
         password,
         Otp,
         Role,
-        Balance,
         pertrade,
         perlot,
         transactionwise,
