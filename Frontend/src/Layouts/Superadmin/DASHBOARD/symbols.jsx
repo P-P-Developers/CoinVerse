@@ -3,89 +3,84 @@ import socket from "../../../Utils/socketClient";
 
 const pipes = [
   // Forex
-  { symbol: "audcad", pip: 0.0001, category: "forex" },
-  { symbol: "audjpy", pip: 0.01, category: "forex" },
-  { symbol: "audnzd", pip: 0.0001, category: "forex" },
-  { symbol: "audusd", pip: 0.0001, category: "forex" },
-  { symbol: "euraud", pip: 0.0001, category: "forex" },
-  { symbol: "eurchf", pip: 0.0001, category: "forex" },
-  { symbol: "eurgbp", pip: 0.0001, category: "forex" },
-  { symbol: "eurjpy", pip: 0.01, category: "forex" },
-  { symbol: "eurnzd", pip: 0.0001, category: "forex" },
-  { symbol: "eurusd", pip: 0.0001, category: "forex" },
-  { symbol: "gbpaud", pip: 0.0001, category: "forex" },
-  { symbol: "gbpcad", pip: 0.0001, category: "forex" },
-  { symbol: "gbpchf", pip: 0.0001, category: "forex" },
-  { symbol: "gbpjpy", pip: 0.01, category: "forex" },
-  { symbol: "gbpusd", pip: 0.0001, category: "forex" },
-  { symbol: "jpyusd", pip: 0.0001, category: "forex" },
-  { symbol: "nzdjpy", pip: 0.01, category: "forex" },
-  { symbol: "nzdusd", pip: 0.0001, category: "forex" },
-  { symbol: "usdcad", pip: 0.0001, category: "forex" },
-  { symbol: "usdchf", pip: 0.0001, category: "forex" },
+  { symbol: "audcad", pip: 0.0001, category: "forex", digit: 4 },
+  { symbol: "audjpy", pip: 0.01, category: "forex", digit: 2 },
+  { symbol: "audnzd", pip: 0.0001, category: "forex", digit: 4 },
+  { symbol: "audusd", pip: 0.0001, category: "forex", digit: 4 },
+  { symbol: "euraud", pip: 0.0001, category: "forex", digit: 4 },
+  { symbol: "eurchf", pip: 0.0001, category: "forex", digit: 4 },
+  { symbol: "eurgbp", pip: 0.0001, category: "forex", digit: 4 },
+  { symbol: "eurjpy", pip: 0.01, category: "forex", digit: 2 },
+  { symbol: "eurnzd", pip: 0.0001, category: "forex", digit: 4 },
+  { symbol: "eurusd", pip: 0.0001, category: "forex", digit: 4 },
+  { symbol: "gbpaud", pip: 0.0001, category: "forex", digit: 4 },
+  { symbol: "gbpcad", pip: 0.0001, category: "forex", digit: 4 },
+  { symbol: "gbpchf", pip: 0.0001, category: "forex", digit: 4 },
+  { symbol: "gbpjpy", pip: 0.01, category: "forex", digit: 2 },
+  { symbol: "gbpusd", pip: 0.0001, category: "forex", digit: 4 },
+  { symbol: "jpyusd", pip: 0.0001, category: "forex", digit: 4 },
+  { symbol: "nzdjpy", pip: 0.01, category: "forex", digit: 2 },
+  { symbol: "nzdusd", pip: 0.0001, category: "forex", digit: 4 },
+  { symbol: "usdcad", pip: 0.0001, category: "forex", digit: 4 },
+  { symbol: "usdchf", pip: 0.0001, category: "forex", digit: 4 },
 
   // Commodity
-  { symbol: "xauusd", pip: 0.01, category: "commodity" }, // Gold
-  { symbol: "xagusd", pip: 0.01, category: "commodity" }, // Silver
+  { symbol: "xauusd", pip: 0.01, category: "commodity", digit: 2 }, // Gold
+  { symbol: "xagusd", pip: 0.01, category: "commodity", digit: 2 }, // Silver
 
   // Crypto
-  { symbol: "bnbbtc", pip: 0.000001, category: "crypto" },
-  { symbol: "btcusd", pip: 1, category: "crypto" },
-  { symbol: "dogeusd", pip: 0.0001, category: "crypto" },
-  { symbol: "ethusd", pip: 0.01, category: "crypto" },
-  { symbol: "solbtc", pip: 0.000001, category: "crypto" },
-  { symbol: "solusd", pip: 0.01, category: "crypto" },
-  { symbol: "usdtusd", pip: 0.0001, category: "crypto" },
-  { symbol: "xrpusd", pip: 0.0001, category: "crypto" },
-  { symbol: "adausd", pip: 0.0001, category: "crypto" },
-  { symbol: "bchusd", pip: 0.01, category: "crypto" },
-  { symbol: "suiusd", pip: 0.0001, category: "crypto" },
-  { symbol: "linkusd", pip: 0.01, category: "crypto" },
-  { symbol: "xlmusd", pip: 0.0001, category: "crypto" },
-  { symbol: "shibusd", pip: 0.00000001, category: "crypto" },
-  { symbol: "ltcusd", pip: 0.01, category: "crypto" },
-  { symbol: "hbarusd", pip: 0.0001, category: "crypto" },
-  { symbol: "dotusd", pip: 0.01, category: "crypto" },
-  { symbol: "uniusd", pip: 0.01, category: "crypto" },
-  { symbol: "pepeusd", pip: 0.00000001, category: "crypto" },
-  { symbol: "aaveusd", pip: 0.01, category: "crypto" },
-  { symbol: "taousd", pip: 0.01, category: "crypto" },
-  { symbol: "aptusd", pip: 0.01, category: "crypto" },
-  { symbol: "icpusd", pip: 0.01, category: "crypto" },
-  { symbol: "nearusd", pip: 0.0001, category: "crypto" },
-  { symbol: "etcusd", pip: 0.01, category: "crypto" },
-  { symbol: "ondousd", pip: 0.0001, category: "crypto" },
-  { symbol: "usd1usd", pip: 0.0001, category: "crypto" },
-  { symbol: "gtusd", pip: 0.0001, category: "crypto" },
-  { symbol: "mntusd", pip: 0.0001, category: "crypto" },
-  { symbol: "polusd", pip: 0.01, category: "crypto" },
-  { symbol: "vetusd", pip: 0.0001, category: "crypto" },
-  { symbol: "kasusd", pip: 0.0001, category: "crypto" },
-  { symbol: "trumpusd", pip: 0.0001, category: "crypto" },
-  { symbol: "enausd", pip: 0.0001, category: "crypto" },
-  { symbol: "skyusd", pip: 0.0001, category: "crypto" },
-  { symbol: "renderusd", pip: 0.01, category: "crypto" },
-  { symbol: "fetusd", pip: 0.0001, category: "crypto" },
-  { symbol: "filusd", pip: 0.01, category: "crypto" },
-  { symbol: "daiusd", pip: 0.0001, category: "crypto" },
-  { symbol: "usdcusd", pip: 0.0001, category: "crypto" },
-  { symbol: "avaxusd", pip: 0.01, category: "crypto" },
-  
-  { symbol: "bnbusd", pip: 0.01, category: "crypto" },
-  { symbol: "trxusd", pip: 0.0001, category: "crypto" },
-  { symbol: "hypeusd", pip: 0.0001, category: "crypto" },
-  { symbol: "leousd", pip: 0.0001, category: "crypto" },
-  { symbol: "xmrusd", pip: 0.0001, category: "crypto" },
-  { symbol: "usdeusd", pip: 0.0001, category: "crypto" },
-  { symbol: "bgbusd", pip: 0.0001, category: "crypto" },
-  { symbol: "piusd", pip: 0.0001, category: "crypto" },
-  { symbol: "okbusd", pip: 0.01, category: "crypto" },
-  { symbol: "croususd", pip: 0.01, category: "crypto" },
-
+  { symbol: "bnbbtc", pip: 0.000001, category: "crypto", digit: 6 },
+  { symbol: "btcusd", pip: 1, category: "crypto", digit: 3 },
+  { symbol: "dogeusd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "ethusd", pip: 0.01, category: "crypto", digit: 2 },
+  { symbol: "solbtc", pip: 0.000001, category: "crypto", digit: 6 },
+  { symbol: "solusd", pip: 0.01, category: "crypto", digit: 2 },
+  { symbol: "usdtusd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "xrpusd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "adausd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "bchusd", pip: 0.01, category: "crypto", digit: 2 },
+  { symbol: "suiusd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "linkusd", pip: 0.01, category: "crypto", digit: 2 },
+  { symbol: "xlmusd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "shibusd", pip: 0.00000001, category: "crypto", digit: 8 },
+  { symbol: "ltcusd", pip: 0.01, category: "crypto", digit: 2 },
+  { symbol: "hbarusd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "dotusd", pip: 0.01, category: "crypto", digit: 2 },
+  { symbol: "uniusd", pip: 0.01, category: "crypto", digit: 2 },
+  { symbol: "pepeusd", pip: 0.00000001, category: "crypto", digit: 8 },
+  { symbol: "aaveusd", pip: 0.01, category: "crypto", digit: 2 },
+  { symbol: "taousd", pip: 0.01, category: "crypto", digit: 2 },
+  { symbol: "aptusd", pip: 0.01, category: "crypto", digit: 2 },
+  { symbol: "icpusd", pip: 0.01, category: "crypto", digit: 2 },
+  { symbol: "nearusd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "etcusd", pip: 0.01, category: "crypto", digit: 2 },
+  { symbol: "ondousd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "usd1usd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "gtusd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "mntusd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "polusd", pip: 0.01, category: "crypto", digit: 2 },
+  { symbol: "vetusd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "kasusd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "trumpusd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "enausd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "skyusd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "renderusd", pip: 0.01, category: "crypto", digit: 2 },
+  { symbol: "fetusd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "filusd", pip: 0.01, category: "crypto", digit: 2 },
+  { symbol: "daiusd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "usdcusd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "avaxusd", pip: 0.01, category: "crypto", digit: 2 },
+  { symbol: "bnbusd", pip: 0.01, category: "crypto", digit: 2 },
+  { symbol: "trxusd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "hypeusd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "leousd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "xmrusd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "usdeusd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "bgbusd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "piusd", pip: 0.0001, category: "crypto", digit: 4 },
+  { symbol: "okbusd", pip: 0.01, category: "crypto", digit: 2 },
+  { symbol: "croususd", pip: 0.01, category: "crypto", digit: 2 },
 ];
-
-
-
 
 function Symbols() {
   const [liveData, setLiveData] = useState({});
@@ -100,8 +95,6 @@ function Symbols() {
       const mid = data?.data?.Mid_Price;
       const type = data?.type;
 
-
-
       if (ticker && bid && ask && mid) {
         setPrevMidPrices((prev) => ({
           ...prev,
@@ -111,9 +104,9 @@ function Symbols() {
         setLiveData((prev) => ({
           ...prev,
           [ticker]: {
-            bid: bid.toFixed(5),
-            ask: ask.toFixed(5),
-            mid: mid.toFixed(5),
+            bid: bid,
+            ask: ask,
+            mid: mid,
             type,
           },
         }));
@@ -198,5 +191,6 @@ function Symbols() {
     </div>
   );
 }
+
 
 export default Symbols;

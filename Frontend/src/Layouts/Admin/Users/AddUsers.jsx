@@ -27,7 +27,7 @@ const AddUsers = () => {
       email: "",
       phone: clientData.PhoneNo || "",
       employee_id: "",
-      Balance: "",
+   
       password: clientData.password || "",
       confirmPassword: "",
 
@@ -63,13 +63,7 @@ const AddUsers = () => {
         errors.phone = "Please enter a valid 10-digit phone number.";
       }
 
-      // Balance validation
-      // if (!values.Balance) {
-      //   errors.Balance = "Please Enter Balance";
-      // } else if (isNaN(values.Balance)) {
-      //   errors.Balance = "Balance must be a number";
-      // }
-
+ 
       // Password validation
       if (!values.password) {
         errors.password = "Please Enter Password";
@@ -116,7 +110,7 @@ const AddUsers = () => {
         Email: values.email.toString().toLowerCase(),
         PhoneNo: values.phone,
         employee_id: values.employee_id,
-        Balance: values.Balance,
+ 
         password: values.password,
         parent_role: Role || "ADMIN",
         parent_id: user_id,
