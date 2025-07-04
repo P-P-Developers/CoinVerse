@@ -170,13 +170,6 @@ const initializeDatabase = async () => {
 
 
 
-// const formatNumber = (num, pipdigit) => {
-//     if (typeof num !== "number" || isNaN(num)) return num;
-//     const factor = num < 50 ? 1e5 : 1e2;
-//     const result = Math.round(num * factor) / factor;
-
-//     return result;
-// };
 
 
 const formatNumber = (num, pipdigit) => {
@@ -279,11 +272,11 @@ const simulatePriceMovement = async (data, type) => {
                 curtime: curtimeStr,
                 Exchange: data[3] || null,
                 Bid_Size: data[4] || data[3] || 0,
-                Bid_Price: formatNumber(simulated - planOffset * pipValue),
+                Bid_Price: formatNumber(simulated - planOffset * pipValue, pipdigit),
 
-                Mid_Price: formatNumber(simulated),
+                Mid_Price: formatNumber(simulated, pipdigit),
                 Ask_Size: data[7] || data[6] || 0,
-                Ask_Price: formatNumber(simulated) + planOffset * pipValue,
+                Ask_Price: formatNumber(simulated + planOffset * pipValue, pipdigit),
             });
 
             const basicData = makePriceData(Basic_plan);
