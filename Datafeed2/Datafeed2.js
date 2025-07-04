@@ -10,7 +10,6 @@ require("dotenv").config();
 
 
 const PORT = 5000;
-const HTTPS_PORT = 1003;
 const MONGO_URL = process.env.MONGO_URL;
 const SOCKET_URL = "http://82.29.178.147:7777/";
 
@@ -25,30 +24,15 @@ app.get("/", (req, res) => {
 
 
 
-// const credentials = {
-//     key: fs.readFileSync("../crt/privkey.pem", "utf8"),
-//     cert: fs.readFileSync("../crt/fullchain.pem", "utf8"),
-// };
-
-
-
-
 const server = http.createServer(app);
-// const httpsServer = https.createServer(credentials, app);
-
-
 
 const io = socketIo(server, { cors: { origin: "*", credentials: true } });
-// const ioSecure = socketIo(httpsServer, { cors: { origin: "*", credentials: true } });
+
 
 
 
 
 const socket = clientSocket(SOCKET_URL);
-
-
-
-
 
 const setupSocketHandlers = (ioInstance) => {
     ioInstance.on("connection", (socket) => {
@@ -71,57 +55,90 @@ const setupSocketHandlers = (ioInstance) => {
 
 
 setupSocketHandlers(io);
-// setupSocketHandlers(ioSecure);
 
 
-let pipes = [
-    { "symbol": "usdtusd", "pip": 0.0001 },
-    { "symbol": "btcxrp", "pip": 0.00001 },
-    { "symbol": "btcusd", "pip": 0.01 },
-    { "symbol": "ethxrp", "pip": 0.00001 },
-    { "symbol": "ethusd", "pip": 0.01 },
-    { "symbol": "usdcusd", "pip": 0.0001 },
-    { "symbol": "solusd", "pip": 0.001 },
-    { "symbol": "solbtc", "pip": 0.000001 },
-    { "symbol": "bnbbtc", "pip": 0.000001 },
-    { "symbol": "xrpusd", "pip": 0.0001 },
-    { "symbol": "daiusd", "pip": 0.0001 },
-    { "symbol": "dogeusd", "pip": 0.00001 },
-    { "symbol": "xauusd", "pip": 0.01 },
-    { "symbol": "audcad", "pip": 0.0001 },
-    { "symbol": "audjpy", "pip": 0.01 },
-    { "symbol": "audnzd", "pip": 0.0001 },
-    { "symbol": "audusd", "pip": 0.0001 },
-    { "symbol": "euraud", "pip": 0.0001 },
-    { "symbol": "eurchf", "pip": 0.0001 },
-    { "symbol": "eurgbp", "pip": 0.0001 },
-    { "symbol": "eurjpy", "pip": 0.01 },
-    { "symbol": "eurnzd", "pip": 0.0001 },
-    { "symbol": "eurusd", "pip": 0.0001 },
-    { "symbol": "gbpaud", "pip": 0.0001 },
-    { "symbol": "gbpcad", "pip": 0.0001 },
-    { "symbol": "gbpchf", "pip": 0.0001 },
-    { "symbol": "gbpjpy", "pip": 0.01 },
-    { "symbol": "gbpusd", "pip": 0.0001 },
-    { "symbol": "jpyusd", "pip": 0.0001 },
-    { "symbol": "nzdjpy", "pip": 0.01 },
-    { "symbol": "nzdusd", "pip": 0.0001 },
-    { "symbol": "usdcad", "pip": 0.0001 },
-    { "symbol": "usdchf", "pip": 0.01 },
-    { "symbol": "xauusd", "pip": 0.01 },
-    { "symbol": "wtiousd", "pip": 0.01 },
-    { "symbol": "brentusd", "pip": 0.001 },
-    { "symbol": "natgasusd", "pip": 0.0001 },
-    { "symbol": "rbobusd", "pip": 0.0001 },
-    { "symbol": "heatoilusd", "pip": 0.0001 },
-    { "symbol": "propaneusd", "pip": 0.01 },
-    { "symbol": "coalusd", "pip": 0.01 },
-    { "symbol": "uraniumusd", "pip": 0.0001 },
-    { "symbol": "ethanolusd", "pip": 0.01 },
-    { "symbol": "electricityusd", "pip": 0.01 },
-    { "symbol": "xagusd", "pip": 0.01 },
-    { "symbol": "krwusd", "pip": 0.01 }
-]
+const pipes = [
+    // Forex
+    { symbol: "audcad", pip: 0.0001, category: "forex" },
+    { symbol: "audjpy", pip: 0.01, category: "forex" },
+    { symbol: "audnzd", pip: 0.0001, category: "forex" },
+    { symbol: "audusd", pip: 0.0001, category: "forex" },
+    { symbol: "euraud", pip: 0.0001, category: "forex" },
+    { symbol: "eurchf", pip: 0.0001, category: "forex" },
+    { symbol: "eurgbp", pip: 0.0001, category: "forex" },
+    { symbol: "eurjpy", pip: 0.01, category: "forex" },
+    { symbol: "eurnzd", pip: 0.0001, category: "forex" },
+    { symbol: "eurusd", pip: 0.0001, category: "forex" },
+    { symbol: "gbpaud", pip: 0.0001, category: "forex" },
+    { symbol: "gbpcad", pip: 0.0001, category: "forex" },
+    { symbol: "gbpchf", pip: 0.0001, category: "forex" },
+    { symbol: "gbpjpy", pip: 0.01, category: "forex" },
+    { symbol: "gbpusd", pip: 0.0001, category: "forex" },
+    { symbol: "jpyusd", pip: 0.0001, category: "forex" },
+    { symbol: "nzdjpy", pip: 0.01, category: "forex" },
+    { symbol: "nzdusd", pip: 0.0001, category: "forex" },
+    { symbol: "usdcad", pip: 0.0001, category: "forex" },
+    { symbol: "usdchf", pip: 0.0001, category: "forex" },
+
+    // Commodity
+    { symbol: "xauusd", pip: 0.01, category: "commodity" }, // Gold
+    { symbol: "xagusd", pip: 0.01, category: "commodity" }, // Silver
+
+    // Crypto
+    { symbol: "bnbbtc", pip: 0.000001, category: "crypto" },
+    { symbol: "btcusd", pip: 1, category: "crypto" },
+    { symbol: "dogeusd", pip: 0.0001, category: "crypto" },
+    { symbol: "ethusd", pip: 0.01, category: "crypto" },
+    { symbol: "solbtc", pip: 0.000001, category: "crypto" },
+    { symbol: "solusd", pip: 0.01, category: "crypto" },
+    { symbol: "usdtusd", pip: 0.0001, category: "crypto" },
+    { symbol: "xrpusd", pip: 0.0001, category: "crypto" },
+    { symbol: "adausd", pip: 0.0001, category: "crypto" },
+    { symbol: "bchusd", pip: 0.01, category: "crypto" },
+    { symbol: "suiusd", pip: 0.0001, category: "crypto" },
+    { symbol: "linkusd", pip: 0.01, category: "crypto" },
+    { symbol: "xlmusd", pip: 0.0001, category: "crypto" },
+    { symbol: "shibusd", pip: 0.00000001, category: "crypto" },
+    { symbol: "ltcusd", pip: 0.01, category: "crypto" },
+    { symbol: "hbarusd", pip: 0.0001, category: "crypto" },
+    { symbol: "dotusd", pip: 0.01, category: "crypto" },
+    { symbol: "uniusd", pip: 0.01, category: "crypto" },
+    { symbol: "pepeusd", pip: 0.00000001, category: "crypto" },
+    { symbol: "aaveusd", pip: 0.01, category: "crypto" },
+    { symbol: "taousd", pip: 0.01, category: "crypto" },
+    { symbol: "aptusd", pip: 0.01, category: "crypto" },
+    { symbol: "icpusd", pip: 0.01, category: "crypto" },
+    { symbol: "nearusd", pip: 0.0001, category: "crypto" },
+    { symbol: "etcusd", pip: 0.01, category: "crypto" },
+    { symbol: "ondousd", pip: 0.0001, category: "crypto" },
+    { symbol: "usd1usd", pip: 0.0001, category: "crypto" },
+    { symbol: "gtusd", pip: 0.0001, category: "crypto" },
+    { symbol: "mntusd", pip: 0.0001, category: "crypto" },
+    { symbol: "polusd", pip: 0.01, category: "crypto" },
+    { symbol: "vetusd", pip: 0.0001, category: "crypto" },
+    { symbol: "kasusd", pip: 0.0001, category: "crypto" },
+    { symbol: "trumpusd", pip: 0.0001, category: "crypto" },
+    { symbol: "enausd", pip: 0.0001, category: "crypto" },
+    { symbol: "skyusd", pip: 0.0001, category: "crypto" },
+    { symbol: "renderusd", pip: 0.01, category: "crypto" },
+    { symbol: "fetusd", pip: 0.0001, category: "crypto" },
+    { symbol: "filusd", pip: 0.01, category: "crypto" },
+    { symbol: "daiusd", pip: 0.0001, category: "crypto" },
+    { symbol: "usdcusd", pip: 0.0001, category: "crypto" },
+    { symbol: "avaxusd", pip: 0.01, category: "crypto" },
+
+    { symbol: "bnbusd", pip: 0.01, category: "crypto" },
+    { symbol: "trxusd", pip: 0.0001, category: "crypto" },
+    { symbol: "hypeusd", pip: 0.0001, category: "crypto" },
+    { symbol: "leousd", pip: 0.0001, category: "crypto" },
+    { symbol: "xmrusd", pip: 0.0001, category: "crypto" },
+    { symbol: "usdeusd", pip: 0.0001, category: "crypto" },
+    { symbol: "bgbusd", pip: 0.0001, category: "crypto" },
+    { symbol: "piusd", pip: 0.0001, category: "crypto" },
+    { symbol: "okbusd", pip: 0.01, category: "crypto" },
+    { symbol: "croususd", pip: 0.01, category: "crypto" },
+
+];
 
 
 
@@ -160,45 +177,16 @@ const initializeDatabase = async () => {
 
 
 
-// const formatNumber = (num) => {
-//   if (typeof num !== "number" || isNaN(num)) return num;
-
-//   return num < 50 ? parseFloat(num.toFixed(6)) : parseFloat(num.toFixed(6));
-// };
-
 
 const formatNumber = (num) => {
     if (typeof num !== "number" || isNaN(num)) return num;
     const factor = num < 50 ? 1e5 : 1e2;
     const result = Math.round(num * factor) / factor;
-    // console.log("result", result)
+
     return result;
 };
 
 
-
-const formatPrices = (data) => {
-    if (Array.isArray(data)) {
-        data.map((item) => {
-            item[4] = formatNumber(item[4]);
-            item[5] = formatNumber(item[5]);
-            item[6] = formatNumber(item[6]);
-            item[7] = formatNumber(item[7]);
-            return item;
-        });
-    }
-    if (data[4] != null && data[4] !== 0) {
-        data[4] = formatNumber(data[4]);
-    }
-    if (data[5] != null && data[5] !== 0) {
-        data[5] = formatNumber(data[5]);
-    }
-    if (data[6] != null && data[6] !== 0) {
-        data[6] = formatNumber(data[6]);
-    }
-
-    return data;
-};
 
 
 const updateDatabase = async (data, type) => {
@@ -235,7 +223,7 @@ const simulatePriceMovement = async (data, type) => {
         Exchange: data[3] || null,
         Bid_Size: data[4] || data[3] || 0,
         Bid_Price: baseMidPrice - planOffset * pipValue,
-        Mid_Price: baseMidPrice,
+        Mid_Price: formatNumber(baseMidPrice),
         Ask_Size: data[7] || data[6] || 0,
         Ask_Price: baseMidPrice + planOffset * pipValue,
     });
@@ -246,24 +234,20 @@ const simulatePriceMovement = async (data, type) => {
 
 
 
-
     if (activeConditions.length == 0) {
         await updateDatabase(basicData, type);
         await updateDatabase(standardData, type);
         await updateDatabase(premiumData, type);
-        // Emit to respective rooms
+
+
         io.to("Basic").emit("receive_data_forex", { data: basicData, type });
         io.to("Standard").emit("receive_data_forex", { data: standardData, type });
         io.to("Premium").emit("receive_data_forex", { data: premiumData, type });
 
-        // ioSecure.to("Basic").emit("receive_data_forex", { data: basicData, type });
-        // ioSecure.to("Standard").emit("receive_data_forex", { data: standardData, type });
-        // ioSecure.to("Premium").emit("receive_data_forex", { data: premiumData, type });
-
         return;
     }
 
-    // === Condition Simulation Logic (Optional) ===
+
     for (const condition of activeConditions) {
         try {
             const lastPrice = condition.logs.at(-1)?.price || condition.initialPrice;
@@ -292,7 +276,8 @@ const simulatePriceMovement = async (data, type) => {
                 Exchange: data[3] || null,
                 Bid_Size: data[4] || data[3] || 0,
                 Bid_Price: simulated - planOffset * pipValue,
-                Mid_Price: simulated,
+
+                Mid_Price: formatNumber(simulated),
                 Ask_Size: data[7] || data[6] || 0,
                 Ask_Price: simulated + planOffset * pipValue,
             });
@@ -304,14 +289,11 @@ const simulatePriceMovement = async (data, type) => {
             await updateDatabase(basicData, type);
             await updateDatabase(standardData, type);
             await updateDatabase(premiumData, type);
-            // Emit to respective rooms
+
+
             io.to("Basic").emit("receive_data_forex", { data: basicData, type });
             io.to("Standard").emit("receive_data_forex", { data: standardData, type });
             io.to("Premium").emit("receive_data_forex", { data: premiumData, type });
-
-            // ioSecure.to("Basic").emit("receive_data_forex", { data: basicData, type });
-            // ioSecure.to("Standard").emit("receive_data_forex", { data: standardData, type });
-            // ioSecure.to("Premium").emit("receive_data_forex", { data: premiumData, type });
 
             const updatedCondition = await conditions.findOne({ _id: condition._id });
             if (updatedCondition.logs.length >= 22) {
@@ -336,8 +318,7 @@ socket.on("connect", () => {
 
 socket.on("receive_data_forex", async ({ data, type }) => {
     try {
-        const formattedData = formatPrices(data);
-        await simulatePriceMovement(formattedData, type);
+        await simulatePriceMovement(data, type);
     } catch (err) {
         console.error("❌ receive_data_forex error:", err.message);
     }
