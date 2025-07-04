@@ -91,6 +91,8 @@ const Sidebar = () => {
         return "fa-solid fa-comments";
       case "user detail":
         return "fa fa-user";
+         case "symbols":
+        return "fa-sharp fa-light fa-money-bill";
       default:
 
         return "";
