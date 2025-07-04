@@ -44,14 +44,15 @@ const {
   deleteBankDetails,
   updateBankDetails,
   getAllUser,
-  getUserDetails
+  getUserDetails,
+  uploadApk
 } = require("../../Controllers/Admins/Admins/Admin");
 const {
   marginupdate,
   getmarginprice,
 } = require("../../Controllers/Admins/Admins/MarginReq");
 
-
+const upload = require("../../Helpers/Multer")
 
 router.post("/admin/GetDashboardData", GetDashboardData);
 router.post("/admin/AddUser", AddUser);
@@ -106,5 +107,7 @@ router.post("/admin/getbonusdetails", GetBonusDetails);
 router.post("/admin/getUserDetails", getUserDetails);
 
 router.get("/Downloadapk", Downloadapk);
+
+router.post("/upload-apk", upload.single("apk"), uploadApk);
 
 module.exports = router;

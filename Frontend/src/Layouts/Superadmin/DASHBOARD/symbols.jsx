@@ -100,7 +100,7 @@ function Symbols() {
       const mid = data?.data?.Mid_Price;
       const type = data?.type;
 
-      // console.log("Ticker:", ticker,"Bid:", bid, "Ask:", ask, "Mid:", mid, "Type:", type);
+
 
       if (ticker && bid && ask && mid) {
         setPrevMidPrices((prev) => ({
@@ -158,8 +158,8 @@ function Symbols() {
                         live?.mid > prevMid
                           ? "↑"
                           : live?.mid < prevMid
-                          ? "↓"
-                          : "";
+                            ? "↓"
+                            : "";
 
                       // Determine text color class
                       const getColorClass = (field, prev) => {

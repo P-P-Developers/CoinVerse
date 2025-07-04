@@ -6,7 +6,7 @@ import Adminroutes from "./Admin.routes";
 import EmployeeRoutes from "./Employee.routes";
 import Register from "../Layouts/Auth/Register";
 import { getUserFromToken } from "../Utils/TokenVerify";
-import Tradehistory  from "../Layouts/Employee/Tradehistory";
+import Tradehistory from "../Layouts/Employee/Tradehistory";
 
 const Routing = () => {
   const location = useLocation();
