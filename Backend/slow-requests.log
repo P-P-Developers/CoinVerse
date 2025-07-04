@@ -10,4 +10,4 @@
 2025-07-04T11:47:39.173Z [warn]: SLOW API: [POST] /login - 253ms
 
 
-d
+d2025-07-04T12:24:26.785Z [warn]: SLOW API: [POST] /users/userSymbollist - 367ms
