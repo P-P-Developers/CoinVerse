@@ -249,7 +249,7 @@ const Updateuser = () => {
       ],
       label_size: 12,
       col_size: 6,
-      disable: true,
+      disable: false,
     },
     {
       name: "inputValue",
@@ -257,8 +257,8 @@ const Updateuser = () => {
       type: "text",
       label_size: 12,
       col_size: 6,
-      disable: true,
-      showWhen: (values) => !!values.selectedOption,
+      disable: false,
+      showWhen: (values) => !!values.selectedOption,  
     },
   ];
 

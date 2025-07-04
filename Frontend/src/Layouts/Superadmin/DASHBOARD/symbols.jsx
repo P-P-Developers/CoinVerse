@@ -92,10 +92,8 @@ function Symbols() {
   const [prevMidPrices, setPrevMidPrices] = useState({});
 
   useEffect(() => {
-    const myKey = "1"; // ✅ Aapka custom key
-    socket.emit("join_plan", "Basic"); // or "Basic", "Premium","Standard"
+    socket.emit("join_plan", "Standard"); // or "Basic", "Premium","Standard"
     socket.on("receive_data_forex", (data) => {
-      console.log("Received data:", data?.data);
       const ticker = data?.data?.ticker?.toLowerCase();
       const bid = data?.data?.Bid_Price;
       const ask = data?.data?.Ask_Price;
@@ -125,7 +123,7 @@ function Symbols() {
     return () => {
       socket.off("receive_data_forex");
     };
-  }, [liveData]);
+  }, []);
 
   return (
     <div className="container-fluid">
