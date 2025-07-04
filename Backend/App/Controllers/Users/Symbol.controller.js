@@ -144,6 +144,16 @@ class UserSymbol {
           },
         },
         { $unwind: "$symbolDetails" },
+
+        {
+          $lookup: {
+            from: "live_prices",
+            localField: "token",
+            foreignField: "Ticker",
+            as: "live_pricesdt",
+          },
+        },
+        { $unwind: "$live_pricesdt" },
         {
           $project: {
             symbol: 1,
@@ -152,6 +162,9 @@ class UserSymbol {
             symbol_name: 1,
             exch_seg: 1,
             lotsize: "$symbolDetails.lotsize",
+            lastpricedt: "$live_pricesdt.lastprice",
+            liveprice: "$live_pricesdt.Mid_Price"
+
           },
         },
       ]);

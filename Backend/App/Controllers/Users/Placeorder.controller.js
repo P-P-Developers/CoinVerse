@@ -265,6 +265,15 @@ class Placeorder {
           },
         },
         {
+          $lookup: {
+            from: "live_prices",
+            localField: "token",
+            foreignField: "Ticker",
+            as: "live_pricesdt",
+          },
+        },
+        { $unwind: "$live_pricesdt" },
+        {
           $project: {
             symbol: 1,
             buy_type: 1,
@@ -285,6 +294,8 @@ class Placeorder {
             stoploss_price: 1,
             Mk_type: 1,
             Exittype: 1,
+            lastpricedt: "$live_pricesdt.lastprice"
+
           },
         },
       ]);
@@ -385,6 +396,15 @@ class Placeorder {
           },
         },
         {
+          $lookup: {
+            from: "live_prices",
+            localField: "token",
+            foreignField: "Ticker",
+            as: "live_pricesdt",
+          },
+        },
+        { $unwind: "$live_pricesdt" },
+        {
           $project: {
             symbol: 1,
             buy_type: 1,
@@ -405,6 +425,7 @@ class Placeorder {
             stoploss_price: 1,
             Mk_type: 1, // Include Mk_type in the response
             Exittype: 1,
+            liveprice: "$live_pricesdt.Mid_Price"
           },
         },
         { $sort: { createdAt: -1 } },
@@ -803,9 +824,8 @@ class Placeorder {
 
       return res.json({
         status: true,
-        message: `${
-          type.charAt(0).toUpperCase() + type.slice(1)
-        } order updated successfully`,
+        message: `${type.charAt(0).toUpperCase() + type.slice(1)
+          } order updated successfully`,
         data: [],
       });
     } catch (error) {
