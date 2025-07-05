@@ -18,4 +18,8 @@ d2025-07-04T12:24:26.785Z [warn]: SLOW API: [POST] /users/userSymbollist - 367ms
 2025-07-04T12:28:10.790Z [warn]: SLOW API: [POST] /admin/getAllUser - 252ms
 2025-07-05T07:31:57.418Z [warn]: SLOW API: [GET] /getCompany - 227ms
 2025-07-05T07:31:57.495Z [warn]: SLOW API: [GET] /getCompany - 296ms
+<<<<<<< HEAD
 >>>>>>> 17752a107bce3870602709819fa727c76afb73fe
+=======
+2025-07-05T09:25:44.612Z [warn]: SLOW API: [POST] /getbroadcastmessageforuser - 215ms
+>>>>>>> b6958225d99fa9b377ceb68985af15e8f705a3b9
