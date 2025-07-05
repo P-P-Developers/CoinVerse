@@ -10,4 +10,5 @@
 2025-07-04T11:47:39.173Z [warn]: SLOW API: [POST] /login - 253ms
 
 
-d
+d2025-07-04T12:20:12.027Z [warn]: SLOW API: [POST] /superadmin/getAdminDetail - 330ms
+2025-07-04T12:20:15.223Z [warn]: SLOW API: [POST] /superadmin/getAdminDetail - 345ms
