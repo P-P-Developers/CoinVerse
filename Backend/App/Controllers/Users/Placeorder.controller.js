@@ -268,7 +268,7 @@ class Placeorder {
           $lookup: {
             from: "live_prices",
             localField: "token",
-            foreignField: "Ticker",
+            foreignField: "ticker",
             as: "live_pricesdt",
           },
         },
@@ -294,7 +294,8 @@ class Placeorder {
             stoploss_price: 1,
             Mk_type: 1,
             Exittype: 1,
-            lastpricedt: "$live_pricesdt.lastprice"
+            lastpricedt: "$live_pricesdt.lastprice",
+            liveprice: "$live_pricesdt.Mid_Price"
 
           },
         },
@@ -358,6 +359,8 @@ class Placeorder {
         "dogeusd",
       ];
 
+
+
       const finduser = await mainorder_model.aggregate([
         {
           $match: {
@@ -399,7 +402,7 @@ class Placeorder {
           $lookup: {
             from: "live_prices",
             localField: "token",
-            foreignField: "Ticker",
+            foreignField: "ticker",
             as: "live_pricesdt",
           },
         },
@@ -425,6 +428,7 @@ class Placeorder {
             stoploss_price: 1,
             Mk_type: 1, // Include Mk_type in the response
             Exittype: 1,
+            lastpricedt: "$live_pricesdt.lastprice",
             liveprice: "$live_pricesdt.Mid_Price"
           },
         },
