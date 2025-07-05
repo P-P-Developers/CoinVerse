@@ -83,7 +83,7 @@ const updateDatabaseCrypto = async (data) => {
         { ticker: data[1] },
         {
           $set: {
-            Ticker: data[1],
+            ticker: data[1],
             Date: data[2],
             curtime: curtime,
             Exchange: data[3],
@@ -114,7 +114,7 @@ const updateDatabaseforex = async (data) => {
         { ticker: data[1] },
         {
           $set: {
-            Ticker: data[1],
+            ticker: data[1],
             Date: data[2],
             curtime: curtime,
             Bid_Size: data[3] || 0,
