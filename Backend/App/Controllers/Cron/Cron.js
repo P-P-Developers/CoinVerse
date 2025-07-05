@@ -1,10 +1,12 @@
 var cron = require("node-cron");
 const db = require("../../Models");
 const Company = db.Company;
-
 const user = db.user;
 const mainorder_model = db.mainorder_model;
 const BonusCollectioniModel = db.BonusCollection;
+const live_priceModal = db.live_priceModal
+
+
 
 const UpdateCompany = async () => {
   try {
@@ -128,4 +130,32 @@ const getLastWeekRange = () => {
 
 cron.schedule("30 23 * * 0", async () => {
   await GetAdminWeeklyProfit();
+});
+
+
+
+
+const updateLastPrice = async () => {
+  try {
+
+    const result = await live_priceModal.updateMany(
+      { Mid_Price: { $exists: true } },
+      [
+        {
+          $set: { lastprice: "$Mid_Price" }
+        }
+      ]
+    );
+
+    console.log(`✅ Updated ${result.modifiedCount} documents.`);
+
+  } catch (err) {
+    console.error("❌ Error updating prices:", err);
+
+  }
+};
+
+
+cron.schedule("1 0 * * *", () => {
+  updateLastPrice();
 });

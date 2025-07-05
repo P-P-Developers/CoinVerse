@@ -120,11 +120,7 @@ class UserSymbol {
   // Userwatchlist with favourite status new code
   async userSymbollist(req, res) {
     try {
-      const userWatchlistRecords = await Userwatchlist.find({
-        userid: req.body.userid,
-      })
-        .select("-createdAt -_id")
-        .sort({ _id: -1 });
+
 
       const favouriteList = await Favouritelist.find({
         userid: req.body.userid,
@@ -144,6 +140,16 @@ class UserSymbol {
           },
         },
         { $unwind: "$symbolDetails" },
+
+        {
+          $lookup: {
+            from: "live_prices",
+            localField: "token",
+            foreignField: "ticker",
+            as: "live_pricesdt",
+          },
+        },
+        { $unwind: "$live_pricesdt" },
         {
           $project: {
             symbol: 1,
@@ -152,6 +158,9 @@ class UserSymbol {
             symbol_name: 1,
             exch_seg: 1,
             lotsize: "$symbolDetails.lotsize",
+            lastpricedt: "$live_pricesdt.lastprice",
+            liveprice: "$live_pricesdt.Mid_Price"
+
           },
         },
       ]);
