@@ -15,14 +15,10 @@ const user_logs = db.user_logs;
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
-
 class Users {
-
-
   // async userWithdrawalanddeposite(req, res) {
   //   try {
   //     const { userid, Balance, type, transactionId, ScreenShot } = req.body;
-
 
   //     const userdata = await User_model.findById({ _id: userid }).sort({
   //       createdAt: -1,
@@ -39,7 +35,6 @@ class Users {
   //       });
   //     }
 
-
   //     const dollarPriceData = await MarginRequired.findOne({
   //       adminid: userdata.parent_id,
   //     }).select("dollarprice");
@@ -51,7 +46,6 @@ class Users {
   //       });
   //     }
 
-
   //     if (isNaN(Balance) || Balance <= 0) {
   //       return res.json({
   //         status: false,
@@ -59,7 +53,6 @@ class Users {
   //         data: [],
   //       });
   //     }
-
 
   //     const dollarcount = parseFloat(Balance).toFixed(6);
 
@@ -85,7 +78,6 @@ class Users {
   //       paymentHistoryId: paymentHistory._id,
   //     });
 
-
   //     return res.json({
   //       status: true,
   //       message: "Request sent",
@@ -100,8 +92,6 @@ class Users {
   //     });
   //   }
   // }
-
-
 
   async userWithdrawalanddeposite(req, res) {
     try {
@@ -123,7 +113,9 @@ class Users {
       if (Balance > 10000) {
         return res.json({
           status: false,
-          message: `You cannot ${type == 1 ? "Deposit" : "Withdraw"} more than 10000`,
+          message: `You cannot ${
+            type == 1 ? "Deposit" : "Withdraw"
+          } more than 10000`,
           data: [],
         });
       }
@@ -142,16 +134,13 @@ class Users {
 
       const dollarcount = parseFloat(Balance).toFixed(6);
 
-
       if (type == 1) {
         // const existingDeposits = await PaymenetHistorySchema.find({
         //   userid: userid,
         //   type: 1,
         // }).sort({ createdAt: 1 });
-
         // if (existingDeposits.length === 0) {
         //   let planType = null;
-
         //   if (Balance == 100) {
         //     planType = 1;
         //   } else if (Balance == 500) {
@@ -159,7 +148,6 @@ class Users {
         //   } else if (Balance == 1000) {
         //     planType = 3;
         //   }
-
         //   if (planType) {
         //     await User_model.findByIdAndUpdate(userid, {
         //       plan_type: planType,
@@ -205,10 +193,6 @@ class Users {
       });
     }
   }
-
-
-
-
 
   async getpaymenthistory(req, res) {
     try {
@@ -301,9 +285,18 @@ class Users {
       }
 
       let Obj = {
-        option: user.pertrade && user.pertrade !== 0 ? "pertrade" : user.transactionwise !== 0 ? "transactionwise" : "perlot",
+        option:
+          user.pertrade && user.pertrade !== 0
+            ? "pertrade"
+            : user.transactionwise !== 0
+            ? "transactionwise"
+            : "perlot",
         value1:
-          user.pertrade && user.pertrade !== 0 ? user.pertrade : user.transactionwise !== 0 ? user.transactionwise : user.perlot,
+          user.pertrade && user.pertrade !== 0
+            ? user.pertrade
+            : user.transactionwise !== 0
+            ? user.transactionwise
+            : user.perlot,
         crypto: result.crypto || 100,
         forex: result.forex || 100,
       };
@@ -467,7 +460,6 @@ class Users {
         data: result,
       });
     } catch (error) {
-
       return res.json({
         status: false,
         message: "Internal server error",
@@ -550,7 +542,6 @@ class Users {
         data: enrichedData,
       });
     } catch (error) {
-
       return res.json({
         status: false,
         message: "Internal server error",
@@ -635,7 +626,6 @@ class Users {
         data: balanceStatements, // Return the enriched data
       });
     } catch (error) {
-
       return res.json({
         status: false,
         message: "Internal server error",
@@ -736,7 +726,6 @@ class Users {
         data: DataArray.flat(), // Flatten the array of results
       });
     } catch (error) {
-
       return res.json({
         status: false,
         message: "Internal server error",
@@ -787,7 +776,6 @@ class Users {
     try {
       const { user_id, pin, fcm_token } = req.body;
 
-
       if (pin && !/^\d{4}$/.test(pin)) {
         return res.send({ status: false, message: "Invalid PIN", data: [] });
       }
@@ -809,8 +797,6 @@ class Users {
       if (user.Role === "USER" || user.Role === "ADMIN") {
         const currentDate = new Date();
         const endDate = new Date(user.End_Date);
-
-
       }
 
       // If pin_status is false, return a message to generate the pin first
@@ -864,12 +850,9 @@ class Users {
     }
   }
 
-
   async FingerAuth(req, res) {
     try {
       const { user_id, fcm_token } = req.body;
-
-
 
       const user = await User_model.findById(user_id);
 
@@ -888,8 +871,6 @@ class Users {
       if (user.Role === "USER" || user.Role === "ADMIN") {
         const currentDate = new Date();
         const endDate = new Date(user.End_Date);
-
-
       }
 
       // If pin_status is false, return a message to generate the pin first
@@ -900,8 +881,6 @@ class Users {
           data: [],
         });
       }
-
-
 
       var token = jwt.sign({ id: user._id }, process.env.SECRET, {
         expiresIn: 28800,
@@ -1016,7 +995,6 @@ class Users {
     }
   }
 
-
   async ForgotPin(req, res) {
     try {
       const { user_id, password, newPin } = req.body;
@@ -1074,7 +1052,6 @@ class Users {
         message: "PIN updated successfully",
         data: [],
       });
-
     } catch (error) {
       console.error("ForgotPin error:", error);
       return res.status(500).send({
@@ -1143,7 +1120,6 @@ class Users {
         bankIfsc,
       } = req.body;
 
-
       if (!userId) {
         return res.status(400).json({
           status: false,
@@ -1171,7 +1147,6 @@ class Users {
       });
 
       const savedAccount = await newAccount.save();
-
 
       return res.status(201).json({
         status: true,
