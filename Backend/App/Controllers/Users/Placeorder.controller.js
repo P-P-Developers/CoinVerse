@@ -931,6 +931,8 @@ class Placeorder {
         type,
         lotsize,
         With_Margin,
+        selectedOption,
+        limitstopprice,
       } = req.body;
 
       if (price <= 0 || !price) {
@@ -1006,6 +1008,35 @@ class Placeorder {
           message: "Order rejected due to low Balance",
           order: rejectedOrder,
         });
+      }
+
+      if (selectedOption == "Limit" || selectedOption == "Stop") {
+        const newOrder = new Order({
+          userid,
+          symbol,
+          price,
+          lot,
+          qty,
+          totalamount:
+            checkadmin.transactionwise == null
+              ? totalamount + parseFloat(brokerage) + parseFloat(brokerage)
+              : totalamount + parseFloat(brokerage),
+          adminid: checkadmin.parent_id,
+          pertrade: checkadmin.userdata,
+          perlot: checkadmin.perlot,
+          turn_over_percentage: checkadmin.turn_over_percentage,
+          brokerage: brokerage,
+          limit: NewLimit,
+          requiredFund,
+          token: SymbolToken?.token,
+          type,
+          lotsize: lotsize,
+          status: "Pending",
+        });
+
+        // Save the new order to the database
+        const orderdata = await newOrder.save();
+        return res.json({ status: true, message: "Order placed", order: orderdata });
       }
 
       // Create a new order object

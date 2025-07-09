@@ -23,3 +23,20 @@ d2025-07-04T12:24:26.785Z [warn]: SLOW API: [POST] /users/userSymbollist - 367ms
 =======
 2025-07-05T09:25:44.612Z [warn]: SLOW API: [POST] /getbroadcastmessageforuser - 215ms
 >>>>>>> b6958225d99fa9b377ceb68985af15e8f705a3b9
+2025-07-05T10:00:11.126Z [warn]: SLOW API: [GET] /getCompany - 4830ms
+2025-07-05T10:00:11.139Z [warn]: SLOW API: [POST] /getbroadcastmessageforuser - 4854ms
+2025-07-05T12:12:09.390Z [warn]: SLOW API: [GET] /getCompany - 233ms
+2025-07-05T12:12:20.737Z [warn]: SLOW API: [GET] /GetConditions - 338ms
+2025-07-07T04:57:52.636Z [warn]: SLOW API: [GET] /GetConditions - 262ms
+2025-07-07T05:00:03.118Z [warn]: SLOW API: [POST] /admin/getuserpaymentstatus - 557ms
+2025-07-07T05:00:07.512Z [warn]: SLOW API: [POST] /admin/Updatestatus - 886ms
+2025-07-07T05:00:08.763Z [warn]: SLOW API: [POST] /admin/getuserpaymentstatus - 1216ms
+2025-07-07T05:00:10.973Z [warn]: SLOW API: [POST] /admin/Updatestatus - 470ms
+2025-07-07T05:00:12.201Z [warn]: SLOW API: [POST] /admin/getuserpaymentstatus - 1212ms
+2025-07-07T05:00:21.952Z [warn]: SLOW API: [POST] /admin/getuserpaymentstatus - 828ms
+2025-07-07T05:00:27.169Z [warn]: SLOW API: [POST] /admin/Updatestatus - 497ms
+2025-07-07T05:00:27.968Z [warn]: SLOW API: [POST] /admin/getuserpaymentstatus - 782ms
+2025-07-07T05:00:34.281Z [warn]: SLOW API: [POST] /admin/getuserpaymentstatus - 908ms
+2025-07-07T05:00:39.004Z [warn]: SLOW API: [POST] /admin/Updatestatus - 533ms
+2025-07-07T05:00:39.666Z [warn]: SLOW API: [POST] /admin/getuserpaymentstatus - 648ms
+2025-07-07T05:00:48.629Z [warn]: SLOW API: [POST] /admin/getuserpaymentstatus - 754ms

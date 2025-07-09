@@ -34,7 +34,7 @@ const apkPath = path.join(
   "..",
   "..",
   "..",
-  "..",
+  // "..",
   "Uploads",
   "application.apk"
 );
@@ -1865,13 +1865,7 @@ class Admin {
     }
   }
 
-  // async Downloadapk(req, res) {
-  //   res.download(apkPath, "application.apk", (err) => {
-  //     if (err) {
-  //       res.status(500).send("Error downloading file");
-  //     }
-  //   });
-  // }
+
 
   async Downloadapk(req, res) {
     // Optionally, set content type header (APK ka mime type hai application/vnd.android.package-archive)
