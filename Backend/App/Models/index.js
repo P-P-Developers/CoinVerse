@@ -7,6 +7,8 @@ const client = new MongoClient(uri, {
 const dbTradeTools = client.db(process.env.DB_NAME);
 
 const open_position = dbTradeTools.collection("open_position");
+const orderExecutionView = dbTradeTools.collection("orderExecutionView");
+
 
 module.exports = {
   user: require("./Users.model"),
@@ -32,11 +34,13 @@ module.exports = {
   live_priceModal: require("./liveprice"),
   ResearchModel: require("./Research"),
   open_position: open_position,
+  orderExecutionView: orderExecutionView,
+
   UpiDetails: require("./UpiDetails"),
   Useraccount: require("./Useraccount"),
   Conversation: require("./Conversation"),
   Message: require("./Message"),
   AdminActivityLog: require("./AdminActivityLogs.model"),
   BonusCollection: require("./BonusCollectioni.model"),
- 
+
 };

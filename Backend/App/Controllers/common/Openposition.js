@@ -1,6 +1,9 @@
 const db = require("../../Models");
 const axios = require("axios");
 const open_position = db.open_position;
+const orderExecutionView = db.orderExecutionView;
+const orders = db.Order;
+
 const user_modal = db.user;
 
 const { sendPushNotification } = require("../common/firebase");
@@ -22,6 +25,8 @@ class OpenPositions {
     }
   }
 
+
+
   async fetchPositions() {
     try {
       const openPositions = await open_position
@@ -35,6 +40,55 @@ class OpenPositions {
         })
         .toArray();
 
+
+      const orderExecutionViewdata = await orderExecutionView
+        .find({
+          slstatus: true
+        })
+        .toArray()
+
+      // 3. To check pending to  orders from orderExecutionViewdata (INDIVIDUALLY)
+      if (orderExecutionViewdata && orderExecutionViewdata.length > 0) {
+        for (const order of orderExecutionViewdata) {
+          const orderData = {
+            userid: order.userid,
+            symbol: order.symbol,
+            price: order.price,
+            lot: order.lot,
+            qty: order.qty,
+            requiredFund: order.requiredFund,
+            type: order.type,
+            lotsize: order.lotsize,
+            selectedOption: "Market",
+            limitstopprice: order.limitstopprice,
+          };
+          const config1 = {
+            method: "post",
+            maxBodyLength: Infinity,
+            url: process.env.base_url + "users/placeorder",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            data: orderData,
+          };
+          try {
+            const response = await axios(config1);
+
+            if (response.status === 200) {
+              console.log(`✅ Order for ${order.symbol} submitted. Status: ${response.status}`);
+              // console.log(" order._id", order._id)
+              // Delete the order after successful placement
+              const orderresponse = await orders.deleteOne({ _id: order._id });
+              console.log("🗑️ Deleted Order:", orderresponse);
+            }
+          } catch (error) {
+            console.error(`❌ Error submitting order for ${order.symbol}:`, error.message);
+          }
+
+        }
+      }
+
+
       if (openPositions && openPositions.length > 0) {
         for (const position of openPositions) {
           let commonData;
@@ -42,11 +96,11 @@ class OpenPositions {
           let GetDeviceToken = await user_modal.findOne({
             _id: position?.userid,
           });
-          let  Exittype = position.checkSlPercent
-                ? "FUND_WISE"
-                : position.checkSlPercent_sl
-                ? "SL"
-                : "TARGET"
+          let Exittype = position.checkSlPercent
+            ? "FUND_WISE"
+            : position.checkSlPercent_sl
+              ? "SL"
+              : "TARGET"
 
           if (position?.signal_type === "buy_sell") {
             commonData = {
@@ -61,7 +115,7 @@ class OpenPositions {
                 ((position?.buy_qty || 0) - (position?.sell_qty || 0)),
               lotsize: position?.lotsize,
               type: "sell",
-              Exittype:Exittype,
+              Exittype: Exittype,
             };
           } else if (position?.signal_type == "sell_buy") {
             commonData = {

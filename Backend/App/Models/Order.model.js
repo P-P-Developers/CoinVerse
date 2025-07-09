@@ -33,12 +33,12 @@ const orderSchema = new mongoose.Schema({
   Role: {
     type: String,
     default: null,
-},
+  },
   lot: {
     type: Number,
     default: null,
   },
-  lotsize:{
+  lotsize: {
     type: Number,
     default: null,
   },
@@ -90,6 +90,11 @@ const orderSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  selectedOption: {
+    type: String,
+    default: null,
+  },
+
   createdAt: {
     type: Date,
     default: Date.now,
