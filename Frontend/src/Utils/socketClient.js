@@ -11,4 +11,7 @@ const socket = io(socket_url == "https://localhost:1003" ? "https://trade.trades
 });
 
 
+    socket.emit("join_plan", "Basic"); // or "Basic", "Premium","Standard"
+
+
 export default socket;

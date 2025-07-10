@@ -26,6 +26,8 @@ import UserDetails from "../Layouts/Superadmin/Admins/UserDetails";
 import UserTradeHistory from "../Layouts/Superadmin/Admins/UserTradeHistory";
 import Settings from "../Layouts/Superadmin/Admins/Settings";
 import Symbols from "../Layouts/Superadmin/DASHBOARD/symbols"
+import Symbols1 from "../Layouts/Superadmin/DASHBOARD/symbol1"
+
 
 const SuperadminRoutes = () => {
   return (
@@ -57,6 +59,8 @@ const SuperadminRoutes = () => {
           <Route path="/settings" element={<Settings />} />
 
           <Route path="/symbols" element={<Symbols />} />
+          <Route path="/game/chart" element={<Symbols1 />} />
+
 
         </Routes>
       </div>
