@@ -4,9 +4,11 @@ const router = require("express").Router()
 
 const { addSymbol, symbolSearch, userSymbollist, deletwatchlistsymbol, getFavouritelist,
     Favouritelist,
-    removeFavourite
+    removeFavourite,
+    DeletePendingOrder,
+    UpdatePendingOrder
 } = require("../../Controllers/Users/Symbol.controller")
-const {getLedgerReport, placeorder, getOrderBook, gettardehistory, position, holding, Squareoff, switchOrderType,UpdateTargetSlPRice ,GetModifyOrder} = require("../../Controllers/Users/Placeorder.controller")
+const { getLedgerReport, placeorder, getOrderBook, gettardehistory, position, holding, Squareoff, switchOrderType, UpdateTargetSlPRice, GetModifyOrder } = require("../../Controllers/Users/Placeorder.controller")
 const { userWithdrawalanddeposite, getpaymenthistory, getUserDetail, getmarginpriceforuser, getAllstatement,
 
     getuserorderdata,
@@ -14,7 +16,7 @@ const { userWithdrawalanddeposite, getpaymenthistory, getUserDetail, getmarginpr
     todaysBroadcastMessage,
     balanceStatementForUser,
     tradeStatementForUser,
- 
+
     tradeStatementForOrder,
     tradeStatementForUser1,
     getUserAccountDetails,
@@ -65,6 +67,8 @@ router.post('/getUserAccountDetails', getUserAccountDetails);
 router.post('/updateUserAccountDetails', updateUserAccountDetails);
 
 router.post('/getledgerreport', getLedgerReport);
+router.post('/deletePendingOrder', DeletePendingOrder);
+router.post('/updatePendingOrder', UpdatePendingOrder);
 
 
 

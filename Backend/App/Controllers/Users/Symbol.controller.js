@@ -4,6 +4,7 @@ const db = require("../../Models");
 const Symbol = db.Symbol;
 const Userwatchlist = db.Userwatchlist;
 const Favouritelist = db.Favouritelist;
+const Order = db.Order;
 const { isArray } = require("lodash"); // Assuming lodash is being used
 
 class UserSymbol {
@@ -362,6 +363,104 @@ class UserSymbol {
       });
     }
   }
+
+
+
+  async DeletePendingOrder(req, res) {
+    try {
+      const { _id, userid } = req.body;
+
+      if (!_id || !userid) {
+        return res.json({
+          status: false,
+          message: "Missing _id or userid in request body",
+        });
+      }
+
+      const result = await Order.updateOne(
+        { _id, userid },
+        {
+          $set: {
+            status: "Rejected",
+            reason: "Manually cancelled",
+          },
+        }
+      );
+
+      if (result.modifiedCount === 1) {
+        return res.json({
+          status: true,
+          message: "Order status updated to Rejected successfully!",
+          data: result,
+        });
+      } else {
+        return res.json({
+          status: false,
+          message: "Order not found or already updated",
+          data: [],
+        });
+      }
+
+    } catch (error) {
+      console.error("Update Order Status Error:", error.message);
+      return res.json({
+        status: false,
+        message: "Internal Server Error while updating order status",
+        data: [],
+      });
+    }
+  }
+
+
+
+  async UpdatePendingOrder(req, res) {
+    try {
+      const { _id, userid, price } = req.body;
+
+      if (!_id || !userid || price === undefined) {
+        return res.json({
+          status: false,
+          message: "Missing _id, userid, or price in request body",
+        });
+      }
+
+      const result = await Order.updateOne(
+        {
+          _id,
+          userid,
+          status: "Pending",
+        },
+        {
+          $set: { price: price },
+        }
+      );
+
+      if (result.matchedCount === 1) {
+        return res.json({
+          status: true,
+          message: "Order price updated successfully!",
+          data: result,
+        });
+      } else {
+        return res.json({
+          status: false,
+          message: "Order not found or status is not 'Pending'",
+          data: [],
+        });
+      }
+
+    } catch (error) {
+      console.error("Update Order Error:", error.message);
+      return res.json({
+        status: false,
+        message: "Internal Server Error while updating order",
+        data: [],
+      });
+    }
+  }
+
+
+
 }
 
 module.exports = new UserSymbol();

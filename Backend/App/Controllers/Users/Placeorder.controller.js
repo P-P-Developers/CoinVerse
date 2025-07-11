@@ -59,6 +59,9 @@ class Placeorder {
     }
   }
 
+
+
+  
   // get order book
   async getOrderBook(req, res) {
     try {
@@ -120,6 +123,9 @@ class Placeorder {
       });
     }
   }
+
+
+
 
   async gettardehistory(req, res) {
     try {
@@ -219,6 +225,9 @@ class Placeorder {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
+
+
+
   // position
   async position(req, res) {
     try {
@@ -903,9 +912,8 @@ class Placeorder {
 
       return res.json({
         status: true,
-        message: `${
-          type.charAt(0).toUpperCase() + type.slice(1)
-        } order updated successfully`,
+        message: `${type.charAt(0).toUpperCase() + type.slice(1)
+          } order updated successfully`,
         data: [],
       });
     } catch (error) {
@@ -997,6 +1005,7 @@ class Placeorder {
           token,
           type,
           lotsize,
+          selectedOption,
           status: "rejected",
           reason: "Order rejected due to low Balance",
         });
@@ -1032,6 +1041,7 @@ class Placeorder {
           type,
           lotsize: lotsize,
           status: "Pending",
+          selectedOption
         });
 
         // Save the new order to the database
@@ -1102,6 +1112,9 @@ class Placeorder {
       });
     }
   }
+
+
+
 }
 
 // place order entry trade

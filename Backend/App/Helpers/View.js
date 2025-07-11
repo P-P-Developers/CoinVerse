@@ -23,7 +23,7 @@ db.createView(
     {
       $lookup: {
         from: "live_prices",
-        localField: "token", 
+        localField: "token",
         foreignField: "ticker",
         as: "livePriceData",
       },
@@ -44,25 +44,25 @@ db.createView(
       $project: {
         _id: 1,
         userid: 1,
-        adminid:1,
+        adminid: 1,
         symbol: 1,
         buy_price: 1,
         sell_price: 1,
         buy_lot: 1,
         sell_lot: 1,
         buy_qty: 1,
-        sell_qty:1,
+        sell_qty: 1,
         token: 1,
         buy_type: 1,
         sell_type: 1,
-        Sl_price_percentage: 1, 
-        Target_price:1,
-        stoploss_price:1,
+        Sl_price_percentage: 1,
+        Target_price: 1,
+        stoploss_price: 1,
         signal_type: 1,
         status: 1,
         lotsize: 1,
-        live_price: "$livePriceData.Bid_Price", 
-        
+        live_price: "$livePriceData.Bid_Price",
+
         checkSlPercent: {
           $switch: {
             branches: [
@@ -128,7 +128,7 @@ db.createView(
               {
                 case: {
                   $and: [
-                    { $ne: ["$stoploss_price", null] }, // Check for null
+                    { $ne: ["$stoploss_price", null] },
                     { $regexMatch: { input: "$stoploss_price", regex: /^[0-9]+(\.[0-9]+)?$/ } }, // Check valid numeric format
                     { $eq: ["$signal_type", "buy_sell"] },
                     {
@@ -165,8 +165,8 @@ db.createView(
             default: false,
           },
         },
-        
-        
+
+
         checkSlPercent_target: {
           $switch: {
             branches: [
@@ -174,12 +174,13 @@ db.createView(
                 case: {
                   $and: [
                     { $eq: ["$signal_type", "buy_sell"] },
-                    { 
-                      $ne: ["$Target_price", null] }, // Check if Target_price is not null
                     {
-                      $regexMatch: { 
-                        input: "$Target_price", 
-                        regex: /^[0-9]+(\.[0-9]+)?$/ 
+                      $ne: ["$Target_price", null]
+                    }, // Check if Target_price is not null
+                    {
+                      $regexMatch: {
+                        input: "$Target_price",
+                        regex: /^[0-9]+(\.[0-9]+)?$/
                       }, // Ensure Target_price is a valid numeric value
                     },
                     {
@@ -196,12 +197,13 @@ db.createView(
                 case: {
                   $and: [
                     { $eq: ["$signal_type", "sell_buy"] },
-                    { 
-                      $ne: ["$Target_price", null] }, // Check if Target_price is not null
                     {
-                      $regexMatch: { 
-                        input: "$Target_price", 
-                        regex: /^[0-9]+(\.[0-9]+)?$/ 
+                      $ne: ["$Target_price", null]
+                    }, // Check if Target_price is not null
+                    {
+                      $regexMatch: {
+                        input: "$Target_price",
+                        regex: /^[0-9]+(\.[0-9]+)?$/
                       }, // Ensure Target_price is a valid numeric value
                     },
                     {
@@ -218,14 +220,124 @@ db.createView(
             default: false,
           },
         },
-        
-        
-        
+
+
+
         buy_time: 1,
         sell_time: 1,
         status: 1,
-        requiredFund:1
+        requiredFund: 1
       },
     },
   ]
 );
+
+
+
+
+
+
+
+db.createView("orderExecutionView", "orders", [
+  {
+    $match: {
+      type: { $in: ["buy", "sell"] },
+      status: "Pending",
+      selectedOption: { $in: ["Limit", "Stop"] }
+    }
+  },
+  {
+    $lookup: {
+      from: "live_prices",
+      let: { orderSymbol: "$symbol" },
+      pipeline: [
+        {
+          $match: {
+            $expr: {
+              $eq: [
+                { $toLower: "$ticker" },
+                { $toLower: "$$orderSymbol" }
+              ]
+            }
+          }
+        }
+      ],
+      as: "live"
+    }
+  },
+  {
+    $unwind: {
+      path: "$live",
+      preserveNullAndEmptyArrays: false
+    }
+  },
+  {
+    $addFields: {
+      executeCondition: {
+        $switch: {
+          branches: [
+            {
+              case: {
+                $and: [
+                  { $eq: ["$type", "buy"] },
+                  { $eq: ["$selectedOption", "Limit"] },
+                  { $lte: ["$live.Ask_Price", { $toDouble: "$price" }] }
+                ]
+              },
+              then: true
+            },
+            {
+              case: {
+                $and: [
+                  { $eq: ["$type", "sell"] },
+                  { $eq: ["$selectedOption", "Limit"] },
+                  { $gte: ["$live.Bid_Price", { $toDouble: "$price" }] }
+                ]
+              },
+              then: true
+            },
+            {
+              case: {
+                $and: [
+                  { $eq: ["$type", "buy"] },
+                  { $eq: ["$selectedOption", "Stop"] },
+                  { $gte: ["$live.Ask_Price", { $toDouble: "$price" }] }
+                ]
+              },
+              then: true
+            },
+            {
+              case: {
+                $and: [
+                  { $eq: ["$type", "sell"] },
+                  { $eq: ["$selectedOption", "Stop"] },
+                  { $lte: ["$live.Bid_Price", { $toDouble: "$price" }] }
+                ]
+              },
+              then: true
+            }
+          ],
+          default: false
+        }
+      }
+    }
+  },
+  {
+    $addFields: {
+      slstatus: "$executeCondition",
+      livePrice: {
+        $cond: {
+          if: { $eq: ["$type", "buy"] },
+          then: "$live.Ask_Price",
+          else: "$live.Bid_Price"
+        }
+      }
+    }
+  },
+  {
+    $project: {
+      executeCondition: 0,
+      live: 0
+    }
+  }
+])
