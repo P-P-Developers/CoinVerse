@@ -1,238 +1,241 @@
-"use strict"
+"use strict";
 
-const { Schema, model } = require('mongoose');
-const mongoose = require('mongoose')
-const Role = require("./Role.model")
+const { Schema, model } = require("mongoose");
+const mongoose = require("mongoose");
+const Role = require("./Role.model");
 
-const userModel = Schema({
+const userModel = Schema(
+  {
     FullName: {
-        type: String,
-        required: true,
-        trim: true,
-        default: null
+      type: String,
+      required: true,
+      trim: true,
+      default: null,
     },
     UserName: {
-        type: String,
-        required: true,
-        trim: true,
-        unique: true,
-        default: null,
-        lowercase: true,
+      type: String,
+      required: true,
+      trim: true,
+      unique: true,
+      default: null,
+      lowercase: true,
     },
     Email: {
-        type: String,
-        required: true,
-        trim: true,
-        unique: true,
-        default: null,
-        lowercase: true,
+      type: String,
+      required: true,
+      trim: true,
+      unique: true,
+      default: null,
+      lowercase: true,
     },
     PhoneNo: {
-        type: String,
-        required: true,
-        trim: true,
-        min: 10,
-        max: 10,
-        unique: true,
-        default: null
+      type: String,
+      required: true,
+      trim: true,
+      min: 10,
+      max: 10,
+      unique: true,
+      default: null,
     },
     password: {
-        type: String,
-        required: true,
-        trim: true,
-        default: null
+      type: String,
+      required: true,
+      trim: true,
+      default: null,
     },
     pin: {
-        type: String,
-        default: null
-
+      type: String,
+      default: null,
     },
 
     pin_status: {
-        type: Boolean, // Indicates if pin has been set
-        default: false
+      type: Boolean, // Indicates if pin has been set
+      default: false,
     },
     Otp: {
-        type: String,
-        trim: true,
-        default: null
+      type: String,
+      trim: true,
+      default: null,
     },
     employee_id: {
-        type: String,
-        trim: true,
-        default: null
+      type: String,
+      trim: true,
+      default: null,
     },
     Create_Date: {
-        type: Date,
-        default: Date.now
+      type: Date,
+      default: Date.now,
     },
     Role: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     Is_Active: {
-        type: String,
-        enum: ['1', '0'],
-        default: '1'
+      type: String,
+      enum: ["1", "0"],
+      default: "1",
     },
     ActiveStatus: {
-        type: String,
-        enum: ['1', '0'],
-        default: '0'
+      type: String,
+      enum: ["1", "0"],
+      default: "0",
     },
     createdAt: {
-        type: Date,
-        default: Date.now
+      type: Date,
+      default: Date.now,
     },
     parent_id: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     Balance: {
-        type: Number,
-        default: null
+      type: Number,
+      default: null,
     },
     Licence: {
-        type: Number,
-        default: null
+      type: Number,
+      default: null,
     },
 
     Start_Date: {
-        type: Date,
-        default: null
+      type: Date,
+      default: null,
     },
     End_Date: {
-        type: Date,
-        default: null
+      type: Date,
+      default: null,
     },
     parent_role: {
-        type: String,
-        required: true,
-
+      type: String,
+      required: true,
     },
     pertrade: {
-        type: Number,
-        defaultValue: null
+      type: Number,
+      defaultValue: null,
     },
     perlot: {
-        type: Number,
-        default: null
+      type: Number,
+      default: null,
     },
     transactionwise: {
-        type: Number,
-        default: null
+      type: Number,
+      default: null,
     },
 
     limit: {
-        type: Number,
-        default: null
+      //INTRADAY LIMIT
+      type: Number,
+      default: 1,
+    },
+    holding_limit: {
+      //HOLDING LIMIT
+      type: Number,
+      default: 1,
     },
     ProfitMargin: {
-        type: Number,
-        default: null
+      type: Number,
+      default: null,
     },
     ProfitBalance: {
-        type: Number,
-        default: null
+      type: Number,
+      default: null,
     },
 
     ReferralCode: {
-        type: String,
-        trim: true,
-        default: null,
+      type: String,
+      trim: true,
+      default: null,
     },
 
     ReferredBy: {
-        type: String, // Stores the referral code of the referrer
-        trim: true,
-        default: null,
+      type: String, // Stores the referral code of the referrer
+      trim: true,
+      default: null,
     },
     DeviceToken: {
-        type: String,
-        trim: true,
-        default: null
+      type: String,
+      trim: true,
+      default: null,
     },
     Refer_Price: {
-        type: String,
-        default: null
+      type: String,
+      default: null,
     },
     Range1: {
-        type: Number,
-        default: 5
+      type: Number,
+      default: 5,
     },
     Range2: {
-        type: Number,
-        default: 7
+      type: Number,
+      default: 7,
     },
     Range3: {
-        type: Number,
-        default: 10
+      type: Number,
+      default: 10,
     },
     Range4: {
-        type: Number,
-        default: 15
+      type: Number,
+      default: 15,
     },
 
     FixedPerClient: {
-        type: Boolean,
-        default: false
+      type: Boolean,
+      default: false,
     },
     FundAdd: {
-        type: Boolean,
-        default: false
+      type: Boolean,
+      default: false,
     },
     EveryTransaction: {
-        type: Boolean,
-        default: false
+      type: Boolean,
+      default: false,
     },
     AddClientBonus: {
-        type: Number,
-        default: null
+      type: Number,
+      default: null,
     },
     FundLessThan100: {
-        type: Number,
-        default: null
+      type: Number,
+      default: null,
     },
     FundLessThan500: {
-        type: Number,
-        default: null
+      type: Number,
+      default: null,
     },
     FundLessThan1000: {
-        type: Number,
-        default: null
+      type: Number,
+      default: null,
     },
     FundGreaterThan1000: {
-        type: Number,
-        default: null
+      type: Number,
+      default: null,
     },
     FixedTransactionPercent: {
-        type: Number,
-        default: null
+      type: Number,
+      default: null,
     },
     NetTransactionPercent: {
-        type: Boolean,
-        default: false
+      type: Boolean,
+      default: false,
     },
     NetTransaction: {
-        type: Number,
-        default: null
+      type: Number,
+      default: null,
     },
     plan_type: {
-        type: Number,
-        enum: [1, 2, 3], // 1: Basic, 2: Standard, 3: Premium
-        default: 1
+      type: Number,
+      enum: [1, 2, 3], // 1: Basic, 2: Standard, 3: Premium
+      default: 1,
     },
     plan_balance: {
-        type: Number,
-        default: null
+      type: Number,
+      default: null,
     },
-
-},
-    {
-        timestamps: true
-    },
-
-)
-const User_model = model('USER', userModel);
+  },
+  {
+    timestamps: true,
+  }
+);
+const User_model = model("USER", userModel);
 
 module.exports = User_model;

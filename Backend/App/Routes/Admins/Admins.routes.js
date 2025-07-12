@@ -5,6 +5,7 @@ const router = require("express").Router();
 const {
   GetDashboardData,
   apiPrice,
+  apiPriceIntraday
 } = require("../../Controllers/Admins/AdminDashboard/Dashboard");
 const {
   AddUser,
@@ -66,6 +67,8 @@ router.post("/admin/Updatestatus", UpdateStatus);
 router.post("/admin/getUsersName", getUsersName);
 
 router.get("/api/prices", apiPrice);
+router.get("/get/intrady/price",apiPriceIntraday)
+
 
 router.post("/admin/getAllUser", getAllUser); // Get all users
 

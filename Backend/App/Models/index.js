@@ -1,9 +1,6 @@
 const MongoClient = require("mongodb").MongoClient;
 const uri = process.env.MONGO_URI;
-const client = new MongoClient(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+const client = new MongoClient(uri);
 const dbTradeTools = client.db(process.env.DB_NAME);
 
 const open_position = dbTradeTools.collection("open_position");

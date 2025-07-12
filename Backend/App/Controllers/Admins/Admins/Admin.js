@@ -58,6 +58,7 @@ class Admin {
         turn_over_percentage,
         brokerage,
         limit,
+        holding_limit,
         employee_id,
         referred_by,
         referral_price,
@@ -81,8 +82,8 @@ class Admin {
           existingUser.UserName === UserName
             ? "Username"
             : existingUser.Email === Email
-              ? "Email"
-              : "Phone Number";
+            ? "Email"
+            : "Phone Number";
 
         return res.json({
           status: false,
@@ -139,6 +140,7 @@ class Admin {
         turn_over_percentage,
         brokerage,
         limit,
+        holding_limit: holding_limit || "1",
         password: hashedPassword,
         Start_Date: startDate,
         End_Date: endDate,
@@ -195,17 +197,17 @@ class Admin {
         }
       }
 
-      if (parentUser.Role === "ADMIN" && parentUser.FixedPerClient) {
-        if (parentUser && Balance >= parentUser.AddClientBonus) {
-          const newBonus = new BonusCollectioniModel({
-            admin_id: parentUser._id,
-            user_id: newUser._id,
-            Bonus: parentUser.AddClientBonus,
-            Type: "Fixed_PerClient",
-          });
-          await newBonus.save();
-        }
-      }
+      // if (parentUser.Role === "ADMIN" && parentUser.FixedPerClient) {
+      // if (parentUser && Balance >= parentUser.AddClientBonus) {
+      //   const newBonus = new BonusCollectioniModel({
+      //     admin_id: parentUser._id,
+      //     user_id: newUser._id,
+      //     Bonus: parentUser.AddClientBonus,
+      //     Type: "Fixed_PerClient",
+      //   });
+      //   await newBonus.save();
+      // }
+      // }
 
       return res.json({
         status: true,
@@ -224,9 +226,52 @@ class Admin {
 
   async updateUser(req, res) {
     try {
-      const { id, perlot, pertrade, ...rest } = req.body;
+      const { id, perlot, pertrade, holding_limit, limit, ...rest } = req.body;
 
       const userdetail = await User_model.findOne({ _id: id });
+
+      console.log(userdetail.limit, "Update User Data:", limit);
+
+      if (holding_limit !== userdetail.holding_limit) {
+        const today = new Date();
+        const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+
+        const HoldingData = await mainorder_model.aggregate([
+          {
+            $match: {
+              userid: id,
+              $or: [
+                {
+                  createdAt: { $lt: startOfDay },
+                  $expr: { $ne: ["$buy_qty", "$sell_qty"] },
+                },
+                {
+                  $expr: {
+                    $eq: [
+                      {
+                        $dateToString: {
+                          format: "%Y-%m-%d",
+                          date: "$holding_dtime",
+                        },
+                      },
+                      {
+                        $dateToString: { format: "%Y-%m-%d", date: new Date() },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ]);
+        if (HoldingData?.length > 0) {
+          return res.send({
+            status: false,
+            message:
+              "You cannot change the limit while holding orders are present",
+          });
+        }
+      }
 
       // Convert perlot and pertrade using the dollar price
       let brokeragepertrade = pertrade;
@@ -252,6 +297,8 @@ class Admin {
       let dataToUpdate = {
         perlot: 0,
         pertrade: 0,
+        holding_limit: holding_limit || "1",
+        limit: limit || "1",
         ...rest,
       };
 
@@ -1408,7 +1455,7 @@ class Admin {
         message: "Research updated successfully",
         data: research,
       });
-    } catch (error) { }
+    } catch (error) {}
   }
 
   async DeleteResearch(req, res) {
@@ -1428,7 +1475,7 @@ class Admin {
         message: "Research deleted successfully",
         data: result,
       });
-    } catch (error) { }
+    } catch (error) {}
   }
 
   async UpdatStatus(req, res) {
@@ -1487,9 +1534,13 @@ class Admin {
 
         qrCodeBase64,
       };
-      const updatedUpiDetails = await UpiDetails.updateOne({ userId: id }, updatedDetails, {
-        upsert: true,
-      });
+      const updatedUpiDetails = await UpiDetails.updateOne(
+        { userId: id },
+        updatedDetails,
+        {
+          upsert: true,
+        }
+      );
 
       if (!updatedUpiDetails) {
         return res.json({
@@ -1865,8 +1916,6 @@ class Admin {
     }
   }
 
-
-
   async Downloadapk(req, res) {
     // Optionally, set content type header (APK ka mime type hai application/vnd.android.package-archive)
     res.setHeader("Content-Type", "application/vnd.android.package-archive");
@@ -1877,8 +1926,6 @@ class Admin {
       }
     });
   }
-
-
 
   async uploadApk(req, res) {
     try {
@@ -1891,7 +1938,6 @@ class Admin {
         filename: req.file.filename,
         path: req.file.path,
       });
-
     } catch (error) {
       return res.json({
         message: "Internal Server Error",
@@ -1899,7 +1945,6 @@ class Admin {
       });
     }
   }
-
 
   async GetBonusDetails(req, res) {
     try {
@@ -2030,7 +2075,6 @@ class Admin {
         .json({ status: false, message: "Internal server error", data: [] });
     }
   }
-
 
   async getUserDetails(req, res) {
     try {
@@ -2227,8 +2271,7 @@ class Admin {
         }
       }
 
-      console.log("finalResult", finalResult)
-
+      console.log("finalResult", finalResult);
 
       return res.json({
         status: true,

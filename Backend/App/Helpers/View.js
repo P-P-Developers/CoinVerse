@@ -271,57 +271,58 @@ db.createView("orderExecutionView", "orders", [
       preserveNullAndEmptyArrays: false
     }
   },
-  {
-    $addFields: {
-      executeCondition: {
-        $switch: {
-          branches: [
-            {
-              case: {
-                $and: [
-                  { $eq: ["$type", "buy"] },
-                  { $eq: ["$selectedOption", "Limit"] },
-                  { $lte: ["$live.Ask_Price", { $toDouble: "$price" }] }
-                ]
-              },
-              then: true
+ {
+  $addFields: {
+    executeCondition: {
+      $switch: {
+        branches: [
+          {
+            case: {
+              $and: [
+                { $eq: ["$type", "buy"] },
+                { $eq: ["$selectedOption", "Limit"] },
+                { $lte: [{ $toDouble: "$live.Ask_Price" }, { $toDouble: "$price" }] }
+              ]
             },
-            {
-              case: {
-                $and: [
-                  { $eq: ["$type", "sell"] },
-                  { $eq: ["$selectedOption", "Limit"] },
-                  { $gte: ["$live.Bid_Price", { $toDouble: "$price" }] }
-                ]
-              },
-              then: true
+            then: true
+          },
+          {
+            case: {
+              $and: [
+                { $eq: ["$type", "sell"] },
+                { $eq: ["$selectedOption", "Limit"] },
+                { $gte: [{ $toDouble: "$live.Bid_Price" }, { $toDouble: "$price" }] }
+              ]
             },
-            {
-              case: {
-                $and: [
-                  { $eq: ["$type", "buy"] },
-                  { $eq: ["$selectedOption", "Stop"] },
-                  { $gte: ["$live.Ask_Price", { $toDouble: "$price" }] }
-                ]
-              },
-              then: true
+            then: true
+          },
+          {
+            case: {
+              $and: [
+                { $eq: ["$type", "buy"] },
+                { $eq: ["$selectedOption", "Stop"] },
+                { $gte: [{ $toDouble: "$live.Ask_Price" }, { $toDouble: "$price" }] }
+              ]
             },
-            {
-              case: {
-                $and: [
-                  { $eq: ["$type", "sell"] },
-                  { $eq: ["$selectedOption", "Stop"] },
-                  { $lte: ["$live.Bid_Price", { $toDouble: "$price" }] }
-                ]
-              },
-              then: true
-            }
-          ],
-          default: false
-        }
+            then: true
+          },
+          {
+            case: {
+              $and: [
+                { $eq: ["$type", "sell"] },
+                { $eq: ["$selectedOption", "Stop"] },
+                { $lte: [{ $toDouble: "$live.Bid_Price" }, { $toDouble: "$price" }] }
+              ]
+            },
+            then: true
+          }
+        ],
+        default: false
       }
     }
-  },
+  }
+},
+
   {
     $addFields: {
       slstatus: "$executeCondition",

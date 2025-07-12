@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { BalanceStatement } = require(".");
 const Schema = mongoose.Schema;
 
 const ProfitmarginSchema = new Schema({

@@ -2,7 +2,7 @@
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 const db = require("../../Models");
-const { options } = require("../../Routes/Users/Userorder.routes");
+// const { options } = require("../../Routes/Users/Userorder.routes");
 const PaymenetHistorySchema = db.PaymenetHistorySchema;
 const User_model = db.user;
 const MarginRequired = db.MarginRequired;
@@ -16,82 +16,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 class Users {
-  // async userWithdrawalanddeposite(req, res) {
-  //   try {
-  //     const { userid, Balance, type, transactionId, ScreenShot } = req.body;
 
-  //     const userdata = await User_model.findById({ _id: userid }).sort({
-  //       createdAt: -1,
-  //     });
-  //     if (!userdata) {
-  //       return res.json({ status: false, message: "User not found", data: [] });
-  //     }
-
-  //     if (Balance > 10000) {
-  //       return res.json({
-  //         status: false,
-  //         message: "You can not " + type == 1 ? "Deposite" : "Withdrawal" + " more than 10000",
-  //         data: [],
-  //       });
-  //     }
-
-  //     const dollarPriceData = await MarginRequired.findOne({
-  //       adminid: userdata.parent_id,
-  //     }).select("dollarprice");
-  //     if (!dollarPriceData) {
-  //       return res.json({
-  //         status: false,
-  //         message: "Dollar price data not found",
-  //         data: [],
-  //       });
-  //     }
-
-  //     if (isNaN(Balance) || Balance <= 0) {
-  //       return res.json({
-  //         status: false,
-  //         message: "Invalid or negative balance provided",
-  //         data: [],
-  //       });
-  //     }
-
-  //     const dollarcount = parseFloat(Balance).toFixed(6);
-
-  //     const paymentHistory = new PaymenetHistorySchema({
-  //       userid: userid,
-  //       adminid: userdata.parent_id,
-  //       Balance: dollarcount,
-  //       type: type,
-  //       status: 0,
-  //       transactionId: transactionId,
-  //       ScreenShot: ScreenShot,
-  //     });
-
-  //     await paymentHistory.save();
-
-  //     req.io.emit("newTransactionRequest", {
-  //       userid: userid,
-  //       adminid: userdata.parent_id,
-  //       username: userdata?.UserName || "",
-  //       amount: dollarcount,
-  //       type: type == 1 ? "Deposit" : "Withdrawal",
-  //       time: new Date(),
-  //       paymentHistoryId: paymentHistory._id,
-  //     });
-
-  //     return res.json({
-  //       status: true,
-  //       message: "Request sent",
-  //       message: "Request sent",
-  //       data: paymentHistory,
-  //     });
-  //   } catch (error) {
-  //     return res.json({
-  //       status: false,
-  //       message: "Error to request send",
-  //       data: [],
-  //     });
-  //   }
-  // }
 
   async userWithdrawalanddeposite(req, res) {
     try {
@@ -240,41 +165,12 @@ class Users {
     }
   }
 
-  // get user
-  // async getUserDetail(req, res) {
-  //   try {
-  //     const { userid } = req.body;
-
-  //     const result = await User_model.find({ _id: userid, Role: "USER" })
-  //       .select(
-  //         "FullName Balance limit pertrade perlot turn_over_percentage brokerage UserName createdAt Start_Date End_Date ActiveStatus"
-  //       )
-  //       .sort({ createdAt: -1 });
-
-  //     if (!result || result.length === 0) {
-  //       return res.json({ status: false, message: "Data not found", data: [] });
-  //     }
-
-
-
-  //     return res.json({
-  //       status: true,
-  //       message: "Data retrieved",
-  //       data: result,
-  //     });
-  //   } catch (error) {
-  //     return res.json({ status: false, message: "Internal error", data: [] });
-  //   }
-  // }
-
-
-
   async getUserDetail(req, res) {
     try {
       const { userid } = req.body;
       const user = await User_model.findOne({ _id: userid, Role: "USER" })
         .select(
-          "FullName Balance limit pertrade perlot turn_over_percentage brokerage UserName createdAt Start_Date End_Date ActiveStatus"
+          "FullName Balance limit holding_limit pertrade perlot turn_over_percentage brokerage UserName createdAt Start_Date End_Date ActiveStatus"
         );
 
       if (!user) {
@@ -294,7 +190,7 @@ class Users {
       return res.json({
         status: true,
         message: "Data retrieved successfully",
-        data: responseData
+        data: [responseData]
       });
 
     } catch (error) {
@@ -302,9 +198,6 @@ class Users {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
-
-
-
 
   //margin value for user
   async getmarginpriceforuser(req, res) {
@@ -1201,6 +1094,9 @@ class Users {
       });
     }
   }
+
+
+
 }
 
 module.exports = new Users();

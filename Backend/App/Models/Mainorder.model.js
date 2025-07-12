@@ -137,17 +137,18 @@ const mainorderSchema = new mongoose.Schema({
     type: Date,
     default: null,
   },
+  Converted: {
+    //INTRADAY OR HOLDING
+    type: String,
+    values: ["INTRADAY", "HOLDING"],
+    default: "INTRADAY",
+  },
 
-  orderid: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Order",
-    },
-  ],
   With_Margin: {
     type: Boolean,
     default: true,
   },
+  orderid: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
 
   createdAt: {
     type: Date,

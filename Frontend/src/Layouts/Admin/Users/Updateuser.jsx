@@ -30,7 +30,8 @@ const Updateuser = () => {
       phone: "",
       employee_id: "",
 
-      limit: "",
+      limit: "1",
+      holding_limit: "1",
       selectedOption: "",
       inputValue: "",
     },
@@ -64,6 +65,19 @@ const Updateuser = () => {
       ) {
         errors.limit = "Limit must be a number between 0 and 10000.";
       }
+
+
+        if (!values.holding_limit) {
+        errors.holding_limit = "Please enter a value for HOLDING limit";
+      } else if (
+        isNaN(values.holding_limit) ||
+        values.holding_limit < 0 ||
+        values.holding_limit > 10000
+      ) {
+        errors.holding_limit = "HOLDING limit must be a number between 0 and 10000.";
+      }
+
+
       if (!values.selectedOption) {
         errors.selectedOption = "Please select an option";
       }
@@ -78,6 +92,7 @@ const Updateuser = () => {
       const data = {
         id: rowData && rowData._id,
         limit: values.limit,
+        holding_limit: values.holding_limit || "1",
         employee_id: values.employee_id,
 
         [selectedOption]: values.inputValue,
@@ -140,7 +155,8 @@ const Updateuser = () => {
         selectedOption: determineSelectedOption(),
         inputValue:
           rowData.pertrade || rowData.perlot || rowData.transactionwise || "",
-        limit: rowData.limit || "",
+        limit: rowData.limit || "1",
+        holding_limit: rowData.holding_limit || "1",
       });
     }
   }, [rowData]);
@@ -224,14 +240,31 @@ const Updateuser = () => {
       disable: false,
     },
 
-    {
-      name: "limit",
-      label: "Margin (0-100%)",
-      type: "number",
+   
+
+
+   {
+      name: "holding_limit",
+      label: "HOLDING Margin",
+      type: "percentage",
       label_size: 12,
       col_size: 6,
       disable: false,
+      min: 0,
+      max: 12,
     },
+    {
+      name: "limit",
+      label: "INTRADAY Margin",
+      type: "percentage",
+      label_size: 12,
+      col_size: 6,
+      disable: false,
+      min: 0,
+      max: 12,
+    },
+
+
     {
       name: "selectedOption",
       label: "Select One Option",

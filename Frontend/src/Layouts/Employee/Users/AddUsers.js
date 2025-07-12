@@ -264,15 +264,23 @@ const AddUsers = () => {
       col_size: 6,
       disable: false,
     },
-  
-    {
+       {
       name: "limit",
-      label: "Margin(0-100%)",
+      label: "Intraday Margin(0-100%)",
       type: "text3",
       label_size: 12,
       col_size: 6,
       disable: false,
     },
+    {
+      name: "limit",
+      label: "Holding Margin(0-100%)",
+      type: "text3",
+      label_size: 12,
+      col_size: 6,
+      disable: false,
+    },
+  
     {
       name: "selectedOption",
       label: "Brokerage",

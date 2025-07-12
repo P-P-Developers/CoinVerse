@@ -87,7 +87,7 @@ function Symbols() {
   const [prevMidPrices, setPrevMidPrices] = useState({});
 
   useEffect(() => {
-    socket.emit("join_plan", "Standard"); // or "Basic", "Premium","Standard"
+    // socket.emit("join_plan", "Standard"); // or "Basic", "Premium","Standard"
     socket.on("receive_data_forex", (data) => {
       const ticker = data?.data?.ticker?.toLowerCase();
       const bid = data?.data?.Bid_Price;
