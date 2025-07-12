@@ -27,11 +27,13 @@ const AddUsers = () => {
       email: "",
       phone: clientData.PhoneNo || "",
       employee_id: "",
-   
+
       password: clientData.password || "",
       confirmPassword: "",
 
-      limit: "",
+      limit: "1",
+      holding_limit: "1",
+
       selectedOption: "",
       inputValue: "",
     },
@@ -63,7 +65,6 @@ const AddUsers = () => {
         errors.phone = "Please enter a valid 10-digit phone number.";
       }
 
- 
       // Password validation
       if (!values.password) {
         errors.password = "Please Enter Password";
@@ -79,13 +80,24 @@ const AddUsers = () => {
       }
 
       if (!values.limit) {
-        errors.limit = "Please enter a value for Limit";
+        errors.limit = "Please enter a value for Holding Limit";
       } else if (
         isNaN(values.limit) ||
         values.limit < 0 ||
         values.limit > 10000
       ) {
-        errors.limit = "Limit should be a number between 0 and 10000";
+        errors.limit = "Holding Limit should be a number between 0 and 10000";
+      }
+
+      if (!values.holding_limit) {
+        errors.holding_limit = "Please enter a value for HOLDING limit";
+      } else if (
+        isNaN(values.holding_limit) ||
+        values.holding_limit < 0 ||
+        values.holding_limit > 10000
+      ) {
+        errors.holding_limit =
+          "HOLDING limit should be a number between 0 and 10000";
       }
 
       // Option validation
@@ -110,12 +122,13 @@ const AddUsers = () => {
         Email: values.email.toString().toLowerCase(),
         PhoneNo: values.phone,
         employee_id: values.employee_id,
- 
+
         password: values.password,
         parent_role: Role || "ADMIN",
         parent_id: user_id,
         Role: "USER",
         limit: values.limit,
+        holding_limit: values.holding_limit || 1,
         [selectedOption]: values.inputValue,
         referred_by: location?.state?.clientData?.referred_by || null,
         referral_price: location?.state?.clientData?.referral_price || 0,
@@ -169,7 +182,7 @@ const AddUsers = () => {
           return item.Role === "EMPLOYE";
         });
       setData(result);
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const fields = [
@@ -205,14 +218,7 @@ const AddUsers = () => {
       col_size: 6,
       disable: false,
     },
-    // {
-    //   name: "Balance",
-    //   label: "Balance",
-    //   type: "text",
-    //   label_size: 12,
-    //   col_size: 6,
-    //   disable: false,
-    // },
+   
     {
       name: "employee_id",
       label: "Employee",
@@ -220,9 +226,9 @@ const AddUsers = () => {
       options: [
         ...(data
           ? data.map((item) => ({
-            label: item.UserName,
-            value: item._id,
-          }))
+              label: item.UserName,
+              value: item._id,
+            }))
           : []),
       ],
       label_size: 12,
@@ -248,8 +254,18 @@ const AddUsers = () => {
     },
 
     {
+      name: "holding_limit",
+      label: "HOLDING Margin",
+      type: "percentage",
+      label_size: 12,
+      col_size: 6,
+      disable: false,
+      min: 0,
+      max: 12,
+    },
+    {
       name: "limit",
-      label: "Margin",
+      label: "INTRADAY Margin",
       type: "percentage",
       label_size: 12,
       col_size: 6,
@@ -272,20 +288,20 @@ const AddUsers = () => {
     },
     ...(formik.values.selectedOption
       ? [
-        {
-          name: "inputValue",
-          label:
-            formik.values.selectedOption === "pertrade"
-              ? "Per Trade"
-              : formik.values.selectedOption === "transactionwise"
+          {
+            name: "inputValue",
+            label:
+              formik.values.selectedOption === "pertrade"
+                ? "Per Trade"
+                : formik.values.selectedOption === "transactionwise"
                 ? "Transaction-Wise %"
                 : "Per Lot",
-          type: "percentage",
-          label_size: 12,
-          col_size: 6,
-          disable: false,
-        },
-      ]
+            type: "percentage",
+            label_size: 12,
+            col_size: 6,
+            disable: false,
+          },
+        ]
       : []),
   ];
 

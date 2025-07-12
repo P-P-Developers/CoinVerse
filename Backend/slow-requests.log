@@ -40,3 +40,11 @@ d2025-07-04T12:24:26.785Z [warn]: SLOW API: [POST] /users/userSymbollist - 367ms
 2025-07-07T05:00:39.004Z [warn]: SLOW API: [POST] /admin/Updatestatus - 533ms
 2025-07-07T05:00:39.666Z [warn]: SLOW API: [POST] /admin/getuserpaymentstatus - 648ms
 2025-07-07T05:00:48.629Z [warn]: SLOW API: [POST] /admin/getuserpaymentstatus - 754ms
+2025-07-12T06:22:31.541Z [warn]: SLOW API: [POST] /superadmin/getAdminDetail - 350ms
+2025-07-12T06:27:54.258Z [warn]: SLOW API: [POST] /superadmin/getAdminDetail - 260ms
+2025-07-12T07:03:05.319Z [warn]: SLOW API: [POST] /admin/getuserpaymentstatus - 4376ms
+2025-07-12T07:03:20.293Z [warn]: SLOW API: [POST] /admin/getuserpaymentstatus - 1694ms
+2025-07-12T07:11:34.830Z [warn]: SLOW API: [POST] /admin/getuserpaymentstatus - 1151ms
+2025-07-12T08:47:44.766Z [warn]: SLOW API: [POST] /convertPosition - 216ms
+2025-07-12T08:50:10.365Z [warn]: SLOW API: [POST] /convertPosition - 204ms
+2025-07-12T09:05:49.106Z [warn]: SLOW API: [POST] /convertPosition - 241ms

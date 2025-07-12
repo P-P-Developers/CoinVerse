@@ -59,9 +59,6 @@ class Placeorder {
     }
   }
 
-
-
-  
   // get order book
   async getOrderBook(req, res) {
     try {
@@ -123,9 +120,6 @@ class Placeorder {
       });
     }
   }
-
-
-
 
   async gettardehistory(req, res) {
     try {
@@ -225,8 +219,6 @@ class Placeorder {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
-
-
 
   // position
   async position(req, res) {
@@ -344,6 +336,7 @@ class Placeorder {
             Exittype: 1,
             lastpricedt: "$live_pricesdt.lastprice",
             liveprice: "$live_pricesdt.Mid_Price",
+            Converted:1
           },
         },
       ]);
@@ -514,6 +507,7 @@ class Placeorder {
             Exittype: 1,
             lastpricedt: "$live_pricesdt.lastprice",
             liveprice: "$live_pricesdt.Mid_Price",
+            Converted: 1, // Include Converted in the response
           },
         },
         { $sort: { createdAt: -1 } },
@@ -912,8 +906,9 @@ class Placeorder {
 
       return res.json({
         status: true,
-        message: `${type.charAt(0).toUpperCase() + type.slice(1)
-          } order updated successfully`,
+        message: `${
+          type.charAt(0).toUpperCase() + type.slice(1)
+        } order updated successfully`,
         data: [],
       });
     } catch (error) {
@@ -1041,12 +1036,16 @@ class Placeorder {
           type,
           lotsize: lotsize,
           status: "Pending",
-          selectedOption
+          selectedOption,
         });
 
         // Save the new order to the database
         const orderdata = await newOrder.save();
-        return res.json({ status: true, message: "Order placed", order: orderdata });
+        return res.json({
+          status: true,
+          message: "Order placed",
+          order: orderdata,
+        });
       }
 
       // Create a new order object
@@ -1113,8 +1112,90 @@ class Placeorder {
     }
   }
 
+  async ConvertPosition(req, res) {
+    try {
+      const { id, user_id } = req.body;
+
+      const UserInfo = await User_model.findOne({ _id: user_id });
+      if (!UserInfo) {
+        return res.json({ status: false, message: "User not found" });
+      }
+
+      const OpenOrders = await Order.find({
+        userid: user_id,
+        status: "Pending",
+      }).select("totalamount");
+
+      const TotalOpenOrderAmount = OpenOrders.reduce(
+        (acc, order) => acc + (order?.totalamount || 0),
+        0
+      );
+
+      const UserBalance = (UserInfo?.Balance || 0) + TotalOpenOrderAmount;
+
+      const trade = await mainorder_model.findOne({ _id: id });
+      if (!trade) {
+        return res.json({ status: false, message: "Trade not found" });
+      }
+
+      let tradeType = trade.signal_type;
+      let RequiredFund;
+      let totalamount;
+
+      if (tradeType === "buy_sell") {
+        RequiredFund =
+          (trade?.buy_price * trade?.lotsize) / UserInfo.holding_limit;
+        totalamount = trade?.buy_price / UserInfo.holding_limit;
+      } else {
+        RequiredFund =
+          (trade?.sell_price * trade?.lotsize) / UserInfo.holding_limit;
+        totalamount = trade?.sell_price / UserInfo.holding_limit;
+      }
+
+      const OldRequiredFund = trade.totalamount * trade.lotsize;
+      const RequiredFundDiff = RequiredFund - OldRequiredFund;
+
+      if (UserBalance < RequiredFundDiff) {
+        return res.json({
+          status: false,
+          message: "Insufficient balance to convert position",
+        });
+      }
+
+      // Fetch specific order (should be findOne, not find)
+      const order = await Order.findOne({ _id: trade?.orderid[0] });
+      if (!order) {
+        return res.json({ status: false, message: "Related order not found" });
+      }
+
+      // Update mainorder
+      trade.totalamount = totalamount;
+      trade.limit = UserInfo?.holding_limit;
+      trade.Converted = "HOLDING";
+      await trade.save();
+
+      // Update order
+      order.totalamount = RequiredFund;
+      order.limit = UserInfo?.holding_limit;
+      await order.save();
+
+      UserInfo.Balance -= RequiredFundDiff;
+      await UserInfo.save();
 
 
+      return res.json({
+        status: true,
+        message: "Position converted successfully",
+      });
+    } catch (error) {
+      console.error("Convert position error:", error);
+      return res.json({
+        status: false,
+        message: "An error occurred",
+        error: error.message || error,
+      });
+    }
+  }
 }
 
 // place order entry trade
