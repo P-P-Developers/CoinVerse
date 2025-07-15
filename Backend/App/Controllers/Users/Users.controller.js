@@ -183,7 +183,7 @@ class Users {
         status: "Pending",
       });
       const totalPendingFund = pendingOrders.reduce(
-        (acc, order) => acc + (order.requiredFund || 0),
+        (acc, order) => acc + (order.totalamount || 0),
         0
       );
       const adjustedBalance =
