@@ -16,8 +16,6 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 class Users {
-
-
   async userWithdrawalanddeposite(req, res) {
     try {
       const { userid, Balance, type, transactionId, ScreenShot } = req.body;
@@ -38,8 +36,9 @@ class Users {
       if (Balance > 10000) {
         return res.json({
           status: false,
-          message: `You cannot ${type == 1 ? "Deposit" : "Withdraw"
-            } more than 10000`,
+          message: `You cannot ${
+            type == 1 ? "Deposit" : "Withdraw"
+          } more than 10000`,
           data: [],
         });
       }
@@ -168,18 +167,27 @@ class Users {
   async getUserDetail(req, res) {
     try {
       const { userid } = req.body;
-      const user = await User_model.findOne({ _id: userid, Role: "USER" })
-        .select(
-          "FullName Balance limit holding_limit pertrade perlot turn_over_percentage brokerage UserName createdAt Start_Date End_Date ActiveStatus"
-        );
+      const user = await User_model.findOne({
+        _id: userid,
+        Role: "USER",
+      }).select(
+        "FullName Balance limit holding_limit pertrade perlot turn_over_percentage brokerage UserName createdAt Start_Date End_Date ActiveStatus"
+      );
 
       if (!user) {
         return res.json({ status: false, message: "User not found", data: [] });
       }
 
-      const pendingOrders = await Order.find({ userid: userid, status: "Pending" });
-      const totalPendingFund = pendingOrders.reduce((acc, order) => acc + (order.requiredFund || 0), 0);
-      const adjustedBalance = user.Balance - totalPendingFund;
+      const pendingOrders = await Order.find({
+        userid: userid,
+        status: "Pending",
+      });
+      const totalPendingFund = pendingOrders.reduce(
+        (acc, order) => acc + (order.requiredFund || 0),
+        0
+      );
+      const adjustedBalance =
+        user.Balance - totalPendingFund / User_model.limit;
       const responseData = {
         ...user._doc,
         Balance: adjustedBalance,
@@ -190,9 +198,8 @@ class Users {
       return res.json({
         status: true,
         message: "Data retrieved successfully",
-        data: [responseData]
+        data: [responseData],
       });
-
     } catch (error) {
       console.error("Error in getUserDetail:", error);
       return res.json({ status: false, message: "Internal error", data: [] });
@@ -210,7 +217,7 @@ class Users {
       const user = result1[0];
 
       const result = await MarginRequired.findOne({
-        adminid: user.parent_id,
+    
       }).select("crypto forex");
 
       if (!result) {
@@ -222,14 +229,14 @@ class Users {
           user.pertrade && user.pertrade !== 0
             ? "pertrade"
             : user.transactionwise !== 0
-              ? "transactionwise"
-              : "perlot",
+            ? "transactionwise"
+            : "perlot",
         value1:
           user.pertrade && user.pertrade !== 0
             ? user.pertrade
             : user.transactionwise !== 0
-              ? user.transactionwise
-              : user.perlot,
+            ? user.transactionwise
+            : user.perlot,
         crypto: result.crypto || 100,
         forex: result.forex || 100,
       };
@@ -1094,9 +1101,6 @@ class Users {
       });
     }
   }
-
-
-
 }
 
 module.exports = new Users();
