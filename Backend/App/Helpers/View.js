@@ -247,16 +247,6 @@ db.createView("open_position", "mainorders", [
 
 
 
-
-
-
-
-
-
-
-
-
-
 db.createView("orderExecutionView", "orders", [
   {
     $match: {
