@@ -2,6 +2,7 @@ const db = require("../../Models");
 const axios = require("axios");
 const open_position = db.open_position;
 const orderExecutionView = db.orderExecutionView;
+const user_overall_fund = db.user_overall_fund;
 const orders = db.Order;
 
 const user_modal = db.user;
@@ -33,13 +34,12 @@ class OpenPositions {
         .find({
           live_price: { $ne: null },
           $or: [
-            { checkSlPercent: true },
+            // { checkSlPercent: true },
             { checkSlPercent_sl: true },
             { checkSlPercent_target: true },
           ],
         })
         .toArray();
-
 
       const orderExecutionViewdata = await orderExecutionView
         .find({
@@ -47,7 +47,76 @@ class OpenPositions {
         })
         .toArray()
 
-      // 3. To check pending to  orders from orderExecutionViewdata (INDIVIDUALLY)
+
+
+      const user_overall_fund_data = await user_overall_fund
+        .find({ overallstatus: true })
+        .toArray();
+
+      if (user_overall_fund_data && user_overall_fund_data.length > 0) {
+        for (const fundData of user_overall_fund_data) {
+          const userId = fundData.userid;
+          const openOrders = fundData.orders || [];
+
+          for (const order of openOrders) {
+            let commonData = null;
+
+            if (order.signal_type === "buy_sell") {
+              commonData = {
+                userid: userId,
+                symbol: order.symbol,
+                id: order._id,
+                price: order.buy_price,
+                lot: order.buy_lot || 0,
+                qty: order.buy_qty || 0,
+                requiredFund: order.buy_price * (order.buy_qty || 0),
+                lotsize: order.lotsize,
+                type: "sell",
+                Exittype: "Less Than 80 Percent",
+              };
+            } else if (order.signal_type === "sell_buy") {
+              commonData = {
+                userid: userId,
+                symbol: order.symbol,
+                id: order._id,
+                price: order.sell_price,
+                lot: order.sell_lot || 0,
+                qty: order.sell_qty || 0,
+                requiredFund: order.sell_price * (order.sell_qty || 0),
+                lotsize: order.lotsize,
+                type: "buy",
+                Exittype: "Less Than 80 Percent",
+              };
+            }
+
+            if (commonData) {
+              try {
+                const config = {
+                  method: "post",
+                  url: process.env.base_url + "users/placeorder",
+                  headers: { "Content-Type": "application/json" },
+                  data: commonData,
+                };
+
+                const response = await axios(config);
+                if (order?.DeviceToken) {
+                  sendPushNotification(
+                    order.DeviceToken,
+                    "Auto Exit",
+                    `Your ${order.symbol} position has been ${response.data.message} at ${commonData.price}`
+                  );
+                }
+
+              } catch (error) {
+                console.error("❌ Error in auto exit request:", error.message);
+              }
+            }
+          }
+
+        }
+      }
+
+
       if (orderExecutionViewdata && orderExecutionViewdata.length > 0) {
         for (const order of orderExecutionViewdata) {
           const orderData = {
@@ -76,10 +145,7 @@ class OpenPositions {
 
             if (response.status === 200) {
               console.log(`✅ Order for ${order.symbol} submitted. Status: ${response.status}`);
-              // console.log(" order._id", order._id)
-              // Delete the order after successful placement
               const orderresponse = await orders.deleteOne({ _id: order._id });
-              console.log("🗑️ Deleted Order:", orderresponse);
             }
           } catch (error) {
             console.error(`❌ Error submitting order for ${order.symbol}:`, error.message);

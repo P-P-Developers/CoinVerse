@@ -5,6 +5,7 @@ const dbTradeTools = client.db(process.env.DB_NAME);
 
 const open_position = dbTradeTools.collection("open_position");
 const orderExecutionView = dbTradeTools.collection("orderExecutionView");
+const user_overall_fund = dbTradeTools.collection("user_overall_fund");
 
 
 module.exports = {
@@ -32,6 +33,7 @@ module.exports = {
   ResearchModel: require("./Research"),
   open_position: open_position,
   orderExecutionView: orderExecutionView,
+  user_overall_fund: user_overall_fund,
 
   UpiDetails: require("./UpiDetails"),
   Useraccount: require("./Useraccount"),

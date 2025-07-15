@@ -52,3 +52,4 @@ d2025-07-04T12:24:26.785Z [warn]: SLOW API: [POST] /users/userSymbollist - 367ms
 2025-07-12T11:36:47.794Z [warn]: SLOW API: [GET] /GetConditions - 596ms
 2025-07-12T11:37:03.041Z [warn]: SLOW API: [POST] /GetAdminBalanceWithPosition - 226ms
 2025-07-12T11:37:03.092Z [warn]: SLOW API: [POST] /admin/brokerageData - 286ms
+2025-07-15T03:17:56.690Z [warn]: SLOW API: [POST] /logoutUser - 1941ms

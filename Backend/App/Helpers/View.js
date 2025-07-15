@@ -420,7 +420,6 @@ db.createView("orderExecutionView", "orders", [
 // );
 
 
-
 db.createView(
   "user_overall_fund",
   "mainorders",
@@ -556,7 +555,6 @@ db.createView(
                     $switch: {
                       branches: [
                         {
-                          // Market Buy = Mid_Price - price
                           case: {
                             $and: [
                               { $eq: ["$$selectedOption", "Market"] },
@@ -576,7 +574,6 @@ db.createView(
                           }
                         },
                         {
-                          // Market Sell = price - Mid_Price
                           case: {
                             $and: [
                               { $eq: ["$$selectedOption", "Market"] },
@@ -596,7 +593,6 @@ db.createView(
                           }
                         },
                         {
-                          // Limit Buy (if Ask_Price <= price)
                           case: {
                             $and: [
                               { $eq: ["$$selectedOption", "Limit"] },
@@ -617,12 +613,11 @@ db.createView(
                           }
                         },
                         {
-                          // Limit Sell (if Bid_Price >= price)
                           case: {
                             $and: [
                               { $eq: ["$$selectedOption", "Limit"] },
                               { $eq: ["$$type", "sell"] },
-                              { $gte: [{ $toDouble: "$$live.Bid_Price" }, "$$price"] }
+                              { $lte: [{ $toDouble: "$$live.Ask_Price" }, "$$price"] }
                             ]
                           },
                           then: {
@@ -630,7 +625,7 @@ db.createView(
                               {
                                 $subtract: [
                                   "$$price",
-                                  { $toDouble: "$$live.Bid_Price" }
+                                  { $toDouble: "$$live.Ask_Price" }
                                 ]
                               },
                               "$$qty"
@@ -638,19 +633,18 @@ db.createView(
                           }
                         },
                         {
-                          // Stop Buy (if Ask_Price >= price)
                           case: {
                             $and: [
                               { $eq: ["$$selectedOption", "Stop"] },
                               { $eq: ["$$type", "buy"] },
-                              { $gte: [{ $toDouble: "$$live.Ask_Price" }, "$$price"] }
+                              { $gte: [{ $toDouble: "$$live.Bid_Price" }, "$$price"] }
                             ]
                           },
                           then: {
                             $multiply: [
                               {
                                 $subtract: [
-                                  { $toDouble: "$$live.Ask_Price" },
+                                  { $toDouble: "$$live.Bid_Price" },
                                   "$$price"
                                 ]
                               },
@@ -659,7 +653,6 @@ db.createView(
                           }
                         },
                         {
-                          // Stop Sell (if Bid_Price <= price)
                           case: {
                             $and: [
                               { $eq: ["$$selectedOption", "Stop"] },
@@ -718,6 +711,7 @@ db.createView(
         _id: 0,
         userid: "$userIdAsObjectId",
         balance: 1,
+        deviceToken: "$user.DeviceToken",
         usedFund: 1,
         holdingPNL: 1,
         conditionalPNL: 1,
