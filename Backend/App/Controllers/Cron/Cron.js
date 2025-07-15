@@ -7,6 +7,7 @@ const BonusCollectioniModel = db.BonusCollection;
 const live_priceModal = db.live_priceModal
 const open_position = db.open_position;
 const axios = require("axios");
+const { sendPushNotification } = require("../common/firebase");
 
 
 const UpdateCompany = async () => {
@@ -166,6 +167,7 @@ cron.schedule("1 0 * * *", () => {
 const IntradayPositionSqareoff = async () => {
   try {
     const openPositions = await open_position.find({
+      userid: "68625c8c31b5a28792325e19",
       Converted: "INTRADAY",
     }).toArray();
 
@@ -232,6 +234,7 @@ const IntradayPositionSqareoff = async () => {
     console.error("❌ CRON Error (11:30 PM Square-Off): ", error);
   }
 };
+
 
 
 cron.schedule("55 23 * * *", async () => {
