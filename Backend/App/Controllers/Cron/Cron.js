@@ -159,3 +159,6 @@ const updateLastPrice = async () => {
 cron.schedule("1 0 * * *", () => {
   updateLastPrice();
 });
+
+
+

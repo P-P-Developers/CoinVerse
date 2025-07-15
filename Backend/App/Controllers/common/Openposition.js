@@ -34,7 +34,7 @@ class OpenPositions {
         .find({
           live_price: { $ne: null },
           $or: [
-            // { checkSlPercent: true },
+            { checkSlPercent: true },
             { checkSlPercent_sl: true },
             { checkSlPercent_target: true },
           ],
@@ -49,72 +49,72 @@ class OpenPositions {
 
 
 
-      const user_overall_fund_data = await user_overall_fund
-        .find({ overallstatus: true })
-        .toArray();
+      // const user_overall_fund_data = await user_overall_fund
+      //   .find({ overallstatus: true })
+      //   .toArray();
 
-      if (user_overall_fund_data && user_overall_fund_data.length > 0) {
-        for (const fundData of user_overall_fund_data) {
-          const userId = fundData.userid;
-          const openOrders = fundData.orders || [];
+      // if (user_overall_fund_data && user_overall_fund_data.length > 0) {
+      //   for (const fundData of user_overall_fund_data) {
+      //     const userId = fundData.userid;
+      //     const openOrders = fundData.orders || [];
 
-          for (const order of openOrders) {
-            let commonData = null;
+      //     for (const order of openOrders) {
+      //       let commonData = null;
 
-            if (order.signal_type === "buy_sell") {
-              commonData = {
-                userid: userId,
-                symbol: order.symbol,
-                id: order._id,
-                price: order.buy_price,
-                lot: order.buy_lot || 0,
-                qty: order.buy_qty || 0,
-                requiredFund: order.buy_price * (order.buy_qty || 0),
-                lotsize: order.lotsize,
-                type: "sell",
-                Exittype: "Less Than 80 Percent",
-              };
-            } else if (order.signal_type === "sell_buy") {
-              commonData = {
-                userid: userId,
-                symbol: order.symbol,
-                id: order._id,
-                price: order.sell_price,
-                lot: order.sell_lot || 0,
-                qty: order.sell_qty || 0,
-                requiredFund: order.sell_price * (order.sell_qty || 0),
-                lotsize: order.lotsize,
-                type: "buy",
-                Exittype: "Less Than 80 Percent",
-              };
-            }
+      //       if (order.signal_type === "buy_sell") {
+      //         commonData = {
+      //           userid: userId,
+      //           symbol: order.symbol,
+      //           id: order._id,
+      //           price: order.buy_price,
+      //           lot: order.buy_lot || 0,
+      //           qty: order.buy_qty || 0,
+      //           requiredFund: order.buy_price * (order.buy_qty || 0),
+      //           lotsize: order.lotsize,
+      //           type: "sell",
+      //           Exittype: "Less Than 80 Percent",
+      //         };
+      //       } else if (order.signal_type === "sell_buy") {
+      //         commonData = {
+      //           userid: userId,
+      //           symbol: order.symbol,
+      //           id: order._id,
+      //           price: order.sell_price,
+      //           lot: order.sell_lot || 0,
+      //           qty: order.sell_qty || 0,
+      //           requiredFund: order.sell_price * (order.sell_qty || 0),
+      //           lotsize: order.lotsize,
+      //           type: "buy",
+      //           Exittype: "Less Than 80 Percent",
+      //         };
+      //       }
 
-            if (commonData) {
-              try {
-                const config = {
-                  method: "post",
-                  url: process.env.base_url + "users/placeorder",
-                  headers: { "Content-Type": "application/json" },
-                  data: commonData,
-                };
+      //       if (commonData) {
+      //         try {
+      //           const config = {
+      //             method: "post",
+      //             url: process.env.base_url + "users/placeorder",
+      //             headers: { "Content-Type": "application/json" },
+      //             data: commonData,
+      //           };
 
-                const response = await axios(config);
-                if (order?.DeviceToken) {
-                  sendPushNotification(
-                    order.DeviceToken,
-                    "Auto Exit",
-                    `Your ${order.symbol} position has been ${response.data.message} at ${commonData.price}`
-                  );
-                }
+      //           const response = await axios(config);
+      //           if (order?.DeviceToken) {
+      //             sendPushNotification(
+      //               order.DeviceToken,
+      //               "Auto Exit",
+      //               `Your ${order.symbol} position has been ${response.data.message} at ${commonData.price}`
+      //             );
+      //           }
 
-              } catch (error) {
-                console.error("❌ Error in auto exit request:", error.message);
-              }
-            }
-          }
+      //         } catch (error) {
+      //           console.error("❌ Error in auto exit request:", error.message);
+      //         }
+      //       }
+      //     }
 
-        }
-      }
+      //   }
+      // }
 
 
       if (orderExecutionViewdata && orderExecutionViewdata.length > 0) {
