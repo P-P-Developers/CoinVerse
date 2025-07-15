@@ -288,9 +288,8 @@ class Placeorder {
         {
           $match: {
             userid,
+            Converted: "INTRADAY",
             createdAt: { $gte: new Date(startOfDay), $lte: new Date(endOfDay) },
-            // $or: [{ buy_type: null }, { sell_type: null }],
-            // $expr: { $ne: ["$buy_qty", "$sell_qty"] },
           },
         },
         {
@@ -336,7 +335,7 @@ class Placeorder {
             Exittype: 1,
             lastpricedt: "$live_pricesdt.lastprice",
             liveprice: "$live_pricesdt.Mid_Price",
-            Converted:1
+            Converted: 1,
           },
         },
       ]);
@@ -381,8 +380,8 @@ class Placeorder {
     try {
       const { userid } = req.body;
 
-      const today = new Date();
-      const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+      // const today = new Date();
+      // const startOfDay = new Date(today.setHours(0, 0, 0, 0));
 
       const cryptoTokens = [
         "bnbbtc",
@@ -438,14 +437,21 @@ class Placeorder {
         "croususd",
       ];
 
-      const finduser = await mainorder_model.aggregate([
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+
+      const endOfDay = new Date();
+      endOfDay.setHours(23, 59, 59, 999);
+      const HoldingData = await mainorder_model.aggregate([
         {
           $match: {
             userid: userid,
             $or: [
               {
-                createdAt: { $lt: startOfDay },
-                $expr: { $ne: ["$buy_qty", "$sell_qty"] },
+                $and: [
+                  { createdAt: { $lt: startOfDay } },
+                  { $expr: { $ne: ["$buy_qty", "$sell_qty"] } },
+                ],
               },
               {
                 $expr: {
@@ -456,14 +462,32 @@ class Placeorder {
                         date: "$holding_dtime",
                       },
                     },
-                    { $dateToString: { format: "%Y-%m-%d", date: new Date() } },
+                    {
+                      $dateToString: {
+                        format: "%Y-%m-%d",
+                        date: new Date(),
+                      },
+                    },
                   ],
                 },
+              },
+              {
+                $and: [
+                  { Converted: "HOLDING" },
+                  {
+                    createdAt: {
+                      $gte: startOfDay,
+                      $lte: endOfDay,
+                    },
+                  },
+                  {
+                    $expr: { $ne: ["$buy_qty", "$sell_qty"] },
+                  },
+                ],
               },
             ],
           },
         },
-
         {
           $addFields: {
             Mk_type: {
@@ -503,17 +527,17 @@ class Placeorder {
             token: 1,
             Target_price: 1,
             stoploss_price: 1,
-            Mk_type: 1, // Include Mk_type in the response
+            Mk_type: 1,
             Exittype: 1,
             lastpricedt: "$live_pricesdt.lastprice",
             liveprice: "$live_pricesdt.Mid_Price",
-            Converted: 1, // Include Converted in the response
+            Converted: 1,
           },
         },
         { $sort: { createdAt: -1 } },
       ]);
 
-      if (finduser.length == 0) {
+      if (HoldingData.length == 0) {
         return res.json({
           status: false,
           error: "No holdings found",
@@ -521,7 +545,7 @@ class Placeorder {
         });
       }
 
-      return res.json({ status: true, data: finduser });
+      return res.json({ status: true, data: HoldingData });
     } catch (error) {
       return res.json({
         status: false,
