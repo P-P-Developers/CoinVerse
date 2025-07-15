@@ -336,7 +336,7 @@ class Placeorder {
             Exittype: 1,
             lastpricedt: "$live_pricesdt.lastprice",
             liveprice: "$live_pricesdt.Mid_Price",
-            Converted:1
+            Converted: 1
           },
         },
       ]);
@@ -906,9 +906,8 @@ class Placeorder {
 
       return res.json({
         status: true,
-        message: `${
-          type.charAt(0).toUpperCase() + type.slice(1)
-        } order updated successfully`,
+        message: `${type.charAt(0).toUpperCase() + type.slice(1)
+          } order updated successfully`,
         data: [],
       });
     } catch (error) {

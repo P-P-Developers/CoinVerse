@@ -58,6 +58,7 @@ db.createView("open_position", "mainorders", [
       signal_type: 1,
       status: 1,
       lotsize: 1,
+      Converted: 1,
       live_price: "$livePriceData.Bid_Price",
 
       checkSlPercent: {

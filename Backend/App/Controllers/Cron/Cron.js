@@ -5,7 +5,8 @@ const user = db.user;
 const mainorder_model = db.mainorder_model;
 const BonusCollectioniModel = db.BonusCollection;
 const live_priceModal = db.live_priceModal
-
+const open_position = db.open_position;
+const axios = require("axios");
 
 
 const UpdateCompany = async () => {
@@ -162,3 +163,77 @@ cron.schedule("1 0 * * *", () => {
 
 
 
+const IntradayPositionSqareoff = async () => {
+  try {
+    const openPositions = await open_position.find({
+      Converted: "INTRADAY",
+    }).toArray();
+
+    if (openPositions?.length > 0) {
+      for (const position of openPositions) {
+        let commonData;
+
+        let GetDeviceToken = await user.findOne({
+          _id: position?.userid,
+        });
+
+        if (position?.signal_type === "buy_sell") {
+          commonData = {
+            userid: position?.userid,
+            symbol: position?.symbol,
+            id: position?._id,
+            price: position?.live_price,
+            lot: (position?.buy_lot || 0) - (position?.sell_lot || 0),
+            qty: (position?.buy_qty || 0) - (position?.sell_qty || 0),
+            requiredFund:
+              position?.live_price *
+              ((position?.buy_qty || 0) - (position?.sell_qty || 0)),
+            lotsize: position?.lotsize,
+            type: "sell",
+            Exittype: "Intraday Position",
+          };
+        } else if (position?.signal_type === "sell_buy") {
+          commonData = {
+            userid: position?.userid,
+            symbol: position?.symbol,
+            id: position?._id,
+            price: position?.live_price,
+            lot: (position?.sell_lot || 0) - (position?.buy_lot || 0),
+            qty: (position?.sell_qty || 0) - (position?.buy_qty || 0),
+            requiredFund:
+              position?.live_price *
+              ((position?.sell_qty || 0) - (position?.buy_qty || 0)),
+            lotsize: position?.lotsize,
+            type: "buy",
+            Exittype: "Intraday Position",
+          };
+        }
+
+        const config = {
+          method: "post",
+          url: process.env.base_url + "Squareoff",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          data: commonData,
+        };
+
+        const response = await axios(config);
+        if (GetDeviceToken?.DeviceToken) {
+          sendPushNotification(
+            GetDeviceToken?.DeviceToken,
+            "Open Position",
+            `Your ${position?.symbol} position is ${response.data.message} at ${position?.live_price} with ${commonData?.Exittype}`,
+          );
+        }
+      }
+    }
+  } catch (error) {
+    console.error("❌ CRON Error (11:30 PM Square-Off): ", error);
+  }
+};
+
+
+cron.schedule("55 23 * * *", async () => {
+  await IntradayPositionSqareoff();
+});
