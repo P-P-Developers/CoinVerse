@@ -10,7 +10,8 @@ export const socket_url = `https://trade.tradestreet.in:1003/`;
 export const socket_url_web = `https://185.209.75.198:1002/`;
 
 
-// TESTING CONFIGURATION
+// // TESTING CONFIGURATION
+
 // export const base_url = `https://trade.tradestreet.in/backend/`;
 // export const socket_url = `https://trade.tradestreet.in:1003/`;
 // export const socket_url_web = `https://185.209.75.198:1002/`;
