@@ -87,3 +87,9 @@ d2025-07-04T12:24:26.785Z [warn]: SLOW API: [POST] /users/userSymbollist - 367ms
 2025-07-15T08:20:35.290Z [warn]: SLOW API: [POST] /users/placeorder - 311ms
 2025-07-15T09:21:21.516Z [warn]: SLOW API: [POST] /getUserlist - 215ms
 2025-07-15T09:35:30.679Z [warn]: SLOW API: [POST] /Squareoff - 208ms
+2025-07-15T10:20:39.452Z [warn]: SLOW API: [POST] /getbroadcastmessageforuser - 226ms
+2025-07-15T10:20:39.575Z [warn]: SLOW API: [GET] /getCompany - 249ms
+2025-07-15T13:32:07.006Z [warn]: SLOW API: [GET] /GetConditions - 550ms
+2025-07-15T13:32:08.686Z [warn]: SLOW API: [GET] /GetConditions - 318ms
+2025-07-15T13:32:09.014Z [warn]: SLOW API: [GET] /GetConditions - 260ms
+2025-07-15T13:32:09.241Z [warn]: SLOW API: [GET] /GetConditions - 225ms
