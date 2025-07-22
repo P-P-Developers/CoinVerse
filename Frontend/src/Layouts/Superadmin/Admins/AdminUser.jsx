@@ -17,6 +17,7 @@ const AdminUser = () => {
   const [reason, setReason] = useState("");
   const [customReason, setCustomReason] = useState("");
 
+
   const TokenData = getUserFromToken();
 
 
@@ -87,6 +88,7 @@ const AdminUser = () => {
           setBalance("");
           setReason("")
           setCustomReason("")
+          getuserallhistory()
 
         } else {
           Swal.fire({
@@ -118,12 +120,6 @@ const AdminUser = () => {
       accessor: "pin",
       Cell: ({ cell }) => <span>{cell.value ? cell.value : "-"}</span>,
     },
-
-    {
-      Header: "Balance",
-      accessor: "Balance",
-      Cell: ({ cell }) => Number(cell.value).toFixed(4),
-    },
     {
       Header: "Balance",
       accessor: "Balance",
@@ -131,57 +127,56 @@ const AdminUser = () => {
         <div
           style={{
             backgroundColor: "#E1FFED",
-            border: "none",
             color: "#33B469",
-            padding: "6px 10px",
-            textAlign: "center",
-            textDecoration: "none",
-            display: "inline-block",
-            fontSize: "13px",
-            cursor: "pointer",
+            padding: "6px 12px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
             borderRadius: "10px",
-            transition: "background-color 0.3s ease",
+            fontSize: "13px",
+            fontWeight: "500",
+            gap: "10px",
           }}
         >
-          <CircleDollarSign
-            style={{
-              height: "16px",
-              marginBottom: "-4px",
-              marginRight: "5px",
-              verticalAlign: "middle",
-            }}
-          />
-          <span style={{ fontWeight: "bold", verticalAlign: "middle" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+
+            <span style={{ fontWeight: "bold" }}>
+              {parseFloat(cell.value).toFixed(2)}
+            </span>
+          </div>
+
+          <div style={{ display: "flex", gap: "8px" }}>
             <CirclePlus
               size={20}
               style={{
-                marginBottom: "-4px",
-                marginRight: "5px",
-                verticalAlign: "middle",
+                color: "#22c55e",
+                cursor: "pointer",
+                transition: "transform 0.2s",
               }}
               onClick={() => {
                 setModal(true);
                 setID(cell.row._id);
                 setType("CREDIT");
               }}
+              onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.2)")}
+              onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
             />
-
-            {parseFloat(cell.value).toFixed(2)}
-
             <CircleMinus
               size={20}
               style={{
-                marginBottom: "-4px",
-                marginRight: "5px",
-                verticalAlign: "middle",
+                color: "#ef4444",
+                cursor: "pointer",
+                transition: "transform 0.2s",
               }}
               onClick={() => {
                 setModal(true);
                 setID(cell.row._id);
                 setType("DEBIT");
               }}
+              onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.2)")}
+              onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
             />
-          </span>
+          </div>
         </div>
       ),
     },
@@ -276,7 +271,7 @@ const AdminUser = () => {
             <div className="modal-content">
               <div className="modal-header border-0 pb-0">
                 <div className="form-header modal-header-title text-start mb-0">
-                  <h4 className="mb-0">Add Fund</h4>
+                  <h4 className="mb-0"> {type == "CREDIT" ? "Credit Fund" : "Debit Fund"}</h4>
                 </div>
                 <button
                   type="button"
