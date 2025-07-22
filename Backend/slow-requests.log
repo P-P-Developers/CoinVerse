@@ -99,3 +99,6 @@ d2025-07-04T12:24:26.785Z [warn]: SLOW API: [POST] /users/userSymbollist - 367ms
 2025-07-21T07:06:36.830Z [warn]: SLOW API: [POST] /admin/walletRecharge - 203ms
 2025-07-21T07:08:49.680Z [warn]: SLOW API: [POST] /admin/walletRecharge - 206ms
 2025-07-21T07:21:38.897Z [warn]: SLOW API: [POST] /admin/walletRecharge - 221ms
+2025-07-22T07:12:35.855Z [warn]: SLOW API: [GET] /GetConditions - 352ms
+2025-07-22T07:12:46.569Z [warn]: SLOW API: [POST] /gettradehistory - 203ms
+2025-07-22T07:13:07.622Z [warn]: SLOW API: [POST] /admin/getuserpaymentstatus - 695ms

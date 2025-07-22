@@ -210,6 +210,7 @@ const AdminUser = () => {
     },
   ];
 
+
   const getuserallhistory = async () => {
     try {
       const data = { userid: id };
@@ -224,6 +225,7 @@ const AdminUser = () => {
       return error;
     }
   };
+
 
   return (
     <>
