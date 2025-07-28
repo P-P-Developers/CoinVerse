@@ -82,7 +82,7 @@ const AllUserDetails = () => {
                 const value = Number(cell?.value);
                 return (
                     <span style={{ color: value < 0 ? 'red' : 'green' }}>
-                        ₹{!isNaN(value) ? value.toFixed(2) : "0.00"}
+                        {!isNaN(value) ? value.toFixed(2) : "0.00"}
                     </span>
                 );
             }
@@ -94,7 +94,7 @@ const AllUserDetails = () => {
                 const value = Number(cell?.value);
                 return (
                     <span style={{ color: value < 0 ? 'red' : 'green' }}>
-                        ₹{!isNaN(value) ? value.toFixed(2) : "0.00"}
+                        {!isNaN(value) ? value.toFixed(2) : "0.00"}
                     </span>
                 );
             }

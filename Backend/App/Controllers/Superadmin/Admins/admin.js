@@ -187,7 +187,7 @@ class Superadmin {
 
   async walletRecharge(req, res) {
     try {
-      const { id, Balance, parent_Id, Type } = req.body;
+      const { id, Balance, parent_Id, Type, reason } = req.body;
 
       if (!Balance) {
         return res.json({
@@ -337,7 +337,8 @@ class Superadmin {
         Amount: dollarcount,
         parent_Id: parent_Id,
         type: Type,
-        message: Type === "CREDIT" ? "Balance Credit" : "Balance Debit",
+        // message: Type === "CREDIT" ? "Balance Added" : "Balance Debit",
+        message: reason,
       });
       await newStatement.save();
 
@@ -854,7 +855,7 @@ class Superadmin {
         {
           $unwind: "$user",
         },
-           {
+        {
           $lookup: {
             from: "live_prices",
             localField: "token",
@@ -910,7 +911,7 @@ class Superadmin {
             live_prices: {
               Mid_Price: "$live_prices.Mid_Price",
               ticker: "$live_prices.ticker",
-              timestamp: "$live_prices.timestamp",  
+              timestamp: "$live_prices.timestamp",
             }
           },
         },

@@ -36,9 +36,8 @@ class Users {
       if (Balance > 10000) {
         return res.json({
           status: false,
-          message: `You cannot ${
-            type == 1 ? "Deposit" : "Withdraw"
-          } more than 10000`,
+          message: `You cannot ${type == 1 ? "Deposit" : "Withdraw"
+            } more than 10000`,
           data: [],
         });
       }
@@ -186,8 +185,8 @@ class Users {
         (acc, order) => acc + (order.totalamount || 0),
         0
       );
-      const adjustedBalance =
-        user.Balance - totalPendingFund / User_model.limit;
+      const adjustedBalance = (user.Balance - totalPendingFund) / User_model.limit;
+
       const responseData = {
         ...user._doc,
         Balance: adjustedBalance,
@@ -217,7 +216,7 @@ class Users {
       const user = result1[0];
 
       const result = await MarginRequired.findOne({
-    
+
       }).select("crypto forex");
 
       if (!result) {
@@ -229,14 +228,14 @@ class Users {
           user.pertrade && user.pertrade !== 0
             ? "pertrade"
             : user.transactionwise !== 0
-            ? "transactionwise"
-            : "perlot",
+              ? "transactionwise"
+              : "perlot",
         value1:
           user.pertrade && user.pertrade !== 0
             ? user.pertrade
             : user.transactionwise !== 0
-            ? user.transactionwise
-            : user.perlot,
+              ? user.transactionwise
+              : user.perlot,
         crypto: result.crypto || 100,
         forex: result.forex || 100,
       };
@@ -1076,7 +1075,7 @@ class Users {
         });
       }
 
-      // ✅ Directly Create a New Account Entry
+  
       const newAccount = new Useraccount({
         userId: new mongoose.Types.ObjectId(userId),
         upiId,

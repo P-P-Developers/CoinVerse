@@ -5,7 +5,7 @@ const Symbol = db.Symbol;
 const Userwatchlist = db.Userwatchlist;
 const Favouritelist = db.Favouritelist;
 const Order = db.Order;
-const { isArray } = require("lodash"); // Assuming lodash is being used
+const { isArray } = require("lodash");
 
 class UserSymbol {
   //user search symbol
@@ -365,6 +365,7 @@ class UserSymbol {
   }
 
 
+  // delete pending order
 
   async DeletePendingOrder(req, res) {
     try {
@@ -412,6 +413,7 @@ class UserSymbol {
   }
 
 
+  // update pending order
 
   async UpdatePendingOrder(req, res) {
     try {
@@ -458,7 +460,6 @@ class UserSymbol {
       });
     }
   }
-
 
 
 }
