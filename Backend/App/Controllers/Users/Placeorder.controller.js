@@ -69,7 +69,7 @@ class Placeorder {
       if (fromDate && toDate) {
         const from = new Date(fromDate);
         const to = new Date(toDate);
-        to.setDate(to.getDate() + 1); // Include full day of toDate
+        to.setDate(to.getDate() + 1);
 
         query.createdAt = {
           $gte: from,
@@ -102,9 +102,9 @@ class Placeorder {
       // Format output
       const formattedResult = result.map((order) => ({
         ...order.toObject(),
-        price: order.price?.toFixed(4) || null,
-        totalamount: order.totalamount?.toFixed(4) || null,
-        requiredFund: order.requiredFund?.toFixed(4) || null,
+        price: order.price || null,
+        totalamount: order.totalamount || null,
+        requiredFund: order.requiredFund || null,
       }));
 
       return res.json({
@@ -366,7 +366,7 @@ class Placeorder {
         const aHasBoth = a.buy_type !== null && a.sell_type !== null;
         const bHasBoth = b.buy_type !== null && b.sell_type !== null;
 
-        return aHasBoth - bHasBoth; // false(0) - true(1) = -1 → keep a before b
+        return aHasBoth - bHasBoth;
       });
 
       res.json({ status: true, data: PositionData });
