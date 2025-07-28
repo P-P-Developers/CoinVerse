@@ -231,39 +231,84 @@ class Admin {
       const userdetail = await User_model.findOne({ _id: id });
 
       console.log(userdetail.limit, "Update User Data:", limit);
+      console.log(userdetail.holding_limit, "Update User Data:", holding_limit);
 
-      if (holding_limit !== userdetail.holding_limit) {
-        const today = new Date();
-        const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+      if (holding_limit != userdetail.holding_limit) {
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
 
+        const endOfDay = new Date();
+        endOfDay.setHours(23, 59, 59, 999);
         const HoldingData = await mainorder_model.aggregate([
           {
             $match: {
               userid: id,
+              $expr: { $ne: ["$buy_qty", "$sell_qty"] }, // <-- Central condition
               $or: [
                 {
-                  createdAt: { $lt: startOfDay },
-                  $expr: { $ne: ["$buy_qty", "$sell_qty"] },
+                  $and: [{ createdAt: { $lt: startOfDay } }],
                 },
                 {
-                  $expr: {
-                    $eq: [
-                      {
-                        $dateToString: {
-                          format: "%Y-%m-%d",
-                          date: "$holding_dtime",
-                        },
+                  $and: [
+                    {
+                      $expr: {
+                        $eq: [
+                          {
+                            $dateToString: {
+                              format: "%Y-%m-%d",
+                              date: "$holding_dtime",
+                            },
+                          },
+                          {
+                            $dateToString: {
+                              format: "%Y-%m-%d",
+                              date: new Date(),
+                            },
+                          },
+                        ],
                       },
-                      {
-                        $dateToString: { format: "%Y-%m-%d", date: new Date() },
+                    },
+                  ],
+                },
+                {
+                  $and: [
+                    { Converted: "HOLDING" },
+                    {
+                      createdAt: {
+                        $gte: startOfDay,
+                        $lte: endOfDay,
                       },
-                    ],
-                  },
+                    },
+                  ],
                 },
               ],
             },
           },
+          {
+            $lookup: {
+              from: "live_prices",
+              localField: "token",
+              foreignField: "ticker",
+              as: "live_pricesdt",
+            },
+          },
+          { $unwind: "$live_pricesdt" },
+          {
+            $project: {
+              symbol: 1,
+              buy_type: 1,
+              sell_type: 1,
+              buy_lot: 1,
+              sell_lot: 1,
+              buy_qty: 1,
+              sell_qty: 1,
+              buy_price: 1,
+              sell_price: 1,
+            },
+          },
+          { $sort: { createdAt: -1 } },
         ]);
+
         if (HoldingData?.length > 0) {
           return res.send({
             status: false,
