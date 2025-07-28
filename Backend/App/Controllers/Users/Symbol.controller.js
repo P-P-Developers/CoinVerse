@@ -365,6 +365,7 @@ class UserSymbol {
   }
 
 
+  // delete pending order
 
   async DeletePendingOrder(req, res) {
     try {
@@ -412,6 +413,7 @@ class UserSymbol {
   }
 
 
+  // update pending order
 
   async UpdatePendingOrder(req, res) {
     try {
