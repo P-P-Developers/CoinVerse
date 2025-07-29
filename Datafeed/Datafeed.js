@@ -221,7 +221,6 @@ const initializeWebSocket = (url, tickers, type) => {
   const ws = new WebSocket(url);
 
   ws.onopen = () => {
-    console.log(`${type} WebSocket connected`);
     ws.send(
       JSON.stringify({
         eventName: "subscribe",

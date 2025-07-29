@@ -108,6 +108,8 @@ const Deposit = () => {
           timer: 2000,
         });
         getAllfundsstatus();
+        window.location.reload();
+        
       } else {
         Swal.fire({
           icon: "error",
@@ -117,6 +119,8 @@ const Deposit = () => {
             "Failed to update the request. Please try again.",
           timer: 2000,
         });
+        window.location.reload();
+
       }
     } catch (error) {
       Swal.fire({

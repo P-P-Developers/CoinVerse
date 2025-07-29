@@ -230,8 +230,6 @@ class Admin {
 
       const userdetail = await User_model.findOne({ _id: id });
 
-      console.log(userdetail.limit, "Update User Data:", limit);
-      console.log(userdetail.holding_limit, "Update User Data:", holding_limit);
 
       if (holding_limit != userdetail.holding_limit) {
         const startOfDay = new Date();
@@ -693,6 +691,7 @@ class Admin {
         return res.json({ status: false, message: "User not found" });
       }
 
+
       // Handle Status = 1 (Accepted)
       if (status == 1) {
         const existingDeposits = await BalanceStatement.find({
@@ -713,6 +712,7 @@ class Admin {
           } else if (paymentHistoryFind.Balance > 1000) {
             planType = 3;
           }
+
 
           if (planType) {
             await User_model.findByIdAndUpdate(paymentHistoryFind.userid, {
@@ -2316,7 +2316,6 @@ class Admin {
         }
       }
 
-      console.log("finalResult", finalResult);
 
       return res.json({
         status: true,

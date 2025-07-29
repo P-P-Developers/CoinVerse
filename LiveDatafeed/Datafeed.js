@@ -70,7 +70,7 @@ const initializeWebSocket = (url, tickers, type) => {
         if (response.service == "crypto_data") {
           if (response.data[5]) {
             const formattedData = formatPrices(response.data);
-            // console.log("formattedData", formattedData)
+ 
 
             io.emit("receive_data_forex", { data: formattedData, type });
           }

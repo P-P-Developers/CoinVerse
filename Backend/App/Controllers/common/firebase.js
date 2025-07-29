@@ -32,7 +32,7 @@ const sendPushNotification = async (firebaseToken, title, message) => {
 
     return { success: true };
   } catch (error) {
-    console.error("Error sending push notification:", error);
+    // console.error("Error sending push notification:", error);
     return { success: false, error };
   }
 };
@@ -57,7 +57,7 @@ const sendMultiplePushNotification = async (firebaseTokens, title, message) => {
         await admin.messaging().send(payload);
         return { success: true };
       } catch (error) {
-        console.error("Error sending push notification:", error);
+        // console.error("Error sending push notification:", error);
         return { success: false, error };
       }
     })

@@ -19,7 +19,6 @@ const storage = multer.diskStorage({
             if (path.extname(filename).toLowerCase() === ".apk") {
                 try {
                     fs.unlinkSync(filePath);
-                    console.log("Deleted:", filename);
                 } catch (err) {
                     console.error("Error deleting:", filename, err);
                 }

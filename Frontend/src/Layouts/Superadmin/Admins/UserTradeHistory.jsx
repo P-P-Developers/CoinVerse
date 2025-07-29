@@ -64,7 +64,6 @@ const UserTradeHistory = () => {
             const response = await UserwiseTradehistory(data);
             setData(response.data);
         } catch (error) {
-            console.log("error")
         }
     };
 

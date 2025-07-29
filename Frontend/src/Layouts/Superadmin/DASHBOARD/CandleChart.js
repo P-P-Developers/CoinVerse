@@ -105,7 +105,6 @@ const LiveCandlestickChart = ({ data }) => {
             _internal_originalTime: time,
           };
 
-          //   console.log("newCandle", newCandle);
 
           lastCandleRef.current = newCandle;
           candleSeriesRef.current.update(newCandle);

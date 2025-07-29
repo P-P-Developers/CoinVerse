@@ -185,7 +185,7 @@ class Users {
         (acc, order) => acc + (order.totalamount || 0),
         0
       );
-      const adjustedBalance = (user.Balance - totalPendingFund) / User_model.limit;
+      const adjustedBalance = user.Balance - totalPendingFund
 
       const responseData = {
         ...user._doc,

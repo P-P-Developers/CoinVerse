@@ -43,12 +43,10 @@ const time = Math.floor(istDate.getTime() / 1000);
           .filter((item) => !isNaN(item.time)) // Ensure no NaN
           .sort((a, b) => a.time - b.time); // Ensure ascending order
 
-        // console.log(formattedData);
 
         setRowData(formattedData);
       })
       .catch((error) => {
-        console.log(error);
       });
   };
 
