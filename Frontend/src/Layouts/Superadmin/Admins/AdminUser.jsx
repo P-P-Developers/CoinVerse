@@ -17,6 +17,9 @@ const AdminUser = () => {
   const [reason, setReason] = useState("");
   const [customReason, setCustomReason] = useState("");
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
+
 
   const TokenData = getUserFromToken();
 
@@ -222,6 +225,22 @@ const AdminUser = () => {
   };
 
 
+  useEffect(() => {
+    if (searchTerm === "") {
+      setFilteredData(data);
+    } else {
+      const filtered = data.filter((item) => {
+        return (
+          item?.FullName?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
+          item?.UserName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item?.PhoneNo?.toString().includes(searchTerm)
+        );
+      });
+      setFilteredData(filtered);
+    }
+  }, [searchTerm, data]);
+
+
   return (
     <>
       <div>
@@ -254,9 +273,11 @@ const AdminUser = () => {
                           className="ml-2 input-search form-control"
                           defaultValue=""
                           style={{ width: "20%" }}
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
                         />
                       </div>
-                      <Table columns={columns} data={data && data} />
+                      <Table columns={columns} data={filteredData} />
                     </div>
                   </div>
                 </div>
@@ -293,11 +314,11 @@ const AdminUser = () => {
                     <div className="col-lg-12 col-sm-12">
                       <div className="input-block mb-3">
                         <input
-                          type="text"
+                          type="number"
                           className="form-control"
                           placeholder="Enter Fund"
                           onChange={(e) => {
-                            let value = e.target.value.replace(/\D/g, "");
+                            let value = e.target.value;
                             if (Number(value) > 10000) {
                               value = "10000";
                             }

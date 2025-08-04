@@ -277,20 +277,18 @@ const Users = () => {
                             placeholder="Write message…"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            onKeyDown={(e) =>
-                              e.key === "Enter" && sendMessage()
-                            }
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault();;
+                                sendMessage();
+                              }
+                            }}
                           />
 
                           <button
                             type="button"
                             onClick={sendMessage}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") {
-                                e.preventDefault();
-                                sendMessage();
-                              }
-                            }}
+
                           >
                             <i className="fa fa-paper-plane" /> Send
                           </button>

@@ -125,7 +125,7 @@ function Symbols() {
           <div className="card transaction-table">
             <div className="card-header border-0 flex-wrap pb-0">
               <div className="mb-4">
-                <h4 className="card-title">Admin User</h4>
+                <h4 className="card-title">Symbol</h4>
               </div>
 
               <div className="container mt-4">

@@ -4,11 +4,34 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import Form from "../../../Utils/Form/Formik"; // Assuming this is your custom Form component
 import { updateuserdata } from "../../../Services/Admin/Addmin";
+import { getEmployee_permissiondata } from "../../../Services/Employee/Employee";
+import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const Updateuser = () => {
+  const TokenData = getUserFromToken();
   const navigate = useNavigate();
   const location = useLocation();
+  const user_id = TokenData?.user_id;
+  const [getaccess, setGetaccess] = useState({});
   const { rowData } = location.state;
+
+  useEffect(() => {
+    getpermission()
+  }, [])
+
+
+  const getpermission = async () => {
+    try {
+      const data = { id: user_id };
+      const response = await getEmployee_permissiondata(data);
+      if (response.status) {
+        setGetaccess(response.data[0]);
+      }
+    } catch (error) { }
+  };
+
+  console.log("getaccess", getaccess)
+
 
   const formik = useFormik({
     initialValues: {
@@ -17,7 +40,7 @@ const Updateuser = () => {
       email: "",
       phone: "",
       employee_id: "",
-   
+
       limit: "",
       selectedOption: "",
       inputValue: "",
@@ -49,17 +72,20 @@ const Updateuser = () => {
         errors.phone = "Please enter a valid 10-digit phone number.";
       }
 
-     
+
       // Limit validation
-      if (!values.limit) {
-        errors.limit = "Please enter a value for Limit";
-      } else if (
-        isNaN(values.limit) ||
-        values.limit < 0 ||
-        values.limit > 100
-      ) {
-        errors.limit = "Limit must be a number between 0 and 100.";
+      if (getaccess?.limit_edit == 1) {
+        if (!values.limit) {
+          errors.limit = "Please enter a value for Limit";
+        } else if (
+          isNaN(values.limit) ||
+          values.limit < 0 ||
+          values.limit > 100
+        ) {
+          errors.limit = "Limit must be a number between 0 and 100.";
+        }
       }
+
 
       // Selected option validation
       if (!values.selectedOption) {
@@ -75,7 +101,7 @@ const Updateuser = () => {
     },
 
     onSubmit: async (values, { setSubmitting }) => {
-  
+
 
       if (values.limit < 0 || values.limit > 100) {
         Swal.fire({
@@ -194,8 +220,8 @@ const Updateuser = () => {
       disable: true,
     },
 
-   
-    {
+
+    getaccess?.limit_edit == 1 && {
       name: "limit",
       label: "Margin",
       type: "text",

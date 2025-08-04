@@ -59,7 +59,7 @@ export const superadmin_header = [
     icon: "fe fe-arrow-up-circle",
     route: "/superadmin/deposit",
   },
-    {
+  {
     id: 11,
     name: "Symbols",
     icon: "fe fe-arrow-up-circle",
@@ -118,12 +118,12 @@ export const admin_header = [
     route: "/admin/loginstatus",
   },
 
-  // {
-  //   id: 8,
-  //   name: "Available Positions",
-  //   icon: "fe fe-target",
-  //   route: "/admin/position",
-  // },
+  {
+    id: 8,
+    name: "Available Positions",
+    icon: "fe fe-target",
+    route: "/admin/position",
+  },
   {
     id: 9,
     name: "Withdrawal",
@@ -203,10 +203,5 @@ export const employee_header = [
     icon: "fe fe-target",
     route: "/employee/brokerage",
   },
-  {
-    id: 5,
-    name: "Trade History",
-    icon: "fe fe-activity",
-    route: "/employee/tradehistory",
-  },
+
 ];

@@ -18,8 +18,7 @@ const Deposit = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const [totalCount, setTotalCount] = useState(0); // for backend total rows
-
+  const [totalCount, setTotalCount] = useState(0); 
   useEffect(() => {
     getAllfundsstatus();
   }, [search, activeTab, page, rowsPerPage]);
@@ -54,7 +53,7 @@ const Deposit = () => {
 
   const getAllfundsstatus = async () => {
     try {
-      setLoading(true); 
+      setLoading(true);
 
       const data = {
         adminid: user_id,
@@ -123,50 +122,50 @@ const Deposit = () => {
               page={page}
               isPage={false}
             />
-         <div
-  className="d-flex justify-content-between align-items-center px-3 py-2"
-  style={{ marginBottom: "20px" }}
->
-  {/* Rows per page */}
-  <div className="d-flex align-items-center">
-    <span>Rows per page:</span>
-    <select
-      className="form-select ms-2"
-      value={rowsPerPage}
-      onChange={(e) => setRowsPerPage(Number(e.target.value))}
-      style={{ width: "auto" }}
-    >
-      <option value={5}>5</option>
-      <option value={10}>10</option>
-      <option value={20}>20</option>
-      <option value={50}>50</option>
-      <option value={100}>100</option>
-    </select>
-  </div>
+            <div
+              className="d-flex justify-content-between align-items-center px-3 py-2"
+              style={{ marginBottom: "20px" }}
+            >
+              {/* Rows per page */}
+              <div className="d-flex align-items-center">
+                <span>Rows per page:</span>
+                <select
+                  className="form-select ms-2"
+                  value={rowsPerPage}
+                  onChange={(e) => setRowsPerPage(Number(e.target.value))}
+                  style={{ width: "auto" }}
+                >
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+              </div>
 
-  {/* Pagination controls */}
-  <div className="d-flex align-items-center gap-2">
-    <button
-      className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
-      onClick={() => handlePageChange(page - 1)}
-      disabled={page === 1}
-    >
-      <i className="bi bi-chevron-left"></i>
-      <span>Prev</span>
-    </button>
-    <span className="fw-semibold text-secondary small">
-      Page {page} of {totalCount}
-    </span>
-    <button
-      className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
-      onClick={() => handlePageChange(page + 1)}
-      disabled={page >= totalCount}
-    >
-      <span>Next</span>
-      <i className="bi bi-chevron-right"></i>
-    </button>
-  </div>
-</div>
+              {/* Pagination controls */}
+              <div className="d-flex align-items-center gap-2">
+                <button
+                  className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
+                  onClick={() => handlePageChange(page - 1)}
+                  disabled={page === 1}
+                >
+                  <i className="bi bi-chevron-left"></i>
+                  <span>Prev</span>
+                </button>
+                <span className="fw-semibold text-secondary small">
+                  Page {page} of {totalCount}
+                </span>
+                <button
+                  className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
+                  onClick={() => handlePageChange(page + 1)}
+                  disabled={page >= totalCount}
+                >
+                  <span>Next</span>
+                  <i className="bi bi-chevron-right"></i>
+                </button>
+              </div>
+            </div>
 
           </>
         )}
@@ -193,9 +192,8 @@ const Deposit = () => {
                         <li className="nav-item" key={tab}>
                           <a
                             href={`#navpills-${index + 1}`}
-                            className={`nav-link navlink ${
-                              activeTab === tab ? "active" : ""
-                            }`}
+                            className={`nav-link navlink ${activeTab === tab ? "active" : ""
+                              }`}
                             data-bs-toggle="tab"
                             onClick={() => handleTabClick(tab)}
                           >
@@ -211,9 +209,8 @@ const Deposit = () => {
                         <div
                           key={tab}
                           id={`navpills-${index + 1}`}
-                          className={`tab-pane ${
-                            activeTab === tab ? "active" : ""
-                          }`}
+                          className={`tab-pane ${activeTab === tab ? "active" : ""
+                            }`}
                         >
                           <div className="row">
                             <div className="col-lg-12">

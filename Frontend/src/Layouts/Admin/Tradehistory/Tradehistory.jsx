@@ -16,7 +16,7 @@ const Tradehistory = () => {
     { Header: "userName", accessor: "userName" },
 
     { Header: "Symbol", accessor: "symbol" },
-      {
+    {
       Header: "Entry Price",
       accessor: "buy_price",
       Cell: ({ cell }) => {
@@ -59,7 +59,7 @@ const Tradehistory = () => {
           return (
             <span style={{ color }}>
               {/* <DollarSign /> */}
-               {formattedProfitLoss}
+              {formattedProfitLoss}
             </span>
           );
         }
@@ -91,7 +91,7 @@ const Tradehistory = () => {
         }
       },
     },
-   {
+    {
       Header: "Signal Type",
       accessor: "signal_type",
       Cell: ({ cell }) => {
@@ -111,33 +111,33 @@ const Tradehistory = () => {
         );
       },
     },
-   {
-        Header: "Entry Time",
-        accessor: "buy_time",
-        Cell: ({ cell }) => {
-          const signal_type = cell.row.signal_type;
-  
-          if (signal_type === "buy_sell") {
-            return cell.row.buy_time ? fDateTimesec(cell.row.buy_time) : "-";
-          } else {
-            return cell.row.sell_time ? fDateTimesec(cell.row.sell_time) : "-";
-          }
-        },
+    {
+      Header: "Entry Time",
+      accessor: "buy_time",
+      Cell: ({ cell }) => {
+        const signal_type = cell.row.signal_type;
+
+        if (signal_type === "buy_sell") {
+          return cell.row.buy_time ? fDateTimesec(cell.row.buy_time) : "-";
+        } else {
+          return cell.row.sell_time ? fDateTimesec(cell.row.sell_time) : "-";
+        }
       },
-      {
-        Header: "Exit time",
-        accessor: "sell_time",
-        Cell: ({ cell }) => {
-          const signal_type = cell.row.signal_type;
-  
-          if (signal_type === "sell_buy") {
-            return cell.row.buy_time ? fDateTimesec(cell.row.buy_time) : "-";
-          } else {
-            return cell.row.sell_time ? fDateTimesec(cell.row.sell_time) : "-";
-          }
-        },
+    },
+    {
+      Header: "Exit time",
+      accessor: "sell_time",
+      Cell: ({ cell }) => {
+        const signal_type = cell.row.signal_type;
+
+        if (signal_type === "sell_buy") {
+          return cell.row.buy_time ? fDateTimesec(cell.row.buy_time) : "-";
+        } else {
+          return cell.row.sell_time ? fDateTimesec(cell.row.sell_time) : "-";
+        }
       },
-  
+    },
+
   ];
 
   const getuserallhistory = async () => {
@@ -145,7 +145,7 @@ const Tradehistory = () => {
       const data = { userid: id };
       const response = await Clienthistory(data);
       setData(response.data);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {

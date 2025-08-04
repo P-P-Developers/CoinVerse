@@ -45,54 +45,54 @@ const Users = () => {
     { Header: "UserName", accessor: "UserName" },
     { Header: "Email", accessor: "Email" },
     { Header: "Phone No", accessor: "PhoneNo" },
-    getaccess.Balance_edit === 1 && {
-      Header: "Balance",
-      accessor: "Balance",
-      Cell: ({ cell }) => (
-        <div
-          style={{
-            backgroundColor: "#E1FFED",
-            border: "none",
-            color: "#33B469",
-            padding: "6px 10px",
-            textAlign: "center",
-            textDecoration: "none",
-            display: "inline-block",
-            fontSize: "13px",
-            cursor: "pointer",
-            borderRadius: "10px",
-            transition: "background-color 0.3s ease",
-          }}
-        >
-          <CircleDollarSign
-            style={{
-              height: "16px",
-              marginBottom: "-4px",
-              marginRight: "5px",
-              verticalAlign: "middle",
-            }}
-          />
-          <span style={{ fontWeight: "bold", verticalAlign: "middle" }}>
-            <CirclePlus
-              size={20}
-              style={{
-                marginBottom: "-4px",
-                marginRight: "5px",
-                verticalAlign: "middle",
-              }}
-              onClick={() => {
-                setModal(true);
-                setID(cell.row._id);
-                setType("CREDIT");
-              }}
-            />
+    // getaccess.Balance_edit == 1 && {
+    //   Header: "Balance",
+    //   accessor: "Balance",
+    //   Cell: ({ cell }) => (
+    //     <div
+    //       style={{
+    //         backgroundColor: "#E1FFED",
+    //         border: "none",
+    //         color: "#33B469",
+    //         padding: "6px 10px",
+    //         textAlign: "center",
+    //         textDecoration: "none",
+    //         display: "inline-block",
+    //         fontSize: "13px",
+    //         cursor: "pointer",
+    //         borderRadius: "10px",
+    //         transition: "background-color 0.3s ease",
+    //       }}
+    //     >
+    //       <CircleDollarSign
+    //         style={{
+    //           height: "16px",
+    //           marginBottom: "-4px",
+    //           marginRight: "5px",
+    //           verticalAlign: "middle",
+    //         }}
+    //       />
+    //       <span style={{ fontWeight: "bold", verticalAlign: "middle" }}>
+    //         <CirclePlus
+    //           size={20}
+    //           style={{
+    //             marginBottom: "-4px",
+    //             marginRight: "5px",
+    //             verticalAlign: "middle",
+    //           }}
+    //           onClick={() => {
+    //             setModal(true);
+    //             setID(cell.row._id);
+    //             setType("CREDIT");
+    //           }}
+    //         />
 
-            {parseFloat(cell.value).toFixed(4)}
-          </span>
-        </div>
-      ),
-    },
- 
+    //         {parseFloat(cell.value).toFixed(2)}
+    //       </span>
+    //     </div>
+    //   ),
+    // },
+
     {
       Header: "Create Date",
       accessor: "Create_Date",
@@ -111,7 +111,7 @@ const Users = () => {
               style={{ cursor: "pointer", color: "#33B469" }}
               onClick={() => updateuserpage(cell.row._id, cell)}
             />
-            <Trash2
+            {/* <Trash2
               style={{
                 cursor: "pointer",
                 marginRight: "10px",
@@ -119,7 +119,7 @@ const Users = () => {
                 color: "red",
               }}
               onClick={() => DeleteUser(cell.row._id)}
-            />
+            /> */}
           </div>
         );
       },
@@ -231,7 +231,7 @@ const Users = () => {
       if (response.status) {
         setGetaccess(response.data[0]);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   // get all admin
@@ -261,7 +261,7 @@ const Users = () => {
       setData(search ? searchfilter : result);
 
       setLoading(false);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getallclient = async () => {
@@ -271,7 +271,7 @@ const Users = () => {
       if (response.status) {
         setGetid(response.data.parent_id);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   return (

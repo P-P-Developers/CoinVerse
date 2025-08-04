@@ -8,6 +8,7 @@ import {
 } from "../../../Services/Superadmin/Superadmin";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { CirclePlus, Pencil, CircleDollarSign, Eye } from "lucide-react";
+import { getAllClient } from "../../../Services/Superadmin/Superadmin";
 
 import Swal from "sweetalert2";
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
@@ -20,6 +21,7 @@ const Users = () => {
 
   const location = useLocation()
   const path = location?.state?.path
+
 
 
   useEffect(() => {
@@ -53,6 +55,11 @@ const Users = () => {
   const [redirectstatus, setRedirectstatus] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(search);
 
+  const [client, setClient] = useState([]);
+
+
+
+
 
   const columns = [
     { Header: "FullName", accessor: "FullName" },
@@ -65,53 +72,53 @@ const Users = () => {
     },
     { Header: "Email", accessor: "Email" },
     { Header: "Phone No", accessor: "PhoneNo" },
-    // {
-    //   Header: "Balance",
-    //   accessor: "Balance",
-    //   Cell: ({ cell }) => (
-    //     <div
-    //       style={{
-    //         backgroundColor: "#E1FFED",
-    //         border: "none",
-    //         color: "#33B469",
-    //         padding: "6px 10px",
-    //         textAlign: "center",
-    //         textDecoration: "none",
-    //         display: "inline-block",
-    //         fontSize: "13px",
-    //         cursor: "pointer",
-    //         borderRadius: "10px",
-    //         transition: "background-color 0.3s ease",
-    //       }}
-    //     >
-    //       <CircleDollarSign
-    //         style={{
-    //           height: "16px",
-    //           marginBottom: "-4px",
-    //           marginRight: "5px",
-    //           verticalAlign: "middle",
-    //         }}
-    //       />
-    //       <span style={{ fontWeight: "bold", verticalAlign: "middle" }}>
-    //         <CirclePlus
-    //           size={20}
-    //           style={{
-    //             marginBottom: "-4px",
-    //             marginRight: "5px",
-    //             verticalAlign: "middle",
-    //           }}
-    //           onClick={() => {
-    //             setModal(true);
-    //             setID(cell.row._id);
-    //             setType("CREDIT");
-    //           }}
-    //         />
+    client?.Edit_balance == 1 && {
+      Header: "Balance",
+      accessor: "Balance",
+      Cell: ({ cell }) => (
+        <div
+          style={{
+            backgroundColor: "#E1FFED",
+            border: "none",
+            color: "#33B469",
+            padding: "6px 10px",
+            textAlign: "center",
+            textDecoration: "none",
+            display: "inline-block",
+            fontSize: "13px",
+            cursor: "pointer",
+            borderRadius: "10px",
+            transition: "background-color 0.3s ease",
+          }}
+        >
+          <CircleDollarSign
+            style={{
+              height: "16px",
+              marginBottom: "-4px",
+              marginRight: "5px",
+              verticalAlign: "middle",
+            }}
+          />
+          <span style={{ fontWeight: "bold", verticalAlign: "middle" }}>
+            <CirclePlus
+              size={20}
+              style={{
+                marginBottom: "-4px",
+                marginRight: "5px",
+                verticalAlign: "middle",
+              }}
+              onClick={() => {
+                setModal(true);
+                setID(cell.row._id);
+                setType("CREDIT");
+              }}
+            />
 
-    //         {parseFloat(cell.value).toFixed(2)}
-    //       </span>
-    //     </div>
-    //   ),
-    // },
+            {parseFloat(cell.value).toFixed(2)}
+          </span>
+        </div>
+      ),
+    },
 
     {
       Header: "Status",
@@ -344,6 +351,20 @@ const Users = () => {
   };
 
 
+  const getallclient = async () => {
+    try {
+      const data = { userid: user_id };
+      const response = await getAllClient(data);
+      if (response.status) {
+        setClient(response.data);
+      }
+    } catch (error) { }
+  };
+
+
+  useEffect(() => {
+    getallclient()
+  }, [])
 
   useEffect(() => {
     getAlluserdata();
@@ -526,12 +547,11 @@ const Users = () => {
                     <div className="col-lg-12 col-sm-12">
                       <div className="input-block mb-3">
                         <input
-                          type="text"
+                          type="number"
                           className="form-control"
                           placeholder="Enter Fund"
                           onChange={(e) => {
-                            // Remove non-digit characters
-                            let value = e.target.value.replace(/\D/g, "");
+                            let value = e.target.value;
 
                             // Convert to number and cap at 10000
                             if (Number(value) > 10000) {

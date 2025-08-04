@@ -13,6 +13,9 @@ const AddAdmin = () => {
   const Role = TokenData?.Role;
   const user_id = TokenData?.user_id;
 
+
+
+
   const formik = useFormik({
     initialValues: {
       fullName: "",
@@ -36,6 +39,8 @@ const AddAdmin = () => {
       FixedTransactionPercent: "",
       NetTransactionPercent: false,
       NetTransaction: "",
+      Edit_balance: "",
+      Fund_request: "",
     },
 
     validate: (values) => {
@@ -122,7 +127,10 @@ const AddAdmin = () => {
         FixedTransactionPercent: values.FixedTransactionPercent,
         NetTransactionPercent: values.NetTransactionPercent,
         NetTransaction: values.NetTransaction,
+        Edit_balance: values.Edit_balance === true ? 1 : 0,
+        Fund_request: values.Fund_request === true ? 1 : 0
       };
+
 
       setSubmitting(false);
 
@@ -162,6 +170,9 @@ const AddAdmin = () => {
         });
     },
   });
+
+
+
 
   const fields = [
     {
@@ -324,6 +335,22 @@ const AddAdmin = () => {
       disable: false,
       showWhen: (values) => values.NetTransactionPercent,
     },
+    {
+      name: "Edit_balance",
+      label: "Edit Balance",
+      type: "checkbox",
+      label_size: 12,
+      col_size: 12,
+      disable: false,
+    },
+    {
+      name: "Fund_request",
+      label: "Withdrawal/deposite Request",
+      type: "checkbox",
+      label_size: 12,
+      col_size: 12,
+      disable: false,
+    }
   ];
 
   useEffect(() => {

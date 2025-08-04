@@ -231,6 +231,16 @@ const userModel = Schema(
       type: Number,
       default: null,
     },
+    Edit_balance: {
+      type: Number,
+      enum: [0, 1],
+      default: 0,
+    },
+    Fund_request: {
+      type: Number,
+      enum: [0, 1],
+      default: 0,
+    }
   },
   {
     timestamps: true,

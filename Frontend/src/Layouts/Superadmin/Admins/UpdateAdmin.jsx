@@ -36,6 +36,8 @@ const UpdateAdmin = () => {
 
       NetTransactionPercent: false,
       NetTransaction: "",
+      Edit_balance: "",
+      Fund_request: ""
 
     },
 
@@ -81,10 +83,12 @@ const UpdateAdmin = () => {
         FundLessThan1000: values.FundAdd ? values.FundLessThan1000 : 0,
         FundGreaterThan1000: values.FundAdd ? values.FundGreaterThan1000 : 0,
 
-        EveryTransaction: values.EveryTransaction ,
+        EveryTransaction: values.EveryTransaction,
         FixedTransactionPercent: values.EveryTransaction ? values.FixedTransactionPercent : 0,
         NetTransactionPercent: values.NetTransactionPercent,
-        NetTransaction:  values.NetTransactionPercent ? values.NetTransaction : 0,
+        NetTransaction: values.NetTransactionPercent ? values.NetTransaction : 0,
+        Edit_balance: values.Edit_balance === true ? 1 : 0,
+        Fund_request: values.Fund_request === true ? 1 : 0
 
       };
 
@@ -146,9 +150,14 @@ const UpdateAdmin = () => {
       FixedTransactionPercent: rowData?.FixedTransactionPercent || "",
       NetTransactionPercent: rowData?.NetTransactionPercent || false,
       NetTransaction: rowData?.NetTransaction || "",
+      Edit_balance: rowData?.Edit_balance == 1 ? true : false,
+      Fund_request: rowData?.Fund_request == 1 ? true : false,
 
     });
   }, [rowData]);
+
+
+
 
   useEffect(() => {
     if (formik.values.FixedPerClient) {
@@ -309,6 +318,22 @@ const UpdateAdmin = () => {
       showWhen: (values) => values.NetTransactionPercent,
       disable: formik.values.NetTransactionPercent ? false : true,
     },
+    {
+      name: "Edit_balance",
+      label: "Edit Balance",
+      type: "checkbox",
+      label_size: 12,
+      col_size: 12,
+      disable: false,
+    },
+    {
+      name: "Fund_request",
+      label: "Withdrawal/deposite Request",
+      type: "checkbox",
+      label_size: 12,
+      col_size: 12,
+      disable: false,
+    }
 
   ];
 

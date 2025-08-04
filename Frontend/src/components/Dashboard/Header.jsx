@@ -46,7 +46,7 @@ const Header = () => {
   }, [exp]);
 
   useEffect(() => {
-  
+
     socket.on("newMessage", (msg) => {
       if (user_id === msg.parent_id) {
         setNotification((prev) => [
@@ -183,7 +183,7 @@ const Header = () => {
     try {
       const response = await LogoutUser({ userid: user_id });
       if (response.status) localStorage.clear();
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getLastPathSegment = (path) => {
@@ -348,6 +348,18 @@ const Header = () => {
                           <span className="ms-2">Profile</span>
                         </Link>
                       )}
+                      {user_role === "EMPLOYE" && (
+                        <Link
+                          to="/employee/profile"
+                          className="dropdown-item ai-icon"
+                        >
+                          <i
+                            className="fas fa-user"
+                            style={{ fontSize: "18px", color: "#000" }}
+                          />
+                          <span className="ms-2">Profile</span>
+                        </Link>
+                      )}
                       {user_role === "ADMIN" && (
                         <>
                           <Link
@@ -360,16 +372,8 @@ const Header = () => {
                             />
                             <span className="ms-2">Bank Details</span>
                           </Link>
-                          <Link
-                            to="/superadmin/settings"
-                            className="dropdown-item ai-icon"
-                          >
-                            <i
-                              className="fas fa-university"
-                              style={{ fontSize: "18px", color: "#000" }}
-                            />
-                            <span className="ms-2">Settings</span>
-                          </Link>
+
+
                         </>
                       )}
                       {user_role === "ADMIN" && (
@@ -398,9 +402,8 @@ const Header = () => {
                       )}
                       {(user_role === "ADMIN" || user_role === "EMPLOYE") && (
                         <Link
-                          to={`/${
-                            user_role === "ADMIN" ? "admin" : "employee"
-                          }/changedpassword`}
+                          to={`/${user_role === "ADMIN" ? "admin" : "employee"
+                            }/changedpassword`}
                           className="dropdown-item ai-icon"
                         >
                           <i

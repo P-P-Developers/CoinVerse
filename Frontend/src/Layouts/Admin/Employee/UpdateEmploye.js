@@ -32,7 +32,7 @@ const UpdateEmploye = () => {
       Edit: false,
       trade_history: false,
       open_position: false,
-    
+
       limit_edit: false,
       Balance_edit: false,
     },
@@ -66,7 +66,7 @@ const UpdateEmploye = () => {
           Edit: values.Edit || values.all ? "1" : "0",
           trade_history: values.trade_history || values.all ? "1" : "0",
           open_position: values.open_position || values.all ? "1" : "0",
-       
+
           limit_edit: values.limit_edit || values.all ? "1" : "0",
           Balance_edit: values.Balance_edit || values.all ? "1" : "0",
         },
@@ -115,7 +115,7 @@ const UpdateEmploye = () => {
           "Edit",
           "trade_history",
           "open_position",
-      
+
           "limit_edit",
           "Balance_edit",
         ].forEach((field) => formik.setFieldValue(field, checked));
@@ -146,13 +146,13 @@ const UpdateEmploye = () => {
             Edit: permissions.Edit === 1,
             trade_history: permissions.trade_history === 1,
             open_position: permissions.open_position === 1,
-     
+
             limit_edit: permissions.limit_edit === 1,
             Balance_edit: permissions.Balance_edit === 1,
             all: allChecked,
           });
         } catch (error) {
-     
+
           Swal.fire({
             title: "Error",
             text: "Failed to load employee permissions.",
@@ -214,13 +214,13 @@ const UpdateEmploye = () => {
       col_size: 3,
       check_box_true: formik.values.all || formik.values.limit_edit,
     },
-    {
-      name: "Balance_edit",
-      label: "Balance Edit",
-      type: "checkbox",
-      col_size: 3,
-      check_box_true: formik.values.all || formik.values.Balance_edit,
-    },
+    // {
+    //   name: "Balance_edit",
+    //   label: "Balance Edit",
+    //   type: "checkbox",
+    //   col_size: 3,
+    //   check_box_true: formik.values.all || formik.values.Balance_edit,
+    // },
   ];
 
   return (

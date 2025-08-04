@@ -3,6 +3,7 @@ import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import { FaPlusCircle } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import Table from "../../../Utils/Table/Table";
+import socket from "../../../Utils/socketClient";
 
 import {
   AddResearch,
@@ -35,7 +36,6 @@ const formFields = [
 
 const Research = () => {
   const TokenData = getUserFromToken();
-
   const user_id = TokenData?.user_id;
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -46,10 +46,80 @@ const Research = () => {
   const [refresh, setRefresh] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [editId, setEditId] = useState(null);
+  const [prevPrices, setPrevPrices] = useState({});
+  const [livePrices, setLivePrices] = useState({});
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "coin" && value) {
+      const selectedCoinPrice = livePrices[value.toLowerCase()];
+      if (selectedCoinPrice) {
+        setFormData((prev) => ({
+          ...prev,
+          [name]: value,
+          price: selectedCoinPrice
+        }));
+      } else {
+        setFormData((prev) => ({ ...prev, [name]: value }));
+      }
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+
+
+  useEffect(() => {
+    const handleData = (data) => {
+      const symbol = data?.data?.ticker?.toLowerCase();
+      const price = Number(data?.data?.Mid_Price);
+      if (symbol && !isNaN(price)) {
+        setPrevPrices(prev => ({
+          ...prev,
+          [symbol]: livePrices[symbol],
+        }));
+        setLivePrices(prev => ({
+          ...prev,
+          [symbol]: price.toFixed(4),
+        }));
+      }
+    };
+
+    socket.on("receive_data_forex", handleData);
+    return () => socket.off("receive_data_forex", handleData);
+  }, [livePrices]);
+
+  const validatePrices = () => {
+    const entryPrice = parseFloat(formData.price);
+    const targetPrice = parseFloat(formData.targetPrice);
+    const stopLoss = parseFloat(formData.stopLoss);
+
+    if (!entryPrice || !targetPrice || !stopLoss) {
+      return true;
+    }
+
+    if (formData.type === "buy") {
+      if (targetPrice <= entryPrice) {
+        toast.error("Target Price should be greater than Entry Price for buy orders.");
+        return false;
+      }
+      if (stopLoss >= entryPrice) {
+        toast.error("Stop Loss should be less than Entry Price for buy orders.");
+        return false;
+      }
+    } else if (formData.type === "sell") {
+      if (targetPrice >= entryPrice) {
+        toast.error("Target Price should be less than Entry Price for sell orders.");
+        return false;
+      }
+      if (stopLoss <= entryPrice) {
+        toast.error("Stop Loss should be greater than Entry Price for sell orders.");
+        return false;
+      }
+    }
+
+    return true;
   };
 
   const handleSubmit = async (e) => {
@@ -57,6 +127,11 @@ const Research = () => {
 
     if (!formData.coin) {
       toast.error("Please select a coin/pair.");
+      return;
+    }
+
+    // Validate prices
+    if (!validatePrices()) {
       return;
     }
 
@@ -91,14 +166,14 @@ const Research = () => {
       try {
         const response = await getResearch(user_id);
         if (response?.data) setResearchData(response.data);
-      } catch (error) {}
+      } catch (error) { }
     };
 
     const fetchSymbols = async () => {
       try {
         const response = await symbolholdoff(user_id);
         setSymbols(response?.data || []);
-      } catch (error) {}
+      } catch (error) { }
     };
 
     fetchSymbols();
@@ -129,8 +204,7 @@ const Research = () => {
 
   const handleToggleStatus = async (id, status) => {
     const confirmToggle = window.confirm(
-      `Are you sure you want to ${
-        status === "Open" ? "close" : "open"
+      `Are you sure you want to ${status === "Open" ? "close" : "open"
       } this entry?`
     );
     if (confirmToggle) {
@@ -179,7 +253,6 @@ const Research = () => {
         );
       },
     },
-
     {
       Header: "Actions",
       accessor: "actions",
@@ -302,6 +375,7 @@ const Research = () => {
                             ).map((symbol, index) => (
                               <option key={index} value={symbol.symbol}>
                                 {symbol.symbol}
+
                               </option>
                             ))
                           ) : (
@@ -316,13 +390,20 @@ const Research = () => {
                     {formFields.map((field, idx) => (
                       <Col md={6} key={idx}>
                         <Form.Group>
-                          <Form.Label>{field.label}</Form.Label>
+                          <Form.Label>
+                            {field.label}
+                            {field.name === "price" && formData.coin && livePrices[formData.coin.toLowerCase()] && (
+                              <span className="text-success ms-2">
+                                (Live: {livePrices[formData.coin.toLowerCase()]})
+                              </span>
+                            )}
+                          </Form.Label>
                           <Form.Control
                             type={field.type}
                             name={field.name}
                             value={formData[field.name]}
                             onChange={handleInputChange}
-                            required
+
                           />
                         </Form.Group>
                       </Col>
@@ -337,21 +418,6 @@ const Research = () => {
                         >
                           <option value="buy">Buy</option>
                           <option value="sell">Sell</option>
-                        </Form.Select>
-                      </Form.Group>
-                    </Col>
-                  </Row>
-                  <Row className="mb-3">
-                    <Col md={6}>
-                      <Form.Group>
-                        <Form.Label>Status</Form.Label>
-                        <Form.Select
-                          name="status"
-                          value={formData.status}
-                          onChange={handleInputChange}
-                        >
-                          <option value="Open">Open</option>
-                          <option value="Close">Close</option>
                         </Form.Select>
                       </Form.Group>
                     </Col>

@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import { fDateTime } from "../../../Utils/Date_format/datefromat";
 import Modal from "react-modal";
 import { getUserFromToken } from "../../../Utils/TokenVerify";
+import { getAllClient } from "../../../Services/Superadmin/Superadmin";
 
 const Withdraw = () => {
   const [data, setData] = useState([]);
@@ -39,6 +40,12 @@ const Withdraw = () => {
   const [transactionId, setTransactionId] = useState("");
   const [uploadedImage, setUploadedImage] = useState(null);
   const [currentRowId, setCurrentRowId] = useState(null);
+  const [client, setClient] = useState([]);
+
+
+  useEffect(() => {
+    getallclient()
+  }, [])
 
 
   useEffect(() => {
@@ -157,7 +164,7 @@ const Withdraw = () => {
     },
   ];
 
-  if (activeTab === "Pending") {
+  if (activeTab === "Pending" && client.Fund_request == 1) {
     columns.push({
       Header: "Action",
       accessor: "Action",
@@ -255,6 +262,19 @@ const Withdraw = () => {
       setLoading(false);
     }
   };
+
+
+  const getallclient = async () => {
+    try {
+      const data = { userid: user_id };
+      const response = await getAllClient(data);
+      if (response.status) {
+        setClient(response.data);
+      }
+    } catch (error) { }
+  };
+
+
 
   const filterDataByStatus = (status) => {
     return data.filter((item) => item.status === status);

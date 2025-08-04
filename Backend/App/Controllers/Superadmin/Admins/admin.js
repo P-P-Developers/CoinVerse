@@ -51,6 +51,8 @@ class Superadmin {
         FundGreaterThan1000,
         NetTransactionPercent,
         NetTransaction,
+        Edit_balance,
+        Fund_request
       } = req.body;
 
       UserName = UserName.toString().toLowerCase();
@@ -137,6 +139,8 @@ class Superadmin {
         FundGreaterThan1000,
         NetTransactionPercent,
         NetTransaction,
+        Edit_balance,
+        Fund_request
       });
 
       await newUser.save();

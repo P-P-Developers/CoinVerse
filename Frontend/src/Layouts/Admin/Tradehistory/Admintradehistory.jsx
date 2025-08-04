@@ -20,6 +20,7 @@ const Tradehistory = () => {
   const [search, setSearch] = useState("");
   const [livePrices, setLivePrices] = useState({});
   const [prevPrices, setPrevPrices] = useState({});
+  const [statusFilter, setStatusFilter] = useState("all");
 
   useEffect(() => {
     socket.on("receive_data_forex", (data) => {
@@ -47,7 +48,7 @@ const Tradehistory = () => {
 
   useEffect(() => {
     getuserallhistory();
-  }, [Userid, search]);
+  }, [Userid, search, statusFilter]);
 
   const columns1 = [
     { Header: "userName", accessor: "userName" },
@@ -218,19 +219,34 @@ const Tradehistory = () => {
     try {
       const data = { userid: Userid, adminid: user_id };
       const response = await Clienthistory(data);
-      const searchfilter = response.data?.filter((item) => {
+      let filteredData = response.data;
+
+      // Apply search filter
+      if (search) {
         const searchLower = search.toLowerCase();
-        return (
-          search === "" ||
-          (item.symbol && item.symbol.toLowerCase().includes(searchLower)) ||
-          (item.buy_price &&
-            item.buy_price.toString().toLowerCase().includes(searchLower)) ||
-          (item.sell_price &&
-            item.sell_price.toString().toLowerCase().includes(searchLower))
-        );
-      });
-      setData(search ? searchfilter : response.data);
-    } catch (error) {}
+        filteredData = filteredData.filter((item) => {
+          return (
+            (item?.userName && item.userName.toLowerCase().includes(searchLower)) ||
+            (item?.symbol && item.symbol.toLowerCase().includes(searchLower)) ||
+            (item?.buy_price &&
+              item.buy_price.toString().toLowerCase().includes(searchLower)) ||
+            (item?.sell_price &&
+              item.sell_price.toString().toLowerCase().includes(searchLower))
+          );
+        });
+      }
+
+      // Apply Open/Close Filter
+      if (statusFilter === "open") {
+        filteredData = filteredData.filter((item) => !item.sell_price);
+      } else if (statusFilter === "close") {
+        filteredData = filteredData.filter((item) => item.sell_price);
+      }
+
+      setData(filteredData);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const GetUserName = async () => {
@@ -240,7 +256,7 @@ const Tradehistory = () => {
       if (response.status) {
         setUserName(response.data);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const calculateTotalProfitLoss = () => {
@@ -282,12 +298,12 @@ const Tradehistory = () => {
                   <div className="mb-4">
                     <h4 className="card-title">Trade History</h4>
                   </div>
-                  <Link
+                  {/* <Link
                     to="/admin/users"
                     className="float-end mb-4 btn btn-primary"
                   >
                     <i className="fa-solid fa-arrow-left"></i> Back
-                  </Link>
+                  </Link> */}
                 </div>
                 <div className="card-body p-0">
                   <div className="tab-content" id="myTabContent1">
@@ -366,6 +382,36 @@ const Tradehistory = () => {
                               ))}
                           </select>
                         </div>
+
+                        <div style={{ flex: 1 }}>
+                          <label
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              marginRight: "0.5rem",
+                            }}
+                          >
+                            👤 Status:
+                          </label>
+                          <select
+                            className="form-select"
+                            style={{
+                              width: "200px",
+                              padding: "8px",
+                              borderRadius: "5px",
+                              border: "1px solid #ccc",
+                              backgroundColor: "#f8f9fa",
+                            }}
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                          >
+                            <option value="all">All</option>
+                            <option value="open">Open Positions</option>
+                            <option value="close">Closed Positions</option>
+                          </select>
+                        </div>
+
+
                       </div>
 
                       <h3 className="ms-3">
