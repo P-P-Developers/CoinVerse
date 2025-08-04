@@ -137,3 +137,4 @@ d2025-07-04T12:24:26.785Z [warn]: SLOW API: [POST] /users/userSymbollist - 367ms
 2025-07-29T05:46:03.149Z [warn]: SLOW API: [POST] /admin/Updatestatus - 1204ms
 2025-07-29T05:46:09.701Z [warn]: SLOW API: [POST] /admin/getuserpaymentstatus - 2648ms
 2025-07-29T05:46:12.624Z [warn]: SLOW API: [POST] /admin/Updatestatus - 616ms
+2025-07-29T08:18:17.825Z [warn]: SLOW API: [GET] /getCompany - 742ms

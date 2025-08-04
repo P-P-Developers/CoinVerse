@@ -91,15 +91,15 @@ class Users {
 
       await paymentHistory.save();
 
-      req.io.emit("newTransactionRequest", {
-        userid: userid,
-        adminid: userdata.parent_id,
-        username: userdata?.UserName || "",
-        amount: dollarcount,
-        type: type == 1 ? "Deposit" : "Withdrawal",
-        time: new Date(),
-        paymentHistoryId: paymentHistory._id,
-      });
+      // req.io.emit("newTransactionRequest", {
+      //   userid: userid,
+      //   adminid: userdata.parent_id,
+      //   username: userdata?.UserName || "",
+      //   amount: dollarcount,
+      //   type: type == 1 ? "Deposit" : "Withdrawal",
+      //   time: new Date(),
+      //   paymentHistoryId: paymentHistory._id,
+      // });
 
       return res.json({
         status: true,

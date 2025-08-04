@@ -1812,7 +1812,7 @@ class Admin {
         },
       };
 
-      req.io.emit("newMessage", fullMessage);
+      // req.io.emit("newMessage", fullMessage);
 
       const GetUser = await User_model.findById(receiverId).select(
         "DeviceToken"
