@@ -203,5 +203,11 @@ export const employee_header = [
     icon: "fe fe-target",
     route: "/employee/brokerage",
   },
+  {
+    id: 5,
+    name: "Trade History",
+    icon: "fe fe-activity",
+    route: "/employee/alltradehistory"
+  },
 
 ];

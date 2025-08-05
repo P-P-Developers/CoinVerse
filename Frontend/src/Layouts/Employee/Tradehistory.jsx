@@ -8,6 +8,7 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 
 
 const Tradehistory = () => {
+  
   const { id } = useParams();
 
 

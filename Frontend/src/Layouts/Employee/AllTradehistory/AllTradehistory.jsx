@@ -6,8 +6,12 @@ import { Link } from "react-router-dom";
 import { GetUsersName, switchOrderType } from "../../../Services/Admin/Addmin";
 import { ArrowLeftRight } from "lucide-react";
 import { getUserFromToken } from "../../../Utils/TokenVerify";
+import { getAllClient } from "../../../Services/Superadmin/Superadmin";
+
+
 
 const Tradehistory = () => {
+
   const TokenData = getUserFromToken();
 
   const user_id = TokenData?.user_id;
@@ -16,14 +20,30 @@ const Tradehistory = () => {
   const [userName, setUserName] = useState();
   const [Userid, setUserId] = useState();
   const [search, setSearch] = useState("");
+  const [client, setClient] = useState({});
+
 
   useEffect(() => {
     GetUserName();
+    getallclient();
   }, []);
 
   useEffect(() => {
     getuserallhistory();
-  }, [Userid, search]);
+  }, [Userid, search, client]);
+
+
+
+  const getallclient = async () => {
+    try {
+      const data = { userid: user_id };
+      const response = await getAllClient(data);
+      if (response.status) {
+        setClient(response.data);
+      }
+    } catch (error) { }
+  };
+
 
   const columns1 = [
     { Header: "Symbol", accessor: "symbol" },
@@ -175,7 +195,7 @@ const Tradehistory = () => {
   // Function to get user history
   const getuserallhistory = async () => {
     try {
-      const data = { userid: Userid, adminid: user_id };
+      const data = { userid: Userid, adminid: client?.parent_id };
       const response = await Clienthistory(data);
       const searchfilter = response.data?.filter((item) => {
         const searchLower = search.toLowerCase();
@@ -189,17 +209,17 @@ const Tradehistory = () => {
         );
       });
       setData(search ? searchfilter : response.data);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const GetUserName = async () => {
     try {
-      const admin_id = user_id;
+      const admin_id = client?.parent_id;
       const response = await GetUsersName({ admin_id });
       if (response.status) {
         setUserName(response.data);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const calculateTotalProfitLoss = () => {

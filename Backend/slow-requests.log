@@ -158,3 +158,6 @@ d2025-07-04T12:24:26.785Z [warn]: SLOW API: [POST] /users/userSymbollist - 367ms
 2025-08-04T13:10:57.688Z [warn]: SLOW API: [POST] /admin/getuserpaymentstatus - 396ms
 2025-08-04T13:11:07.991Z [warn]: SLOW API: [POST] /admin/getuserpaymentstatus - 774ms
 2025-08-04T13:11:24.999Z [warn]: SLOW API: [POST] /admin/getUserDetails - 204ms
+2025-08-05T04:51:33.619Z [warn]: SLOW API: [GET] /GetConditions - 422ms
+2025-08-05T04:58:56.046Z [warn]: SLOW API: [GET] /GetConditions - 334ms
+2025-08-05T05:17:22.574Z [warn]: SLOW API: [POST] /getEmployee_permissiondata - 2388ms
