@@ -161,3 +161,7 @@ d2025-07-04T12:24:26.785Z [warn]: SLOW API: [POST] /users/userSymbollist - 367ms
 2025-08-05T04:51:33.619Z [warn]: SLOW API: [GET] /GetConditions - 422ms
 2025-08-05T04:58:56.046Z [warn]: SLOW API: [GET] /GetConditions - 334ms
 2025-08-05T05:17:22.574Z [warn]: SLOW API: [POST] /getEmployee_permissiondata - 2388ms
+2025-08-05T10:30:56.692Z [warn]: SLOW API: [POST] /getbroadcastmessageforuser - 441ms
+2025-08-05T10:30:56.863Z [warn]: SLOW API: [POST] /getProfitMargin - 594ms
+2025-08-05T10:30:56.997Z [warn]: SLOW API: [POST] /admin/brokerageData - 734ms
+2025-08-05T10:30:57.049Z [warn]: SLOW API: [POST] /admin/getbonusdetails - 782ms
