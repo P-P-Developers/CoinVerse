@@ -662,3 +662,16 @@ export async function GetAllUserDeatailsdata(data, token) {
     return await err;
   }
 }
+
+
+
+export async function UpdatePlanTypedata(data, token) {
+  try {
+    const res = await axios.post(`${Config.base_url}admin/UpdatePlanType`, data, {
+      data: {},
+    });
+    return await res?.data;
+  } catch (err) {
+    return await err;
+  }
+}

@@ -16,6 +16,9 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 class Users {
+
+
+  
   async userWithdrawalanddeposite(req, res) {
     try {
       const { userid, Balance, type, transactionId, ScreenShot } = req.body;

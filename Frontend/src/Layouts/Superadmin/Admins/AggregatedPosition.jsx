@@ -21,25 +21,25 @@ const AggregatedPosition = ({ groupedData, search = "" }) => {
 
 
 
-useEffect(() => {
-  const handleData = (data) => {
-    const symbol = data?.data?.ticker?.toLowerCase();
-    const price = Number(data?.data?.Mid_Price);
-    if (symbol && !isNaN(price)) {
-      setPrevPrices(prev => ({
-        ...prev,
-        [symbol]: livePrices[symbol],
-      }));
-      setLivePrices(prev => ({
-        ...prev,
-        [symbol]: price.toFixed(4),
-      }));
-    }
-  };
+  useEffect(() => {
+    const handleData = (data) => {
+      const symbol = data?.data?.ticker?.toLowerCase();
+      const price = Number(data?.data?.Mid_Price);
+      if (symbol && !isNaN(price)) {
+        setPrevPrices(prev => ({
+          ...prev,
+          [symbol]: livePrices[symbol],
+        }));
+        setLivePrices(prev => ({
+          ...prev,
+          [symbol]: price.toFixed(4),
+        }));
+      }
+    };
 
-  socket.on("receive_data_forex", handleData);
-  return () => socket.off("receive_data_forex", handleData);
-}, []);
+    socket.on("receive_data_forex", handleData);
+    return () => socket.off("receive_data_forex", handleData);
+  }, []);
 
 
 
@@ -175,6 +175,7 @@ useEffect(() => {
     return strVal;
   }
 
+  console.log("displayedGroups", displayedGroups)
 
   return (
     <div className="container-fluid px-3">
@@ -212,6 +213,7 @@ useEffect(() => {
           if (current >= previous) priceColor = "green";
           else if (current < previous) priceColor = "red";
         }
+
 
         return (
           <Card
@@ -315,6 +317,74 @@ useEffect(() => {
 
                 <div>
                   <p className="d-flex align-items-center gap-2" style={{ fontWeight: "bold", margin: 0 }}>
+
+
+                    {/* Buy P&L */}
+                    Buy Profit/Loss:{" "}
+                    <span
+                      style={{
+                        color: (() => {
+                          const buyPL = records?.reduce((acc, item) => {
+                            const symbol = item.symbol?.toLowerCase();
+                            const livePrice1 = livePrices[symbol] ?? live_prices.Mid_Price;
+
+                            if (item.signal_type === "buy_sell") {
+                              acc += (livePrice1 - item.buy_price) * item.buy_lot;
+                            }
+                            return acc;
+                          }, 0);
+                          return buyPL >= 0 ? "green" : "red";
+                        })(),
+                      }}
+                    >
+                      {(() => {
+                        const buyPL = records?.reduce((acc, item) => {
+                          const symbol = item.symbol?.toLowerCase();
+                          const livePrice1 = livePrices[symbol] ?? live_prices.Mid_Price;
+
+                          if (item.signal_type === "buy_sell") {
+                            acc += (livePrice1 - item.buy_price) * item.buy_lot;
+                          }
+                          return acc;
+                        }, 0);
+                        return buyPL.toFixed(5);
+                      })()}
+                    </span>
+
+                    {/* Sell P&L */}
+                    Sell Profit/Loss:{" "}
+                    <span
+                      style={{
+                        color: (() => {
+                          const sellPL = records?.reduce((acc, item) => {
+                            const symbol = item.symbol?.toLowerCase();
+                            const livePrice1 = livePrices[symbol] ?? live_prices.Mid_Price;
+
+                            if (item.signal_type === "sell_buy") {
+                              acc += (item.sell_price - livePrice1) * item.sell_lot;
+                            }
+                            return acc;
+                          }, 0);
+                          return sellPL >= 0 ? "green" : "red";
+                        })(),
+                      }}
+                    >
+                      {(() => {
+                        const sellPL = records?.reduce((acc, item) => {
+                          const symbol = item.symbol?.toLowerCase();
+                          const livePrice1 = livePrices[symbol] ?? live_prices.Mid_Price;
+
+                          if (item.signal_type === "sell_buy") {
+                            acc += (item.sell_price - livePrice1) * item.sell_lot;
+                          }
+                          return acc;
+                        }, 0);
+                        return sellPL.toFixed(5);
+                      })()}
+                    </span>
+                  </p>
+
+                  <p className="d-flex align-items-end gap-4 justify-content-end" style={{ fontWeight: "bold", margin: 0 }}>
                     Overall Profit/Loss:{" "}
                     <span
                       style={{
@@ -335,7 +405,7 @@ useEffect(() => {
                         })(),
                       }}
                     >
-                      
+
                       {(() => {
                         const overall = records?.reduce((acc, item) => {
                           const symbol = item.symbol?.toLowerCase();
@@ -353,6 +423,7 @@ useEffect(() => {
                       })()}
                     </span>
                   </p>
+
                 </div>
 
               </div>

@@ -17,6 +17,8 @@ const employee_permission = db.employee_permission;
 const ResearchModel = db.ResearchModel;
 const UpiDetails = db.UpiDetails;
 const Useraccount = db.Useraccount;
+const user_logs = db.user_logs;
+
 
 // const nodemailer = require('nodemailer');
 const Conversation = db.Conversation;
@@ -82,8 +84,8 @@ class Admin {
           existingUser.UserName === UserName
             ? "Username"
             : existingUser.Email === Email
-            ? "Email"
-            : "Phone Number";
+              ? "Email"
+              : "Phone Number";
 
         return res.json({
           status: false,
@@ -691,25 +693,30 @@ class Admin {
         return res.json({ status: false, message: "User not found" });
       }
 
+      const checkadmin = await User_model.findOne({
+        _id: admin_id,
+      }).select("Basic_plan Premium_plan Standard_plan");
 
       // Handle Status = 1 (Accepted)
       if (status == 1) {
         const existingDeposits = await BalanceStatement.find({
           userid: paymentHistoryFind.userid,
           type: "CREDIT",
-        }).sort({ createdAt: 1 });
+        }).sort({ Amount: -1 });
 
-        if (existingDeposits.length === 0) {
+        const largestAmount = existingDeposits.length > 0 ? existingDeposits[0].Amount : paymentHistoryFind.Balance;
+
+        if (paymentHistoryFind.Balance > largestAmount) {
           let planType = null;
 
-          if (paymentHistoryFind.Balance < 100) {
+          if (paymentHistoryFind.Balance < checkadmin?.Basic_plan) {
             planType = 1;
           } else if (
-            paymentHistoryFind.Balance > 100 &&
-            paymentHistoryFind.Balance <= 1000
+            paymentHistoryFind.Balance > checkadmin?.Basic_plan &&
+            paymentHistoryFind.Balance <= checkadmin?.Standard_plan
           ) {
             planType = 2;
-          } else if (paymentHistoryFind.Balance > 1000) {
+          } else if (paymentHistoryFind.Balance > checkadmin?.Premium_plan) {
             planType = 3;
           }
 
@@ -721,6 +728,7 @@ class Admin {
             });
           }
         }
+
 
         const parentUser = await User_model.findOne({
           _id: admin_id,
@@ -1500,7 +1508,7 @@ class Admin {
         message: "Research updated successfully",
         data: research,
       });
-    } catch (error) {}
+    } catch (error) { }
   }
 
   async DeleteResearch(req, res) {
@@ -1520,7 +1528,7 @@ class Admin {
         message: "Research deleted successfully",
         data: result,
       });
-    } catch (error) {}
+    } catch (error) { }
   }
 
   async UpdatStatus(req, res) {
@@ -2331,6 +2339,55 @@ class Admin {
       });
     }
   }
+
+
+
+  async UpdatePlanType(req, res) {
+    try {
+      const { adminId, Basic_plan, Standard_plan, Premium_plan } = req.body;
+
+      if (!adminId) {
+        return res.json({ status: false, message: "adminId is required" });
+      }
+
+      const check_id = await User_model.findById(adminId);
+      if (!check_id) {
+        return res.json({ status: false, message: "Admin not found", data: [] });
+      }
+
+      const updateFields = {};
+      if (Basic_plan !== undefined) updateFields.Basic_plan = Basic_plan;
+      if (Standard_plan !== undefined) updateFields.Standard_plan = Standard_plan;
+      if (Premium_plan !== undefined) updateFields.Premium_plan = Premium_plan;
+
+      if (Object.keys(updateFields).length === 0) {
+        return res.json({ status: false, message: "No fields to update" });
+      }
+
+      const updated = await User_model.findByIdAndUpdate(
+        adminId,
+        { $set: updateFields },
+        { new: true }
+      );
+
+      await new user_logs({
+        user_Id: check_id._id,
+        admin_Id: check_id.parent_id,
+        UserName: check_id.UserName,
+        login_status: "Plan Changed",
+        role: check_id.Role,
+      }).save();
+
+      return res.json({ status: true, message: "Plans updated successfully", data: updated });
+
+    } catch (error) {
+      console.error("UpdatePlanType Error:", error);
+      return res.json({ status: false, message: "Internal server error", error: error.message });
+    }
+  }
+
+
+
 }
 
 module.exports = new Admin();

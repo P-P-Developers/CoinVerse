@@ -240,6 +240,18 @@ const userModel = Schema(
       type: Number,
       enum: [0, 1],
       default: 0,
+    },
+    Basic_plan: {
+      type: Number,
+      default: null
+    },
+    Standard_plan: {
+      type: Number,
+      default: null
+    },
+    Premium_plan: {
+      type: Number,
+      default: null
     }
   },
   {

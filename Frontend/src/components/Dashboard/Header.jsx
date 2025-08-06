@@ -388,6 +388,18 @@ const Header = () => {
                           <span className="ms-2">Basic Setting</span>
                         </Link>
                       )}
+                      {user_role === "ADMIN" && (
+                        <Link
+                          to="/admin/planSubscription"
+                          className="dropdown-item ai-icon"
+                        >
+                          <i
+                            className="fas fa-cog"
+                            style={{ fontSize: "18px", color: "#000" }}
+                          />
+                          <span className="ms-2">Plan</span>
+                        </Link>
+                      )}
                       {user_role === "SUPERADMIN" && (
                         <Link
                           to="/superadmin/system"

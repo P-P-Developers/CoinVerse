@@ -72,6 +72,19 @@ const Users = () => {
     },
     { Header: "Email", accessor: "Email" },
     { Header: "Phone No", accessor: "PhoneNo" },
+    {
+      Header: "Plan",
+      accessor: "plan_type",
+      Cell: ({ cell }) => {
+        const planLabels = {
+          1: "Basic Plan",
+          2: "Standard Plan",
+          3: "Premium Plan",
+        };
+
+        return <span>{planLabels[cell.value] || "--"}</span>;
+      }
+    },
     client?.Edit_balance == 1 && {
       Header: "Balance",
       accessor: "Balance",

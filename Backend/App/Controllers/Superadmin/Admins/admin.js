@@ -193,18 +193,16 @@ class Superadmin {
     try {
       const { id, Balance, parent_Id, Type, reason } = req.body;
 
-      if (!Balance) {
+      if (!id || !Balance || !Type) {
         return res.json({
           status: false,
-          message: "Please Enter Balance",
+          message: "Missing required fields",
           data: [],
         });
       }
 
-      // Parse Balance to a float
       const dollarcount = parseFloat(Balance);
 
-      // Fetch user data
       const userdata = await User_model.findOne({ _id: id });
       if (!userdata) {
         return res.json({
@@ -214,19 +212,52 @@ class Superadmin {
         });
       }
 
-      // Initialize newBalance with the current balance
       let newBalance = parseFloat(userdata.Balance || 0);
+
       const parentUser = await User_model.findOne({ _id: parent_Id });
 
-      // Update balance based on the transaction type
+
+      const existingDeposits = await BalanceStatement.find({
+        userid: userdata._id,
+        type: "CREDIT",
+      }).sort({ Amount: -1 });
+
+      const largestAmount = existingDeposits.length > 0 ? existingDeposits[0].Amount : 0;
+      console.log()
+
+      if (dollarcount > largestAmount) {
+        let planType = null;
+
+        if (dollarcount < parentUser?.Basic_plan) {
+          planType = 1;
+        } else if (
+          dollarcount >= parentUser?.Basic_plan &&
+          dollarcount <= parentUser?.Standard_plan
+        ) {
+          planType = 2;
+        } else if (dollarcount > parentUser?.Premium_plan) {
+          planType = 3;
+        }
+
+        if (planType) {
+          await User_model.findByIdAndUpdate(userdata._id, {
+            plan_type: planType,
+            plan_balance: dollarcount,
+          });
+        }
+      }
+
+      // ✅ CREDIT Logic
       if (Type === "CREDIT") {
         if (newBalance === 0) {
           if (parentUser && userdata.ReferredBy) {
             const ReferredByUser = await User_model.findOne({
               _id: userdata.ReferredBy,
             });
+
             if (ReferredByUser && ReferredByUser.Role === "USER") {
               let refferalAmount = 0;
+
               if (dollarcount > 50 && dollarcount <= 100) {
                 refferalAmount = (dollarcount * parentUser.Range1) / 100;
               } else if (dollarcount > 100 && dollarcount <= 500) {
@@ -237,19 +268,23 @@ class Superadmin {
                 refferalAmount = (dollarcount * parentUser.Range4) / 100;
               }
 
-              const newStatement = new BalanceStatement({
-                userid: userdata.ReferredBy,
-                Amount: refferalAmount,
-                parent_Id: parentUser._id,
-                type: "CREDIT",
-                message: "Referral Balance Added",
-              });
-              await newStatement.save();
+              if (refferalAmount > 0) {
+                const newStatement = new BalanceStatement({
+                  userid: userdata.ReferredBy,
+                  Amount: refferalAmount,
+                  parent_Id: parentUser._id,
+                  type: "CREDIT",
+                  message: "Referral Balance Added",
+                });
+                await newStatement.save();
+              }
             }
           }
+
+          // 👉 Add Client Bonus
           if (
-            parentUser.FixedPerClient &&
-            dollarcount >= parentUser.AddClientBonus
+            parentUser?.FixedPerClient &&
+            dollarcount >= parentUser?.AddClientBonus
           ) {
             const newBonus = new BonusCollectioniModel({
               admin_id: parentUser._id,
@@ -259,33 +294,35 @@ class Superadmin {
             });
             await newBonus.save();
           }
-          if (newBalance === 0) {
-            if (parentUser && parentUser.FundAdd) {
-              let calculatedBonus;
 
-              if (dollarcount < 100) {
-                calculatedBonus = parentUser.FundLessThan100;
-              } else if (dollarcount < 500) {
-                calculatedBonus = parentUser.FundLessThan500;
-              } else if (dollarcount < 1000) {
-                calculatedBonus = parentUser.FundLessThan1000;
-              } else {
-                calculatedBonus = parentUser.FundGreaterThan1000;
-              }
-              const newBonus = new BonusCollectioniModel({
-                admin_id: parentUser._id,
-                user_id: userdata._id,
-                Bonus: calculatedBonus,
-                Type: "Fund_Add",
-              });
+          // 👉 Fund Add Bonus
+          if (parentUser?.FundAdd) {
+            let calculatedBonus;
 
-              await newBonus.save();
+            if (dollarcount < 100) {
+              calculatedBonus = parentUser.FundLessThan100;
+            } else if (dollarcount < 500) {
+              calculatedBonus = parentUser.FundLessThan500;
+            } else if (dollarcount < 1000) {
+              calculatedBonus = parentUser.FundLessThan1000;
+            } else {
+              calculatedBonus = parentUser.FundGreaterThan1000;
             }
+
+            const newBonus = new BonusCollectioniModel({
+              admin_id: parentUser._id,
+              user_id: userdata._id,
+              Bonus: calculatedBonus,
+              Type: "Fund_Add",
+            });
+
+            await newBonus.save();
           }
-        } else if (newBalance >= 0) {
-          if (parentUser && newBalance > 0 && parentUser.EveryTransaction) {
-            let BonusForFixedTransaction =
-              dollarcount * (parentUser.FixedTransactionPercent / 100);
+        } else {
+          // 👉 Bonus on Every Transaction
+          if (parentUser?.EveryTransaction) {
+            const BonusForFixedTransaction =
+              (dollarcount * parentUser.FixedTransactionPercent) / 100;
 
             const newBonus = new BonusCollectioniModel({
               admin_id: parentUser._id,
@@ -296,15 +333,22 @@ class Superadmin {
             await newBonus.save();
           }
         }
+
+        // Add to balance
         newBalance += dollarcount;
 
+        // Notification
         sendPushNotification(
           userdata.DeviceToken,
           "Wallet Recharge",
           `Your wallet has been credited with ${dollarcount} USD`
         );
-      } else if (Type === "DEBIT") {
+      }
+
+      // ✅ DEBIT Logic
+      else if (Type === "DEBIT") {
         newBalance -= dollarcount;
+
         if (newBalance < 0) {
           return res.json({
             status: false,
@@ -312,7 +356,10 @@ class Superadmin {
             data: [],
           });
         }
-      } else {
+      }
+
+      // ❌ Invalid Transaction Type
+      else {
         return res.json({
           status: false,
           message: "Invalid transaction type",
@@ -320,13 +367,13 @@ class Superadmin {
         });
       }
 
-      // Update user's balance in the database
+      // ✅ Update user balance
       await User_model.updateOne(
         { _id: userdata._id },
         { $set: { Balance: newBalance } }
       );
 
-      // Save the wallet transaction
+      // ✅ Save to wallet history
       const result = new Wallet_model({
         user_Id: userdata._id,
         Balance: dollarcount,
@@ -335,14 +382,13 @@ class Superadmin {
       });
       await result.save();
 
-      // Save the balance statement
+      // ✅ Save to balance statement
       const newStatement = new BalanceStatement({
         userid: userdata._id,
         Amount: dollarcount,
         parent_Id: parent_Id,
         type: Type,
-        // message: Type === "CREDIT" ? "Balance Added" : "Balance Debit",
-        message: reason,
+        message: reason || (Type === "CREDIT" ? "Balance Added" : "Balance Debited"),
       });
       await newStatement.save();
 
@@ -352,6 +398,7 @@ class Superadmin {
         data: { newBalance },
       });
     } catch (error) {
+      console.error("Error in walletRecharge:", error);
       return res.json({
         status: false,
         message: "Internal error occurred",
@@ -964,6 +1011,11 @@ class Superadmin {
           $sort: {
             "_id.symbol": 1,
             "_id.signal_type": 1,
+          },
+        },
+        {
+          $sort: {
+            count: -1,
           },
         },
       ];
@@ -1859,7 +1911,6 @@ class Superadmin {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
-
 
 
 }

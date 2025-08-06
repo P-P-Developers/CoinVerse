@@ -31,6 +31,7 @@ import Chatbox from "../Layouts/Admin/Chatbox/Chatdash";
 import AllUserDetails from "../Layouts/Admin/AllUserDetails/AllUserDetails";
 import UserTradeHistory from "../Layouts/Admin/AllUserDetails/UserTradeHistory";
 import Bankdetails from "../Layouts/Admin/Profile/Bankdetails";
+import PlanSubscription from "../Layouts/Admin/PlanSubscription/PlanSubscription";
 
 const AdminRoutes = () => {
   return (
@@ -77,8 +78,9 @@ const AdminRoutes = () => {
           <Route path="/research" element={<Research />} />
           <Route path="/basicsetting" element={<Basicsetting />} />
           <Route path="/chatbox" element={<Chatbox />} />
-                    <Route path="/bankdetails" element={<Bankdetails />} />
-          
+          <Route path="/bankdetails" element={<Bankdetails />} />
+          <Route path="/planSubscription" element={<PlanSubscription />} />
+
         </Routes>
       </div>
       <Footer />

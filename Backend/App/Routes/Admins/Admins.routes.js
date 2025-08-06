@@ -46,7 +46,8 @@ const {
   updateBankDetails,
   getAllUser,
   getUserDetails,
-  uploadApk
+  uploadApk,
+  UpdatePlanType
 } = require("../../Controllers/Admins/Admins/Admin");
 const {
   marginupdate,
@@ -67,7 +68,7 @@ router.post("/admin/Updatestatus", UpdateStatus);
 router.post("/admin/getUsersName", getUsersName);
 
 router.get("/api/prices", apiPrice);
-router.get("/get/intrady/price",apiPriceIntraday)
+router.get("/get/intrady/price", apiPriceIntraday)
 
 
 router.post("/admin/getAllUser", getAllUser); // Get all users
@@ -108,6 +109,8 @@ router.post("/admin/getreferralcode", GetReferralCode);
 router.post("/admin/updatereferprice", UpdateReferPrice);
 router.post("/admin/getbonusdetails", GetBonusDetails);
 router.post("/admin/getUserDetails", getUserDetails);
+
+router.post("/admin/UpdatePlanType", UpdatePlanType);
 
 router.get("/Downloadapk", Downloadapk);
 
