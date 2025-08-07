@@ -224,3 +224,4 @@ d2025-07-04T12:24:26.785Z [warn]: SLOW API: [POST] /users/userSymbollist - 367ms
 2025-08-07T09:51:02.187Z [warn]: SLOW API: [POST] /admin/Updatestatus - 227ms
 2025-08-07T09:51:37.502Z [warn]: SLOW API: [POST] /admin/Updatestatus - 230ms
 2025-08-07T09:51:52.400Z [warn]: SLOW API: [POST] /admin/Updatestatus - 216ms
+2025-08-07T10:15:30.956Z [warn]: SLOW API: [POST] /getclienttradehistory - 207ms
