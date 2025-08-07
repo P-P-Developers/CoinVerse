@@ -21,7 +21,7 @@ const Deposit = () => {
   useEffect(() => {
     getAdminNames();
     getAllfundsstatus();
-  }, [ activeTab, page, rowsPerPage, selectedAdminName]);
+  }, [activeTab, page, rowsPerPage, selectedAdminName]);
 
   const getAdminNames = async () => {
     try {
@@ -109,7 +109,7 @@ const Deposit = () => {
         });
         getAllfundsstatus();
         window.location.reload();
-        
+
       } else {
         Swal.fire({
           icon: "error",
@@ -139,7 +139,7 @@ const Deposit = () => {
 
   const getAllfundsstatus = async () => {
     try {
-         if(selectedAdminName === "") {
+      if (selectedAdminName === "") {
         setData([]);
         return;
       }
@@ -149,14 +149,14 @@ const Deposit = () => {
         activeTab,
         page,
         limit: rowsPerPage,
-        search:"",
+        search: "",
       };
       const response = await getFundstatus(data);
 
       if (response.status) {
         const filtertype = response.data || [];
         setData(filtertype);
-      
+
       }
     } catch (error) {
     }
@@ -182,7 +182,7 @@ const Deposit = () => {
           {/* Search Input */}
           <div className="col-lg-4">
             <label htmlFor="searchInput" className="form-label">
-             🔍 Search:
+              🔍 Search:
             </label>
             <input
               id="searchInput"
@@ -218,7 +218,7 @@ const Deposit = () => {
         </div>
 
         <Table
-        className='mt-5 '
+          className='mt-5 '
           columns={columns}
           data={filteredData}
           rowsPerPage={rowsPerPage}
@@ -270,9 +270,8 @@ const Deposit = () => {
                         <li className="nav-item" key={tab}>
                           <a
                             href={`#navpills-${index + 1}`}
-                            className={`nav-link navlink ${
-                              activeTab === tab ? "active" : ""
-                            }`}
+                            className={`nav-link navlink ${activeTab === tab ? "active" : ""
+                              }`}
                             data-bs-toggle="tab"
                             onClick={() => handleTabClick(tab)}
                           >
@@ -288,9 +287,8 @@ const Deposit = () => {
                         <div
                           key={tab}
                           id={`navpills-${index + 1}`}
-                          className={`tab-pane ${
-                            activeTab === tab ? "active" : ""
-                          }`}
+                          className={`tab-pane ${activeTab === tab ? "active" : ""
+                            }`}
                         >
                           <div className="row">
                             <div className="col-lg-12">

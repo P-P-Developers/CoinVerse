@@ -14,6 +14,8 @@ const Loginstatus = () => {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [users, setUsers] = useState([]);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [loginStatusFilter, setLoginStatusFilter] = useState("");
+
 
   const fetchUsers = async () => {
     try {
@@ -43,15 +45,15 @@ const Loginstatus = () => {
             item.login_status.toLowerCase().includes(search.toLowerCase())) ||
           (item.role && item.role.toLowerCase().includes(search.toLowerCase()));
 
-        if (!selectedUserId) {
-          return searchInputMatch;
-        }
+        const userMatch = !selectedUserId || item.UserName === selectedUserId;
+        const statusMatch =
+          !loginStatusFilter || item.login_status === loginStatusFilter;
 
-        return searchInputMatch && item.UserName === selectedUserId;
+        return searchInputMatch && userMatch && statusMatch;
       });
 
       setData(filteredData || response.data);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -60,7 +62,7 @@ const Loginstatus = () => {
 
   useEffect(() => {
     getLogsForSelectedUser();
-  }, [selectedUserId, search]);
+  }, [selectedUserId, search, loginStatusFilter]);
 
   const columns = [
     { Header: "UserName", accessor: "UserName" },
@@ -133,8 +135,25 @@ const Loginstatus = () => {
                             <option>No users available</option>
                           )}
                         </select>
+
                       </div>
+
                     </div>
+
+                    <div className="col-md-3">
+                      <label className="me-2">Login Status:</label>
+                      <select
+                        className="form-control"
+                        style={{ width: "60%" }}
+                        onChange={(e) => setLoginStatusFilter(e.target.value)}
+                        value={loginStatusFilter}
+                      >
+                        <option value="">All</option>
+                        <option value="Panel On">Panel On</option>
+                        <option value="Panel off">Panel Off</option>
+                      </select>
+                    </div>
+
                   </div>
 
                   <div

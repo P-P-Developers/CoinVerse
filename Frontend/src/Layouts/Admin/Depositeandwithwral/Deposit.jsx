@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
 import { Modal } from "react-bootstrap";
 import { getUserFromToken } from "../../../Utils/TokenVerify";
+import { getAllClient } from "../../../Services/Superadmin/Superadmin";
 
 const Deposit = () => {
   const TokenData = getUserFromToken();
@@ -18,10 +19,70 @@ const Deposit = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const [totalCount, setTotalCount] = useState(0); 
+  const [totalCount, setTotalCount] = useState(0);
+  const [client, setClient] = useState([]);
+  const [currentRowId, setCurrentRowId] = useState(null);
+
+
+
+  useEffect(() => {
+    getallclient()
+  }, [])
+
   useEffect(() => {
     getAllfundsstatus();
   }, [search, activeTab, page, rowsPerPage]);
+
+
+  const handleSelectChange = async (rowId, row, event) => {
+    const newSelectedValues = {
+      ...selectedValues,
+      [rowId]: event.target.value,
+    };
+    setSelectedValues(newSelectedValues);
+    await Updatestatus(row._id, newSelectedValues[rowId]);
+
+  };
+
+
+
+  const Updatestatus = async (id, status) => {
+    try {
+      const admin_id = user_id;
+      const data = { admin_id, id, status };
+      const response = await UpdatestatusForpaymenthistory(data);
+
+      if (response.status) {
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text:
+            response.message ||
+            "An unexpected error occurred. Please try again.",
+          timer: 2000,
+        });
+        getAllfundsstatus();
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text:
+            response.message ||
+            "Failed to update the request. Please try again.",
+          timer: 2000,
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text:
+          error.message || "An unexpected error occurred. Please try again.",
+        timer: 2000,
+      });
+    }
+  };
+
 
   const columns = [
     { Header: "Name", accessor: "FullName" },
@@ -45,7 +106,46 @@ const Deposit = () => {
       accessor: "createdAt",
       Cell: ({ cell }) => fDateTimesec(cell.value),
     },
+
   ];
+
+
+  if (activeTab === "Pending" && client.Fund_request == 1) {
+    columns.push({
+      Header: "Action",
+      accessor: "Action",
+      Cell: ({ cell }) => (
+        <div>
+          <select
+            className="form-select"
+            onChange={(event) =>
+              handleSelectChange(cell.row.id, cell.row, event)
+            }
+            Value={selectedValues[cell.row.id] || "0"}
+          >
+            <option value="0">Pending</option>
+            <option value="2">Reject</option>
+            <option value="1">Complete</option>
+          </select>
+        </div>
+      ),
+    });
+  }
+
+
+
+  const getallclient = async () => {
+    try {
+      const data = { userid: user_id };
+      const response = await getAllClient(data);
+      if (response.status) {
+        setClient(response.data);
+      }
+    } catch (error) { }
+  };
+
+
+
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -203,7 +303,7 @@ const Deposit = () => {
                       ))}
                     </ul>
 
-                    {/* Tab Content */}
+
                     <div className="tab-content">
                       {["Pending", "Complete", "Reject"].map((tab, index) => (
                         <div

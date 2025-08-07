@@ -223,7 +223,7 @@ const Updateuser = () => {
 
     getaccess?.limit_edit == 1 && {
       name: "limit",
-      label: "Margin",
+      label: "INTRADAY Margin",
       type: "text",
       label_size: 12,
       col_size: 6,

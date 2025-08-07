@@ -22,6 +22,9 @@ const Tradehistory = () => {
   const [prevPrices, setPrevPrices] = useState({});
   const [statusFilter, setStatusFilter] = useState("all");
 
+
+
+
   useEffect(() => {
     socket.on("receive_data_forex", (data) => {
       const symbol = data.data[1]?.toLowerCase();
@@ -236,12 +239,12 @@ const Tradehistory = () => {
         });
       }
 
-      // Apply Open/Close Filter
       if (statusFilter === "open") {
-        filteredData = filteredData.filter((item) => !item.sell_price);
+        filteredData = filteredData.filter((item) => item.sell_price === null || item.sell_price === undefined);
       } else if (statusFilter === "close") {
-        filteredData = filteredData.filter((item) => item.sell_price);
+        filteredData = filteredData.filter((item) => item.sell_price !== null && item.sell_price !== undefined);
       }
+
 
       setData(filteredData);
     } catch (error) {

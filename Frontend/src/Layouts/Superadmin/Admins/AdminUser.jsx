@@ -18,14 +18,11 @@ const AdminUser = () => {
   const [customReason, setCustomReason] = useState("");
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState(""); // New state for status filter
   const [filteredData, setFilteredData] = useState([]);
 
-
   const TokenData = getUserFromToken();
-
-
   const user_id = TokenData?.user_id;
-
 
   const { id } = useParams();
   const [data, setData] = useState([]);
@@ -86,7 +83,6 @@ const AdminUser = () => {
               response.message || "The balance has been updated successfully.",
           });
 
-
           setModal(false);
           setBalance("");
           setReason("")
@@ -111,8 +107,6 @@ const AdminUser = () => {
       });
     }
   };
-
-
 
   const columns = [
     { Header: "FullName", accessor: "FullName" },
@@ -142,7 +136,6 @@ const AdminUser = () => {
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-
             <span style={{ fontWeight: "bold" }}>
               {parseFloat(cell.value).toFixed(2)}
             </span>
@@ -187,15 +180,24 @@ const AdminUser = () => {
       Header: "ActiveStatus",
       accessor: "ActiveStatus",
       Cell: ({ cell }) => (
-        <span
-          style={{
-            height: "15px",
-            width: "15px",
-            backgroundColor: cell.value == 1 ? "green" : "red",
-            borderRadius: "50%",
-            display: "inline-block",
-          }}
-        ></span>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <span
+            style={{
+              height: "15px",
+              width: "15px",
+              backgroundColor: cell.value == 1 ? "green" : "red",
+              borderRadius: "50%",
+              display: "inline-block",
+            }}
+          ></span>
+          <span style={{
+            color: cell.value == 1 ? "green" : "red",
+            fontWeight: "500",
+            fontSize: "12px"
+          }}>
+            {cell.value == 1 ? "Active" : "Inactive"}
+          </span>
+        </div>
       ),
     },
     { Header: "PhoneNo", accessor: "PhoneNo" },
@@ -207,7 +209,6 @@ const AdminUser = () => {
       },
     },
   ];
-
 
   const getuserallhistory = async () => {
     try {
@@ -224,22 +225,35 @@ const AdminUser = () => {
     }
   };
 
-
+  // Updated filtering logic to include status filter
   useEffect(() => {
-    if (searchTerm === "") {
-      setFilteredData(data);
-    } else {
-      const filtered = data.filter((item) => {
+    let filtered = data;
+
+    // Apply search filter
+    if (searchTerm !== "") {
+      filtered = filtered.filter((item) => {
         return (
           item?.FullName?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
           item?.UserName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           item?.PhoneNo?.toString().includes(searchTerm)
         );
       });
-      setFilteredData(filtered);
     }
-  }, [searchTerm, data]);
 
+
+    if (statusFilter !== "") {
+      filtered = filtered.filter((item) => {
+        if (statusFilter === "active") {
+          return item.ActiveStatus == 1;
+        } else if (statusFilter === "inactive") {
+          return item.ActiveStatus == 0;
+        }
+        return true;
+      });
+    }
+
+    setFilteredData(filtered);
+  }, [searchTerm, statusFilter, data]);
 
   return (
     <>
@@ -267,16 +281,54 @@ const AdminUser = () => {
                       role="tabpanel"
                       aria-labelledby="Week-tab"
                     >
-                      <div className="mb-3 ms-4">
-                        Search :{" "}
-                        <input
-                          className="ml-2 input-search form-control"
-                          defaultValue=""
-                          style={{ width: "20%" }}
-                          value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+                      {/* Enhanced filter section */}
+                      <div className="mb-3 ms-4 d-flex align-items-center gap-3 flex-wrap">
+                        <div className="d-flex align-items-center">
+                          <label className="me-2 fw-bold">Search:</label>
+                          <input
+                            className="form-control"
+                            style={{ width: "250px" }}
+                            placeholder="Search by name, username, phone..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                          />
+                        </div>
+
+                        <div className="d-flex align-items-center">
+                          <label className="me-2 fw-bold">Status:</label>
+                          <select
+                            className="form-select"
+                            style={{ width: "150px" }}
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                          >
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                          </select>
+                        </div>
+
+                        {/* Clear filters button */}
+                        {(searchTerm || statusFilter) && (
+                          <button
+                            className="btn btn-outline-secondary btn-sm"
+                            onClick={() => {
+                              setSearchTerm("");
+                              setStatusFilter("");
+                            }}
+                          >
+                            Clear Filters
+                          </button>
+                        )}
+
+                        {/* Results count */}
+                        <div className="ms-auto">
+                          <small className="text-muted">
+                            Showing {filteredData.length} of {data.length} users
+                          </small>
+                        </div>
                       </div>
+
                       <Table columns={columns} data={filteredData} />
                     </div>
                   </div>
@@ -392,10 +444,6 @@ const AdminUser = () => {
           </div>
         </div>
       )}
-
-
-
-
     </>
   );
 };

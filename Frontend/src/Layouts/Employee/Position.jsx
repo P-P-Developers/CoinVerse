@@ -1,75 +1,295 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../Utils/Table/Table";
-import { getEmployeeUserposition } from "../../Services/Employee/Employee";
+import { fDateTimesec } from "../../Utils/Date_format/datefromat";
+import { Clienthistory } from "../../Services/Admin/Addmin";
+import { Link } from "react-router-dom";
+import { GetUsersName, switchOrderType } from "../../Services/Admin/Addmin";
+import { ArrowLeftRight } from "lucide-react";
 import { getUserFromToken } from "../../Utils/TokenVerify";
+import socket from "../../Utils/socketClient";
 
-const Position = () => {
+const Tradehistory = () => {
   const TokenData = getUserFromToken();
 
   const user_id = TokenData?.user_id;
 
+  console.log("TokenData", TokenData)
 
   const [data, setData] = useState([]);
+  const [userName, setUserName] = useState();
+  const [Userid, setUserId] = useState();
   const [search, setSearch] = useState("");
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [livePrices, setLivePrices] = useState({});
+  const [prevPrices, setPrevPrices] = useState({});
+  const [statusFilter, setStatusFilter] = useState("all");
 
 
- useEffect(() => {
+
+
+  useEffect(() => {
+    socket.on("receive_data_forex", (data) => {
+      const symbol = data.data[1]?.toLowerCase();
+      const price = Number(data.data[5]);
+      if (symbol && !isNaN(price)) {
+        setPrevPrices((prev) => ({
+          ...prev,
+          [symbol]: livePrices[symbol],
+        }));
+        setLivePrices((prev) => ({
+          ...prev,
+          [symbol]: price.toFixed(3),
+        }));
+      }
+    });
+    return () => {
+      socket.off("receive_data_forex");
+    };
+  }, [livePrices]);
+
+  useEffect(() => {
+    GetUserName();
+  }, []);
+
+  useEffect(() => {
     getuserallhistory();
-  }, [search]);
+  }, [Userid, search, statusFilter]);
 
-  const columns = [
-    { Header: "symbol", accessor: "symbol" },
+  const columns1 = [
+    { Header: "userName", accessor: "userName" },
+
+    { Header: "Symbol", accessor: "symbol" },
     {
-      Header: "Buy qty",
-      accessor: "buy_qty",
+      Header: "Entry Price",
+      accessor: "buy_price",
       Cell: ({ cell }) => {
-        const buy_qty = cell.row.buy_qty;
-        return buy_qty ? buy_qty : "-";
+        const buy_price = cell.row.buy_price;
+        const signal_type = cell.row.signal_type;
+        if (signal_type === "buy_sell") {
+          return buy_price ? buy_price.toFixed(3) : "-";
+        } else {
+          return cell.row.sell_price ? cell.row.sell_price.toFixed(3) : "-";
+        }
       },
     },
     {
-      Header: "Sell qty",
-      accessor: "sell_qty",
+      Header: "Exit Price",
+      accessor: "sell_price",
       Cell: ({ cell }) => {
-        const sell_qty = cell.row.sell_qty;
-        return sell_qty ? sell_qty : "-";
+        const buy_price = cell.row.buy_price;
+        const signal_type = cell.row.signal_type;
+        if (signal_type === "sell_buy") {
+          return buy_price
+            ? buy_price.toFixed(3)
+            : livePrices[cell.row.symbol.toLowerCase()] || "-";
+        } else {
+          return cell.row.sell_price
+            ? cell.row.sell_price.toFixed(3)
+            : livePrices[cell.row.symbol.toLowerCase()] || "-";
+        }
       },
     },
     {
-      Header: "Position Avg",
-      accessor: "Position Avg",
+      Header: "P/L",
+      accessor: "P/L",
       Cell: ({ cell }) => {
-        const { sell_qty, buy_qty } = cell.row;
-        const availablePosition = buy_qty - sell_qty;
-        return <span>{availablePosition}</span>;
+        const signal_type = cell.row.signal_type;
+        const sellPrice = cell.row.sell_price;
+        const buyPrice = cell.row.buy_price;
+        const buyQty = cell.row.buy_qty;
+
+        if (sellPrice && buyPrice && buyQty) {
+          // if(signal_type === "buy_sell"){
+          const profitLoss = (sellPrice - buyPrice) * buyQty;
+          const formattedProfitLoss = profitLoss.toFixed(4);
+
+          const color = profitLoss > 0 ? "green" : "red";
+
+          return (
+            <span style={{ color }}>
+              {/* <DollarSign /> */}
+              {formattedProfitLoss}
+            </span>
+          );
+        } else if (signal_type === "buy_sell") {
+          const livePrice = livePrices[cell.row.symbol?.toLowerCase()];
+          if (livePrice) {
+            const profitLoss = (livePrice - buyPrice) * cell.row.buy_qty;
+            const formattedProfitLoss = profitLoss.toFixed(4);
+            const color = profitLoss > 0 ? "green" : "red";
+            return <span style={{ color }}>{formattedProfitLoss}</span>;
+          }
+        } else if (signal_type === "sell_buy") {
+          const livePrice = livePrices[cell.row.symbol?.toLowerCase()];
+          if (livePrice) {
+            const profitLoss =
+              (cell.row.sell_price - livePrice) * cell.row.sell_lot;
+            const formattedProfitLoss = profitLoss.toFixed(4);
+            const color = profitLoss > 0 ? "green" : "red";
+            return <span style={{ color }}>{formattedProfitLoss}</span>;
+          }
+        }
+
+        return "-";
+      },
+    },
+    {
+      Header: "Entry lot",
+      accessor: "buy_lot",
+      Cell: ({ cell }) => {
+        const signal_type = cell.row.signal_type;
+        if (signal_type === "buy_sell") {
+          return cell.row.buy_lot ? cell.row.buy_lot : "-";
+        } else {
+          return cell.row.sell_lot ? cell.row.sell_lot : "-";
+        }
+      },
+    },
+    {
+      Header: "Exit lot",
+      accessor: "sell_lot",
+      Cell: ({ cell }) => {
+        const signal_type = cell.row.signal_type;
+        if (signal_type === "sell_buy") {
+          return cell.row.buy_lot ? cell.row.buy_lot : "-";
+        } else {
+          return cell.row.sell_lot ? cell.row.sell_lot : "-";
+        }
+      },
+    },
+
+    {
+      Header: "Signal Type",
+      accessor: "signal_type",
+      Cell: ({ cell }) => {
+        const signal_type = cell.row.signal_type;
+
+        // return signal_type ? signal_type == "buy_sell" ? "BUY" :"SELL" : "-";
+        return (
+          <>
+            {signal_type === "buy_sell" ? (
+              <span style={{ color: "green" }}> BUY</span>
+            ) : signal_type === "sell_buy" ? (
+              <span style={{ color: "red" }}> SELL</span>
+            ) : (
+              <span style={{ color: "blue" }}> {signal_type}</span>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
+      Header: "Entry Time",
+      accessor: "buy_time",
+      Cell: ({ cell }) => {
+        const signal_type = cell.row.signal_type;
+
+        if (signal_type === "buy_sell") {
+          return cell.row.buy_time ? fDateTimesec(cell.row.buy_time) : "-";
+        } else {
+          return cell.row.sell_time ? fDateTimesec(cell.row.sell_time) : "-";
+        }
+      },
+    },
+    {
+      Header: "Exit time",
+      accessor: "sell_time",
+      Cell: ({ cell }) => {
+        const signal_type = cell.row.signal_type;
+
+        if (signal_type === "sell_buy") {
+          return cell.row.buy_time ? fDateTimesec(cell.row.buy_time) : "-";
+        } else {
+          return cell.row.sell_time ? fDateTimesec(cell.row.sell_time) : "-";
+        }
+      },
+    },
+
+    {
+      Header: "switch",
+      accessor: "switch",
+      Cell: ({ cell }) => {
+        return (
+          <span onClick={(e) => ChangeTradeType(cell.row)}>
+            <ArrowLeftRight />
+          </span>
+        );
       },
     },
   ];
 
-  // getting data
+  // Function to get user history
   const getuserallhistory = async () => {
     try {
-      const data = { userid: user_id };
-      const response = await getEmployeeUserposition(data);
-      const filterdata =
-        response.data &&
-        response.data.filter((item) => {
-          return item.buy_qty !== item.sell_qty;
-        });
-      const searchfilter = filterdata?.filter((item) => {
-        const searchInputMatch =
-          search === "" ||
-          (item.symbol &&
-            item.symbol.toLowerCase().includes(search.toLowerCase()));
+      const data = { userid: Userid, adminid: TokenData?.parent_id };
+      const response = await Clienthistory(data);
+      let filteredData = response.data;
 
-        return searchInputMatch;
-      });
-      setData(search ? searchfilter : filterdata);
-    } catch (error) {}
+      // Apply search filter
+      if (search) {
+        const searchLower = search.toLowerCase();
+        filteredData = filteredData.filter((item) => {
+          return (
+            (item?.userName && item.userName.toLowerCase().includes(searchLower)) ||
+            (item?.symbol && item.symbol.toLowerCase().includes(searchLower)) ||
+            (item?.buy_price &&
+              item.buy_price.toString().toLowerCase().includes(searchLower)) ||
+            (item?.sell_price &&
+              item.sell_price.toString().toLowerCase().includes(searchLower))
+          );
+        });
+      }
+
+      if (statusFilter === "open") {
+        filteredData = filteredData.filter((item) => item.sell_price === null || item.sell_price === undefined);
+      } else if (statusFilter === "close") {
+        filteredData = filteredData.filter((item) => item.sell_price !== null && item.sell_price !== undefined);
+      }
+
+
+      setData(filteredData);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
- 
+  const GetUserName = async () => {
+    try {
+      const admin_id = TokenData?.parent_id;
+      const response = await GetUsersName({ admin_id });
+      if (response.status) {
+        setUserName(response.data);
+      }
+    } catch (error) { }
+  };
+
+  const calculateTotalProfitLoss = () => {
+    return data
+      .reduce((total, row) => {
+        const sellPrice = row.sell_price;
+        const buyPrice = row.buy_price;
+        const buyQty = row.buy_qty;
+        const signal_type = row.signal_type;
+        if (sellPrice && buyPrice && buyQty) {
+          return total + (sellPrice - buyPrice) * buyQty;
+        }
+        return total;
+      }, 0)
+      .toFixed(4);
+  };
+
+  const totalProfitLoss = calculateTotalProfitLoss();
+
+  const ChangeTradeType = async (row) => {
+    const data = { id: row._id };
+    const response = await switchOrderType(data);
+
+    if (response.status) {
+      getuserallhistory();
+    } else {
+      alert("Error");
+    }
+  };
 
   return (
     <>
@@ -80,8 +300,14 @@ const Position = () => {
               <div className="card transaction-table">
                 <div className="card-header border-0 flex-wrap pb-0">
                   <div className="mb-4">
-                    <h4 className="card-title">Position</h4>
+                    <h4 className="card-title">Trade History</h4>
                   </div>
+                  {/* <Link
+                    to="/admin/users"
+                    className="float-end mb-4 btn btn-primary"
+                  >
+                    <i className="fa-solid fa-arrow-left"></i> Back
+                  </Link> */}
                 </div>
                 <div className="card-body p-0">
                   <div className="tab-content" id="myTabContent1">
@@ -91,47 +317,121 @@ const Position = () => {
                       role="tabpanel"
                       aria-labelledby="Week-tab"
                     >
-                      <div className="mb-3 ms-4">
-                        Search :{" "}
-                        <input
-                          className="ml-2 input-search form-control"
-                          style={{ width: "20%" }}
-                          type="text"
-                          placeholder="Search..."
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
-                        />
-                      </div>
-                      <Table
-                        columns={columns}
-                        data={data && data}
-                        rowsPerPage={rowsPerPage}
-                      />
-
                       <div
-                        className="d-flex align-items-center"
                         style={{
-                          marginBottom: "20px",
-                          marginLeft: "20px",
-                          marginTop: "-48px",
+                          display: "flex",
+                          gap: "20px",
+                          alignItems: "center",
+                          padding: "1rem",
                         }}
                       >
-                        Rows per page:{" "}
-                        <select
-                          className="form-select ml-2"
-                          value={rowsPerPage}
-                          onChange={(e) =>
-                            setRowsPerPage(Number(e.target.value))
-                          }
-                          style={{ width: "auto", marginLeft: "10px" }}
-                        >
-                          <option value={5}>5</option>
-                          <option value={10}>10</option>
-                          <option value={20}>20</option>
-                          <option value={50}>50</option>
-                          <option value={100}>100</option>
-                        </select>
+                        {/* Search Input */}
+                        <div style={{ flex: 1 }}>
+                          <label
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              marginRight: "0.5rem",
+                            }}
+                          >
+                            🔍 Search:
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Search..."
+                            className="form-control"
+                            style={{
+                              width: "100%",
+                              padding: "10px",
+                              borderRadius: "5px",
+                              border: "1px solid #ccc",
+                              backgroundColor: "#f8f9fa",
+                            }}
+                            value={search}
+                            autoFocus
+                            onChange={(e) => setSearch(e.target.value)}
+                          />
+                        </div>
+
+                        {/* User Dropdown */}
+                        <div style={{ flex: 1 }}>
+                          <label
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              marginRight: "0.5rem",
+                            }}
+                          >
+                            👤 Users:
+                          </label>
+                          <select
+                            className="form-select"
+                            style={{
+                              width: "100%",
+                              padding: "10px",
+                              borderRadius: "5px",
+                              border: "1px solid #ccc",
+                              backgroundColor: "#f8f9fa",
+                              color: "#333",
+                            }}
+                            onChange={(e) => setUserId(e.target.value)}
+                            defaultValue=""
+                          >
+                            <option value="all">Select a user</option>
+                            {userName &&
+                              userName.map((username) => (
+                                <option key={username._id} value={username._id}>
+                                  {username.UserName}
+                                </option>
+                              ))}
+                          </select>
+                        </div>
+
+                        <div style={{ flex: 1 }}>
+                          <label
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              marginRight: "0.5rem",
+                            }}
+                          >
+                            👤 Status:
+                          </label>
+                          <select
+                            className="form-select"
+                            style={{
+                              width: "200px",
+                              padding: "8px",
+                              borderRadius: "5px",
+                              border: "1px solid #ccc",
+                              backgroundColor: "#f8f9fa",
+                            }}
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                          >
+                            <option value="all">All</option>
+                            <option value="open">Open Positions</option>
+                            <option value="close">Closed Positions</option>
+                          </select>
+                        </div>
+
+
                       </div>
+
+                      <h3 className="ms-3">
+                        Total Profit/Loss:{" "}
+                        <span
+                          style={{
+                            color: totalProfitLoss > 0 ? "green" : "red",
+                            fontSize: "1.2rem",
+                          }}
+                        >
+                          {" "}
+                          {/* <DollarSign /> */}
+                          {totalProfitLoss}
+                        </span>
+                      </h3>
+                      <Table columns={columns1} data={data && data} />
                     </div>
                   </div>
                 </div>
@@ -144,4 +444,4 @@ const Position = () => {
   );
 };
 
-export default Position;
+export default Tradehistory;
