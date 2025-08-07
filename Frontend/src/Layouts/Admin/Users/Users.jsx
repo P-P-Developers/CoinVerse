@@ -7,7 +7,7 @@ import {
   updateActivestatus,
 } from "../../../Services/Superadmin/Superadmin";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { CirclePlus, Pencil, CircleDollarSign, Eye } from "lucide-react";
+import { CirclePlus, Pencil, CircleDollarSign, Eye, CircleMinus } from "lucide-react";
 import { getAllClient } from "../../../Services/Superadmin/Superadmin";
 
 import Swal from "sweetalert2";
@@ -55,6 +55,9 @@ const Users = () => {
   const [redirectstatus, setRedirectstatus] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(search);
 
+  const [reason, setReason] = useState("");
+  const [customReason, setCustomReason] = useState("");
+
   const [client, setClient] = useState([]);
 
 
@@ -85,50 +88,64 @@ const Users = () => {
         return <span>{planLabels[cell.value] || "--"}</span>;
       }
     },
-    client?.Edit_balance == 1 && {
+    client?.Edit_balance == 1 &&
+    {
       Header: "Balance",
       accessor: "Balance",
       Cell: ({ cell }) => (
         <div
           style={{
             backgroundColor: "#E1FFED",
-            border: "none",
             color: "#33B469",
-            padding: "6px 10px",
-            textAlign: "center",
-            textDecoration: "none",
-            display: "inline-block",
-            fontSize: "13px",
-            cursor: "pointer",
+            padding: "6px 12px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
             borderRadius: "10px",
-            transition: "background-color 0.3s ease",
+            fontSize: "13px",
+            fontWeight: "500",
+            gap: "10px",
           }}
         >
-          <CircleDollarSign
-            style={{
-              height: "16px",
-              marginBottom: "-4px",
-              marginRight: "5px",
-              verticalAlign: "middle",
-            }}
-          />
-          <span style={{ fontWeight: "bold", verticalAlign: "middle" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+
+            <span style={{ fontWeight: "bold" }}>
+              {parseFloat(cell.value).toFixed(2)}
+            </span>
+          </div>
+
+          <div style={{ display: "flex", gap: "8px" }}>
             <CirclePlus
               size={20}
               style={{
-                marginBottom: "-4px",
-                marginRight: "5px",
-                verticalAlign: "middle",
+                color: "#22c55e",
+                cursor: "pointer",
+                transition: "transform 0.2s",
               }}
               onClick={() => {
                 setModal(true);
                 setID(cell.row._id);
                 setType("CREDIT");
               }}
+              onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.2)")}
+              onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
             />
-
-            {parseFloat(cell.value).toFixed(2)}
-          </span>
+            <CircleMinus
+              size={20}
+              style={{
+                color: "#ef4444",
+                cursor: "pointer",
+                transition: "transform 0.2s",
+              }}
+              onClick={() => {
+                setModal(true);
+                setID(cell.row._id);
+                setType("DEBIT");
+              }}
+              onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.2)")}
+              onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
+            />
+          </div>
         </div>
       ),
     },
@@ -535,28 +552,30 @@ const Users = () => {
       </div>
 
       {modal && (
-        <div
-          className="modal custom-modal d-block"
-          id="add_vendor"
-          role="dialog"
-        >
+        <div className="modal custom-modal d-block" id="add_vendor" role="dialog">
           <div className="modal-dialog modal-dialog-centered modal-md">
             <div className="modal-content">
               <div className="modal-header border-0 pb-0">
                 <div className="form-header modal-header-title text-start mb-0">
-                  <h4 className="mb-0">Add Fund</h4>
+                  <h4 className="mb-0"> {type == "CREDIT" ? "Credit Fund" : "Debit Fund"}</h4>
                 </div>
                 <button
                   type="button"
                   className="btn-close"
                   data-bs-dismiss="modal"
                   aria-label="Close"
-                  onClick={() => setModal(false)}
+                  onClick={() => {
+                    setModal(false);
+                    setReason("");
+                    setCustomReason("");
+                    setBalance("");
+                  }}
                 ></button>
               </div>
               <div>
                 <div className="modal-body">
                   <div className="row">
+                    {/* Fund Input */}
                     <div className="col-lg-12 col-sm-12">
                       <div className="input-block mb-3">
                         <input
@@ -565,26 +584,62 @@ const Users = () => {
                           placeholder="Enter Fund"
                           onChange={(e) => {
                             let value = e.target.value;
-
-                            // Convert to number and cap at 10000
                             if (Number(value) > 10000) {
                               value = "10000";
                             }
-
                             setBalance(value);
                           }}
                           value={balance}
                         />
                       </div>
                     </div>
+
+                    {/* Reason Dropdown */}
+                    <div className="col-lg-12 col-sm-12">
+                      <div className="input-block mb-3">
+                        <select
+                          className="form-select"
+                          value={reason}
+                          onChange={(e) => setReason(e.target.value)}
+                        >
+                          <option value="">Select Reason</option>
+                          <option value="Profit Share">Profit Share</option>
+                          <option value="Referral Bonus">Referral Bonus</option>
+                          <option value="Manual Credit">Manual Credit</option>
+                          <option value="Manual Debit">Manual Debit</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Show custom input if "Other" is selected */}
+                    {reason === "Other" && (
+                      <div className="col-lg-12 col-sm-12">
+                        <div className="input-block mb-3">
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Enter Custom Reason"
+                            value={customReason}
+                            onChange={(e) => setCustomReason(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
+
                 <div className="modal-footer">
                   <button
                     type="button"
                     data-bs-dismiss="modal"
                     className="btn btn-back cancel-btn me-2"
-                    onClick={() => setModal(false)}
+                    onClick={() => {
+                      setModal(false);
+                      setReason("");
+                      setCustomReason("");
+                      setBalance("");
+                    }}
                   >
                     Cancel
                   </button>
