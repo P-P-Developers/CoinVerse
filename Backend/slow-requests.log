@@ -225,3 +225,17 @@ d2025-07-04T12:24:26.785Z [warn]: SLOW API: [POST] /users/userSymbollist - 367ms
 2025-08-07T09:51:37.502Z [warn]: SLOW API: [POST] /admin/Updatestatus - 230ms
 2025-08-07T09:51:52.400Z [warn]: SLOW API: [POST] /admin/Updatestatus - 216ms
 2025-08-07T10:15:30.956Z [warn]: SLOW API: [POST] /getclienttradehistory - 207ms
+2025-08-08T05:36:37.543Z [warn]: SLOW API: [GET] /getCompany - 264ms
+2025-08-08T09:58:11.790Z [warn]: SLOW API: [GET] /GetConditions - 520ms
+2025-08-08T10:09:33.924Z [warn]: SLOW API: [GET] /getCompany - 317ms
+2025-08-08T10:16:29.574Z [warn]: SLOW API: [POST] /getclienttradehistory - 236ms
+2025-08-08T10:16:31.269Z [warn]: SLOW API: [POST] /getclienttradehistory - 212ms
+2025-08-08T10:16:40.247Z [warn]: SLOW API: [POST] /getclienttradehistory - 415ms
+2025-08-08T10:16:40.483Z [warn]: SLOW API: [POST] /getclienttradehistory - 419ms
+2025-08-08T10:16:43.528Z [warn]: SLOW API: [POST] /getclienttradehistory - 217ms
+2025-08-08T10:16:45.483Z [warn]: SLOW API: [POST] /getclienttradehistory - 219ms
+2025-08-08T10:16:45.525Z [warn]: SLOW API: [POST] /getclienttradehistory - 230ms
+2025-08-08T10:16:45.559Z [warn]: SLOW API: [POST] /getclienttradehistory - 201ms
+2025-08-08T10:16:45.592Z [warn]: SLOW API: [POST] /getclienttradehistory - 256ms
+2025-08-08T10:45:15.441Z [warn]: SLOW API: [POST] /getclienttradehistory - 268ms
+2025-08-08T10:47:43.777Z [warn]: SLOW API: [POST] /getclienttradehistory - 227ms

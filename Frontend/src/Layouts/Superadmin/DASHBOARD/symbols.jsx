@@ -124,9 +124,7 @@ function Symbols() {
         <div className="col-lg-12">
           <div className="card transaction-table">
             <div className="card-header border-0 flex-wrap pb-0">
-              <div className="mb-4">
-                <h4 className="card-title">Symbol</h4>
-              </div>
+
 
               <div className="container mt-4">
                 <h2 className="mb-3">Symbol Live Prices</h2>

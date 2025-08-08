@@ -5,6 +5,8 @@ import { fDateTime, fDateTimesec } from "../../../Utils/Date_format/datefromat";
 import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 const Position = () => {
+
+
   const TokenData = getUserFromToken();
 
   const user_id = TokenData?.user_id;
@@ -127,7 +129,7 @@ const Position = () => {
         if (signal_type === "buy_sell") {
           return cell.row.buy_time ? fDateTimesec(cell.row.buy_time) : "-";
         } else {
-          return cell.row.sell_time ? fDateTimesec(cell.row.sell_time) : "-";
+          return cell.row.sell_time ? fDateTimesec(cell.row.buy_time) : "-";
         }
       },
     },
@@ -144,18 +146,16 @@ const Position = () => {
         }
       },
     },
-    
-   
+
+
   ];
 
   const getuserallhistory = async () => {
     try {
       const data = { userid: user_id, Role: Role };
       const response = await getpositionhistory(data);
-
-
       setData(response.data || []);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -183,9 +183,9 @@ const Position = () => {
                       aria-labelledby="Week-tab"
                     >
                       <div className="mb-3 ms-4">
-                       
+
                         <div className="d-flex align-items-center mb-3">
-                       
+
                           <div className="me-3">
                             <label className="form-label">🔍 Search:</label>
                             <input

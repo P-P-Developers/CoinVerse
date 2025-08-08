@@ -12,7 +12,11 @@ import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
 
 import Dropdown from "react-bootstrap/Dropdown";
 
+
+
 const Position = () => {
+
+
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [adminNames, setAdminNames] = useState([]);
@@ -24,13 +28,19 @@ const Position = () => {
   const [logsPage, setLogsPage] = useState(0);
   const logsPerPage = 10;
 
+
+
+
   useEffect(() => {
     getuserallhistory();
   }, [search, selectedAdmin]);
 
+
+
   useEffect(() => {
     GetAdminUserName();
   }, []);
+
 
   const getuserallhistory = async () => {
     try {
@@ -41,6 +51,9 @@ const Position = () => {
     } catch (error) { }
   };
 
+
+
+
   const GetAdminUserName = async () => {
     try {
       const res = await getAdminName();
@@ -48,15 +61,21 @@ const Position = () => {
     } catch (error) { }
   };
 
+
+
+
   // Dummy log data
   const openLogsModal = () => {
     setShowModal(true);
   };
 
+
   const closeLogsModal = () => {
     setShowModal(false);
     setLogsPage(0);
   };
+
+
 
   // Pagination logic for logs
   const totalLogsPages = Math.ceil(logsData.length / logsPerPage);
@@ -65,6 +84,8 @@ const Position = () => {
     (logsPage + 1) * logsPerPage
   );
 
+
+  
   return (
     <div className="container-fluid">
       <div className="row">
