@@ -245,6 +245,15 @@ const Users = () => {
         return;
       }
 
+      if (!reason) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Please enter a valid Reason.",
+        });
+        return;
+      }
+
       // Show confirmation popup
       const confirmation = await Swal.fire({
         title: "Confirm Update",

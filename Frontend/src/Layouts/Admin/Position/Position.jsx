@@ -11,6 +11,7 @@ const Position = () => {
 
   const user_id = TokenData?.user_id;
   const Role = TokenData?.Role;
+
   const [originalData, setOriginalData] = useState([]);
   const [selectedUserName, setSelectedUserName] = useState(null);
   const [data, setData] = useState([]);
@@ -57,7 +58,6 @@ const Position = () => {
         const buyQty = cell.row.buy_qty;
 
         if (sellPrice && buyPrice && buyQty) {
-          // if(signal_type === "buy_sell"){
           const profitLoss = (sellPrice - buyPrice) * buyQty;
           const formattedProfitLoss = profitLoss.toFixed(4);
 
@@ -65,7 +65,6 @@ const Position = () => {
 
           return (
             <span style={{ color }}>
-              {/* <DollarSign /> */}
               {formattedProfitLoss}
             </span>
           );
@@ -105,7 +104,6 @@ const Position = () => {
       Cell: ({ cell }) => {
         const signal_type = cell.row.signal_type;
 
-        // return signal_type ? signal_type == "buy_sell" ? "BUY" :"SELL" : "-";
         return (
           <>
             {signal_type === "buy_sell" ? (
@@ -147,7 +145,6 @@ const Position = () => {
       },
     },
 
-
   ];
 
   const getuserallhistory = async () => {
@@ -160,7 +157,20 @@ const Position = () => {
 
   useEffect(() => {
     getuserallhistory();
-  }, [search, selectedUserName]);
+  }, []);
+
+
+  
+  const filteredData = data.filter((item) => {
+    const searchLower = search.toLowerCase();
+    return (
+      item.username?.toLowerCase().includes(searchLower) ||
+      item.symbol?.toLowerCase().includes(searchLower) ||
+      item.signal_type?.toLowerCase().includes(searchLower)
+    );
+  });
+
+
 
   return (
     <>
@@ -197,33 +207,12 @@ const Position = () => {
                             />
                           </div>
 
-                          <div>
-                            <label className="form-label">Select User:</label>
-                            <select
-                              className="form-control"
-                              onChange={(e) =>
-                                setSelectedUserName(e.target.value)
-                              }
-                              value={selectedUserName}
-                            >
-                              <option value="">Select a user</option>
-                              {originalData.length > 0 ? (
-                                originalData.map((user) => (
-                                  <option key={user} value={user}>
-                                    {user}
-                                  </option>
-                                ))
-                              ) : (
-                                <option>No users available</option>
-                              )}
-                            </select>
-                          </div>
                         </div>
                       </div>
 
                       <Table
                         columns={columns}
-                        data={data && data}
+                        data={filteredData}
                         rowsPerPage={rowsPerPage}
                       />
                       <div

@@ -13,10 +13,10 @@ const BonusAndBrokerage = () => {
   const user_id = TokenData?.user_id;
 
   const [data, setData] = useState([]);
+  const [bonusData, setBonusData] = useState([]);
   const [search, setSearch] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [completed, setCompleted] = useState(0);
-  const [bonusData, setBonusData] = useState([]);
   const [totalBrokerage, setTotalBrokerage] = useState(0);
 
   const columns = [
@@ -78,13 +78,14 @@ const BonusAndBrokerage = () => {
 
       setCompleted(bonusRes?.CompletedBrokrageandBonus || 0);
 
+      // Brokerage data structure
       const structuredData =
         brokerageRes.data?.map((item) => ({
           UserName: item.UserName,
           ...item.balance_data,
         })) || [];
 
-      const filteredData = structuredData
+      const filteredBrokerageData = structuredData
         .map((item) => ({
           UserName: item.UserName,
           symbol: item.symbol,
@@ -94,14 +95,25 @@ const BonusAndBrokerage = () => {
         }))
         .filter(
           (item) =>
-            !search || item.symbol?.toLowerCase().includes(search.toLowerCase())
+            !search ||
+            item.symbol?.toLowerCase().includes(search.toLowerCase()) ||
+            item.UserName?.toLowerCase().includes(search.toLowerCase())
         );
 
-      setData(filteredData);
+      setData(filteredBrokerageData);
 
+      // Bonus data filtering
       const bonusList = bonusRes.data || [];
-      setBonusData(bonusList);
+      const filteredBonusData = bonusList.filter(
+        (item) =>
+          !search ||
+          item.username?.toLowerCase().includes(search.toLowerCase()) ||
+          item.Type?.toLowerCase().includes(search.toLowerCase())
+      );
 
+      setBonusData(filteredBonusData);
+
+      // Total brokerage calculation
       const totalBrokerageVal =
         structuredData.reduce(
           (acc, item) => acc + Number(item.brokerage || 0),
@@ -116,9 +128,8 @@ const BonusAndBrokerage = () => {
 
   const fetchMarginData = async () => {
     try {
-      const res = await getProfitMarginApi({ admin_id: user_id });
-      // Not used in UI, can be added later
-    } catch (error) {}
+      await getProfitMarginApi({ admin_id: user_id });
+    } catch (error) { }
   };
 
   return (
@@ -127,11 +138,11 @@ const BonusAndBrokerage = () => {
         <div className="card-body">
           {/* Search Input */}
           <div className="mb-3">
-            <label className="form-label fw-semibold">Search by Symbol:</label>
+            <label className="form-label fw-semibold">Search:</label>
             <input
               type="text"
               className="form-control"
-              placeholder="Search..."
+              placeholder="Search by Symbol, Username, or Type..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               style={{ maxWidth: "300px" }}
@@ -193,7 +204,7 @@ const BonusAndBrokerage = () => {
                   marginTop: "-48px",
                 }}
               >
-                Rows per page:{" "}
+                Rows per page:
                 <select
                   className="form-select ml-2"
                   value={rowsPerPage}
@@ -204,7 +215,7 @@ const BonusAndBrokerage = () => {
                   <option value={10}>10</option>
                   <option value={20}>20</option>
                   <option value={50}>50</option>
-                  <option value={50}>100</option>
+                  <option value={100}>100</option>
                 </select>
               </div>
             </Tab>

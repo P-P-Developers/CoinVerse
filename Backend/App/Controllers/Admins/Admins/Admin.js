@@ -1225,15 +1225,15 @@ class Admin {
 
       if (!userid || userid === "all") {
         result = await mainorder_model
-          // .find({ adminid, $expr: { $eq: ["$sell_lot", "$buy_lot"] } })
-          .find({ adminid })
+          .find({ adminid, $expr: { $eq: ["$sell_lot", "$buy_lot"] } })
+          // .find({ adminid })
 
           .sort({ createdAt: -1 });
       } else {
         result = await mainorder_model
           .find({
             userid,
-            // $expr: { $eq: ["$sell_lot", "$buy_lot"] },
+            $expr: { $eq: ["$sell_lot", "$buy_lot"] },
           })
           .sort({ createdAt: -1 });
       }
@@ -1263,6 +1263,11 @@ class Admin {
       return res.json({ status: false, message: "internal error", data: [] });
     }
   }
+
+
+
+
+
 
   async getlicensedata(req, res) {
     try {

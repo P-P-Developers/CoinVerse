@@ -51,7 +51,6 @@ const Table = ({
 
   useEffect(() => {
     setCurrentPage(0);
-
   }, [search]);
 
 

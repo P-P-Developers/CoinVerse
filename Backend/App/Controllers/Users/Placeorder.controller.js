@@ -121,16 +121,123 @@ class Placeorder {
     }
   }
 
+  // async gettardehistory(req, res) {
+  //   try {
+  //     const { userid, Role } = req.body;
+
+  //     let result;
+
+  //     if (Role === "USER") {
+  //       result = await mainorder_model
+  //         .find({ userid: userid })
+  //         .sort({ createdAt: -1 });
+  //       if (result.length > 0) {
+  //         return res.json({
+  //           status: true,
+  //           message: "User found",
+  //           data: result,
+  //         });
+  //       } else {
+  //         return res.json({
+  //           status: false,
+  //           message: "No orders found for this user",
+  //           data: [],
+  //         });
+  //       }
+  //     } else {
+  //       result = await mainorder_model.aggregate([
+  //         {
+  //           $match: {
+  //             adminid: userid,
+  //             $or: [
+  //               { sell_price: null },
+  //               { sell_price: { $exists: false } }
+  //             ]
+  //           },
+  //         },
+  //         {
+  //           $lookup: {
+  //             from: "users",
+  //             let: { user_id: { $toObjectId: "$userid" } },
+  //             pipeline: [
+  //               {
+  //                 $match: {
+  //                   $expr: { $eq: ["$_id", "$$user_id"] },
+  //                 },
+  //               },
+  //             ],
+  //             as: "userDetails",
+  //           },
+  //         },
+  //         {
+  //           $unwind: {
+  //             path: "$userDetails",
+  //             preserveNullAndEmptyArrays: true,
+  //           },
+  //         },
+  //         {
+  //           $project: {
+  //             adminid: 1,
+  //             username: { $ifNull: ["$userDetails.UserName", "No username"] },
+
+  //             symbol: 1,
+  //             buy_qty: 1,
+  //             sell_qty: 1,
+  //             PositionAvg: 1,
+  //             buy_type: 1,
+  //             sell_type: 1,
+  //             buy_type: 1,
+  //             sell_price: 1,
+  //             buy_lot: 1,
+  //             buy_price: 1,
+  //             sell_lot: 1,
+  //             buy_time: 1,
+  //             sell_time: 1,
+  //             lotsize: 1,
+  //             token: 1,
+  //             requiredFund: 1,
+  //             reason: 1,
+  //             status: 1,
+  //             perlot: 1,
+  //             brokerage: 1,
+  //             limit: 1,
+  //             createdAt: 1,
+  //           },
+
+  //         },
+  //       ]);
+
+  //       if (result.length > 0) {
+  //         return res.json({
+  //           status: true,
+  //           message: "Admin found",
+  //           data: result,
+  //         });
+  //       } else {
+  //         return res.json({
+  //           status: false,
+  //           message: "No orders found for this admin",
+  //           data: [],
+  //         });
+  //       }
+  //     }
+  //   } catch (error) {
+  //     return res.json({ status: false, message: "Internal error", data: [] });
+  //   }
+  // }
+
+
   async gettardehistory(req, res) {
     try {
-      const { userid, Role } = req.body;
-
+      const { userid, Role  } = req.body;
       let result;
 
       if (Role === "USER") {
+        // USER case — pura data
         result = await mainorder_model
           .find({ userid: userid })
           .sort({ createdAt: -1 });
+
         if (result.length > 0) {
           return res.json({
             status: true,
@@ -145,12 +252,15 @@ class Placeorder {
           });
         }
       } else {
+        // ADMIN case — pura data with user details
         result = await mainorder_model.aggregate([
           {
             $match: {
               adminid: userid,
-
-
+              $or: [
+                { sell_price: null },
+                { sell_price: { $exists: false } }
+              ]
             },
           },
           {
@@ -174,34 +284,11 @@ class Placeorder {
             },
           },
           {
-            $project: {
-              adminid: 1,
-              username: { $ifNull: ["$userDetails.UserName", "No username"] },
-
-              symbol: 1,
-              buy_qty: 1,
-              sell_qty: 1,
-              PositionAvg: 1,
-              buy_type: 1,
-              sell_type: 1,
-              buy_type: 1,
-              sell_price: 1,
-              buy_lot: 1,
-              sell_lot: 1,
-              buy_time: 1,
-              sell_time: 1,
-              lotsize: 1,
-              token: 1,
-              requiredFund: 1,
-              reason: 1,
-              status: 1,
-              perlot: 1,
-              brokerage: 1,
-              limit: 1,
-              createdAt: 1,
-            },
-
-          },
+            $addFields: {
+              username: { $ifNull: ["$userDetails.UserName", "No username"] }
+            }
+          }
+          // $project hata diya, taaki sara data aaye
         ]);
 
         if (result.length > 0) {
@@ -219,11 +306,10 @@ class Placeorder {
         }
       }
     } catch (error) {
+      console.error(error);
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
-
-
 
 
 

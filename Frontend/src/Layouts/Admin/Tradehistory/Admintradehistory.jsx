@@ -244,8 +244,6 @@ const Tradehistory = () => {
       } else if (statusFilter === "close") {
         filteredData = filteredData.filter((item) => item.sell_price !== null && item.sell_price !== undefined);
       }
-
-
       setData(filteredData);
     } catch (error) {
       console.error(error);
@@ -258,6 +256,8 @@ const Tradehistory = () => {
       const response = await GetUsersName({ admin_id });
       if (response.status) {
         setUserName(response.data);
+      } else {
+        setUserName([])
       }
     } catch (error) { }
   };
@@ -386,7 +386,7 @@ const Tradehistory = () => {
                           </select>
                         </div>
 
-                        <div style={{ flex: 1 }}>
+                        {/* <div style={{ flex: 1 }}>
                           <label
                             style={{
                               fontWeight: "bold",
@@ -412,7 +412,7 @@ const Tradehistory = () => {
                             <option value="open">Open Positions</option>
                             <option value="close">Closed Positions</option>
                           </select>
-                        </div>
+                        </div> */}
 
 
                       </div>
@@ -430,7 +430,7 @@ const Tradehistory = () => {
                           {totalProfitLoss}
                         </span>
                       </h3>
-                      <Table columns={columns1} data={data && data} />
+                      <Table columns={columns1} data={data && data} search={search} />
                     </div>
                   </div>
                 </div>

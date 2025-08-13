@@ -179,17 +179,17 @@ const Tradehistory = () => {
         return fDateTimesec(cell.value);
       },
     },
-    {
-      Header: "switch",
-      accessor: "switch",
-      Cell: ({ cell }) => {
-        return (
-          <span onClick={(e) => ChangeTradeType(cell.row)}>
-            <ArrowLeftRight />
-          </span>
-        );
-      },
-    },
+    // {
+    //   Header: "switch",
+    //   accessor: "switch",
+    //   Cell: ({ cell }) => {
+    //     return (
+    //       <span onClick={(e) => ChangeTradeType(cell.row)}>
+    //         <ArrowLeftRight />
+    //       </span>
+    //     );
+    //   },
+    // },
   ];
 
   // Function to get user history
