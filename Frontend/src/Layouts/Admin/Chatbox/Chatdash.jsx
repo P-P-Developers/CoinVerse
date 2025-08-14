@@ -18,27 +18,26 @@ const Users = () => {
   const [input, setInput] = useState("");
   const [conversationId, setConversationId] = useState(null);
 
-  // New states for notifications and unread messages
+
   const [unreadMessages, setUnreadMessages] = useState({});
   const [lastMessages, setLastMessages] = useState({});
   const [isTyping, setIsTyping] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const [isVisible, setIsVisible] = useState(true); // Track if window is visible
+  const [isVisible, setIsVisible] = useState(true);
 
   const msgBodyRef = useRef(null);
   const audioRef = useRef(null);
   const pollingInterval = useRef(null);
 
-  // Initialize audio for notification sound
+
   useEffect(() => {
     audioRef.current = new Audio();
     audioRef.current.src = "data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEbBSuTyfDIeSUIJHfJ8N2QQAoUXrTp66hVFApGn+DyvmEbBSuTyfDIeSUIJHfJ8N2QQAoUXrTp66hVFApGn+DyvmEbBSuTyfDIeSUIJHfJ8N2QQAoUXrTp66hVFApGn+DyvmEbBSuTyfDIeSwF";
 
-    // Track window visibility to auto-clear notifications
+
     const handleVisibilityChange = () => {
       setIsVisible(!document.hidden);
 
-      // Clear unread messages for selected user when window becomes visible
       if (!document.hidden && selectedUser) {
         setUnreadMessages(prev => ({
           ...prev,
@@ -62,7 +61,7 @@ const Users = () => {
       msgBodyRef.current.scrollTop = msgBodyRef.current.scrollHeight;
     }
 
-    // Clear unread messages when messages are loaded and user is viewing them
+
     if (selectedUser && messages.length > 0) {
       setUnreadMessages(prev => ({
         ...prev,
@@ -75,18 +74,16 @@ const Users = () => {
     getAlluserdata();
   }, [search]);
 
-  // Re-sort users when unread messages or last messages change
+
   useEffect(() => {
     if (data.length > 0) {
       const sortedUsers = [...data].sort((a, b) => {
         const aUnread = unreadMessages[a._id] || 0;
         const bUnread = unreadMessages[b._id] || 0;
 
-        // First priority: users with unread messages
         if (aUnread > 0 && bUnread === 0) return -1;
         if (bUnread > 0 && aUnread === 0) return 1;
 
-        // Second priority: last message timestamp
         const aLastMsg = lastMessages[a._id];
         const bLastMsg = lastMessages[b._id];
 
@@ -96,11 +93,9 @@ const Users = () => {
         if (aLastMsg && !bLastMsg) return -1;
         if (bLastMsg && !aLastMsg) return 1;
 
-        // Default: alphabetical by name
         return (a.FullName || a.UserName || '').localeCompare(b.FullName || b.UserName || '');
       });
 
-      // Only update if order actually changed
       const hasOrderChanged = sortedUsers.some((user, index) =>
         !data[index] || user._id !== data[index]._id
       );
@@ -111,10 +106,10 @@ const Users = () => {
     }
   }, [unreadMessages, lastMessages]);
 
-  // Auto-refresh messages every 3 seconds
+
   useEffect(() => {
     if (selectedUser) {
-      // Clear notifications immediately when a user is selected
+
       setUnreadMessages(prev => ({
         ...prev,
         [selectedUser._id]: 0
@@ -132,14 +127,14 @@ const Users = () => {
     }
   }, [selectedUser]);
 
-  // Play notification sound
+
   const playNotificationSound = () => {
     if (soundEnabled && audioRef.current) {
       audioRef.current.play().catch(e => console.log('Audio play failed:', e));
     }
   };
 
-  // Show browser notification
+
   const showBrowserNotification = (userName, message) => {
     if (Notification.permission === 'granted') {
       new Notification(`New message from ${userName}`, {
@@ -150,7 +145,8 @@ const Users = () => {
     }
   };
 
-  // Request notification permission
+
+
   const requestNotificationPermission = () => {
     if ('Notification' in window) {
       Notification.requestPermission();
@@ -161,7 +157,7 @@ const Users = () => {
     requestNotificationPermission();
   }, []);
 
-  // Clear notifications when component mounts or messages change for selected user
+
   useEffect(() => {
     if (selectedUser) {
       const timer = setTimeout(() => {
@@ -169,13 +165,13 @@ const Users = () => {
           ...prev,
           [selectedUser._id]: 0
         }));
-      }, 500); // Small delay to ensure messages are loaded
+      }, 500);
 
       return () => clearTimeout(timer);
     }
   }, [selectedUser, messages]);
 
-  // get all admin
+
   const getAlluserdata = async () => {
     const data = { id: user_id };
 
@@ -202,7 +198,7 @@ const Users = () => {
 
       setData(search ? searchfilter : result);
 
-      // Check for new messages for all users
+
       if (result) {
         result.forEach(user => checkForNewMessages(user));
       }
@@ -211,7 +207,7 @@ const Users = () => {
     }
   };
 
-  // Check for new messages for a specific user
+
   const checkForNewMessages = async (user) => {
     try {
       const convRes = await axios.post(`${Config.base_url}admin/conversation`, {
@@ -227,27 +223,22 @@ const Users = () => {
         const lastMessage = latestMessages[latestMessages.length - 1];
         const previousLastMessage = lastMessages[user._id];
 
-        // If there's a new message from the user (not admin)
         if (lastMessage &&
           lastMessage.senderType !== 'admin' &&
           (!previousLastMessage || lastMessage._id !== previousLastMessage._id)) {
 
-          // Update unread count if this user is not selected
           if (!selectedUser || selectedUser._id !== user._id) {
             setUnreadMessages(prev => ({
               ...prev,
               [user._id]: (prev[user._id] || 0) + 1
             }));
 
-            // Play notification sound and show browser notification
+
             playNotificationSound();
             showBrowserNotification(user.UserName || user.FullName, lastMessage.message);
-
-            // Move user to top of the list by updating their timestamp
             moveUserToTop(user._id);
           }
 
-          // Update last message
           setLastMessages(prev => ({
             ...prev,
             [user._id]: lastMessage
@@ -259,11 +250,11 @@ const Users = () => {
     }
   };
 
-  // Function to move user to top of list
+
   const moveUserToTop = (userId) => {
     setData(prevData => {
       const userIndex = prevData.findIndex(user => user._id === userId);
-      if (userIndex > 0) { // If user is not already at top
+      if (userIndex > 0) {
         const userToMove = prevData[userIndex];
         const newData = [userToMove, ...prevData.filter((_, index) => index !== userIndex)];
         return newData;
@@ -285,7 +276,6 @@ const Users = () => {
       const res = await axios.get(`${Config.base_url}admin/messages/${convId}`);
       const newMessages = res.data.messages;
 
-      // If this is from polling and there are new messages, play sound
       if (isPolling && newMessages.length > messages.length) {
         const hasNewUserMessage = newMessages.some((msg, idx) =>
           idx >= messages.length && msg.senderType !== 'admin'
@@ -298,7 +288,6 @@ const Users = () => {
 
       setMessages(newMessages);
 
-      // Always clear unread messages for selected user (when viewing messages)
       setUnreadMessages(prev => ({
         ...prev,
         [user._id]: 0
@@ -399,7 +388,7 @@ const Users = () => {
                                       key={index}
                                       onClick={() => {
                                         setSelectedUser(userData);
-                                        // Clear unread messages immediately when user clicks
+
                                         setUnreadMessages(prev => ({
                                           ...prev,
                                           [userData._id]: 0
@@ -550,7 +539,7 @@ const Users = () => {
                                 className="btn btn-link"
                                 onClick={() => {
                                   fetchMessages(selectedUser);
-                                  // Clear unread messages when manually refreshing
+
                                   setUnreadMessages(prev => ({
                                     ...prev,
                                     [selectedUser._id]: 0
@@ -569,7 +558,7 @@ const Users = () => {
                           className="msg-body"
                           ref={msgBodyRef}
                           onScroll={() => {
-                            // Clear notifications when user scrolls (indicating they're reading)
+
                             if (selectedUser) {
                               setUnreadMessages(prev => ({
                                 ...prev,
@@ -578,7 +567,7 @@ const Users = () => {
                             }
                           }}
                           onClick={() => {
-                            // Clear notifications when user clicks in message area
+
                             if (selectedUser) {
                               setUnreadMessages(prev => ({
                                 ...prev,

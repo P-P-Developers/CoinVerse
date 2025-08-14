@@ -264,3 +264,5 @@ d2025-07-04T12:24:26.785Z [warn]: SLOW API: [POST] /users/userSymbollist - 367ms
 2025-08-13T07:06:40.088Z [warn]: SLOW API: [POST] /admin/brokerageData - 757ms
 2025-08-13T07:22:30.382Z [warn]: SLOW API: [POST] /admin/walletRecharge - 268ms
 2025-08-13T07:27:30.420Z [warn]: SLOW API: [POST] /admin/getAllUser - 252ms
+2025-08-14T06:29:39.163Z [warn]: SLOW API: [POST] /admin/getbonusdetails - 284ms
+2025-08-14T06:29:39.374Z [warn]: SLOW API: [POST] /admin/brokerageData - 504ms
