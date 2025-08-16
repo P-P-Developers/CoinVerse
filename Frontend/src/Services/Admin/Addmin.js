@@ -675,3 +675,17 @@ export async function UpdatePlanTypedata(data, token) {
     return await err;
   }
 }
+
+
+
+
+export async function DeleteAdminBankdetails(data, token) {
+  try {
+    const res = await axios.post(`${Config.base_url}admin/deleteAdminBankDetails`, data, {
+      data: {},
+    });
+    return await res?.data;
+  } catch (err) {
+    return await err;
+  }
+}

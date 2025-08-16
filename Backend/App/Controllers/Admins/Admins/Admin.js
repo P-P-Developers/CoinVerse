@@ -1572,7 +1572,6 @@ class Admin {
       const {
         id,
         walleturl,
-
         qrCodeBase64,
       } = req.body;
 
@@ -1643,6 +1642,31 @@ class Admin {
     }
   }
 
+
+  async deleteAdminBankDetails(req, res) {
+    try {
+      const { id } = req.body;
+      const bankDetail = await UpiDetails.findById(id);
+      if (!bankDetail) {
+        return res.json({ status: false, message: "Bank detail not found" });
+      }
+      await UpiDetails.findByIdAndDelete(id);
+      return res.json({
+        status: true,
+        message: "Bank detail deleted successfully",
+        data: bankDetail,
+      });
+    } catch (error) {
+      return res.json({
+        status: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  }
+
+
+
   async setPrimaryBank(req, res) {
     try {
       const { id } = req.body;
@@ -1698,6 +1722,8 @@ class Admin {
       });
     }
   }
+
+
 
   async updateBankDetails(req, res) {
     try {

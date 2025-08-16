@@ -32,6 +32,7 @@ const {
   UpdatStatus,
   DeleteResearch,
   UpdateUpiDetails,
+  deleteAdminBankDetails,
   getUpiDetails,
   getConversations,
   getMessages,
@@ -96,6 +97,7 @@ router.post("/admin/updatstatus", UpdatStatus);
 router.post("/admin/deleteresearch", DeleteResearch);
 
 router.post("/admin/updateUpiDetails", UpdateUpiDetails);
+router.post("/admin/deleteAdminBankDetails", deleteAdminBankDetails);
 router.post("/admin/getUpiDetails", getUpiDetails);
 router.post("/admin/setPrimaryBank", setPrimaryBank);
 router.post("/admin/deleteBankDetails", deleteBankDetails);
