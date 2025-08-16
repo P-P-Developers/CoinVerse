@@ -281,3 +281,4 @@ d2025-07-04T12:24:26.785Z [warn]: SLOW API: [POST] /users/userSymbollist - 367ms
 2025-08-16T05:45:52.590Z [warn]: SLOW API: [POST] /admin/getUpiDetails - 205ms
 2025-08-16T05:46:11.134Z [warn]: SLOW API: [POST] /admin/getUpiDetails - 202ms
 2025-08-16T05:46:15.844Z [warn]: SLOW API: [POST] /admin/deleteAdminBankDetails - 485ms
+2025-08-16T06:00:23.513Z [warn]: SLOW API: [POST] /admin/getUpiDetails - 375ms
