@@ -8,7 +8,7 @@ const { addSymbol, symbolSearch, userSymbollist, deletwatchlistsymbol, getFavour
     DeletePendingOrder,
     UpdatePendingOrder
 } = require("../../Controllers/Users/Symbol.controller")
-const { getLedgerReport, placeorder, getOrderBook, gettardehistory, position, holding, Squareoff, switchOrderType, getSwitchOrderType, UpdateTargetSlPRice, GetModifyOrder, ConvertPosition } = require("../../Controllers/Users/Placeorder.controller")
+const { getLedgerReport, placeorder, getOrderBook, gettardehistory, position, holding, Squareoff, switchOrderType, getSwitchOrderType, getAllSwitchOrderType, UpdateTargetSlPRice, GetModifyOrder, ConvertPosition } = require("../../Controllers/Users/Placeorder.controller")
 const { userWithdrawalanddeposite, getpaymenthistory, getUserDetail, getmarginpriceforuser, getAllstatement,
 
     getuserorderdata,
@@ -60,6 +60,7 @@ router.post('/todaysBroadcastMessage', todaysBroadcastMessage);
 
 router.post('/switchOrderType', switchOrderType);
 router.post('/getSwitchOrderType', getSwitchOrderType);
+router.get('/getAllSwitchOrderType', getAllSwitchOrderType);
 router.post('/UpdateTargetSlPRice', UpdateTargetSlPRice);
 
 router.post('/open/order', GetModifyOrder);

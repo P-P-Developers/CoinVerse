@@ -350,3 +350,13 @@ d2025-07-04T12:24:26.785Z [warn]: SLOW API: [POST] /users/userSymbollist - 367ms
 2025-08-18T07:13:13.459Z [warn]: SLOW API: [POST] /getSwitchOrderType - 250ms
 2025-08-18T07:13:14.743Z [warn]: SLOW API: [POST] /getclienttradehistory - 205ms
 2025-08-18T07:14:30.097Z [warn]: SLOW API: [POST] /getclienttradehistory - 239ms
+2025-08-18T07:25:46.061Z [warn]: SLOW API: [POST] /getclienttradehistory - 228ms
+2025-08-18T08:11:07.018Z [warn]: SLOW API: [POST] /gettradehistory - 225ms
+2025-08-18T08:20:00.575Z [warn]: SLOW API: [POST] /gettradehistory - 226ms
+2025-08-18T08:26:09.365Z [warn]: SLOW API: [GET] /getCompany - 567ms
+2025-08-18T08:26:09.376Z [warn]: SLOW API: [GET] /getAdminName - 554ms
+2025-08-18T08:26:09.380Z [warn]: SLOW API: [GET] /getCompany - 551ms
+2025-08-18T08:26:09.704Z [warn]: SLOW API: [POST] /getclienttradehistory - 309ms
+2025-08-18T08:26:12.026Z [warn]: SLOW API: [POST] /getclienttradehistory - 236ms
+2025-08-18T08:37:20.220Z [warn]: SLOW API: [POST] /getclienttradehistory - 278ms
+2025-08-18T09:11:39.112Z [warn]: SLOW API: [POST] /getclienttradehistory - 295ms

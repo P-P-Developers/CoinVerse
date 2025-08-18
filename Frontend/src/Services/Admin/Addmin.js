@@ -517,6 +517,19 @@ export async function getswitchOrderTypedata(data, token) {
 
 
 
+export async function getAllswitchOrderTypedata(data, token) {
+  try {
+    const res = await axios.get(`${Config.base_url}getAllSwitchOrderType`, data, {
+      data: {},
+    });
+    return await res?.data;
+  } catch (err) {
+    return await err;
+  }
+}
+
+
+
 
 export async function AddResearch(data, token) {
   try {

@@ -3,15 +3,17 @@ import Table from "../../../Utils/Table/Table";
 import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
 import { gettradehistory } from "../../../Services/Admin/Addmin";
 import { Link } from "react-router-dom";
-import { ArrowLeftRight } from "lucide-react";
+import { ArrowLeftRight, X } from "lucide-react";
 import {
   getAdminName,
   switchOrderType,
 } from "../../../Services/Superadmin/Superadmin";
 import socket from "../../../Utils/socketClient";
+import { getAllswitchOrderTypedata } from "../../../Services/Admin/Addmin";
 
 
 const SuperAdminTradeHistory = () => {
+
   const [data, setData] = useState([]);
   const [userName, setUserName] = useState();
   const [Userid, setUserId] = useState();
@@ -23,9 +25,11 @@ const SuperAdminTradeHistory = () => {
   const [toDate, setToDate] = useState("");
   const [livePrices, setLivePrices] = useState({});
   const [prevPrices, setPrevPrices] = useState({});
+  const [logsmodel, setLogsmodel] = useState(false);
+  const [logsdata, setLogsdata] = useState([])
 
 
- useEffect(() => {
+  useEffect(() => {
     socket.on("receive_data_forex", (data) => {
       const symbol = data.data[1]?.toLowerCase();
       const price = Number(data.data[5]);
@@ -85,7 +89,7 @@ const SuperAdminTradeHistory = () => {
       }
 
       setData(filteredData);
-    } catch (error) {}
+    } catch (error) { }
   };
 
 
@@ -114,12 +118,12 @@ const SuperAdminTradeHistory = () => {
         const signal_type = cell.row.signal_type;
         if (signal_type === "sell_buy") {
           return buy_price ? buy_price.toFixed(4) : livePrices[
-                                          cell.row.symbol?.toLowerCase()
-                                        ];
+            cell.row.symbol?.toLowerCase()
+          ];
         } else {
           return cell.row.sell_price ? cell.row.sell_price.toFixed(4) : livePrices[
-                                          cell.row.symbol?.toLowerCase()
-                                        ];
+            cell.row.symbol?.toLowerCase()
+          ];
         }
       },
     },
@@ -133,7 +137,7 @@ const SuperAdminTradeHistory = () => {
         const buyQty = cell.row.buy_qty;
 
         if (sellPrice && buyPrice && buyQty) {
-       
+
           const profitLoss = (sellPrice - buyPrice) * buyQty;
           const formattedProfitLoss = profitLoss.toFixed(4);
 
@@ -141,11 +145,11 @@ const SuperAdminTradeHistory = () => {
 
           return (
             <span style={{ color }}>
-            
+
               {formattedProfitLoss}
             </span>
           );
-        }else if (signal_type === "buy_sell") {
+        } else if (signal_type === "buy_sell") {
           const livePrice = livePrices[cell.row.symbol?.toLowerCase()];
           if (livePrice) {
             const profitLoss = (livePrice - buyPrice) * cell.row.buy_qty;
@@ -153,7 +157,7 @@ const SuperAdminTradeHistory = () => {
             const color = profitLoss > 0 ? "green" : "red";
             return <span style={{ color }}>{formattedProfitLoss}</span>;
           }
-        }else if (signal_type === "sell_buy") {
+        } else if (signal_type === "sell_buy") {
           const livePrice = livePrices[cell.row.symbol?.toLowerCase()];
           if (livePrice) {
             const profitLoss = (cell.row.sell_price - livePrice) * cell.row.sell_lot;
@@ -250,6 +254,25 @@ const SuperAdminTradeHistory = () => {
   ];
 
 
+  const columns2 = [
+    { Header: "Admin Name", accessor: "AdminName" },
+    { Header: "UserName", accessor: "UserName" },
+    { Header: "Symbol", accessor: "Symbol" },
+    { Header: "Type", accessor: "type" },
+    { Header: "Message", accessor: "message" },
+    {
+      Header: "UpdatedAt",
+      accessor: "updatedAt",
+      Cell: ({ cell }) => {
+        return fDateTimesec(cell.value);
+      },
+    },
+  ];
+
+
+
+
+
   const GetUserName = async () => {
     try {
       const response = await getAdminName();
@@ -257,7 +280,7 @@ const SuperAdminTradeHistory = () => {
         setUserName(response.data);
         setUserId(response.data[0]);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
 
@@ -270,7 +293,7 @@ const SuperAdminTradeHistory = () => {
         const signal_type = row.signal_type;
         if (sellPrice && buyPrice && buyQty) {
           return total + (sellPrice - buyPrice) * buyQty;
-       
+
         }
         return total;
       }, 0)
@@ -291,6 +314,22 @@ const SuperAdminTradeHistory = () => {
     }
   };
 
+  const fetchChangeTradeType = async (row) => {
+    const response = await getAllswitchOrderTypedata();
+    if (response.status) {
+      setLogsdata(response.data)
+    } else {
+      alert("Error");
+    }
+  };
+
+
+  useEffect(() => {
+    if (logsmodel) {
+      fetchChangeTradeType()
+    }
+  }, [logsmodel])
+
   return (
     <>
       <div>
@@ -300,10 +339,21 @@ const SuperAdminTradeHistory = () => {
               <div className="card transaction-table">
                 <div className="card-header border-0 flex-wrap pb-0 d-flex justify-content-between align-items-center">
                   <h4 className="card-title mb-0">📊 Trade History</h4>
-                  <Link to="/admin/users" className="btn btn-primary">
-                    <i className="fa-solid fa-arrow-left me-2"></i>Back
-                  </Link>
+                  <div className="d-flex align-items-center">
+                    <Link to="/admin/users" className="btn btn-primary me-2">
+                      <i className="fa-solid fa-arrow-left me-2"></i>Back
+                    </Link>
+                    <div
+                      onClick={() => setLogsmodel(true)}
+                      className="btn btn-primary"
+                      style={{ cursor: "pointer" }}
+                    >
+                      Logs
+                    </div>
+                  </div>
                 </div>
+
+
                 <div className="card-body p-0">
                   <div className="tab-content" id="myTabContent1">
                     <div
@@ -445,6 +495,37 @@ const SuperAdminTradeHistory = () => {
           </div>
         </div>
       </div>
+      {logsmodel && (
+        <div
+          className="modal show d-block"
+          style={{
+            backgroundColor: "rgba(0,0,0,0.5)",
+            zIndex: 1050,
+          }}
+        >
+          <div className="modal-dialog modal-xl modal-dialog-centered">
+            <div className="modal-content shadow-lg rounded-3">
+              <div className="modal-header bg-primary text-white">
+                <h5 className="modal-title text-white">📋 System Logs</h5>
+                <button
+                  type="button"
+                  className="btn-close btn-close-white"
+                  onClick={() => setLogsmodel(false)}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    fontSize: "20px",
+                    cursor: "pointer",
+                  }}
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              <Table columns={columns2} data={logsdata} />
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

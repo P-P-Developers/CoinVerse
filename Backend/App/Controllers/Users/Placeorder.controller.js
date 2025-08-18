@@ -823,6 +823,9 @@ class Placeorder {
             UserName: "$userDetails.UserName",
           },
         },
+        {
+          $sort: { createdAt: -1 }
+        }
       ]);
 
       res.status(200).json({
@@ -838,6 +841,74 @@ class Placeorder {
       });
     }
   }
+
+
+  async getAllSwitchOrderType(req, res) {
+    try {
+      const logs = await tradeSwitchlogs.aggregate([
+        {
+          $lookup: {
+            from: "users",
+            localField: "user_Id",
+            foreignField: "_id",
+            as: "userDetails",
+          },
+        },
+        {
+          $unwind: {
+            path: "$userDetails",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "admin_Id",
+            foreignField: "_id",
+            as: "adminDetails",
+          },
+        },
+        {
+          $unwind: {
+            path: "$adminDetails",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+
+        {
+          $project: {
+            _id: 1,
+            Symbol: 1,
+            type: 1,
+            Trade_Id: 1,
+            admin_Id: 1,
+            user_Id: 1,
+            message: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            UserName: "$userDetails.UserName",
+            AdminName: "$adminDetails.UserName",
+          },
+        },
+        {
+          $sort: { createdAt: -1 }
+        }
+      ]);
+
+      res.status(200).json({
+        status: true,
+        message: "All logs fetched successfully",
+        data: logs,
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: false,
+        message: "Server Error",
+        error: error.message,
+      });
+    }
+  }
+
 
 
   async UpdateTargetSlPRice(req, res) {
