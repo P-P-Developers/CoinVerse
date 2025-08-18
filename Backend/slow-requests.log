@@ -338,3 +338,15 @@ d2025-07-04T12:24:26.785Z [warn]: SLOW API: [POST] /users/userSymbollist - 367ms
 2025-08-18T07:01:46.015Z [warn]: SLOW API: [POST] /getclienttradehistory - 228ms
 2025-08-18T07:03:02.005Z [warn]: SLOW API: [POST] /admin/getuserpaymentstatus - 217ms
 2025-08-18T07:09:12.981Z [warn]: SLOW API: [POST] /getclienttradehistory - 231ms
+2025-08-18T07:10:23.714Z [warn]: SLOW API: [POST] /getclienttradehistory - 274ms
+2025-08-18T07:10:23.853Z [warn]: SLOW API: [POST] /getclienttradehistory - 353ms
+2025-08-18T07:10:44.042Z [warn]: SLOW API: [POST] /getclienttradehistory - 206ms
+2025-08-18T07:10:44.110Z [warn]: SLOW API: [POST] /getclienttradehistory - 236ms
+2025-08-18T07:10:47.039Z [warn]: SLOW API: [POST] /getclienttradehistory - 208ms
+2025-08-18T07:11:32.919Z [warn]: SLOW API: [POST] /getclienttradehistory - 226ms
+2025-08-18T07:12:24.183Z [warn]: SLOW API: [POST] /getclienttradehistory - 210ms
+2025-08-18T07:13:04.158Z [warn]: SLOW API: [POST] /getclienttradehistory - 202ms
+2025-08-18T07:13:04.254Z [warn]: SLOW API: [POST] /getclienttradehistory - 205ms
+2025-08-18T07:13:13.459Z [warn]: SLOW API: [POST] /getSwitchOrderType - 250ms
+2025-08-18T07:13:14.743Z [warn]: SLOW API: [POST] /getclienttradehistory - 205ms
+2025-08-18T07:14:30.097Z [warn]: SLOW API: [POST] /getclienttradehistory - 239ms
