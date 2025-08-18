@@ -6,6 +6,8 @@ const Order = db.Order;
 const User_model = db.user;
 const mainorder_model = db.mainorder_model;
 const BalanceStatement = db.BalanceStatement;
+const tradeSwitchlogs = db.tradeSwitchlogs;
+const mongoose = require("mongoose");
 const moment = require("moment"); // make sure to install it
 
 class Placeorder {
@@ -229,7 +231,7 @@ class Placeorder {
 
   async gettardehistory(req, res) {
     try {
-      const { userid, Role  } = req.body;
+      const { userid, Role } = req.body;
       let result;
 
       if (Role === "USER") {
@@ -653,14 +655,12 @@ class Placeorder {
   async switchOrderType(req, res) {
     try {
       const { id } = req.body;
-
       const trade = await mainorder_model.findOne({ _id: id });
       if (!trade) {
         return res.json({ status: false, message: "Order not found" });
       }
 
       const isDoubleOrder = trade.orderid.length === 2;
-
       // Swap helpers
       const swap = (a, b) => [b, a];
       const isBuySell = trade.signal_type === "buy_sell";
@@ -755,6 +755,19 @@ class Placeorder {
         await order.save();
       }
 
+
+
+      const tradelogs = await tradeSwitchlogs({
+        user_Id: trade.userid || "",
+        admin_Id: trade.adminid || "",
+        Symbol: trade.symbol || "",
+        Trade_Id: id,
+        type: trade.signal_type,
+        message: `Order type switched to ${trade.signal_type}`,
+      });
+
+      await tradelogs.save()
+
       return res.json({
         status: true,
         message: "Order type switched",
@@ -770,6 +783,62 @@ class Placeorder {
       });
     }
   }
+
+
+  async getSwitchOrderType(req, res) {
+    try {
+      const { admin_id } = req.body;
+
+      const logs = await tradeSwitchlogs.aggregate([
+        {
+          $match: {
+            admin_Id: new mongoose.Types.ObjectId(admin_id),
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "user_Id",
+            foreignField: "_id",
+            as: "userDetails",
+          },
+        },
+        {
+          $unwind: {
+            path: "$userDetails",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            Symbol: 1,
+            type: 1,
+            Trade_Id: 1,
+            admin_Id: 1,
+            user_Id: 1,
+            message: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            UserName: "$userDetails.UserName",
+          },
+        },
+      ]);
+
+      res.status(200).json({
+        status: true,
+        message: "Logs fetched successfully",
+        data: logs,
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: false,
+        message: "Server Error",
+        error: error.message,
+      });
+    }
+  }
+
 
   async UpdateTargetSlPRice(req, res) {
     try {

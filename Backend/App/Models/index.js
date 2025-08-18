@@ -1,3 +1,4 @@
+
 const MongoClient = require("mongodb").MongoClient;
 const uri = process.env.MONGO_URI;
 const client = new MongoClient(uri);
@@ -41,5 +42,6 @@ module.exports = {
   Message: require("./Message"),
   AdminActivityLog: require("./AdminActivityLogs.model"),
   BonusCollection: require("./BonusCollectioni.model"),
+  tradeSwitchlogs: require("./TradeSwitchLogs.model")
 
 };

@@ -3,8 +3,8 @@ import Table from "../../../Utils/Table/Table";
 import { fDateTimesec } from "../../../Utils/Date_format/datefromat";
 import { Clienthistory } from "../../../Services/Admin/Addmin";
 import { Link } from "react-router-dom";
-import { GetUsersName, switchOrderType } from "../../../Services/Admin/Addmin";
-import { ArrowLeftRight } from "lucide-react";
+import { GetUsersName, switchOrderType, getswitchOrderTypedata } from "../../../Services/Admin/Addmin";
+import { ArrowLeftRight, X } from "lucide-react";
 import { getUserFromToken } from "../../../Utils/TokenVerify";
 
 import socket from "../../../Utils/socketClient";
@@ -14,6 +14,8 @@ const Tradehistory = () => {
 
   const user_id = TokenData?.user_id;
 
+
+
   const [data, setData] = useState([]);
   const [userName, setUserName] = useState();
   const [Userid, setUserId] = useState();
@@ -21,7 +23,8 @@ const Tradehistory = () => {
   const [livePrices, setLivePrices] = useState({});
   const [prevPrices, setPrevPrices] = useState({});
   const [statusFilter, setStatusFilter] = useState("all");
-
+  const [logsmodel, setLogsmodel] = useState(false);
+  const [logsdata, setLogsdata] = useState([])
 
 
 
@@ -52,6 +55,8 @@ const Tradehistory = () => {
   useEffect(() => {
     getuserallhistory();
   }, [Userid, search, statusFilter]);
+
+
 
   const columns1 = [
     { Header: "userName", accessor: "userName" },
@@ -217,6 +222,25 @@ const Tradehistory = () => {
     },
   ];
 
+
+
+  const columns = [
+    { Header: "UserName", accessor: "UserName" },
+    { Header: "Symbol", accessor: "Symbol" },
+    { Header: "Type", accessor: "type" },
+    { Header: "Message", accessor: "message" },
+    {
+      Header: "UpdatedAt",
+      accessor: "updatedAt",
+      Cell: ({ cell }) => {
+        return fDateTimesec(cell.value);
+      },
+    },
+  ];
+
+
+
+
   // Function to get user history
   const getuserallhistory = async () => {
     try {
@@ -250,6 +274,8 @@ const Tradehistory = () => {
     }
   };
 
+
+
   const GetUserName = async () => {
     try {
       const admin_id = user_id;
@@ -261,6 +287,9 @@ const Tradehistory = () => {
       }
     } catch (error) { }
   };
+
+
+
 
   const calculateTotalProfitLoss = () => {
     return data
@@ -277,6 +306,7 @@ const Tradehistory = () => {
       .toFixed(4);
   };
 
+
   const totalProfitLoss = calculateTotalProfitLoss();
 
   const ChangeTradeType = async (row) => {
@@ -290,6 +320,26 @@ const Tradehistory = () => {
     }
   };
 
+
+
+  const fetchChangeTradeType = async (row) => {
+    const data = { admin_id: user_id };
+    const response = await getswitchOrderTypedata(data);
+    if (response.status) {
+      setLogsdata(response.data)
+      getuserallhistory();
+    } else {
+      alert("Error");
+    }
+  };
+
+
+  useEffect(() => {
+    if (logsmodel) {
+      fetchChangeTradeType()
+    }
+  }, [logsmodel])
+
   return (
     <>
       <div>
@@ -301,12 +351,13 @@ const Tradehistory = () => {
                   <div className="mb-4">
                     <h4 className="card-title">Trade History</h4>
                   </div>
-                  {/* <Link
-                    to="/admin/users"
+                  <div
+                    onClick={() => setLogsmodel(true)}
                     className="float-end mb-4 btn btn-primary"
+                    style={{ cursor: "pointer" }}
                   >
-                    <i className="fa-solid fa-arrow-left"></i> Back
-                  </Link> */}
+                    Logs
+                  </div>
                 </div>
                 <div className="card-body p-0">
                   <div className="tab-content" id="myTabContent1">
@@ -385,36 +436,6 @@ const Tradehistory = () => {
                               ))}
                           </select>
                         </div>
-
-                        {/* <div style={{ flex: 1 }}>
-                          <label
-                            style={{
-                              fontWeight: "bold",
-                              fontSize: "16px",
-                              marginRight: "0.5rem",
-                            }}
-                          >
-                            👤 Status:
-                          </label>
-                          <select
-                            className="form-select"
-                            style={{
-                              width: "200px",
-                              padding: "8px",
-                              borderRadius: "5px",
-                              border: "1px solid #ccc",
-                              backgroundColor: "#f8f9fa",
-                            }}
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value)}
-                          >
-                            <option value="all">All</option>
-                            <option value="open">Open Positions</option>
-                            <option value="close">Closed Positions</option>
-                          </select>
-                        </div> */}
-
-
                       </div>
 
                       <h3 className="ms-3">
@@ -425,8 +446,6 @@ const Tradehistory = () => {
                             fontSize: "1.2rem",
                           }}
                         >
-                          {" "}
-                          {/* <DollarSign /> */}
                           {totalProfitLoss}
                         </span>
                       </h3>
@@ -439,6 +458,40 @@ const Tradehistory = () => {
           </div>
         </div>
       </div>
+
+
+      {logsmodel && (
+        <div
+          className="modal show d-block"
+          style={{
+            backgroundColor: "rgba(0,0,0,0.5)",
+            zIndex: 1050,
+          }}
+        >
+          <div className="modal-dialog modal-xl modal-dialog-centered">
+            <div className="modal-content shadow-lg rounded-3">
+              <div className="modal-header bg-primary text-white">
+                <h5 className="modal-title text-white">📋 System Logs</h5>
+                <button
+                  type="button"
+                  className="btn-close btn-close-white"
+                  onClick={() => setLogsmodel(false)}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    fontSize: "20px",
+                    cursor: "pointer",
+                  }}
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              <Table columns={columns} data={logsdata} search={search} />
+            </div>
+          </div>
+        </div>
+      )}
+
     </>
   );
 };
