@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTC/ETH Options Chain Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #16213e);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            background: linear-gradient(45deg, #f7931e, #627eea, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: #a0a0a0;
+            font-size: 0.9rem;
+        }
+
+        select, input {
+            padding: 12px;
+            border: 2px solid #333;
+            border-radius: 8px;
+            background: #1a1a2e;
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #f7931e;
+            box-shadow: 0 0 10px rgba(247, 147, 30, 0.3);
+        }
+
+        .symbol-selector {
+            display: flex;
+            gap: 10px;
+        }
+
+        .symbol-btn {
+            padding: 10px 20px;
+            border: 2px solid #333;
+            border-radius: 25px;
+            background: transparent;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .symbol-btn.active {
+            background: linear-gradient(45deg, #f7931e, #627eea);
+            border-color: transparent;
+        }
+
+        .symbol-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(247, 147, 30, 0.3);
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pulse {
+            width: 12px;
+            height: 12px;
+            background: #00ff88;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 255, 136, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); }
+        }
+
+        .price-display {
+            text-align: center;
+            background: linear-gradient(145deg, #1e1e3f, #2a2a5a);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .current-price {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #00ff88;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+        }
+
+        .price-change {
+            font-size: 1.2rem;
+            margin-top: 10px;
+        }
+
+        .positive { color: #00ff88; }
+        .negative { color: #ff4757; }
+
+        .options-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .options-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .options-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .expiry-tabs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .expiry-tab {
+            padding: 8px 16px;
+            border: 2px solid #333;
+            border-radius: 20px;
+            background: transparent;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .expiry-tab.active {
+            background: #f7931e;
+            border-color: #f7931e;
+        }
+
+        .options-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .options-table th {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px 10px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border-bottom: 2px solid #333;
+        }
+
+        .options-table td {
+            padding: 12px 10px;
+            text-align: center;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .options-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .strike-cell {
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .call-option {
+            background: rgba(0, 255, 136, 0.1);
+            color: #00ff88;
+        }
+
+        .put-option {
+            background: rgba(255, 71, 87, 0.1);
+            color: #ff6b7a;
+        }
+
+        .itm { 
+            background: rgba(247, 147, 30, 0.2);
+            font-weight: bold;
+        }
+
+        .buy-sell-buttons {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .btn-buy, .btn-sell {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 35px;
+        }
+
+        .btn-buy {
+            background: #00ff88;
+            color: #000;
+        }
+
+        .btn-sell {
+            background: #ff4757;
+            color: #fff;
+        }
+
+        .btn-buy:hover, .btn-sell:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .market-data {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .data-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .data-card .label {
+            font-size: 0.8rem;
+            color: #a0a0a0;
+            margin-bottom: 5px;
+        }
+
+        .data-card .value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #00ff88;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .current-price {
+                font-size: 2rem;
+            }
+            
+            .options-table th,
+            .options-table td {
+                padding: 8px 5px;
+                font-size: 0.8rem;
+            }
+            
+            .expiry-tabs {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Crypto Options Chain Pro</h1>
+            <p>Advanced Bitcoin & Ethereum Options Trading Platform</p>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label>Select Symbol:</label>
+                <div class="symbol-selector">
+                    <button class="symbol-btn active" data-symbol="BTC">🪙 BTC</button>
+                    <button class="symbol-btn" data-symbol="ETH">⚡ ETH</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>Strike Range:</label>
+                <select id="strikeRange">
+                    <option value="5">±5% from Current Price</option>
+                    <option value="10" selected>±10% from Current Price</option>
+                    <option value="15">±15% from Current Price</option>
+                    <option value="20">±20% from Current Price</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Update Frequency:</label>
+                <select id="updateFreq">
+                    <option value="3000">Real-time (3s)</option>
+                    <option value="5000" selected>Fast (5s)</option>
+                    <option value="10000">Normal (10s)</option>
+                    <option value="30000">Slow (30s)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="live-indicator">
+                <div class="pulse"></div>
+                <span id="connectionStatus">🟢 Live Data Active</span>
+            </div>
+            <div id="lastUpdate">Last Update: --</div>
+        </div>
+
+        <div class="price-display" id="priceDisplay">
+            <div class="symbol-name" id="symbolName">Bitcoin (BTC-USD)</div>
+            <div class="current-price" id="currentPrice">Loading...</div>
+            <div class="price-change" id="priceChange">--</div>
+            
+            <div class="market-data">
+                <div class="data-card">
+                    <div class="label">24h Volume</div>
+                    <div class="value" id="volume">--</div>
+                </div>
+                <div class="data-card">
+                    <div class="label">Market Cap</div>
+                    <div class="value" id="marketCap">--</div>
+                </div>
+                <div class="data-card">
+                    <div class="label">24h High</div>
+                    <div class="value" id="high24h">--</div>
+                </div>
+                <div class="data-card">
+                    <div class="label">24h Low</div>
+                    <div class="value" id="low24h">--</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="options-container">
+            <div class="options-header">
+                <h2 class="options-title" id="optionsTitle">Bitcoin Options Chain</h2>
+                <div class="expiry-tabs" id="expiryTabs">
+                    <!-- Dynamic expiry tabs will be inserted here -->
+                </div>
+            </div>
+
+            <table class="options-table">
+                <thead>
+                    <tr>
+                        <th>Strike Price</th>
+                        <th colspan="3">CALLS</th>
+                        <th colspan="3">PUTS</th>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <th>Premium</th>
+                        <th>Volume</th>
+                        <th>Action</th>
+                        <th>Premium</th>
+                        <th>Volume</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="optionsTableBody">
+                    <!-- Dynamic options data will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        class CryptoOptionsChain {
+            constructor() {
+                this.apiKey = '5XHAJY5SNDOEG040';
+                this.currentSymbol = 'BTC';
+                this.currentPrice = 0;
+                this.updateInterval = null;
+                this.selectedExpiry = null;
+                
+                this.cryptoPrices = {
+                    BTC: { price: 65247, change: 2.34, volume: '28.5B', marketCap: '1.28T', high: 66200, low: 64100 },
+                    ETH: { price: 2418, change: -1.22, volume: '15.2B', marketCap: '291B', high: 2456, low: 2380 }
+                };
+                
+                this.initializeElements();
+                this.setupEventListeners();
+                this.generateExpiryDates();
+                this.updateDisplay();
+                this.startLiveUpdates();
+            }
+
+            initializeElements() {
+                this.elements = {
+                    symbolButtons: document.querySelectorAll('.symbol-btn'),
+                    strikeRange: document.getElementById('strikeRange'),
+                    updateFreq: document.getElementById('updateFreq'),
+                    connectionStatus: document.getElementById('connectionStatus'),
+                    lastUpdate: document.getElementById('lastUpdate'),
+                    symbolName: document.getElementById('symbolName'),
+                    currentPrice: document.getElementById('currentPrice'),
+                    priceChange: document.getElementById('priceChange'),
+                    volume: document.getElementById('volume'),
+                    marketCap: document.getElementById('marketCap'),
+                    high24h: document.getElementById('high24h'),
+                    low24h: document.getElementById('low24h'),
+                    optionsTitle: document.getElementById('optionsTitle'),
+                    expiryTabs: document.getElementById('expiryTabs'),
+                    optionsTableBody: document.getElementById('optionsTableBody')
+                };
+            }
+
+            setupEventListeners() {
+                // Symbol selection
+                this.elements.symbolButtons.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        this.elements.symbolButtons.forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.currentSymbol = e.target.dataset.symbol;
+                        this.updateDisplay();
+                    });
+                });
+
+                // Strike range change
+                this.elements.strikeRange.addEventListener('change', () => {
+                    this.generateOptionsChain();
+                });
+
+                // Update frequency change
+                this.elements.updateFreq.addEventListener('change', (e) => {
+                    this.startLiveUpdates(parseInt(e.target.value));
+                });
+            }
+
+            generateExpiryDates() {
+                const expiryDates = [];
+                const today = new Date();
+                
+                // Current month end
+                const currentMonthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                if (currentMonthEnd > today) {
+                    expiryDates.push({
+                        date: currentMonthEnd,
+                        label: `${currentMonthEnd.toLocaleDateString('en-US', { month: 'short' })} ${currentMonthEnd.getDate()}`
+                    });
+                }
+                
+                // Next month end
+                const nextMonthEnd = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+                expiryDates.push({
+                    date: nextMonthEnd,
+                    label: `${nextMonthEnd.toLocaleDateString('en-US', { month: 'short' })} ${nextMonthEnd.getDate()}`
+                });
+
+                // Additional monthly expiries (next 4 months)
+                for (let i = 3; i <= 6; i++) {
+                    const futureDate = new Date(today.getFullYear(), today.getMonth() + i, 0);
+                    expiryDates.push({
+                        date: futureDate,
+                        label: `${futureDate.toLocaleDateString('en-US', { month: 'short' })} ${futureDate.getDate()}`
+                    });
+                }
+
+                this.expiryDates = expiryDates;
+                this.selectedExpiry = expiryDates[0];
+                this.renderExpiryTabs();
+            }
+
+            renderExpiryTabs() {
+                const tabsHtml = this.expiryDates.map((expiry, index) => 
+                    `<button class="expiry-tab ${index === 0 ? 'active' : ''}" data-index="${index}">
+                        ${expiry.label}
+                    </button>`
+                ).join('');
+                
+                this.elements.expiryTabs.innerHTML = tabsHtml;
+                
+                // Add click listeners to tabs
+                this.elements.expiryTabs.querySelectorAll('.expiry-tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        this.elements.expiryTabs.querySelectorAll('.expiry-tab').forEach(t => t.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.selectedExpiry = this.expiryDates[parseInt(e.target.dataset.index)];
+                        this.generateOptionsChain();
+                    });
+                });
+            }
+
+            async fetchRealTimePrice() {
+                try {
+                    // Simulate API call with realistic price movements
+                    const symbol = this.currentSymbol;
+                    const current = this.cryptoPrices[symbol];
+                    
+                    // Generate realistic price movements
+                    const volatility = symbol === 'BTC' ? 0.002 : 0.003;
+                    const priceChange = (Math.random() - 0.5) * 2 * volatility;
+                    current.price = Math.max(0, current.price * (1 + priceChange));
+                    
+                    // Update change percentage
+                    current.change += (Math.random() - 0.5) * 0.5;
+                    
+                    this.currentPrice = current.price;
+                    this.updatePriceDisplay();
+                    this.generateOptionsChain();
+                    
+                } catch (error) {
+                    console.error('Price fetch error:', error);
+                }
+            }
+
+            updateDisplay() {
+                const symbolData = this.cryptoPrices[this.currentSymbol];
+                const symbolName = this.currentSymbol === 'BTC' ? 'Bitcoin (BTC-USD)' : 'Ethereum (ETH-USD)';
+                
+                this.elements.symbolName.textContent = symbolName;
+                this.elements.optionsTitle.textContent = `${this.currentSymbol} Options Chain`;
+                
+                this.currentPrice = symbolData.price;
+                this.updatePriceDisplay();
+                this.generateOptionsChain();
+            }
+
+            updatePriceDisplay() {
+                const symbolData = this.cryptoPrices[this.currentSymbol];
+                
+                this.elements.currentPrice.textContent = `$${symbolData.price.toLocaleString('en-US', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                })}`;
+                
+                const changeText = `${symbolData.change >= 0 ? '+' : ''}${symbolData.change.toFixed(2)}%`;
+                this.elements.priceChange.textContent = changeText;
+                this.elements.priceChange.className = `price-change ${symbolData.change >= 0 ? 'positive' : 'negative'}`;
+                
+                this.elements.volume.textContent = symbolData.volume;
+                this.elements.marketCap.textContent = symbolData.marketCap;
+                this.elements.high24h.textContent = `$${symbolData.high.toLocaleString()}`;
+                this.elements.low24h.textContent = `$${symbolData.low.toLocaleString()}`;
+                
+                this.elements.lastUpdate.textContent = `Last Update: ${new Date().toLocaleTimeString()}`;
+            }
+
+            generateOptionsChain() {
+                if (!this.selectedExpiry) return;
+                
+                const strikeRange = parseInt(this.elements.strikeRange.value);
+                const currentPrice = this.currentPrice;
+                
+                // Calculate strike prices around current price
+                const minStrike = currentPrice * (1 - strikeRange / 100);
+                const maxStrike = currentPrice * (1 + strikeRange / 100);
+                const strikeCount = 12;
+                const strikeStep = (maxStrike - minStrike) / strikeCount;
+                
+                // Calculate days to expiry
+                const today = new Date();
+                const daysToExpiry = Math.max(1, Math.ceil((this.selectedExpiry.date - today) / (1000 * 60 * 60 * 24)));
+                
+                const optionsHtml = [];
+                
+                for (let i = 0; i <= strikeCount; i++) {
+                    const strike = minStrike + (i * strikeStep);
+                    const roundedStrike = Math.round(strike / 50) * 50; // Round to nearest 50
+                    
+                    const callPrice = this.calculateOptionPrice(currentPrice, roundedStrike, daysToExpiry, 'call');
+                    const putPrice = this.calculateOptionPrice(currentPrice, roundedStrike, daysToExpiry, 'put');
+                    
+                    const callVolume = Math.floor(Math.random() * 2000 + 500);
+                    const putVolume = Math.floor(Math.random() * 1800 + 300);
+                    
+                    const isCallITM = this.currentSymbol === 'BTC' ? currentPrice > roundedStrike : currentPrice > roundedStrike;
+                    const isPutITM = this.currentSymbol === 'BTC' ? currentPrice < roundedStrike : currentPrice < roundedStrike;
+                    
+                    optionsHtml.push(`
+                        <tr>
+                            <td class="strike-cell">$${roundedStrike.toLocaleString()}</td>
+                            <td class="call-option ${isCallITM ? 'itm' : ''}">$${callPrice.toFixed(2)}</td>
+                            <td class="call-option">${callVolume.toLocaleString()}</td>
+                            <td class="buy-sell-buttons">
+                                <button class="btn-buy" onclick="tradeOption('${this.currentSymbol}', ${roundedStrike}, 'call', 'buy')">Buy</button>
+                                <button class="btn-sell" onclick="tradeOption('${this.currentSymbol}', ${roundedStrike}, 'call', 'sell')">Sell</button>
+                            </td>
+                            <td class="put-option ${isPutITM ? 'itm' : ''}">$${putPrice.toFixed(2)}</td>
+                            <td class="put-option">${putVolume.toLocaleString()}</td>
+                            <td class="buy-sell-buttons">
+                                <button class="btn-buy" onclick="tradeOption('${this.currentSymbol}', ${roundedStrike}, 'put', 'buy')">Buy</button>
+                                <button class="btn-sell" onclick="tradeOption('${this.currentSymbol}', ${roundedStrike}, 'put', 'sell')">Sell</button>
+                            </td>
+                        </tr>
+                    `);
+                }
+                
+                this.elements.optionsTableBody.innerHTML = optionsHtml.join('');
+            }
+
+            calculateOptionPrice(spotPrice, strike, daysToExpiry, type) {
+                // Enhanced Black-Scholes approximation for crypto options
+                const timeValue = daysToExpiry / 365;
+                const volatility = this.currentSymbol === 'BTC' ? 0.75 : 0.85; // Higher volatility for ETH
+                const riskFreeRate = 0.05;
+                
+                const d1 = (Math.log(spotPrice / strike) + (riskFreeRate + (volatility * volatility / 2)) * timeValue) / (volatility * Math.sqrt(timeValue));
+                const d2 = d1 - volatility * Math.sqrt(timeValue);
+                
+                // Simplified normal distribution approximation
+                const normCdf = (x) => 0.5 + 0.5 * Math.sign(x) * Math.sqrt(1 - Math.exp(-2 * x * x / Math.PI));
+                
+                let optionPrice;
+                if (type === 'call') {
+                    const intrinsicValue = Math.max(0, spotPrice - strike);
+                    const timeValueComponent = spotPrice * normCdf(d1) - strike * Math.exp(-riskFreeRate * timeValue) * normCdf(d2);
+                    optionPrice = Math.max(intrinsicValue, timeValueComponent);
+                } else {
+                    const intrinsicValue = Math.max(0, strike - spotPrice);
+                    const timeValueComponent = strike * Math.exp(-riskFreeRate * timeValue) * normCdf(-d2) - spotPrice * normCdf(-d1);
+                    optionPrice = Math.max(intrinsicValue, timeValueComponent);
+                }
+                
+                // Add some randomness for realism
+                const randomFactor = 0.95 + Math.random() * 0.1;
+                return Math.max(0.01, optionPrice * randomFactor);
+            }
+
+            startLiveUpdates(interval = 5000) {
+                if (this.updateInterval) {
+                    clearInterval(this.updateInterval);
+                }
+                
+                this.updateInterval = setInterval(() => {
+                    this.fetchRealTimePrice();
+                }, interval);
+                
+                // Initial fetch
+                this.fetchRealTimePrice();
+            }
+
+            destroy() {
+                if (this.updateInterval) {
+                    clearInterval(this.updateInterval);
+                }
+            }
+        }
+
+        // Global function for trading actions
+        function tradeOption(symbol, strike, type, action) {
+            const message = `${action.toUpperCase()} ${symbol} ${strike} ${type.toUpperCase()}`;
+            
+            // Create a simple modal-like alert
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                background: linear-gradient(145deg, #1e1e3f, #2a2a5a);
+                padding: 30px; border-radius: 15px; text-align: center;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+                z-index: 1000; color: white; min-width: 300px;
+            `;
+            modal.innerHTML = `
+                <h3>🎯 Order Placed!</h3>
+                <p style="margin: 15px 0; font-size: 1.1rem;">${message}</p>
+                <p style="color: #a0a0a0; font-size: 0.9rem;">Demo Mode - No real trading</p>
+                <button onclick="this.parentElement.remove()" 
+                        style="margin-top: 20px; padding: 10px 20px; background: #00ff88; 
+                               color: black; border: none; border-radius: 8px; cursor: pointer;">
+                    OK
+                </button>
+            `;
+            document.body.appendChild(modal);
+            
+            setTimeout(() => modal.remove(), 3000);
+        }
+
+        // Initialize the application
+        const optionsChain = new CryptoOptionsChain();
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            optionsChain.destroy();
+        });
+    </script>
+</body>
+</html>
