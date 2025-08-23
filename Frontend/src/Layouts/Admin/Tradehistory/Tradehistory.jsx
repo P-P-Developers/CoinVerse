@@ -212,7 +212,8 @@ const Tradehistory = () => {
                         >
                           {" "}
                           <DollarSign />
-                          {totalProfitLoss}
+                          {(Number(totalProfitLoss) || 0).toFixed(2)}
+
                         </span>
                       </h4>
                       <Table

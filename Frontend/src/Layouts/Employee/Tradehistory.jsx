@@ -3,19 +3,19 @@ import Table from "../../Utils/Table/Table";
 import { fDateTime, fDateTimesec } from "../../Utils/Date_format/datefromat";
 import { useParams } from "react-router-dom";
 import { Clienthistory } from "../../Services/Admin/Addmin";
-import { DollarSign  } from 'lucide-react'
+import { DollarSign } from 'lucide-react'
 import { Link, Navigate, useNavigate } from "react-router-dom";
 
 
 const Tradehistory = () => {
-  
+
   const { id } = useParams();
 
 
   const [data, setData] = useState([]);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
- useEffect(() => {
+  useEffect(() => {
     getuserallhistory();
   }, [id]);
 
@@ -23,24 +23,26 @@ const Tradehistory = () => {
   // Define columns for the table
   const columns = [
     { Header: "Symbol", accessor: "symbol" },
-    { Header: "Buy Price", accessor: "buy_price",
+    {
+      Header: "Buy Price", accessor: "buy_price",
       Cell: ({ cell }) => {
-        const buy_price = cell.row.buy_price; 
-        return buy_price ? buy_price : "-"; 
+        const buy_price = cell.row.buy_price;
+        return buy_price ? buy_price : "-";
       }
     },
-    { Header: "Sell Price", accessor: "sell_price",
+    {
+      Header: "Sell Price", accessor: "sell_price",
       Cell: ({ cell }) => {
-        const sell_price = cell.row.sell_price; 
-        return sell_price ? sell_price : "-"; 
+        const sell_price = cell.row.sell_price;
+        return sell_price ? sell_price : "-";
       }
     },
     {
       Header: "P/L",
       accessor: "P/L",
       Cell: ({ cell }) => {
-        const sellPrice = cell.row.sell_price; 
-        const buyPrice = cell.row.buy_price; 
+        const sellPrice = cell.row.sell_price;
+        const buyPrice = cell.row.buy_price;
         const buyQty = cell.row.buy_qty;
 
         if (sellPrice && buyPrice && buyQty) {
@@ -51,7 +53,7 @@ const Tradehistory = () => {
 
           return (
             <span style={{ color }}>
-                <DollarSign /> {formattedProfitLoss}
+              <DollarSign /> {formattedProfitLoss}
             </span>
           );
         }
@@ -59,47 +61,54 @@ const Tradehistory = () => {
         return "N/A";
       }
     },
-    { Header: "Buy lot", accessor: "buy_lot",
+    {
+      Header: "Buy lot", accessor: "buy_lot",
       Cell: ({ cell }) => {
-        const buy_lot = cell.row.buy_lot; 
-        return buy_lot ? buy_lot : "-"; 
+        const buy_lot = cell.row.buy_lot;
+        return buy_lot ? buy_lot : "-";
       }
     },
-    { Header: "Sell lot", accessor: "sell_lot",
+    {
+      Header: "Sell lot", accessor: "sell_lot",
       Cell: ({ cell }) => {
-        const sell_lot = cell.row.sell_lot; 
-        return sell_lot ? sell_lot : "-"; 
+        const sell_lot = cell.row.sell_lot;
+        return sell_lot ? sell_lot : "-";
       }
     },
-    { Header: "Buy qty", accessor: "buy_qty",
+    {
+      Header: "Buy qty", accessor: "buy_qty",
       Cell: ({ cell }) => {
-        const buy_qty = cell.row.buy_qty; 
-        return buy_qty ? buy_qty : "-"; 
+        const buy_qty = cell.row.buy_qty;
+        return buy_qty ? buy_qty : "-";
       }
     },
-    { Header: "Sell qty", accessor: "sell_qty",
+    {
+      Header: "Sell qty", accessor: "sell_qty",
       Cell: ({ cell }) => {
-        const sell_qty = cell.row.sell_qty; 
-        return sell_qty ? sell_qty : "-"; 
+        const sell_qty = cell.row.sell_qty;
+        return sell_qty ? sell_qty : "-";
       }
     },
-    { Header: "Buy Time", accessor: "buy_time",
+    {
+      Header: "Buy Time", accessor: "buy_time",
       Cell: ({ cell }) => {
-        const buyTime = cell.row.buy_time; 
-        return buyTime ? fDateTime(buyTime) : "-"; 
+        const buyTime = cell.row.buy_time;
+        return buyTime ? fDateTime(buyTime) : "-";
       }
     },
-    { Header: "Sell time", accessor: "sell_time",
+    {
+      Header: "Sell time", accessor: "sell_time",
       Cell: ({ cell }) => {
-        const sell_time = cell.row.sell_time; 
-        return sell_time ? fDateTime(sell_time) : "-"; 
+        const sell_time = cell.row.sell_time;
+        return sell_time ? fDateTime(sell_time) : "-";
       }
     },
-    { Header: "Create Date", accessor: "createdAt",
-      Cell: ({ cell }) => {
-        return fDateTimesec(cell.value);
-      }
-    },
+    // {
+    //   Header: "Create Date", accessor: "createdAt",
+    //   Cell: ({ cell }) => {
+    //     return fDateTimesec(cell.value);
+    //   }
+    // },
   ];
 
   // Function to get user history
@@ -109,7 +118,7 @@ const Tradehistory = () => {
       const response = await Clienthistory(data);
       setData(response.data);
     } catch (error) {
-   
+
     }
   };
 
@@ -129,8 +138,8 @@ const Tradehistory = () => {
 
 
   const totalProfitLoss = calculateTotalProfitLoss();
-  
-  
+
+
   return (
     <>
       <div>
@@ -156,24 +165,28 @@ const Tradehistory = () => {
                       role="tabpanel"
                       aria-labelledby="Week-tab">
                       <div className="mb-3 ms-4">
-                       🔍 Search :{" "}
+                        🔍 Search :{" "}
                         <input
                           className="ml-2 input-search form-control"
                           defaultValue=""
                           style={{ width: "20%" }}
                         />
                       </div>
-                      <h5>
+
+                      <h3 className="ms-3">
                         Total Profit/Loss:{" "}
                         <span
                           style={{
                             color: totalProfitLoss > 0 ? "green" : "red",
-                          }}>
+                            fontSize: "1.2rem",
+                          }}
+                        >
                           {" "}
-                          <DollarSign />
-                          {totalProfitLoss}
+
+                          {(Number(totalProfitLoss) || 0).toFixed(2)}
+
                         </span>
-                      </h5>
+                      </h3>
                       <Table
                         columns={columns}
                         data={data && data}

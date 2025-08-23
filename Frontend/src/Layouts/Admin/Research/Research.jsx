@@ -416,8 +416,8 @@ const Research = () => {
                           value={formData.type}
                           onChange={handleInputChange}
                         >
-                          <option value="buy">Buy</option>
-                          <option value="sell">Sell</option>
+                          <option value="buy" style={{ color: "green" }}>Buy</option>
+                          <option value="sell" style={{ color: "red" }}>Sell</option>
                         </Form.Select>
                       </Form.Group>
                     </Col>

@@ -292,7 +292,11 @@ const UserTradeHistory = () => {
                                                                 color: totalProfitLoss > 0 ? "green" : "red",
                                                             }}
                                                         >
-                                                            {totalProfitLoss}
+
+                                                            {(Number(totalProfitLoss) || 0).toFixed(2)}
+
+
+
                                                         </span>
                                                     </h3>
                                                 </div>

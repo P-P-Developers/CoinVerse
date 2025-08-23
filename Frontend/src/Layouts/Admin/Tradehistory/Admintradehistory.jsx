@@ -436,6 +436,34 @@ const Tradehistory = () => {
                               ))}
                           </select>
                         </div>
+                        <div style={{ flex: 1 }}>
+                          <label
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              marginRight: "0.5rem",
+                            }}
+                          >
+                            📊 Status:
+                          </label>
+                          <select
+                            className="form-select"
+                            style={{
+                              width: "100%",
+                              padding: "10px",
+                              borderRadius: "5px",
+                              border: "1px solid #ccc",
+                              backgroundColor: "#f8f9fa",
+                              color: "#333",
+                            }}
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                          >
+                            <option value="all">All</option>
+                            <option value="open">Open</option>
+                            <option value="close">Close</option>
+                          </select>
+                        </div>
                       </div>
 
                       <h3 className="ms-3">
@@ -446,7 +474,7 @@ const Tradehistory = () => {
                             fontSize: "1.2rem",
                           }}
                         >
-                          {totalProfitLoss}
+                          {(Number(totalProfitLoss) || 0).toFixed(2)}
                         </span>
                       </h3>
                       <Table columns={columns1} data={data && data} search={search} />

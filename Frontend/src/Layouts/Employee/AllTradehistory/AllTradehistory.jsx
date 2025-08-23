@@ -8,20 +8,17 @@ import { ArrowLeftRight } from "lucide-react";
 import { getUserFromToken } from "../../../Utils/TokenVerify";
 import { getAllClient } from "../../../Services/Superadmin/Superadmin";
 
-
-
 const Tradehistory = () => {
-
   const TokenData = getUserFromToken();
-
   const user_id = TokenData?.user_id;
 
   const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [userName, setUserName] = useState();
   const [Userid, setUserId] = useState();
   const [search, setSearch] = useState("");
   const [client, setClient] = useState({});
-
+  const [tradeFilter, setTradeFilter] = useState("all"); // New filter state
 
   useEffect(() => {
     GetUserName();
@@ -32,7 +29,10 @@ const Tradehistory = () => {
     getuserallhistory();
   }, [Userid, search, client]);
 
-
+  // Filter data when tradeFilter or data changes
+  useEffect(() => {
+    filterData();
+  }, [data, tradeFilter]);
 
   const getallclient = async () => {
     try {
@@ -43,7 +43,6 @@ const Tradehistory = () => {
       }
     } catch (error) { }
   };
-
 
   const columns1 = [
     { Header: "Symbol", accessor: "symbol" },
@@ -83,15 +82,12 @@ const Tradehistory = () => {
         const buyQty = cell.row.buy_qty;
 
         if (sellPrice && buyPrice && buyQty) {
-          // if(signal_type === "buy_sell"){
           const profitLoss = (sellPrice - buyPrice) * buyQty;
           const formattedProfitLoss = profitLoss.toFixed(4);
-
           const color = profitLoss > 0 ? "green" : "red";
 
           return (
             <span style={{ color }}>
-              {/* <DollarSign /> */}
               {formattedProfitLoss}
             </span>
           );
@@ -124,14 +120,12 @@ const Tradehistory = () => {
         }
       },
     },
-
     {
       Header: "Signal Type",
       accessor: "signal_type",
       Cell: ({ cell }) => {
         const signal_type = cell.row.signal_type;
 
-        // return signal_type ? signal_type == "buy_sell" ? "BUY" :"SELL" : "-";
         return (
           <>
             {signal_type === "buy_sell" ? (
@@ -145,7 +139,6 @@ const Tradehistory = () => {
         );
       },
     },
-
     {
       Header: "Entry Time",
       accessor: "buy_time",
@@ -173,43 +166,73 @@ const Tradehistory = () => {
       },
     },
     {
-      Header: "Create Date",
-      accessor: "createdAt",
+      Header: "Status",
+      accessor: "status",
       Cell: ({ cell }) => {
-        return fDateTimesec(cell.value);
+        const isOpen = isTradeOpen(cell.row);
+        return (
+          <span
+            style={{
+              color: isOpen ? "orange" : "green",
+              fontWeight: "bold",
+              padding: "4px 8px",
+              borderRadius: "4px",
+              backgroundColor: isOpen ? "#fff3cd" : "#d4edda",
+              border: `1px solid ${isOpen ? "#ffeaa7" : "#c3e6cb"}`,
+            }}
+          >
+            {isOpen ? "OPEN" : "CLOSED"}
+          </span>
+        );
       },
     },
-    // {
-    //   Header: "switch",
-    //   accessor: "switch",
-    //   Cell: ({ cell }) => {
-    //     return (
-    //       <span onClick={(e) => ChangeTradeType(cell.row)}>
-    //         <ArrowLeftRight />
-    //       </span>
-    //     );
-    //   },
-    // },
   ];
+
+  // Function to check if a trade is open
+  const isTradeOpen = (row) => {
+    const hasBuyLot = row.buy_lot && row.buy_lot > 0;
+    const hasSellLot = row.sell_lot && row.sell_lot > 0;
+
+    // Trade is open if it has either buy_lot or sell_lot but not both completed
+    // Or if it doesn't have both buy_price and sell_price
+    return (hasBuyLot && !hasSellLot) || (!hasBuyLot && hasSellLot) || !row.sell_price || !row.buy_price;
+  };
+
+  // Function to filter data based on open/close status
+  const filterData = () => {
+    let filtered = data;
+
+    // Apply search filter first
+    if (search) {
+      const searchLower = search.toLowerCase();
+      filtered = filtered.filter((item) => {
+        return (
+          (item.symbol && item.symbol.toLowerCase().includes(searchLower)) ||
+          (item.buy_price && item.buy_price.toString().toLowerCase().includes(searchLower)) ||
+          (item.sell_price && item.sell_price.toString().toLowerCase().includes(searchLower))
+        );
+      });
+    }
+
+    // Apply open/close filter
+    if (tradeFilter === "open") {
+      filtered = filtered.filter((item) => isTradeOpen(item));
+    } else if (tradeFilter === "closed") {
+      filtered = filtered.filter((item) => !isTradeOpen(item));
+    }
+
+    setFilteredData(filtered);
+  };
 
   // Function to get user history
   const getuserallhistory = async () => {
     try {
       const data = { userid: Userid, adminid: client?.parent_id };
       const response = await Clienthistory(data);
-      const searchfilter = response.data?.filter((item) => {
-        const searchLower = search.toLowerCase();
-        return (
-          search === "" ||
-          (item.symbol && item.symbol.toLowerCase().includes(searchLower)) ||
-          (item.buy_price &&
-            item.buy_price.toString().toLowerCase().includes(searchLower)) ||
-          (item.sell_price &&
-            item.sell_price.toString().toLowerCase().includes(searchLower))
-        );
-      });
-      setData(search ? searchfilter : response.data);
-    } catch (error) { }
+      setData(response.data || []);
+    } catch (error) {
+      setData([]);
+    }
   };
 
   const GetUserName = async () => {
@@ -223,12 +246,11 @@ const Tradehistory = () => {
   };
 
   const calculateTotalProfitLoss = () => {
-    return data
+    return filteredData
       .reduce((total, row) => {
         const sellPrice = row.sell_price;
         const buyPrice = row.buy_price;
         const buyQty = row.buy_qty;
-        const signal_type = row.signal_type;
         if (sellPrice && buyPrice && buyQty) {
           return total + (sellPrice - buyPrice) * buyQty;
         }
@@ -282,10 +304,11 @@ const Tradehistory = () => {
                           gap: "20px",
                           alignItems: "center",
                           padding: "1rem",
+                          flexWrap: "wrap",
                         }}
                       >
                         {/* Search Input */}
-                        <div style={{ flex: 1 }}>
+                        <div style={{ flex: 1, minWidth: "200px" }}>
                           <label
                             style={{
                               fontWeight: "bold",
@@ -313,7 +336,7 @@ const Tradehistory = () => {
                         </div>
 
                         {/* User Dropdown */}
-                        <div style={{ flex: 1 }}>
+                        <div style={{ flex: 1, minWidth: "200px" }}>
                           <label
                             style={{
                               fontWeight: "bold",
@@ -345,7 +368,56 @@ const Tradehistory = () => {
                               ))}
                           </select>
                         </div>
+
+                        {/* Open/Close Filter */}
+                        <div style={{ flex: 1, minWidth: "200px" }}>
+                          <label
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              marginRight: "0.5rem",
+                            }}
+                          >
+                            📊 Status:
+                          </label>
+                          <select
+                            className="form-select"
+                            style={{
+                              width: "100%",
+                              padding: "10px",
+                              borderRadius: "5px",
+                              border: "1px solid #ccc",
+                              backgroundColor: "#f8f9fa",
+                              color: "#333",
+                            }}
+                            value={tradeFilter}
+                            onChange={(e) => setTradeFilter(e.target.value)}
+                          >
+                            <option value="all">All Trades</option>
+                            <option value="open">Open Trades</option>
+                            <option value="closed">Closed Trades</option>
+                          </select>
+                        </div>
                       </div>
+
+                      {/* Trade Statistics */}
+                      {/* <div style={{ padding: "0 1rem", marginBottom: "1rem" }}>
+                        <div style={{ display: "flex", gap: "30px", flexWrap: "wrap" }}>
+                          <h5>
+                            Total Trades: <span style={{ color: "#007bff" }}>{filteredData.length}</span>
+                          </h5>
+                          <h5>
+                            Open Trades: <span style={{ color: "orange" }}>
+                              {filteredData.filter(row => isTradeOpen(row)).length}
+                            </span>
+                          </h5>
+                          <h5>
+                            Closed Trades: <span style={{ color: "green" }}>
+                              {filteredData.filter(row => !isTradeOpen(row)).length}
+                            </span>
+                          </h5>
+                        </div>
+                      </div> */}
 
                       <h3 className="ms-3">
                         Total Profit/Loss:{" "}
@@ -355,12 +427,10 @@ const Tradehistory = () => {
                             fontSize: "1.2rem",
                           }}
                         >
-                          {" "}
-                          {/* <DollarSign /> */}
-                          {totalProfitLoss}
+                          {(Number(totalProfitLoss) || 0).toFixed(2)}
                         </span>
                       </h3>
-                      <Table columns={columns1} data={data && data} />
+                      <Table columns={columns1} data={filteredData} />
                     </div>
                   </div>
                 </div>

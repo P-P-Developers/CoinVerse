@@ -27,6 +27,7 @@ const SuperAdminTradeHistory = () => {
   const [prevPrices, setPrevPrices] = useState({});
   const [logsmodel, setLogsmodel] = useState(false);
   const [logsdata, setLogsdata] = useState([])
+  const [tradeStatus, setTradeStatus] = useState(""); // New state for open/close filter
 
 
   useEffect(() => {
@@ -55,7 +56,9 @@ const SuperAdminTradeHistory = () => {
 
   useEffect(() => {
     getuserallhistory();
-  }, [Userid, Search, userNamed, toDate, fromDate]);
+  }, [Userid, Search, userNamed, toDate, fromDate, tradeStatus]);
+
+
 
   const getuserallhistory = async () => {
     try {
@@ -63,7 +66,7 @@ const SuperAdminTradeHistory = () => {
         return;
       }
 
-      const data = { adminid: Userid._id, toDate: toDate, fromDate: fromDate };
+      const data = { adminid: Userid._id, toDate: toDate, fromDate: fromDate, status: tradeStatus };
       const response = await gettradehistory(data);
       let UserNameListData = response.data.map((item) => {
         return item.userName;
@@ -72,8 +75,9 @@ const SuperAdminTradeHistory = () => {
       setUserNameList([...new Set(UserNameListData)]);
 
       let filteredData = response.data;
+
       if (Search || userNamed) {
-        filteredData = response.data.filter((item) => {
+        filteredData = filteredData.filter((item) => {
           const userNameMatch = Search
             ? item.userName.toLowerCase().includes(Search.toLowerCase())
             : true;
@@ -87,16 +91,44 @@ const SuperAdminTradeHistory = () => {
           return (userNameMatch || symbolMatch) && userNameListMatch;
         });
       }
-
       setData(filteredData);
     } catch (error) { }
   };
 
 
+  const getTradeStatus = (row) => {
+    if (row.buy_price && row.sell_price) {
+      return "Closed";
+    } else if (row.buy_price || row.sell_price) {
+      return "Open";
+    }
+    return "Unknown";
+  };
+
   const columns = [
     { Header: "UserName", accessor: "userName" },
-
     { Header: "Symbol", accessor: "symbol" },
+    {
+      Header: "Status",
+      accessor: "status",
+      Cell: ({ cell }) => {
+        const status = getTradeStatus(cell.row);
+        return (
+          <span
+            style={{
+              color: status === "Open" ? "green" : status === "Closed" ? "#a72828ff" : "#6c757d",
+              fontWeight: "bold",
+              padding: "2px 8px",
+              borderRadius: "12px",
+              backgroundColor: status === "Open" ? "#fff3cd" : status === "Closed" ? "#d4edda" : "#f8f9fa",
+              fontSize: "12px"
+            }}
+          >
+            {status === "Open" ? "🟢OPEN" : status === "Closed" ? "🟡CLOSED" : "❓ UNKNOWN"}
+          </span>
+        );
+      },
+    },
     {
       Header: "Entry Price",
       accessor: "buy_price",
@@ -269,10 +301,6 @@ const SuperAdminTradeHistory = () => {
     },
   ];
 
-
-
-
-
   const GetUserName = async () => {
     try {
       const response = await getAdminName();
@@ -282,7 +310,6 @@ const SuperAdminTradeHistory = () => {
       }
     } catch (error) { }
   };
-
 
   const calculateTotalProfitLoss = () => {
     return data
@@ -299,7 +326,6 @@ const SuperAdminTradeHistory = () => {
       }, 0)
       .toFixed(4);
   };
-
 
   const totalProfitLoss = calculateTotalProfitLoss();
 
@@ -322,7 +348,6 @@ const SuperAdminTradeHistory = () => {
       alert("Error");
     }
   };
-
 
   useEffect(() => {
     if (logsmodel) {
@@ -353,7 +378,6 @@ const SuperAdminTradeHistory = () => {
                   </div>
                 </div>
 
-
                 <div className="card-body p-0">
                   <div className="tab-content" id="myTabContent1">
                     <div
@@ -363,7 +387,7 @@ const SuperAdminTradeHistory = () => {
                       aria-labelledby="Week-tab"
                     >
                       <div className="row gx-3 gy-2 p-3">
-                        <div className="col-md-4">
+                        <div className="col-md-3">
                           <label className="fw-bold mb-1">🛡️ Admin</label>
                           <select
                             className="form-select"
@@ -385,7 +409,7 @@ const SuperAdminTradeHistory = () => {
                           </select>
                         </div>
 
-                        <div className="col-md-4">
+                        <div className="col-md-3">
                           <label className="fw-bold mb-1">👤 User</label>
                           <select
                             className="form-select"
@@ -400,6 +424,30 @@ const SuperAdminTradeHistory = () => {
                                 </option>
                               ))}
                           </select>
+                        </div>
+
+                        <div className="col-md-3">
+                          <label className="fw-bold mb-1">📈 Trade Status</label>
+                          <select
+                            className="form-select"
+                            onChange={(e) => setTradeStatus(e.target.value)}
+                            value={tradeStatus}
+                          >
+                            <option value="">All Trades</option>
+                            <option value="open">🟢Open Trades</option>
+                            <option value="close">🟡Closed Trades</option>
+                          </select>
+                        </div>
+
+                        <div className="col-md-3">
+                          <label className="fw-bold mb-1">🔍 Search</label>
+                          <input
+                            type="text"
+                            placeholder="Search..."
+                            className="form-control"
+                            onChange={(e) => setSearch(e.target.value)}
+                            value={Search}
+                          />
                         </div>
 
                         <div className="col-md-2">
@@ -422,16 +470,6 @@ const SuperAdminTradeHistory = () => {
                           />
                         </div>
 
-                        <div className="col-md-4">
-                          <label className="fw-bold mb-1">🔍 Search</label>
-                          <input
-                            type="text"
-                            placeholder="Search..."
-                            className="form-control"
-                            onChange={(e) => setSearch(e.target.value)}
-                            value={Search}
-                          />
-                        </div>
                         <div className="col-md-3 d-flex align-items-end">
                           <button
                             className="btn btn-outline-secondary w-100"
@@ -441,7 +479,7 @@ const SuperAdminTradeHistory = () => {
                             Refresh
                           </button>
                         </div>
-                        <div className="col-md-4 d-flex align-items-end">
+                        <div className="col-md-5 d-flex align-items-end">
                           <h3>
                             💰 Total Profit/Loss:{" "}
                             <span
@@ -449,7 +487,7 @@ const SuperAdminTradeHistory = () => {
                                 color: totalProfitLoss > 0 ? "green" : "red",
                               }}
                             >
-                              {totalProfitLoss}
+                              {(Number(totalProfitLoss) || 0).toFixed(2)}
                             </span>
                           </h3>
                         </div>

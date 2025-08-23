@@ -3,11 +3,13 @@ import Swal from "sweetalert2";
 import {
   createOrUpdateCompanyApi,
   getCompanyApi,
+  removeCompanyImagedata
 } from "../../../Services/Superadmin/Superadmin";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { ThreeDots } from "react-loader-spinner";
 import { useEffect, useState } from "react";
+import { X } from 'lucide-react';
 
 Modal.setAppElement("#root");
 
@@ -90,6 +92,32 @@ const System = () => {
     }
   };
 
+  const RemoveImage = async (type) => {
+    try {
+      const data = { type: type }
+      const res = await removeCompanyImagedata(data);
+      if (res.status) {
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: res.message || "Image is Removed !",
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: res.message || "Something went wrong. Please try again.",
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "An error occurred while submitting the form. Please try again.",
+      });
+    }
+  };
+
   return (
     <div className="container-fluid mt-4">
       <div className="row justify-content-center">
@@ -137,11 +165,10 @@ const System = () => {
                             type="text"
                             name="panelName"
                             id="panelName"
-                            className={`form-control ${
-                              errors.panelName && touched.panelName
-                                ? "is-invalid"
-                                : ""
-                            }`}
+                            className={`form-control ${errors.panelName && touched.panelName
+                              ? "is-invalid"
+                              : ""
+                              }`}
                             placeholder="Enter Panel Name"
                           />
                           {errors.panelName && touched.panelName && (
@@ -159,11 +186,10 @@ const System = () => {
                             type="text"
                             name="loginUrl"
                             id="loginUrl"
-                            className={`form-control ${
-                              errors.loginUrl && touched.loginUrl
-                                ? "is-invalid"
-                                : ""
-                            }`}
+                            className={`form-control ${errors.loginUrl && touched.loginUrl
+                              ? "is-invalid"
+                              : ""
+                              }`}
                             placeholder="Enter Login URL"
                           />
                           {errors.loginUrl && touched.loginUrl && (
@@ -175,7 +201,7 @@ const System = () => {
                       </div>
 
                       <div className="row">
-                        <div className="col-md-6 mb-3">
+                        <div className="col-md-4 mb-3">
                           <label htmlFor="logo" className="form-label">
                             Logo
                           </label>
@@ -183,9 +209,8 @@ const System = () => {
                             type="file"
                             id="logo"
                             name="logo"
-                            className={`form-control ${
-                              errors.logo && touched.logo ? "is-invalid" : ""
-                            }`}
+                            className={`form-control ${errors.logo && touched.logo ? "is-invalid" : ""
+                              }`}
                             onChange={async (e) => {
                               const file = e.target.files[0];
                               const base64 = await convertToBase64(file);
@@ -197,21 +222,42 @@ const System = () => {
                               {errors.logo}
                             </div>
                           )}
-                          <small className="text-muted">
-                            Choose a logo image from your gallery.
-                          </small>
+
                           {values.logo && (
-                            <div className="mt-2">
+                            <div className="mt-2 position-relative d-inline-block">
+                              {/* Image */}
                               <img
                                 src={values.logo}
                                 alt="Current Logo"
                                 width="100"
+                                className="rounded border"
                               />
+
+
+                              <button
+                                type="button"
+                                className="position-absolute btn btn-danger rounded-circle p-1"
+                                style={{
+                                  top: '-8px',
+                                  right: '-8px',
+                                  width: '24px',
+                                  height: '24px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  border: '2px solid white',
+                                  fontSize: '12px'
+                                }}
+                                onClick={() => RemoveImage(1)}
+                                title="Remove Logo"
+                              >
+                                <X size={12} color="white" />
+                              </button>
                             </div>
                           )}
                         </div>
 
-                        <div className="col-md-6 mb-3">
+                        <div className="col-md-4 mb-3">
                           <label htmlFor="favicon" className="form-label">
                             Favicon
                           </label>
@@ -219,11 +265,10 @@ const System = () => {
                             type="file"
                             id="favicon"
                             name="favicon"
-                            className={`form-control ${
-                              errors.favicon && touched.favicon
-                                ? "is-invalid"
-                                : ""
-                            }`}
+                            className={`form-control ${errors.favicon && touched.favicon
+                              ? "is-invalid"
+                              : ""
+                              }`}
                             onChange={async (e) => {
                               const file = e.target.files[0];
                               const base64 = await convertToBase64(file);
@@ -236,23 +281,41 @@ const System = () => {
                               {errors.favicon}
                             </div>
                           )}
-                          <small className="text-muted">
-                            Upload a favicon file (16x16px).
-                          </small>
+
                           {values.favicon && (
-                            <div className="mt-2">
+                            <div className="mt-2 position-relative d-inline-block">
+                              {/* Image */}
                               <img
                                 src={values.favicon}
-                                alt="Current login Image"
+                                alt="Current Favicon"
                                 width="100"
+                                className="rounded border"
                               />
+
+                              {/* Red Cross icon - top right corner */}
+                              <button
+                                type="button"
+                                className="position-absolute btn btn-danger rounded-circle p-1"
+                                style={{
+                                  top: '-8px',
+                                  right: '-8px',
+                                  width: '24px',
+                                  height: '24px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  border: '2px solid white',
+                                  fontSize: '12px'
+                                }}
+                                onClick={() => RemoveImage(2)}
+                                title="Remove Favicon"
+                              >
+                                <X size={12} color="white" />
+                              </button>
                             </div>
                           )}
                         </div>
-                      </div>
-
-                      <div className="row">
-                        <div className="col-md-6 mb-3">
+                        <div className="col-md-4 mb-3">
                           <label htmlFor="loginImage" className="form-label">
                             Login Image
                           </label>
@@ -260,11 +323,10 @@ const System = () => {
                             type="file"
                             id="loginImage"
                             name="loginImage"
-                            className={`form-control ${
-                              errors.loginImage && touched.loginImage
-                                ? "is-invalid"
-                                : ""
-                            }`}
+                            className={`form-control ${errors.loginImage && touched.loginImage
+                              ? "is-invalid"
+                              : ""
+                              }`}
                             onChange={async (e) => {
                               const file = e.target.files[0];
                               const base64 = await convertToBase64(file);
@@ -276,20 +338,43 @@ const System = () => {
                               {errors.loginImage}
                             </div>
                           )}
-                          <small className="text-muted">
-                            Choose a login image from your gallery.
-                          </small>
+
                           {values.loginImage && (
-                            <div className="mt-2">
+                            <div className="mt-2 position-relative d-inline-block">
+                              {/* Image */}
                               <img
                                 src={values.loginImage}
-                                alt="Current login Image"
+                                alt="Current Login Image"
                                 width="100"
+                                className="rounded border"
                               />
+
+
+                              <button
+                                type="button"
+                                className="position-absolute btn btn-danger rounded-circle p-1"
+                                style={{
+                                  top: '-8px',
+                                  right: '-8px',
+                                  width: '24px',
+                                  height: '24px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  border: '2px solid white',
+                                  fontSize: '12px'
+                                }}
+                                onClick={() => RemoveImage(3)}
+                                title="Remove Login Image"
+                              >
+                                <X size={12} color="white" />
+                              </button>
                             </div>
                           )}
                         </div>
                       </div>
+
+
 
                       <div className="row">
                         <div className="col-12 text-center">

@@ -1267,6 +1267,53 @@ class Superadmin {
     }
   }
 
+
+
+  async removeCompanyImage(req, res) {
+    try {
+      const { type } = req.body;
+
+      if (![1, 2, 3].includes(type)) {
+        return res.json({
+          status: false,
+          message: "Invalid type. Use 1 for logo, 2 for favicon, 3 for loginImage",
+          data: [],
+        });
+      }
+
+      let updateData = {};
+      if (type === 1) updateData.logo = "";
+      if (type === 2) updateData.favicon = "";
+      if (type === 3) updateData.loginImage = "";
+
+      let company = await Company.updateOne({}, { $set: updateData });
+
+      if (!company) {
+        return res.json({
+          status: false,
+          message: "Failed to remove image",
+          data: [],
+        });
+      }
+
+      return res.json({
+        status: true,
+        message: "Image removed successfully",
+        data: company,
+      });
+    } catch (error) {
+      return res.json({
+        status: false,
+        message: "Internal error",
+        data: [],
+      });
+    }
+  }
+
+
+
+
+
   // READ: Get company settings
   async getCompany(req, res) {
     try {
@@ -1436,11 +1483,14 @@ class Superadmin {
     }
   }
 
+
   async gettradehistory(req, res) {
     try {
-      const { adminid, fromDate, toDate } = req.body;
+      const { adminid, fromDate, toDate, status } = req.body;
 
       const query = { adminid };
+
+      // Date filter
       if (fromDate || toDate) {
         query.createdAt = {};
         if (fromDate) {
@@ -1450,6 +1500,21 @@ class Superadmin {
           const toDateObj = new Date(toDate);
           toDateObj.setHours(23, 59, 59, 999);
           query.createdAt.$lte = toDateObj;
+        }
+      }
+
+      // Status filter
+      if (status && status.toLowerCase() !== "all") {
+        if (status.toLowerCase() === "open") {
+          // buy_lot ya sell_lot me se koi ek null ho
+          query.$or = [
+            { buy_lot: null },
+            { sell_lot: null },
+          ];
+        } else if (status.toLowerCase() === "close") {
+          // dono buy_lot aur sell_lot null na ho
+          query.buy_lot = { $ne: null };
+          query.sell_lot = { $ne: null };
         }
       }
 
@@ -1483,6 +1548,7 @@ class Superadmin {
       return res.json({ status: false, message: "internal error", data: [] });
     }
   }
+
 
 
   async GetAdminBalanceWithPosition(req, res) {

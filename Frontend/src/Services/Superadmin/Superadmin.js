@@ -239,6 +239,19 @@ export async function createOrUpdateCompanyApi(data) {
   }
 }
 
+
+
+export async function removeCompanyImagedata(data) {
+  try {
+    let res = await axios.post(`${Config.base_url}removeCompanyImage`, data);
+    return await res?.data;
+  } catch (error) {
+    return;
+  }
+}
+
+
+
 export async function getCompanyApi() {
   try {
     let res = await axios.get(`${Config.base_url}getCompany`);

@@ -20,6 +20,7 @@ const {
   AddProfitMargin,
   getProfitMargin,
   createOrUpdateCompany,
+  removeCompanyImage,
   getCompany,
   deleteCompany,
   gettradehistory,
@@ -56,6 +57,7 @@ router.get("/getBrokerageDataForSuperAdmin", brokerageDataForSuperAdmin);
 router.post("/AddProfitMargin", AddProfitMargin);
 router.post("/getProfitMargin", getProfitMargin);
 router.post("/createOrUpdateCompany", createOrUpdateCompany);
+router.post("/removeCompanyImage", removeCompanyImage);
 router.get("/getCompany", getCompany);
 router.get("/getAdminName", getAdminName);
 router.delete("/deleteCompany", deleteCompany);
