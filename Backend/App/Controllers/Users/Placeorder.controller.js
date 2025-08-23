@@ -228,7 +228,6 @@ class Placeorder {
   //   }
   // }
 
-
   async gettardehistory(req, res) {
     try {
       const { userid, Role } = req.body;
@@ -259,10 +258,7 @@ class Placeorder {
           {
             $match: {
               adminid: userid,
-              $or: [
-                { sell_price: null },
-                { sell_price: { $exists: false } }
-              ]
+              $or: [{ sell_price: null }, { sell_price: { $exists: false } }],
             },
           },
           {
@@ -287,9 +283,9 @@ class Placeorder {
           },
           {
             $addFields: {
-              username: { $ifNull: ["$userDetails.UserName", "No username"] }
-            }
-          }
+              username: { $ifNull: ["$userDetails.UserName", "No username"] },
+            },
+          },
           // $project hata diya, taaki sara data aaye
         ]);
 
@@ -312,9 +308,6 @@ class Placeorder {
       return res.json({ status: false, message: "Internal error", data: [] });
     }
   }
-
-
-
 
   // position
   async position(req, res) {
@@ -431,7 +424,7 @@ class Placeorder {
             Exittype: 1,
             lastpricedt: "$live_pricesdt.lastprice",
             liveprice: "$live_pricesdt.Mid_Price",
-            Converted: 1
+            Converted: 1,
           },
         },
       ]);
@@ -448,12 +441,10 @@ class Placeorder {
         return {
           ...data,
           buy_price:
-            data?.buy_price && !isNaN(data.buy_price)
-              ? data.buy_price.toFixed(4)
-              : null,
+            data?.buy_price && !isNaN(data.buy_price) ? data.buy_price : null,
           sell_price:
             data?.sell_price && !isNaN(data.sell_price)
-              ? data.sell_price.toFixed(4)
+              ? data.sell_price
               : null,
         };
       });
@@ -755,8 +746,6 @@ class Placeorder {
         await order.save();
       }
 
-
-
       const tradelogs = await tradeSwitchlogs({
         user_Id: trade.userid || "",
         admin_Id: trade.adminid || "",
@@ -766,7 +755,7 @@ class Placeorder {
         message: `Order type switched to ${trade.signal_type}`,
       });
 
-      await tradelogs.save()
+      await tradelogs.save();
 
       return res.json({
         status: true,
@@ -783,7 +772,6 @@ class Placeorder {
       });
     }
   }
-
 
   async getSwitchOrderType(req, res) {
     try {
@@ -824,8 +812,8 @@ class Placeorder {
           },
         },
         {
-          $sort: { createdAt: -1 }
-        }
+          $sort: { createdAt: -1 },
+        },
       ]);
 
       res.status(200).json({
@@ -841,7 +829,6 @@ class Placeorder {
       });
     }
   }
-
 
   async getAllSwitchOrderType(req, res) {
     try {
@@ -891,8 +878,8 @@ class Placeorder {
           },
         },
         {
-          $sort: { createdAt: -1 }
-        }
+          $sort: { createdAt: -1 },
+        },
       ]);
 
       res.status(200).json({
@@ -908,8 +895,6 @@ class Placeorder {
       });
     }
   }
-
-
 
   async UpdateTargetSlPRice(req, res) {
     try {
@@ -1023,7 +1008,7 @@ class Placeorder {
         brokerage =
           (parseFloat(checkadmin.transactionwise) * parseFloat(requiredFund)) /
           100;
-        brokerage = parseFloat(brokerage.toFixed(2));
+        brokerage = parseFloat(brokerage);
       }
 
       // Validate lot size based on type (buy or sell)
@@ -1101,7 +1086,7 @@ class Placeorder {
         const totalCost =
           (tradehistory.buy_price * tradehistory.buy_lot || 0) +
           priceNum * lotNum;
-        const avgPrice = totalCost / totalQuantity;
+        const avgPrice = totalCost / totalQuantity; // Could lose precision
 
         tradehistory.buy_price = avgPrice;
         tradehistory.buy_lot = totalQuantity;
@@ -1164,8 +1149,9 @@ class Placeorder {
 
       return res.json({
         status: true,
-        message: `${type.charAt(0).toUpperCase() + type.slice(1)
-          } order updated successfully`,
+        message: `${
+          type.charAt(0).toUpperCase() + type.slice(1)
+        } order updated successfully`,
         data: [],
       });
     } catch (error) {
@@ -1195,6 +1181,22 @@ class Placeorder {
         limitstopprice,
       } = req.body;
 
+      console.log({
+        userid,
+        symbol,
+        price,
+        lot,
+        qty,
+        requiredFund,
+        token,
+        type,
+        lotsize,
+        With_Margin,
+        selectedOption,
+        limitstopprice,
+      });
+
+
       if (price <= 0 || !price) {
         return res.json({ status: false, message: "Please provide price" });
       }
@@ -1215,6 +1217,7 @@ class Placeorder {
       let NewLimit = With_Margin ? parseFloat(checkadmin.limit) : 1;
 
       const SymbolToken = await Symbol.findOne({ symbol: symbol });
+
       if (SymbolToken == null) {
         return res.json({
           status: false,
@@ -1234,7 +1237,7 @@ class Placeorder {
           (parseFloat(checkadmin.transactionwise) * parseFloat(requiredFund)) /
           100;
 
-        brokerage = brokerage.toFixed(2);
+        brokerage = brokerage;
       }
 
       const totalamount = parseFloat(requiredFund) / NewLimit;
@@ -1254,7 +1257,7 @@ class Placeorder {
           qty,
           adminid: checkadmin.parent_id,
           requiredFund,
-          token,
+          token: SymbolToken?.token,
           type,
           lotsize,
           selectedOption,
@@ -1438,7 +1441,6 @@ class Placeorder {
 
       UserInfo.Balance -= RequiredFundDiff;
       await UserInfo.save();
-
 
       return res.json({
         status: true,
