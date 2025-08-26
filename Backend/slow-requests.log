@@ -420,3 +420,15 @@ d2025-07-04T12:24:26.785Z [warn]: SLOW API: [POST] /users/userSymbollist - 367ms
 2025-08-26T11:26:15.205Z [warn]: SLOW API: [POST] /SignIn - 423ms
 2025-08-26T11:28:49.142Z [warn]: SLOW API: [POST] /admin/AddUser - 242ms
 2025-08-26T11:28:49.145Z [warn]: SLOW API: [POST] /SignIn - 396ms
+2025-08-26T12:27:14.198Z [warn]: SLOW API: [GET] /getCompany - 228ms
+2025-08-26T12:27:14.275Z [warn]: SLOW API: [POST] /admin/getUsersName - 283ms
+2025-08-26T12:27:14.290Z [warn]: SLOW API: [POST] /getEmployee_permissiondata - 303ms
+2025-08-26T12:27:14.354Z [warn]: SLOW API: [POST] /getbroadcastmessageforuser - 376ms
+2025-08-26T12:27:14.500Z [warn]: SLOW API: [POST] /getAllclent - 504ms
+2025-08-26T12:27:14.700Z [warn]: SLOW API: [POST] /getclienttradehistory - 702ms
+2025-08-26T12:27:14.777Z [warn]: SLOW API: [POST] /getclienttradehistory - 249ms
+2025-08-26T12:27:40.282Z [warn]: SLOW API: [POST] /admin/GetDashboardData - 220ms
+2025-08-26T12:27:58.923Z [warn]: SLOW API: [GET] /getCompany - 238ms
+2025-08-26T12:28:02.718Z [warn]: SLOW API: [GET] /getCompany - 250ms
+2025-08-26T12:28:12.021Z [warn]: SLOW API: [GET] /getCompany - 265ms
+2025-08-26T12:28:13.773Z [warn]: SLOW API: [POST] /superadmin/getAdminDetail - 284ms
