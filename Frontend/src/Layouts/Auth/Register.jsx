@@ -95,7 +95,8 @@ const Register = () => {
             showConfirmButton: false,
             timer: 1500,
           }).then(() => {
-            navigate("/login");
+            // window.location.href = "https://trade.tradestreet.in/backend/Downloadapk";
+            window.location.href = `https://${window.location.hostname}/backend/Downloadapk`;
           });
         } else {
           Swal.fire({

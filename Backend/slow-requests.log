@@ -408,3 +408,13 @@ d2025-07-04T12:24:26.785Z [warn]: SLOW API: [POST] /users/userSymbollist - 367ms
 2025-08-26T09:15:04.609Z [warn]: SLOW API: [POST] /admin/getAllUser - 378ms
 2025-08-26T09:15:04.616Z [warn]: SLOW API: [POST] /admin/getAllUser - 373ms
 2025-08-26T09:15:29.177Z [warn]: SLOW API: [GET] /getCompany - 202ms
+2025-08-26T11:08:34.903Z [warn]: SLOW API: [POST] /Squareoff - 264ms
+2025-08-26T11:13:03.603Z [warn]: SLOW API: [GET] /getCompany - 59320ms
+2025-08-26T11:13:03.609Z [warn]: SLOW API: [GET] /getCompany - 50054ms
+2025-08-26T11:13:03.652Z [warn]: SLOW API: [GET] /getCompany - 90238ms
+2025-08-26T11:13:03.661Z [warn]: SLOW API: [GET] /getCompany - 61745ms
+2025-08-26T11:13:03.669Z [warn]: SLOW API: [GET] /getCompany - 37331ms
+2025-08-26T11:13:03.710Z [warn]: SLOW API: [GET] /getCompany - 57944ms
+2025-08-26T11:19:35.431Z [warn]: SLOW API: [GET] /getCompany - 83477ms
+2025-08-26T11:26:15.199Z [warn]: SLOW API: [POST] /admin/AddUser - 237ms
+2025-08-26T11:26:15.205Z [warn]: SLOW API: [POST] /SignIn - 423ms
