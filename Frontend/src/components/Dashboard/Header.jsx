@@ -210,6 +210,7 @@ const Header = () => {
     Changedpassword: "Changed Password",
     Addemployees: "Add Employee",
     Basicsetting: "Basic Settings",
+    Alltradehistory: "Trade History"
   };
 
   const title = pageTitles[formattedSegment] || formattedSegment;

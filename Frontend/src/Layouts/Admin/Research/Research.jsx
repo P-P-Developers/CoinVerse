@@ -165,7 +165,8 @@ const Research = () => {
     const fetchResearchData = async () => {
       try {
         const response = await getResearch(user_id);
-        if (response?.data) setResearchData(response.data);
+        if (response?.data)
+          setResearchData(response.data);
       } catch (error) { }
     };
 
@@ -365,6 +366,7 @@ const Research = () => {
                           name="coin"
                           value={formData.coin}
                           onChange={handleInputChange}
+                          required
                         >
                           <option value="">Select Coin/Pair</option>
                           {Symbols.length > 0 ? (
@@ -403,6 +405,7 @@ const Research = () => {
                             name={field.name}
                             value={formData[field.name]}
                             onChange={handleInputChange}
+                            required
 
                           />
                         </Form.Group>
@@ -415,6 +418,7 @@ const Research = () => {
                           name="type"
                           value={formData.type}
                           onChange={handleInputChange}
+                          required
                         >
                           <option value="buy" style={{ color: "green" }}>Buy</option>
                           <option value="sell" style={{ color: "red" }}>Sell</option>

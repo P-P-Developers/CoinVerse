@@ -160,7 +160,7 @@ const Position = () => {
   }, []);
 
 
-  
+
   const filteredData = data.filter((item) => {
     const searchLower = search.toLowerCase();
     return (

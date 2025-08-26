@@ -42,6 +42,7 @@ const apkPath = path.join(
 );
 
 class Admin {
+
   async AddUser(req, res) {
     try {
       const {
@@ -52,6 +53,7 @@ class Admin {
         parent_id,
         parent_role,
         password,
+        Balance,
         Otp,
         Role,
         pertrade,
@@ -174,7 +176,7 @@ class Admin {
 
         // Log in wallet
         const walletEntry = new Wallet_model({
-          user_Id: referred_by, // or just `referred_by`
+          user_Id: referred_by,
           Balance: creditAmount,
           parent_Id: referringUser.parent_id || null,
           Type: "CREDIT",
@@ -2102,6 +2104,64 @@ class Admin {
     }
   }
 
+  // async getAllUser(req, res) {
+  //   try {
+  //     const { id, search, ActiveStatus } = req.body;
+  //     const page = parseInt(req.body.page) || 1;
+  //     const limit = parseInt(req.body.limit) || 1000;
+  //     const skip = (page - 1) * limit;
+
+  //     if (!id) {
+  //       return res
+  //         .status(400)
+  //         .json({ status: false, message: "Parent ID is required", data: [] });
+  //     }
+  //     const filter = {
+  //       parent_id: id,
+  //       Role: "USER",
+  //     };
+
+  //     // Apply ActiveStatus filter if provided
+  //     if (ActiveStatus === "Active" || ActiveStatus === "Inactive") {
+  //       filter.ActiveStatus = ActiveStatus == "Active" ? "1" : "0";
+  //     }
+
+  //     if (search) {
+  //       const regex = new RegExp(search, "i");
+  //       filter.$or = [
+  //         { FullName: regex },
+  //         { Email: regex },
+  //         { UserName: regex },
+  //       ];
+  //     }
+
+  //     // Fetch filtered and paginated users
+  //     const result = await User_model.find(filter)
+  //       .sort({ createdAt: -1 })
+  //       .skip(skip)
+  //       .limit(limit);
+
+  //     const totalCount = await User_model.countDocuments(filter);
+
+  //     return res.json({
+  //       status: true,
+  //       message: "Data fetched successfully",
+  //       data: result,
+  //       pagination: {
+  //         totalCount,
+  //         currentPage: page,
+  //         totalPages: Math.ceil(totalCount / limit),
+  //         limit,
+  //       },
+  //     });
+  //   } catch (error) {
+  //     console.error("Error in getAllUser:", error);
+  //     return res
+  //       .status(500)
+  //       .json({ status: false, message: "Internal server error", data: [] });
+  //   }
+  // }
+
   async getAllUser(req, res) {
     try {
       const { id, search, ActiveStatus } = req.body;
@@ -2114,12 +2174,12 @@ class Admin {
           .status(400)
           .json({ status: false, message: "Parent ID is required", data: [] });
       }
+
       const filter = {
         parent_id: id,
         Role: "USER",
       };
 
-      // Apply ActiveStatus filter if provided
       if (ActiveStatus === "Active" || ActiveStatus === "Inactive") {
         filter.ActiveStatus = ActiveStatus == "Active" ? "1" : "0";
       }
@@ -2133,11 +2193,44 @@ class Admin {
         ];
       }
 
-      // Fetch filtered and paginated users
-      const result = await User_model.find(filter)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit);
+      const pipeline = [
+        { $match: filter },
+        { $sort: { createdAt: -1 } },
+        { $skip: skip },
+        { $limit: limit },
+        {
+          $addFields: {
+            employeeObjId: {
+              $cond: [
+                {
+                  $and: [
+                    { $ifNull: ["$employee_id", false] }, 
+                    { $eq: [{ $strLenCP: "$employee_id" }, 24] } 
+                  ]
+                },
+                { $toObjectId: "$employee_id" },
+                null
+              ]
+            }
+          }
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "employeeObjId",
+            foreignField: "_id",
+            as: "employeeDetails",
+          },
+        },
+        {
+          $addFields: {
+            employeeName: { $arrayElemAt: ["$employeeDetails.UserName", 0] },
+          },
+        },
+        { $project: { employeeDetails: 0 } },
+      ];
+
+      const result = await User_model.aggregate(pipeline);
 
       const totalCount = await User_model.countDocuments(filter);
 
@@ -2159,6 +2252,8 @@ class Admin {
         .json({ status: false, message: "Internal server error", data: [] });
     }
   }
+
+
 
   async getUserDetails(req, res) {
     try {

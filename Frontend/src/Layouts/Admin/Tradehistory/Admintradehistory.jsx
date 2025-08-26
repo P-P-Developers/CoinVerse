@@ -264,10 +264,17 @@ const Tradehistory = () => {
       }
 
       if (statusFilter === "open") {
-        filteredData = filteredData.filter((item) => item.sell_price === null || item.sell_price === undefined);
+        filteredData = filteredData.filter(
+          (item) =>
+            item.sell_price == null || item.buy_price == null
+        );
       } else if (statusFilter === "close") {
-        filteredData = filteredData.filter((item) => item.sell_price !== null && item.sell_price !== undefined);
+        filteredData = filteredData.filter(
+          (item) =>
+            item.sell_price != null && item.buy_price != null
+        );
       }
+
       setData(filteredData);
     } catch (error) {
       console.error(error);

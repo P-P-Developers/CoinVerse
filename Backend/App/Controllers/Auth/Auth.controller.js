@@ -66,8 +66,8 @@ class Auth {
             EmailCheck.plan_type == 3
               ? "Standard"
               : EmailCheck.plan_type == 2
-              ? "Premium"
-              : "Basic",
+                ? "Premium"
+                : "Basic",
         },
         process.env.SECRET,
         {
@@ -109,8 +109,8 @@ class Auth {
             EmailCheck.plan_type == 3
               ? "Standard"
               : EmailCheck.plan_type == 2
-              ? "Premium"
-              : "Basic",
+                ? "Premium"
+                : "Basic",
         },
       });
     } catch (error) {
@@ -198,6 +198,7 @@ class Auth {
           data: [],
         });
       }
+
 
       const data = {
         FullName,

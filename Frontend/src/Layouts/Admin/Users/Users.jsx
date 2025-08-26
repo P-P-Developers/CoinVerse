@@ -209,14 +209,8 @@ const Users = () => {
     },
     {
       Header: "Employee Allotment",
-      accessor: "employee_id",
-      Cell: ({ cell, row }) => {
-        const employee_id = cell.row.employee_id;
-
-        const employee = employeename.find((emp) => emp._id === employee_id);
-
-        return employee ? employee.UserName : "N/A";
-      },
+      accessor: "employeeName",
+      Cell: ({ cell }) => <span>{cell.value ? cell.value : "--"}</span>,
     },
   ];
 
@@ -614,8 +608,8 @@ const Users = () => {
                           <option value="">Select Reason</option>
                           <option value="Profit Share">Profit Share</option>
                           <option value="Referral Bonus">Referral Bonus</option>
-                          <option value="Manual Credit">Manual Credit</option>
-                          <option value="Manual Debit">Manual Debit</option>
+                          {type == "CREDIT" && <option value="Manual Credit">Manual Credit</option>}
+                          {type !== "CREDIT" && <option value="Manual Debit">Manual Debit</option>}
                           <option value="Other">Other</option>
                         </select>
                       </div>

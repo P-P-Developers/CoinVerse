@@ -228,6 +228,8 @@ class Placeorder {
   //   }
   // }
 
+
+
   async gettardehistory(req, res) {
     try {
       const { userid, Role } = req.body;
@@ -258,8 +260,11 @@ class Placeorder {
           {
             $match: {
               adminid: userid,
-              $or: [{ sell_price: null }, { sell_price: { $exists: false } }],
-            },
+              $or: [
+                { buy_lot: null },
+                { sell_lot: null }
+              ]
+            }
           },
           {
             $lookup: {
@@ -1149,9 +1154,8 @@ class Placeorder {
 
       return res.json({
         status: true,
-        message: `${
-          type.charAt(0).toUpperCase() + type.slice(1)
-        } order updated successfully`,
+        message: `${type.charAt(0).toUpperCase() + type.slice(1)
+          } order updated successfully`,
         data: [],
       });
     } catch (error) {

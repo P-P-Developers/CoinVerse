@@ -8,6 +8,8 @@ import { getCompanyApi } from "../../Services/Superadmin/Superadmin";
 
 
 const Register = () => {
+
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
@@ -64,7 +66,10 @@ const Register = () => {
       UserName: Yup.string().required("Username is required"),
       PhoneNo: Yup.string()
         .matches(/^[0-9]+$/, "Phone number is not valid")
+        .min(10, "Phone number must be exactly 10 digits")
+        .max(10, "Phone number must be exactly 10 digits")
         .required("Phone number is required"),
+
       Email: Yup.string()
         .email("Invalid email address") // Email validation
         .required("Email is required"), // Ensure Email validation
@@ -78,7 +83,7 @@ const Register = () => {
     }),
     onSubmit: async (values) => {
       const { confirmPassword, ...dataToSubmit } = values;
-      dataToSubmit.UserName = dataToSubmit.UserName.toLowerCase(); // Convert UserName to lowercase
+      dataToSubmit.UserName = dataToSubmit.UserName.toLowerCase();
       try {
         const response = await SignIn(dataToSubmit);
 
@@ -154,7 +159,7 @@ const Register = () => {
             <div className="card mb-0 h-auto">
               <div className="card-body">
                 <div className="text-center mb-3">
-                  
+
                 </div>
 
                 <h2 className="text-center mb-2">Sign Up</h2>
@@ -166,11 +171,10 @@ const Register = () => {
                     <input
                       id="FullName"
                       type="text"
-                      className={`form-control ${
-                        formik.touched.FullName && formik.errors.FullName
-                          ? "is-invalid"
-                          : ""
-                      }`}
+                      className={`form-control ${formik.touched.FullName && formik.errors.FullName
+                        ? "is-invalid"
+                        : ""
+                        }`}
                       {...formik.getFieldProps("FullName")}
                     />
                     {formik.touched.FullName && formik.errors.FullName ? (
@@ -187,11 +191,10 @@ const Register = () => {
                     <input
                       id="UserName"
                       type="text"
-                      className={`form-control ${
-                        formik.touched.UserName && formik.errors.UserName
-                          ? "is-invalid"
-                          : ""
-                      }`}
+                      className={`form-control ${formik.touched.UserName && formik.errors.UserName
+                        ? "is-invalid"
+                        : ""
+                        }`}
                       {...formik.getFieldProps("UserName")}
                       onInput={(e) => (e.target.value = e.target.value.toLowerCase())} // Force lowercase input
                     />
@@ -209,11 +212,10 @@ const Register = () => {
                     <input
                       id="PhoneNo"
                       type="text"
-                      className={`form-control ${
-                        formik.touched.PhoneNo && formik.errors.PhoneNo
-                          ? "is-invalid"
-                          : ""
-                      }`}
+                      className={`form-control ${formik.touched.PhoneNo && formik.errors.PhoneNo
+                        ? "is-invalid"
+                        : ""
+                        }`}
                       {...formik.getFieldProps("PhoneNo")}
                     />
                     {formik.touched.PhoneNo && formik.errors.PhoneNo ? (
@@ -230,9 +232,8 @@ const Register = () => {
                     <input
                       id="Email"
                       type="email"
-                      className={`form-control ${
-                        formik.touched.Email && formik.errors.Email ? "is-invalid" : ""
-                      }`}
+                      className={`form-control ${formik.touched.Email && formik.errors.Email ? "is-invalid" : ""
+                        }`}
                       {...formik.getFieldProps("Email")} // Ensure proper binding
                     />
                     {formik.touched.Email && formik.errors.Email ? (
@@ -248,11 +249,10 @@ const Register = () => {
                       <input
                         id="password"
                         type={showPassword ? "text" : "password"}
-                        className={`form-control ${
-                          formik.touched.password && formik.errors.password
-                            ? "is-invalid"
-                            : ""
-                        }`}
+                        className={`form-control ${formik.touched.password && formik.errors.password
+                          ? "is-invalid"
+                          : ""
+                          }`}
                         {...formik.getFieldProps("password")}
                       />
                       <button
@@ -277,12 +277,11 @@ const Register = () => {
                       <input
                         id="confirmPassword"
                         type={showConfirmPassword ? "text" : "password"}
-                        className={`form-control ${
-                          formik.touched.confirmPassword &&
+                        className={`form-control ${formik.touched.confirmPassword &&
                           formik.errors.confirmPassword
-                            ? "is-invalid"
-                            : ""
-                        }`}
+                          ? "is-invalid"
+                          : ""
+                          }`}
                         {...formik.getFieldProps("confirmPassword")}
                       />
                       <button
@@ -295,7 +294,7 @@ const Register = () => {
                       </button>
                     </div>
                     {formik.touched.confirmPassword &&
-                    formik.errors.confirmPassword ? (
+                      formik.errors.confirmPassword ? (
                       <div className="invalid-feedback">
                         {formik.errors.confirmPassword}
                       </div>
@@ -309,11 +308,10 @@ const Register = () => {
                     <input
                       id="ReferredBy"
                       type="text"
-                      className={`form-control ${
-                        formik.touched.ReferredBy && formik.errors.ReferredBy
-                          ? "is-invalid"
-                          : ""
-                      }`}
+                      className={`form-control ${formik.touched.ReferredBy && formik.errors.ReferredBy
+                        ? "is-invalid"
+                        : ""
+                        }`}
                       {...formik.getFieldProps("ReferredBy")}
                     />
                     {formik.touched.ReferredBy && formik.errors.ReferredBy ? (
@@ -327,8 +325,8 @@ const Register = () => {
                     <button
                       className="btn btn-primary"
                       type="submit"
-                      // disabled={!formik.isValid || formik.isSubmitting}>
-                      >
+                    // disabled={!formik.isValid || formik.isSubmitting}>
+                    >
                       Register
                     </button>
                   </div>

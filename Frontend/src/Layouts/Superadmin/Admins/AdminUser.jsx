@@ -362,7 +362,7 @@ const AdminUser = () => {
               <div>
                 <div className="modal-body">
                   <div className="row">
-                    {/* Fund Input */}
+
                     <div className="col-lg-12 col-sm-12">
                       <div className="input-block mb-3">
                         <input
@@ -381,7 +381,7 @@ const AdminUser = () => {
                       </div>
                     </div>
 
-                    {/* Reason Dropdown */}
+
                     <div className="col-lg-12 col-sm-12">
                       <div className="input-block mb-3">
                         <select
@@ -392,14 +392,14 @@ const AdminUser = () => {
                           <option value="">Select Reason</option>
                           <option value="Profit Share">Profit Share</option>
                           <option value="Referral Bonus">Referral Bonus</option>
-                          <option value="Manual Credit">Manual Credit</option>
-                          <option value="Manual Debit">Manual Debit</option>
+                          {type == "CREDIT" && <option value="Manual Credit">Manual Credit</option>}
+                          {type !== "CREDIT" && <option value="Manual Debit">Manual Debit</option>}
                           <option value="Other">Other</option>
                         </select>
                       </div>
                     </div>
 
-                    {/* Show custom input if "Other" is selected */}
+
                     {reason === "Other" && (
                       <div className="col-lg-12 col-sm-12">
                         <div className="input-block mb-3">
