@@ -418,3 +418,5 @@ d2025-07-04T12:24:26.785Z [warn]: SLOW API: [POST] /users/userSymbollist - 367ms
 2025-08-26T11:19:35.431Z [warn]: SLOW API: [GET] /getCompany - 83477ms
 2025-08-26T11:26:15.199Z [warn]: SLOW API: [POST] /admin/AddUser - 237ms
 2025-08-26T11:26:15.205Z [warn]: SLOW API: [POST] /SignIn - 423ms
+2025-08-26T11:28:49.142Z [warn]: SLOW API: [POST] /admin/AddUser - 242ms
+2025-08-26T11:28:49.145Z [warn]: SLOW API: [POST] /SignIn - 396ms
