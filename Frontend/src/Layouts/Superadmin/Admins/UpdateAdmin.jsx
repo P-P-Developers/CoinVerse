@@ -135,7 +135,7 @@ const UpdateAdmin = () => {
       username: rowData?.UserName || "",
       email: rowData?.Email || "",
       phone: rowData?.PhoneNo || "",
-      // Licence: rowData?.Licence || "",
+      // Licence: rowData?.  || "",
       ProfitMargin: rowData?.ProfitMargin || 0,
       password: "",
       confirmPassword: "",
