@@ -56,7 +56,7 @@ const Register = () => {
       FullName: "",
       UserName: "",
       PhoneNo: "",
-      Email: "", // Ensure Email is included
+      Email: "",
       password: "",
       confirmPassword: "",
       ReferredBy: refCode || "",
