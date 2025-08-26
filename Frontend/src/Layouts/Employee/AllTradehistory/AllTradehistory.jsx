@@ -165,27 +165,27 @@ const Tradehistory = () => {
         }
       },
     },
-    {
-      Header: "Status",
-      accessor: "status",
-      Cell: ({ cell }) => {
-        const isOpen = isTradeOpen(cell.row);
-        return (
-          <span
-            style={{
-              color: isOpen ? "orange" : "green",
-              fontWeight: "bold",
-              padding: "4px 8px",
-              borderRadius: "4px",
-              backgroundColor: isOpen ? "#fff3cd" : "#d4edda",
-              border: `1px solid ${isOpen ? "#ffeaa7" : "#c3e6cb"}`,
-            }}
-          >
-            {isOpen ? "OPEN" : "CLOSED"}
-          </span>
-        );
-      },
-    },
+    // {
+    //   Header: "Status",
+    //   accessor: "status",
+    //   Cell: ({ cell }) => {
+    //     const isOpen = isTradeOpen(cell.row);
+    //     return (
+    //       <span
+    //         style={{
+    //           color: isOpen ? "orange" : "green",
+    //           fontWeight: "bold",
+    //           padding: "4px 8px",
+    //           borderRadius: "4px",
+    //           backgroundColor: isOpen ? "#fff3cd" : "#d4edda",
+    //           border: `1px solid ${isOpen ? "#ffeaa7" : "#c3e6cb"}`,
+    //         }}
+    //       >
+    //         {isOpen ? "OPEN" : "CLOSED"}
+    //       </span>
+    //     );
+    //   },
+    // },
   ];
 
   // Function to check if a trade is open
