@@ -855,8 +855,8 @@ class Placeorder {
         {
           $lookup: {
             from: "users",
-            localField: "admin_Id",
-            foreignField: "_id",
+            localField: "parent_id",
+            foreignField: "user_Id",
             as: "adminDetails",
           },
         },
@@ -900,6 +900,8 @@ class Placeorder {
       });
     }
   }
+
+
 
   async UpdateTargetSlPRice(req, res) {
     try {

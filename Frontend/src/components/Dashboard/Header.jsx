@@ -447,7 +447,7 @@ const Header = () => {
         <div className="page-titles">
           <div className="sub-dz-head">
             <div className="d-flex align-items-center dz-head-title">
-              <h2 className="text-white m-0">{title}</h2>
+              <h2 className="text-white m-4">{title}</h2>
             </div>
           </div>
         </div>

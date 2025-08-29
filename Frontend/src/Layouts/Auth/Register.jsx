@@ -213,6 +213,7 @@ const Register = () => {
                     <input
                       id="PhoneNo"
                       type="text"
+                      maxLength={10}
                       className={`form-control ${formik.touched.PhoneNo && formik.errors.PhoneNo
                         ? "is-invalid"
                         : ""

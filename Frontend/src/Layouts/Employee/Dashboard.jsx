@@ -3,6 +3,7 @@ import { getEmployeeUserdata } from "../../Services/Employee/Employee";
 import { getUserFromToken } from "../../Utils/TokenVerify";
 
 const Dashboard = () => {
+
   const TokenData = getUserFromToken();
 
   const [countdata, setCountdata] = useState([0]);
@@ -29,7 +30,7 @@ const Dashboard = () => {
     <div>
       <div className="container-fluid">
         <div className="row">
-          <div className="col-xl-12">
+          <div className="col-2xl-12">
             <div className="row main-card">
               <div className="col-md-4">
                 <div className="card card-box bg-secondary bg-secondary">

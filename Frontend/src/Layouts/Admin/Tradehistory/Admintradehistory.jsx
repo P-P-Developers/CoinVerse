@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { GetUsersName, switchOrderType, getswitchOrderTypedata } from "../../../Services/Admin/Addmin";
 import { ArrowLeftRight, X } from "lucide-react";
 import { getUserFromToken } from "../../../Utils/TokenVerify";
+import Swal from "sweetalert2";
 
 import socket from "../../../Utils/socketClient";
 
@@ -102,7 +103,6 @@ const Tradehistory = () => {
         const buyQty = cell.row.buy_qty;
 
         if (sellPrice && buyPrice && buyQty) {
-          // if(signal_type === "buy_sell"){
           const profitLoss = (sellPrice - buyPrice) * buyQty;
           const formattedProfitLoss = profitLoss.toFixed(4);
 
@@ -110,7 +110,6 @@ const Tradehistory = () => {
 
           return (
             <span style={{ color }}>
-              {/* <DollarSign /> */}
               {formattedProfitLoss}
             </span>
           );
@@ -228,7 +227,12 @@ const Tradehistory = () => {
     { Header: "UserName", accessor: "UserName" },
     { Header: "Symbol", accessor: "Symbol" },
     { Header: "Type", accessor: "type" },
-    { Header: "Message", accessor: "message" },
+    {
+      Header: "Message", accessor: "message",
+      Cell: ({ cell }) => {
+        return cell.row.message === "Order type switched to sell_buy" ? "Order type switched SELL to BUY" : "Order type switched BUY to SELL"
+      }
+    },
     {
       Header: "UpdatedAt",
       accessor: "updatedAt",
@@ -316,15 +320,29 @@ const Tradehistory = () => {
 
   const totalProfitLoss = calculateTotalProfitLoss();
 
-  const ChangeTradeType = async (row) => {
-    const data = { id: row._id };
-    const response = await switchOrderType(data);
 
-    if (response.status) {
-      getuserallhistory();
-    } else {
-      alert("Error");
-    }
+  const ChangeTradeType = async (row) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to change trade type?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, change it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const data = { id: row._id };
+        const response = await switchOrderType(data);
+
+        if (response.status) {
+          Swal.fire("Success!", "Trade type changed successfully.", "success");
+          getuserallhistory();
+        } else {
+          Swal.fire("Error!", "Something went wrong.", "error");
+        }
+      }
+    });
   };
 
 
@@ -339,6 +357,12 @@ const Tradehistory = () => {
       alert("Error");
     }
   };
+
+
+
+
+
+
 
 
   useEffect(() => {

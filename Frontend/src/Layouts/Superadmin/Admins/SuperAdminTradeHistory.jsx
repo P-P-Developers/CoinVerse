@@ -10,7 +10,7 @@ import {
 } from "../../../Services/Superadmin/Superadmin";
 import socket from "../../../Utils/socketClient";
 import { getAllswitchOrderTypedata } from "../../../Services/Admin/Addmin";
-
+import Swal from "sweetalert2";
 
 const SuperAdminTradeHistory = () => {
 
@@ -291,7 +291,12 @@ const SuperAdminTradeHistory = () => {
     { Header: "UserName", accessor: "UserName" },
     { Header: "Symbol", accessor: "Symbol" },
     { Header: "Type", accessor: "type" },
-    { Header: "Message", accessor: "message" },
+    {
+      Header: "Message", accessor: "message",
+      Cell: ({ cell }) => {
+        return cell.row.message === "Order type switched to sell_buy" ? "Order type switched SELL to BUY" : "Order type switched BUY to SELL"
+      }
+    },
     {
       Header: "UpdatedAt",
       accessor: "updatedAt",
@@ -330,14 +335,27 @@ const SuperAdminTradeHistory = () => {
   const totalProfitLoss = calculateTotalProfitLoss();
 
   const ChangeTradeType = async (row) => {
-    const data = { id: row._id };
-    const response = await switchOrderType(data);
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to change trade type?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, change it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const data = { id: row._id };
+        const response = await switchOrderType(data);
 
-    if (response.status) {
-      getuserallhistory();
-    } else {
-      alert("Error");
-    }
+        if (response.status) {
+          Swal.fire("Success!", "Trade type changed successfully.", "success");
+          getuserallhistory();
+        } else {
+          Swal.fire("Error!", "Something went wrong.", "error");
+        }
+      }
+    });
   };
 
   const fetchChangeTradeType = async (row) => {
