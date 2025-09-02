@@ -182,7 +182,7 @@ class Admin {
 
         await walletEntry.save();
 
-        if (Balance > 0) {
+        if (creditAmount > 0) {
           const newStatement = new BalanceStatement({
             userid: referred_by,
             Amount: creditAmount,

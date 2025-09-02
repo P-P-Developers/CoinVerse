@@ -23,19 +23,6 @@ class DeribitOptionsTracker {
     return new Date(year, monthMap[monthStr], day);
   }
 
-  getNearestExpiry(expiryDates) {
-    const now = new Date();
-    let nearest = null, minDiff = Infinity;
-    expiryDates.forEach((expiry) => {
-      const diff = this.parseExpiryDate(expiry) - now;
-      if (diff > 0 && diff < minDiff) {
-        minDiff = diff;
-        nearest = expiry;
-      }
-    });
-    return nearest;
-  }
-
   parseInstrument(instrumentName) {
     const parts = instrumentName.split("-");
     if (parts.length !== 4) return null;
@@ -46,48 +33,23 @@ class DeribitOptionsTracker {
     };
   }
 
-  /** ---------- Format Data ---------- **/
-  getFormattedData() {
-    const results = [];
-    const now = new Date();
-    const curtime = now.toTimeString().slice(0, 5).replace(":", "");
+  /** ---------- Emit Single Update ---------- **/
+  triggerUpdateSingle(instrumentData) {
+    if (this.onDataUpdate && this.btcUsdPrice && instrumentData) {
+      const now = new Date();
+      const curtime = now.toTimeString().slice(0, 5).replace(":", "");
 
-    Object.entries(this.optionChain).forEach(([expiry, strikes]) => {
-      Object.entries(strikes).forEach(([strike, strikeData]) => {
-        const strikePrice = parseFloat(strike);
-        const { c: call = {}, p: put = {} } = strikeData;
+      const obj = {
+        ticker: instrumentData.instrument,
+        Ask_Price: (instrumentData.ask || instrumentData.mark) * this.btcUsdPrice,
+        Bid_Price: (instrumentData.bid || instrumentData.mark) * this.btcUsdPrice,
+        Mid_Price: instrumentData.mark * this.btcUsdPrice,
+        Date: now.toISOString(),
+        curtime,
+        expiry: instrumentData.expiry,
+      };
 
-        if (call.mark) {
-          results.push({
-            ticker: `BTC-${expiry}-${strikePrice}-C`,
-            Ask_Price: call.mark * this.btcUsdPrice,
-            Bid_Price: call.mark * this.btcUsdPrice,
-            Mid_Price: call.mark * this.btcUsdPrice,
-            Date: now.toISOString(),
-            curtime,
-            expiry,
-          });
-        }
-        if (put.mark) {
-          results.push({
-            ticker: `BTC-${expiry}-${strikePrice}-P`,
-            Ask_Price: put.mark * this.btcUsdPrice,
-            Bid_Price: put.mark * this.btcUsdPrice,
-            Mid_Price: put.mark * this.btcUsdPrice,
-            Date: now.toISOString(),
-            curtime,
-            expiry,
-          });
-        }
-      });
-    });
-
-    return results.sort((a, b) => a.ticker.localeCompare(b.ticker));
-  }
-
-  triggerUpdate() {
-    if (this.onDataUpdate && this.btcUsdPrice) {
-      this.onDataUpdate(this.getFormattedData());
+      this.onDataUpdate(obj); // send one object at a time
     }
   }
 
@@ -107,18 +69,15 @@ class DeribitOptionsTracker {
 
       let instruments = data.result.map((inst) => inst.instrument_name);
 
-      // 2. Find top 2 expiry dates
+      // 2. Take only nearest expiry (avoid too much load)
       const expiryDates = [
         ...new Set(instruments.map((i) => i.split("-")[1]).filter(Boolean)),
       ];
-      const top2Expiries = expiryDates.slice(0, 2);
-      console.log("Top 2 Expiries:", top2Expiries);
+      const nearest = expiryDates[0];
+      console.log("Using expiry:", nearest);
 
-      // 3. Filter instruments for both expiries
-      instruments = instruments.filter((i) =>
-        top2Expiries.some((exp) => i.includes(exp))
-      );
-      console.log("Filtered Instruments Count:", instruments.length);
+      // 3. Filter instruments for nearest expiry
+      instruments = instruments.filter((i) => i.includes(nearest));
 
       // 4. Init optionChain expiry-wise
       instruments.forEach((inst) => {
@@ -166,9 +125,10 @@ class DeribitOptionsTracker {
           })
         );
 
+        // Subscribe BTC spot price
         this.ws.send(JSON.stringify(sub(["ticker.BTC-PERPETUAL.100ms"], 3)));
 
-        // Subscribe in chunks
+        // Subscribe to instruments (chunked)
         const tickerCh = instruments.map((i) => `ticker.${i}.100ms`);
         const bookCh = instruments.map((i) => `book.${i}.100ms`);
         const chunkSize = 50;
@@ -185,38 +145,45 @@ class DeribitOptionsTracker {
       });
 
       this.ws.on("message", (raw) => {
-        const msg = JSON.parse(raw);
+        let msg;
+        try {
+          msg = JSON.parse(raw);
+        } catch {
+          return;
+        }
         if (!msg.params) return;
         const { channel, data } = msg.params;
 
         // BTC price updates
         if (channel === "ticker.BTC-PERPETUAL.100ms") {
           this.btcUsdPrice = data.last_price;
-          return this.triggerUpdate();
+          return;
         }
 
         // Option ticker updates
-        if (channel.startsWith("ticker.BTC-") && !channel.includes("PERPETUAL")) {
+        if (channel?.startsWith("ticker.BTC-") && !channel.includes("PERPETUAL")) {
           const parsed = this.parseInstrument(data.instrument_name);
           if (parsed) {
-            const o = this.optionChain[parsed.expiry]?.[parsed.strike]?.[parsed.type.toLowerCase()];
+            const o =
+              this.optionChain[parsed.expiry]?.[parsed.strike]?.[parsed.type.toLowerCase()];
             if (o) {
               o.mark = data.mark_price;
               o.iv = data.mark_iv;
-              this.triggerUpdate();
+              this.triggerUpdateSingle(o);
             }
           }
         }
 
         // Order book updates
-        if (channel.startsWith("book.BTC-")) {
+        if (channel?.startsWith("book.BTC-")) {
           const parsed = this.parseInstrument(channel.split(".")[1]);
           if (parsed) {
-            const o = this.optionChain[parsed.expiry]?.[parsed.strike]?.[parsed.type.toLowerCase()];
+            const o =
+              this.optionChain[parsed.expiry]?.[parsed.strike]?.[parsed.type.toLowerCase()];
             if (o) {
               o.bid = data.bids?.[0]?.[0] || null;
               o.ask = data.asks?.[0]?.[0] || null;
-              this.triggerUpdate();
+              this.triggerUpdateSingle(o);
             }
           }
         }
@@ -228,6 +195,7 @@ class DeribitOptionsTracker {
 
       this.ws.on("close", () => {
         console.log("WebSocket closed, reconnecting...");
+        this.stop();
         setTimeout(() => this.start(this.onDataUpdate), 5000);
       });
     } catch (err) {
@@ -236,15 +204,13 @@ class DeribitOptionsTracker {
   }
 
   stop() {
-    this.ws?.close();
+    if (this.ws) {
+      this.ws.removeAllListeners();
+      this.ws.close();
+      this.ws = null;
+    }
+    this.optionChain = {};
   }
 }
-
-/** ---------- Usage Example ---------- **/
-const tracker = new DeribitOptionsTracker();
-
-tracker.start((data) => {
-  // console.log("Updated sample:", data.slice(0, 5)); // print only first 5 updates
-});
 
 module.exports = DeribitOptionsTracker;

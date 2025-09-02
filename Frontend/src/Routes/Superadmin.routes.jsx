@@ -27,6 +27,7 @@ import UserTradeHistory from "../Layouts/Superadmin/Admins/UserTradeHistory";
 import Settings from "../Layouts/Superadmin/Admins/Settings";
 import Symbols from "../Layouts/Superadmin/DASHBOARD/symbols"
 import Symbols1 from "../Layouts/Superadmin/DASHBOARD/symbol1"
+import Optionchain from "../Layouts/Superadmin/DASHBOARD/Optionchain"
 
 
 const SuperadminRoutes = () => {
@@ -61,6 +62,8 @@ const SuperadminRoutes = () => {
           <Route path="/symbols" element={<Symbols />} />
           <Route path="/game/chart" element={<Symbols1 />} />
 
+          <Route path="/game/chart" element={<Symbols1 />} />
+          <Route path="/game/optionchain" element={<Optionchain />} />
 
         </Routes>
       </div>

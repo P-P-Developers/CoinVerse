@@ -4,9 +4,8 @@ const http = require("http");
 const socketIo = require("socket.io");
 const WebSocket = require("ws");
 require("dotenv").config();
-const DeribitOptionsTracker = require("./Optiondata");
 
-const PORT = 7777;
+const PORT = 5000;
 const API_KEY = "e533600bac1b5195c93e19a99b72720043ba3d79";
 
 const app = express();
@@ -54,10 +53,6 @@ const formatPrices = (data) => {
 // WebSocket Setup
 const initializeWebSocket = (url, tickers, type) => {
   const ws = new WebSocket(url);
-
-  /** ---------- Usage Example ---------- **/
-
-
 
   ws.onopen = () => {
     console.log(`✅ ${type.toUpperCase()} WebSocket connected`);
@@ -181,33 +176,6 @@ const startSockets = () => {
     ],
     "crypto"
   );
-
-  const tracker = new DeribitOptionsTracker();
-
-tracker.start((data) => {
-  // Guard condition: saare required fields valid hone chahiye
-  if (
-    data &&
-    data?.ticker &&
-    data?.Date &&
-    data?.Mid_Price &&
-    data?.Mid_Price > 0
-  ) {
-    let formattedData1 = [
-      "T",
-      data?.ticker,
-      data?.Date,
-      "gdax",
-      data?.Mid_Price,
-      data?.Mid_Price,
-      data?.Mid_Price,
-      data?.Mid_Price,
-    ];
-
-
-    io.emit("receive_data_forex", { data: formattedData1, type: "crypto" });
-  }
-});
 };
 
 // Start Server

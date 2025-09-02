@@ -171,25 +171,26 @@ const initializeDatabase = async () => {
   Standard_plan = companyData[0]?.Standard_plan;
 };
 
-const formatNumber = (num, pipdigit) => {
-  if (typeof num !== "number" || isNaN(num)) return num;
-
-  const factor = Math.pow(10, pipdigit);
-  const result = Math.round(num * factor) / factor;
-
-  return result.toFixed(pipdigit);
+// digits = number of decimal places (2, 4, 6 ...), not a pip value.
+const formatNumber = (num, digits = 4) => {
+  if (typeof num !== "number" || !isFinite(num)) return num;
+  const factor = 10 ** digits;
+  return (Math.round(num * factor) / factor).toFixed(digits);
 };
 
+
 const updateDatabase = async (data, type) => {
+ 
   if (data.Mid_Price === 0) return;
-  await collection.updateOne(
-    { ticker: data.ticker },
-    { $set: data },
-    { upsert: true }
-  );
+  // await collection.updateOne(
+  //   { ticker: data.ticker },
+  //   { $set: data },
+  //   { upsert: true }
+  // );
 };
 
 const simulatePriceMovement = async (data, type) => {
+ 
   const symbol = data[1];
   const curTime = new Date();
   const curtimeStr = `${curTime.getHours().toString().padStart(2, "0")}${curTime
@@ -205,6 +206,7 @@ const simulatePriceMovement = async (data, type) => {
   const pipdigit = pipObj.digit;
 
   let baseMidPrice = data[type === "crypto" ? 6 : 5] || 0;
+  // console.log("baseMidPrice",baseMidPrice)
   if (baseMidPrice === 0) return;
 
   const makePriceData = (planOffset) => ({
@@ -213,13 +215,12 @@ const simulatePriceMovement = async (data, type) => {
     curtime: curtimeStr,
     Exchange: data[3] || null,
     Bid_Size: data[4] || data[3] || 0,
-    Bid_Price: formatNumber(baseMidPrice - planOffset * pipValue, pipdigit),
+    Bid_Price: formatNumber(baseMidPrice, pipdigit),
     Mid_Price: formatNumber(baseMidPrice, pipdigit),
     Ask_Size: data[7] || data[6] || 0,
-    Ask_Price: formatNumber(baseMidPrice + planOffset * pipValue, pipdigit),
+    Ask_Price: formatNumber(baseMidPrice, pipdigit),
   });
 
-  // console.log("activeConditions.length",activeConditions.length)
   if (activeConditions.length == 0) {
     const basicData = makePriceData(Basic_plan);
     const standardData = makePriceData(Standard_plan);

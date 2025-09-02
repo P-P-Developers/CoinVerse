@@ -34,10 +34,10 @@ const Register = () => {
     link.href = res.data.favicon;
     document.getElementsByTagName("head")[0].appendChild(link);
 
-    document.title = res.data.panelName;
+    document.title = res?.data?.panelName;
 
-    setLogo(res.data.logo);
-    changeFavicon(res.data.favicon);
+    setLogo(res?.data?.logo);
+    changeFavicon(res?.data?.favicon);
   }
 
   const changeFavicon = (iconPath) => {
