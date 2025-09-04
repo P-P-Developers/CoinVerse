@@ -4,7 +4,7 @@ const axios = require("axios");
 class DeribitOptionsTracker {
   constructor() {
     this.optionChain = {}; // expiry -> strike -> type
-    this.btcUsdPrice = null;
+ 
     this.ws = null;
     this.onDataUpdate = null;
   }
@@ -34,24 +34,29 @@ class DeribitOptionsTracker {
   }
 
   /** ---------- Emit Single Update ---------- **/
-  triggerUpdateSingle(instrumentData) {
-    if (this.onDataUpdate && this.btcUsdPrice && instrumentData) {
-      const now = new Date();
-      const curtime = now.toTimeString().slice(0, 5).replace(":", "");
+ triggerUpdateSingle(instrumentData) {
+  let btcusdPrice = instrumentData?.index_price || instrumentData?.underlying_price;
+  
+  if (this.onDataUpdate && btcusdPrice && instrumentData) {
+    const now = new Date();
+    const curtime = now.toTimeString().slice(0, 5).replace(":", "");
 
-      const obj = {
-        ticker: instrumentData.instrument,
-        Ask_Price: (instrumentData.ask || instrumentData.mark) * this.btcUsdPrice,
-        Bid_Price: (instrumentData.bid || instrumentData.mark) * this.btcUsdPrice,
-        Mid_Price: instrumentData.mark * this.btcUsdPrice,
-        Date: now.toISOString(),
-        curtime,
-        expiry: instrumentData.expiry,
-      };
+    const mark = instrumentData.mark_price || instrumentData.mark;
+    const bid = instrumentData.best_bid_price || instrumentData.bid;
+    const ask = instrumentData.best_ask_price || instrumentData.ask;
 
-      this.onDataUpdate(obj); // send one object at a time
-    }
+    // Construct normalized object
+    const obj = {
+      ticker: instrumentData.instrument_name || instrumentData.instrument,
+      Ask_Price: ask ? ask * btcusdPrice : mark * btcusdPrice,
+      Bid_Price: bid ? bid * btcusdPrice : mark * btcusdPrice,
+      Mid_Price: mark ? mark * btcusdPrice : null,
+      Date: now.toISOString()
+    };
+
+    this.onDataUpdate(obj); // Send one clean object at a time
   }
+}
 
   onUpdate(callback) {
     this.onDataUpdate = callback;
@@ -154,12 +159,7 @@ class DeribitOptionsTracker {
         if (!msg.params) return;
         const { channel, data } = msg.params;
 
-        // BTC price updates
-        if (channel === "ticker.BTC-PERPETUAL.100ms") {
-          this.btcUsdPrice = data.last_price;
-          return;
-        }
-
+     
         // Option ticker updates
         if (channel?.startsWith("ticker.BTC-") && !channel.includes("PERPETUAL")) {
           const parsed = this.parseInstrument(data.instrument_name);
@@ -169,7 +169,7 @@ class DeribitOptionsTracker {
             if (o) {
               o.mark = data.mark_price;
               o.iv = data.mark_iv;
-              this.triggerUpdateSingle(o);
+              this.triggerUpdateSingle(data);
             }
           }
         }
@@ -183,7 +183,7 @@ class DeribitOptionsTracker {
             if (o) {
               o.bid = data.bids?.[0]?.[0] || null;
               o.ask = data.asks?.[0]?.[0] || null;
-              this.triggerUpdateSingle(o);
+              this.triggerUpdateSingle(data);
             }
           }
         }

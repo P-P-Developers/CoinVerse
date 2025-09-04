@@ -209,7 +209,6 @@ class Dashboard {
     const formattedStartDate = formatDate(startDate);
     const formattedEndDate = formatDate(yesterday);
 
-
     const url = `https://api.tiingo.com/tiingo/crypto/prices?tickers=${symbol}&startDate=${formattedEndDate}&resampleFreq=1min&token=${API_TOKEN}`;
 
     try {

@@ -3,12 +3,9 @@ const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 const db = require("../../../Models");
-const { findOne } = require("../../../Models/Role.model");
 const User_model = db.user;
-const Role = db.role;
 const Wallet_model = db.WalletRecharge;
 const totalLicense = db.totalLicense;
-const MarginRequired = db.MarginRequired;
 const BalanceStatement = db.BalanceStatement;
 const employee_permission = db.employee_permission;
 const mainorder_model = db.mainorder_model;
@@ -52,7 +49,7 @@ class Superadmin {
         NetTransactionPercent,
         NetTransaction,
         Edit_balance,
-        Fund_request
+        Fund_request,
       } = req.body;
 
       UserName = UserName.toString().toLowerCase();
@@ -140,7 +137,7 @@ class Superadmin {
         NetTransactionPercent,
         NetTransaction,
         Edit_balance,
-        Fund_request
+        Fund_request,
       });
 
       await newUser.save();
@@ -216,14 +213,14 @@ class Superadmin {
 
       const parentUser = await User_model.findOne({ _id: parent_Id });
 
-
       const existingDeposits = await BalanceStatement.find({
         userid: userdata._id,
         type: "CREDIT",
       }).sort({ Amount: -1 });
 
-      const largestAmount = existingDeposits.length > 0 ? existingDeposits[0].Amount : 0;
-      console.log()
+      const largestAmount =
+        existingDeposits.length > 0 ? existingDeposits[0].Amount : 0;
+      console.log();
 
       if (dollarcount > largestAmount) {
         let planType = null;
@@ -388,7 +385,8 @@ class Superadmin {
         Amount: dollarcount,
         parent_Id: parent_Id,
         type: Type,
-        message: reason || (Type === "CREDIT" ? "Balance Added" : "Balance Debited"),
+        message:
+          reason || (Type === "CREDIT" ? "Balance Added" : "Balance Debited"),
       });
       await newStatement.save();
 
@@ -483,10 +481,9 @@ class Superadmin {
           data: result,
         });
       }
-    } catch (error) { }
+    } catch (error) {}
   }
 
-  // admin history
   async getadminhistory(req, res) {
     try {
       const walletData = await Wallet_model.aggregate([
@@ -572,7 +569,8 @@ class Superadmin {
       const message = changes
         .map(
           (c) =>
-            `${c.field}: 'Old Value : ${c.oldValue ?? ""}' → 'Updated Value : ${c.newValue ?? ""
+            `${c.field}: 'Old Value : ${c.oldValue ?? ""}' → 'Updated Value : ${
+              c.newValue ?? ""
             }'`
         )
         .join(", ");
@@ -613,7 +611,6 @@ class Superadmin {
     }
   }
 
-  // deleted admin
   async Delete_Admin(req, res) {
     try {
       const { id } = req.body;
@@ -719,7 +716,6 @@ class Superadmin {
     }
   }
 
-  //get admin user detail
   async getadminuserdetail(req, res) {
     try {
       const { userid } = req.body;
@@ -735,7 +731,6 @@ class Superadmin {
     }
   }
 
-  // get employee user
   async getEmployeeuserdetail(req, res) {
     try {
       const { userid } = req.body;
@@ -751,7 +746,6 @@ class Superadmin {
     }
   }
 
-  // get licence detail
   async getlicencedetail(req, res) {
     try {
       const { userid } = req.body;
@@ -784,100 +778,6 @@ class Superadmin {
       });
     }
   }
-
-
-
-
-  // async getPosition_detail(req, res) {
-  //   try {
-  //     const { adminid } = req.body;
-
-
-  //     const pipeline = [
-  //       {
-  //         $match: {
-  //           adminid: adminid ? adminid : { $exists: true },
-  //           $expr: { $ne: ["$buy_lot", "$sell_lot"] },
-  //         },
-  //       },
-  //       {
-  //         $addFields: {
-  //           useridObjectId: { $toObjectId: "$userid" },
-  //         },
-  //       },
-  //       {
-  //         $lookup: {
-  //           from: "users",
-  //           localField: "useridObjectId",
-  //           foreignField: "_id",
-  //           as: "user",
-  //         },
-  //       },
-
-  //       { $unwind: "$user" },
-  //       {
-  //         $project: {
-  //           symbol: 1,
-  //           signal_type: 1,
-  //           buy_lot: 1,
-  //           sell_lot: 1,
-  //           buy_price: 1,
-  //           sell_price: 1,
-  //           buy_qty: 1,
-  //           sell_qty: 1,
-  //           createdAt: 1,
-  //           adminid: 1,
-  //           userid: 1,
-  //           userName: "$user.UserName",
-  //           Target_price: 1,
-  //           stoploss_price: 1,
-  //           Sl_price_percentage: 1,
-
-  //         },
-  //       },
-  //       {
-  //         $group: {
-  //           _id: {
-  //             symbol: "$symbol",
-  //             signal_type: "$signal_type",
-  //           },
-  //           records: { $push: "$$ROOT" },
-  //           count: { $sum: 1 },
-
-  //           avg_buy_price: { $avg: "$buy_price" },
-  //           avg_sell_price: { $avg: "$sell_price" },
-  //           avg_buy_lot: { $avg: "$buy_lot" },
-  //           avg_sell_lot: { $avg: "$sell_lot" },
-  //           avg_buy_qty: { $avg: "$buy_qty" },
-  //           avg_sell_qty: { $avg: "$sell_qty" },
-
-  //         },
-  //       },
-  //       {
-  //         $sort: {
-  //           "_id.symbol": 1,
-  //           "_id.signal_type": 1,
-  //         },
-  //       },
-  //     ];
-
-  //     const result = await mainorder_model.aggregate(pipeline);
-
-  //     const UserName = await User_model.find({ parent_id: adminid }, { UserName: 1 });
-
-
-  //     if (!result || result.length === 0) {
-  //       return res.json({ status: false, message: "Data not found", data: [] });
-  //     }
-
-  //     return res.json({ status: true, message: "Data found", data: result, User: UserName });
-  //   } catch (error) {
-  //     console.log("Error at getPosition_detail", error);
-  //     return res.json({ status: false, message: "Internal error", data: [] });
-  //   }
-  // }
-
-
 
   async getPosition_detail(req, res) {
     try {
@@ -963,7 +863,7 @@ class Superadmin {
               Mid_Price: "$live_prices.Mid_Price",
               ticker: "$live_prices.ticker",
               timestamp: "$live_prices.timestamp",
-            }
+            },
           },
         },
         {
@@ -1043,11 +943,6 @@ class Superadmin {
     }
   }
 
-
-
-
-
-
   async brokerageDataForSuperAdmin(req, res) {
     try {
       const aggregatedData = await User_model.aggregate([
@@ -1121,9 +1016,6 @@ class Superadmin {
     }
   }
 
-
-
-
   async AddProfitMargin(req, res) {
     try {
       const { adminid, balance } = req.body;
@@ -1176,9 +1068,6 @@ class Superadmin {
     }
   }
 
-
-
-
   async getProfitMargin(req, res) {
     try {
       const { admin_id } = req.body;
@@ -1216,7 +1105,6 @@ class Superadmin {
       });
     }
   }
-
 
   async createOrUpdateCompany(req, res) {
     try {
@@ -1267,7 +1155,6 @@ class Superadmin {
     }
   }
 
-  // READ: Get company settings
   async getCompany(req, res) {
     try {
       const company = await Company.findOne();
@@ -1295,8 +1182,6 @@ class Superadmin {
     }
   }
 
-
-
   async AddCompany(req, res) {
     try {
       const { Basic_plan, Standard_plan, Premium_plan } = req.body;
@@ -1307,7 +1192,6 @@ class Superadmin {
           message: "All plans (Basic, Standard, Premium) are required.",
         });
       }
-
 
       let company = await Company.findOne();
 
@@ -1325,7 +1209,11 @@ class Superadmin {
         });
       }
 
-      const newCompany = new Company({ Basic_plan, Standard_plan, Premium_plan });
+      const newCompany = new Company({
+        Basic_plan,
+        Standard_plan,
+        Premium_plan,
+      });
       const savedCompany = await newCompany.save();
 
       return res.status(201).json({
@@ -1333,7 +1221,6 @@ class Superadmin {
         message: "Plans created successfully.",
         data: savedCompany,
       });
-
     } catch (error) {
       console.error("Error at AddCompany:", error);
       return res.status(500).json({
@@ -1342,10 +1229,8 @@ class Superadmin {
         data: [],
       });
     }
-  };
+  }
 
-
-  // DELETE: Delete company settings
   async deleteCompany(req, res) {
     try {
       const { companyId } = req.body;
@@ -1483,7 +1368,6 @@ class Superadmin {
       return res.json({ status: false, message: "internal error", data: [] });
     }
   }
-
 
   async GetAdminBalanceWithPosition(req, res) {
     try {
@@ -1658,18 +1542,21 @@ class Superadmin {
     }
   }
 
-
-
-
   async getUserlist(req, res) {
     try {
       const { adminid, userId, status, input } = req.body;
       let users = [];
 
       if (userId) {
-        const user = await User_model.findOne({ _id: userId }).select("UserName _id Balance");
+        const user = await User_model.findOne({ _id: userId }).select(
+          "UserName _id Balance"
+        );
         if (!user) {
-          return res.json({ status: false, message: "User not found", data: [] });
+          return res.json({
+            status: false,
+            message: "User not found",
+            data: [],
+          });
         }
         users = [user];
       } else if (adminid) {
@@ -1677,7 +1564,11 @@ class Superadmin {
           .select("UserName _id Balance")
           .sort({ createdAt: -1 });
       } else {
-        return res.json({ status: false, message: "userId or adminid is required", data: [] });
+        return res.json({
+          status: false,
+          message: "userId or adminid is required",
+          data: [],
+        });
       }
 
       if (!users.length) {
@@ -1692,7 +1583,13 @@ class Superadmin {
           $match: {
             userid: { $in: userIdStrings },
             type: "CREDIT",
-            message: { $in: ["Balance Added", "Balance used for Deposit", "Balance Credit"] },
+            message: {
+              $in: [
+                "Balance Added",
+                "Balance used for Deposit",
+                "Balance Credit",
+              ],
+            },
           },
         },
         {
@@ -1709,7 +1606,7 @@ class Superadmin {
           $match: {
             userid: { $in: userIdStrings },
             type: "DEBIT",
-            message: { $in: ["Balance used for withdrawal"] }
+            message: { $in: ["Balance used for withdrawal"] },
           },
         },
         {
@@ -1738,10 +1635,12 @@ class Superadmin {
       ]);
 
       // Completed Orders
-      const allOrders = await mainorder_model.find({
-        userid: { $in: userIdStrings },
-        status: "Completed",
-      }).select("userid symbol buy_price sell_price buy_qty sell_qty");
+      const allOrders = await mainorder_model
+        .find({
+          userid: { $in: userIdStrings },
+          status: "Completed",
+        })
+        .select("userid symbol buy_price sell_price buy_qty sell_qty");
 
       const symbolPriceMap = {
         BTCUSD: 106600,
@@ -1757,14 +1656,16 @@ class Superadmin {
         const buyQty = parseFloat(order.buy_qty || 0);
         const sellQty = parseFloat(order.sell_qty || 0);
         const buyPrice = parseFloat(order.buy_price || 0);
-        const sellPrice = order.sell_price !== null ? parseFloat(order.sell_price) : null;
+        const sellPrice =
+          order.sell_price !== null ? parseFloat(order.sell_price) : null;
 
         const qtyMatched = Math.min(buyQty, sellQty);
 
         // ✅ Realized
-        const realized = sellPrice !== null
-          ? parseFloat((sellPrice - buyPrice) * qtyMatched)
-          : 0;
+        const realized =
+          sellPrice !== null
+            ? parseFloat((sellPrice - buyPrice) * qtyMatched)
+            : 0;
 
         // ✅ Unrealized
         let unrealized = 0;
@@ -1802,7 +1703,9 @@ class Superadmin {
         const totalCredit = parseFloat(creditMap[id] || 0);
         const totalDebit = parseFloat(debitMap[id] || 0);
         const totalBrokerage = parseFloat(brokerageMap[id] || 0);
-        const remainingBalance = parseFloat(totalCredit - totalDebit - totalBrokerage);
+        const remainingBalance = parseFloat(
+          totalCredit - totalDebit - totalBrokerage
+        );
 
         const pl = plMap[id] || { realized: 0, unrealized: 0 };
 
@@ -1825,9 +1728,13 @@ class Superadmin {
         const numericInput = parseFloat(input);
         if (!isNaN(numericInput)) {
           if (status == 0) {
-            finalResult = result.filter((user) => parseFloat(user.realizedPL) < numericInput);
+            finalResult = result.filter(
+              (user) => parseFloat(user.realizedPL) < numericInput
+            );
           } else if (status == 1) {
-            finalResult = result.filter((user) => parseFloat(user.realizedPL) > numericInput);
+            finalResult = result.filter(
+              (user) => parseFloat(user.realizedPL) > numericInput
+            );
           }
         }
       }
@@ -1846,8 +1753,6 @@ class Superadmin {
       });
     }
   }
-
-
 
   async UserWisetradehistory(req, res) {
     try {
@@ -1879,18 +1784,26 @@ class Superadmin {
       let result = await mainorder_model.find(query).sort({ createdAt: -1 });
 
       if (!result || result.length === 0) {
-        return res.json({ status: false, message: "No trades found", data: [] });
+        return res.json({
+          status: false,
+          message: "No trades found",
+          data: [],
+        });
       }
 
       // Apply status-based filtering only if status is provided
       if (status === 0) {
-        result = result.filter(item => item.buy_lot === item.sell_lot);
+        result = result.filter((item) => item.buy_lot === item.sell_lot);
       } else if (status === 1) {
-        result = result.filter(item => item.buy_lot !== item.sell_lot);
+        result = result.filter((item) => item.buy_lot !== item.sell_lot);
       }
 
       if (result.length === 0) {
-        return res.json({ status: false, message: "No trades found for given status", data: [] });
+        return res.json({
+          status: false,
+          message: "No trades found for given status",
+          data: [],
+        });
       }
 
       const user = await User_model.findOne({ _id: userid });
@@ -1912,7 +1825,38 @@ class Superadmin {
     }
   }
 
+  async getupdatevertion(req, res) {
+    try {
+      const { version } = req.body;
 
+      let companyDoc;
+
+      if (version) {
+        // अगर document है तो update, वरना create कर दो
+        companyDoc = await Company.findOneAndUpdate(
+          {},
+          { $set: { version } },
+          { new: true, upsert: true } // ✅ upsert मतलब अगर doc नहीं है तो बना दो
+        );
+      } else {
+        // सिर्फ़ get करो
+        companyDoc = await Company.findOne({}).select("version");
+      }
+
+      return res.json({
+        status: true,
+        message: "Version fetched",
+        version: companyDoc?.version || "1.0.0",
+      });
+    } catch (error) {
+      console.error("Error at getupdatevertion", error);
+      return res.json({
+        status: false,
+        message: "Internal error",
+        data: [],
+      });
+    }
+  }
 }
 
 module.exports = new Superadmin();

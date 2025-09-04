@@ -43,7 +43,11 @@ const companySchema = new mongoose.Schema(
     Premium_plan: {
       type: Number,
       default: null
-    }
+    },
+    version: {
+      type: String,
+      default: "1.0.0"
+    },
   },
   { timestamps: true }
 );

@@ -29,7 +29,7 @@ app.use((req, res, next) => {
 
 // Setting up CORS options
 const corsOpts = {
-  origin: ["http://localhost:3000", "*"],
+  origin: ["http://localhost:3001", "*"],
   credentials: true,
   methods: ["GET", "POST"],
   allowedHeaders: ["Content-Type", "Authorization", "x-access-token"],

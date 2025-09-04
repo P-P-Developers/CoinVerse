@@ -11,8 +11,8 @@ require("dotenv").config();
 const PORT = 5000;
 const HTTPS_PORT = 1003;
 const MONGO_URL = process.env.MONGO_URL;
-// const SOCKET_URL = "http://82.29.178.147:7777/";
-const SOCKET_URL = "http://185.209.75.198:7777/";
+const SOCKET_URL = "http://82.29.178.147:7777/";
+// const SOCKET_URL = "http://185.209.75.198:7777/";
 
 
 const app = express();
@@ -171,7 +171,7 @@ const initializeDatabase = async () => {
   Standard_plan = companyData[0]?.Standard_plan;
 };
 
-const formatNumber = (num, pipdigit) => {
+const formatNumber = (num, pipdigit=0.0001) => {
   if (typeof num !== "number" || isNaN(num)) return num;
 
   const factor = Math.pow(10, pipdigit);
@@ -181,6 +181,7 @@ const formatNumber = (num, pipdigit) => {
 };
 
 const updateDatabase = async (data, type) => {
+  // console.log("Updating database with data:", data);
   if (data.Mid_Price === 0) return;
   await collection.updateOne(
     { ticker: data.ticker },

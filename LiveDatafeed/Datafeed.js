@@ -204,7 +204,7 @@ tracker.start((data) => {
       data?.Mid_Price,
     ];
 
-
+    // console.log("Formatted Deribit Data:", formattedData1);
     io.emit("receive_data_forex", { data: formattedData1, type: "crypto" });
   }
 });
