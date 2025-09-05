@@ -4,7 +4,6 @@ const axios = require("axios");
 class DeribitOptionsTracker {
   constructor() {
     this.optionChain = {}; // expiry -> strike -> type
- 
     this.ws = null;
     this.onDataUpdate = null;
   }
@@ -33,30 +32,67 @@ class DeribitOptionsTracker {
     };
   }
 
-  /** ---------- Emit Single Update ---------- **/
- triggerUpdateSingle(instrumentData) {
-  let btcusdPrice = instrumentData?.index_price || instrumentData?.underlying_price;
-  
-  if (this.onDataUpdate && btcusdPrice && instrumentData) {
+  /** ---------- Get Current Month's Last Expiry ---------- **/
+  getCurrentMonthExpiries(expiryStrings) {
     const now = new Date();
-    const curtime = now.toTimeString().slice(0, 5).replace(":", "");
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    // Parse all expiries and filter for current month
+    const currentMonthExpiries = expiryStrings
+      .map(expiryStr => ({
+        str: expiryStr,
+        date: this.parseExpiryDate(expiryStr)
+      }))
+      .filter(exp => 
+        exp.date.getMonth() === currentMonth && 
+        exp.date.getFullYear() === currentYear &&
+        exp.date >= now // Only future dates
+      )
+      .sort((a, b) => a.date - b.date); // Sort by date ascending
 
-    const mark = instrumentData.mark_price || instrumentData.mark;
-    const bid = instrumentData.best_bid_price || instrumentData.bid;
-    const ask = instrumentData.best_ask_price || instrumentData.ask;
+    const result = [];
+    
+    if (currentMonthExpiries.length > 0) {
+      // Add nearest expiry (first in sorted array)
+      result.push(expiryStrings[0]);
+      result.push(expiryStrings[1]);
 
-    // Construct normalized object
-    const obj = {
-      ticker: instrumentData.instrument_name || instrumentData.instrument,
-      Ask_Price: ask ? ask * btcusdPrice : mark * btcusdPrice,
-      Bid_Price: bid ? bid * btcusdPrice : mark * btcusdPrice,
-      Mid_Price: mark ? mark * btcusdPrice : null,
-      Date: now.toISOString()
-    };
-
-    this.onDataUpdate(obj); // Send one clean object at a time
+      
+      // Add last expiry of current month (if different from nearest)
+      const lastExpiry = currentMonthExpiries[currentMonthExpiries.length - 1];
+      if (lastExpiry.str !== currentMonthExpiries[0].str) {
+        result.push(lastExpiry.str);
+      }
+    }
+    
+    return result;
   }
-}
+
+  /** ---------- Emit Single Update ---------- **/
+  triggerUpdateSingle(instrumentData) {
+    let btcusdPrice = instrumentData?.index_price || instrumentData?.underlying_price;
+    
+    if (this.onDataUpdate && btcusdPrice && instrumentData) {
+      const now = new Date();
+      const curtime = now.toTimeString().slice(0, 5).replace(":", "");
+
+      const mark = instrumentData.mark_price || instrumentData.mark;
+      const bid = instrumentData.best_bid_price || instrumentData.bid;
+      const ask = instrumentData.best_ask_price || instrumentData.ask;
+
+      // Construct normalized object
+      const obj = {
+        ticker: instrumentData.instrument_name || instrumentData.instrument,
+        Ask_Price: ask ? ask * btcusdPrice : mark * btcusdPrice,
+        Bid_Price: bid ? bid * btcusdPrice : mark * btcusdPrice,
+        Mid_Price: mark ? mark * btcusdPrice : null,
+        Date: now.toISOString()
+      };
+
+      this.onDataUpdate(obj); // Send one clean object at a time
+    }
+  }
 
   onUpdate(callback) {
     this.onDataUpdate = callback;
@@ -74,15 +110,27 @@ class DeribitOptionsTracker {
 
       let instruments = data.result.map((inst) => inst.instrument_name);
 
-      // 2. Take only nearest expiry (avoid too much load)
-      const expiryDates = [
+      // 2. Get nearest expiry (any month) and current month's last expiry
+      const allExpiryDates = [
         ...new Set(instruments.map((i) => i.split("-")[1]).filter(Boolean)),
       ];
-      const nearest = expiryDates[0];
-      console.log("Using expiry:", nearest);
+      
+      const selectedExpiries = this.getCurrentMonthExpiries(allExpiryDates);
+      console.log("Current month expiries:", selectedExpiries);
+      
+      if (selectedExpiries.length === 0) {
+        console.log("No valid expiries found, using first available");
+        selectedExpiries.push(allExpiryDates[0]);
+      }
+      
+      console.log("Using expiries:", selectedExpiries);
 
-      // 3. Filter instruments for nearest expiry
-      instruments = instruments.filter((i) => i.includes(nearest));
+      // 3. Filter instruments for selected expiries
+      instruments = instruments.filter((i) => 
+        selectedExpiries.some(exp => i.includes(exp))
+      );
+
+      // console.log(`Tracking ${instruments}`);
 
       // 4. Init optionChain expiry-wise
       instruments.forEach((inst) => {
@@ -159,7 +207,6 @@ class DeribitOptionsTracker {
         if (!msg.params) return;
         const { channel, data } = msg.params;
 
-     
         // Option ticker updates
         if (channel?.startsWith("ticker.BTC-") && !channel.includes("PERPETUAL")) {
           const parsed = this.parseInstrument(data.instrument_name);

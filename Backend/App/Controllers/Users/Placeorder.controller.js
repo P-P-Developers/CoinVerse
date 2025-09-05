@@ -123,111 +123,6 @@ class Placeorder {
     }
   }
 
-  // async gettardehistory(req, res) {
-  //   try {
-  //     const { userid, Role } = req.body;
-
-  //     let result;
-
-  //     if (Role === "USER") {
-  //       result = await mainorder_model
-  //         .find({ userid: userid })
-  //         .sort({ createdAt: -1 });
-  //       if (result.length > 0) {
-  //         return res.json({
-  //           status: true,
-  //           message: "User found",
-  //           data: result,
-  //         });
-  //       } else {
-  //         return res.json({
-  //           status: false,
-  //           message: "No orders found for this user",
-  //           data: [],
-  //         });
-  //       }
-  //     } else {
-  //       result = await mainorder_model.aggregate([
-  //         {
-  //           $match: {
-  //             adminid: userid,
-  //             $or: [
-  //               { sell_price: null },
-  //               { sell_price: { $exists: false } }
-  //             ]
-  //           },
-  //         },
-  //         {
-  //           $lookup: {
-  //             from: "users",
-  //             let: { user_id: { $toObjectId: "$userid" } },
-  //             pipeline: [
-  //               {
-  //                 $match: {
-  //                   $expr: { $eq: ["$_id", "$$user_id"] },
-  //                 },
-  //               },
-  //             ],
-  //             as: "userDetails",
-  //           },
-  //         },
-  //         {
-  //           $unwind: {
-  //             path: "$userDetails",
-  //             preserveNullAndEmptyArrays: true,
-  //           },
-  //         },
-  //         {
-  //           $project: {
-  //             adminid: 1,
-  //             username: { $ifNull: ["$userDetails.UserName", "No username"] },
-
-  //             symbol: 1,
-  //             buy_qty: 1,
-  //             sell_qty: 1,
-  //             PositionAvg: 1,
-  //             buy_type: 1,
-  //             sell_type: 1,
-  //             buy_type: 1,
-  //             sell_price: 1,
-  //             buy_lot: 1,
-  //             buy_price: 1,
-  //             sell_lot: 1,
-  //             buy_time: 1,
-  //             sell_time: 1,
-  //             lotsize: 1,
-  //             token: 1,
-  //             requiredFund: 1,
-  //             reason: 1,
-  //             status: 1,
-  //             perlot: 1,
-  //             brokerage: 1,
-  //             limit: 1,
-  //             createdAt: 1,
-  //           },
-
-  //         },
-  //       ]);
-
-  //       if (result.length > 0) {
-  //         return res.json({
-  //           status: true,
-  //           message: "Admin found",
-  //           data: result,
-  //         });
-  //       } else {
-  //         return res.json({
-  //           status: false,
-  //           message: "No orders found for this admin",
-  //           data: [],
-  //         });
-  //       }
-  //     }
-  //   } catch (error) {
-  //     return res.json({ status: false, message: "Internal error", data: [] });
-  //   }
-  // }
-
   async gettardehistory(req, res) {
     try {
       const { userid, Role } = req.body;
@@ -314,9 +209,11 @@ class Placeorder {
     try {
       const { userid } = req.body;
 
-      const today = new Date();
-      const startOfDay = today.setHours(0, 0, 0, 0);
-      const endOfDay = today.setHours(23, 59, 59, 999);
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+
+      const endOfDay = new Date();
+      endOfDay.setHours(23, 59, 59, 999);
 
       // List of crypto tokens
       const cryptoTokens = [
@@ -378,7 +275,7 @@ class Placeorder {
           $match: {
             userid,
             Converted: "INTRADAY",
-            createdAt: { $gte: new Date(startOfDay), $lte: new Date(endOfDay) },
+            createdAt: { $gte: startOfDay, $lte: endOfDay },
           },
         },
         {
@@ -437,7 +334,7 @@ class Placeorder {
         });
       }
 
-      let PositionData = finduser.map((data) => {
+      let PositionData = finduser?.map((data) => {
         return {
           ...data,
           buy_price:
@@ -458,6 +355,7 @@ class Placeorder {
 
       res.json({ status: true, data: PositionData });
     } catch (error) {
+      console.log("Position Error:", error);
       res.json({ status: false, error: "Internal Server Error", data: [] });
     }
   }
@@ -1181,22 +1079,6 @@ class Placeorder {
         limitstopprice,
       } = req.body;
 
-      console.log({
-        userid,
-        symbol,
-        price,
-        lot,
-        qty,
-        requiredFund,
-        token,
-        type,
-        lotsize,
-        With_Margin,
-        selectedOption,
-        limitstopprice,
-      });
-
-
       if (price <= 0 || !price) {
         return res.json({ status: false, message: "Please provide price" });
       }
@@ -1218,13 +1100,13 @@ class Placeorder {
 
       const SymbolToken = await Symbol.findOne({ symbol: symbol });
 
-      if (SymbolToken == null) {
-        return res.json({
-          status: false,
-          message: "Symbol not found",
-          order: [],
-        });
-      }
+      // if (SymbolToken == null) {
+      //   return res.json({
+      //     status: false,
+      //     message: "Symbol not found",
+      //     order: [],
+      //   });
+      // }
       const checkbalance = checkadmin.Balance;
 
       let brokerage = 0;
@@ -1257,7 +1139,7 @@ class Placeorder {
           qty,
           adminid: checkadmin.parent_id,
           requiredFund,
-          token: SymbolToken?.token,
+          token: SymbolToken ? SymbolToken?.token : symbol,
           type,
           lotsize,
           selectedOption,
@@ -1292,7 +1174,7 @@ class Placeorder {
           brokerage: brokerage,
           limit: NewLimit,
           requiredFund,
-          token: SymbolToken?.token,
+          token: SymbolToken ? SymbolToken?.token : symbol,
           type,
           lotsize: lotsize,
           status: "Pending",
@@ -1326,7 +1208,7 @@ class Placeorder {
         brokerage: brokerage,
         limit: NewLimit,
         requiredFund,
-        token: SymbolToken?.token,
+        token: SymbolToken ? SymbolToken?.token : symbol,
         type,
         lotsize: lotsize,
         status: "Completed",
@@ -1517,7 +1399,7 @@ const EntryTrade = async (
       buy_time: currentTime,
       requiredFund,
       lotsize: lotsize,
-      token: SymbolToken.token,
+      token: SymbolToken ? SymbolToken?.token : symbol,
       adminid: checkadmin.parent_id,
       pertrade: checkadmin.userdata,
       perlot: checkadmin.perlot,
@@ -1620,7 +1502,7 @@ const ExitTrade = async (
         qty,
         adminid: checkadmin.parent_id,
         requiredFund,
-        token,
+        token: SymbolToken ? SymbolToken?.token : symbol,
         type,
         lotsize,
         status: "rejected",
@@ -1648,7 +1530,7 @@ const ExitTrade = async (
       sell_time: currentTime,
       requiredFund,
       lotsize: lotsize,
-      token: SymbolToken.token,
+      token: SymbolToken ? SymbolToken?.token : symbol,
       adminid: checkadmin.parent_id,
       pertrade: checkadmin.userdata,
       perlot: checkadmin.perlot,
